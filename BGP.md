@@ -28,11 +28,11 @@
 * 权重属性，思科私有属性，不可传递
 * 取值范围：0 - 65535，越大越优。
 * 默认值：若其下一跳为0.0.0.0，则其缺省值为32768（包括本地network进入的非IGP路由以及重分发进入的路由）；若其下一跳不为0.0.0.0（包括本地network进入的IGP路由，以及邻居传递来的路由），则缺省值为0。
-* 修改方式：
-    * `neighbor 3.3.3.3 weight 1`
-    * 从3.3.3.3邻居路由器收到的路由，weight值均改为1
-
-精确修改weight route map调用
+指定邻居修改：
+```
+neighbor 3.3.3.3 weight 1
+```
+精确修改，调用route-map
 ```
 ip prefix-list wei_plist seq 5 permit 11.11.11.0/24
 route-map wei_map permit 10
@@ -43,10 +43,15 @@ router bgp 234
  nei 3.3.3.3 route-map wei_map in
 ```
 ### Local Preference
-公认自选属性，传递范围为一个AS，缺省值为100，越大越优。
-AS内对于同一条路由，通过该属性区分那条路由最优，用于通告给IBGP邻居，该路由是如何离开AS的。
-修改命令：bgp default local-preference 101
-或者使用route-map：
+* 本地优先级属性，公认自选属性，传递范围为一个AS
+* 通过该属性，区分AS内的同一条路由哪条最优。
+* 默认值：100，越大越优。
+全局修改：
+```
+bgp default local-preference 101
+```
+精确修改：
+```
 ip prefix-list 10 seq 10 permit 111.111.111.0/24
 route-map local permit 10
  match ip address prefix-list 10
@@ -54,7 +59,8 @@ route-map local permit 10
 route-map local permit 20
 router bgp 234
  neighbor 12.1.1.1 route-map local in
-4.3.    AS-Path
+```
+### AS-Path
 公认强制属性，传递范围是整个Internet，越短越优。
 用一串AS号描述目标路由经过哪些AS。
 access-list 10 permit 11.11.11.0
