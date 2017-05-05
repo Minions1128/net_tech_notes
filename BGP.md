@@ -181,26 +181,22 @@ router bgp 65001
 * 考虑到在AS内部的防环机制，iBGP之间传递路由只能有一跳。
 * 联邦，在一个AS之内，划分出多个子AS域，建立EBGP邻接关系，可以将路由母AS之内进行多跳的传递。
 ### 举个例子：
-* 拓扑
-> R1-R2-R3-R4
-
-> R1在AS1，R2、R3、R4在AS2，R2,、R3在65002子AS，R4在65004子AS。
+* 拓扑`R1-R2-R3-R4`
+* R1在AS1，R2、R3、R4在AS2，R2,、R3在65002子AS，R4在65004子AS。
+```
 R1:
 router bgp 1
- bgp log-neighbor-changes
  network 1.1.1.1 mask 255.255.255.255
  neighbor 12.1.1.2 remote-as 2
 R2:
-router bgp 65002
+router bgp 65002                            # 宣告子AS号
  bgp router-id 2.2.2.2
- bgp log-neighbor-changes
- bgp confederation identifier 2
+ bgp confederation identifier 2             # 宣告主AS号
  neighbor 12.1.1.1 remote-as 1
- neighbor 23.1.1.3 remote-as 65002
+ neighbor 23.1.1.3 remote-as 65002          # 使用子AS号指定邻居
 R3:
 router bgp 65002
  bgp router-id 3.3.3.3
- bgp log-neighbor-changes
  bgp confederation identifier 2
  bgp confederation peers 65004 
  neighbor 23.1.1.2 remote-as 65002
@@ -208,14 +204,13 @@ router bgp 65002
 R4:
 router bgp 65004
  bgp router-id 4.4.4.4
- bgp log-neighbor-changes
  bgp confederation identifier 2
  bgp confederation peers 65002 
  neighbor 34.1.1.3 remote-as 65002
 ```
 可以将路由反射器和联邦联合使用，解决复杂问题。
-8. show ip bgp命令
-【图片】 
+## show ip bgp命令
+![](https://github.com/Minions1128/net_tech_notes/blob/master/img/show_bgp_cmd.jpg)
 BGP表中，从左到右，*为合法路由，有资格加入路由表；r为RIB-failure路由，也有资格加表，但由于管理距离，无法加表；s为抑制路由；>为最优路由，实际加入路由表中的路由；i为路由通过ibgp学到的；后面的i标识起源属性，意为通过igp进入BGP的。
 同步概念：
 如果路由器通过IBGP学到一条路由，该路由器必须再通过IGP学到该路由才可以加表。
