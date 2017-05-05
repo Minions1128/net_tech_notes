@@ -165,24 +165,26 @@ router bgp 65001
 * 最小的Cluster List长度
 * 较低的邻居IP地址的路由
 ## Route Reflector
-6.1.    定义
-路由反射器，简称RR；
-Cluster，在同一个AS之内，RR所能涉及到的范围；
-RRC，路由反射器客户端。
-RR和RRC之间有IBGP邻接关系，而RRC之间没有邻接关系。
-6.2.    工作机制
-RR收到一条EBGP路由，会将其传递给其它EBGP对等体、IGBP对等体（包括RRC和non-RRC）；
-RR收到一条RRC传递的IBGP路由，会将其发送给其他EBGP对等体、IGBP对等体（包括RRC和non-RRC）；
-RR收到一条non-RRC传递的IBGP路由，会将其传递给其他EBGP对等体和RRC，不会传递给non-RRC。
-被RR反射的路由，不会修改任何BGP属性。
-6.3.    配置
-在RR上BGP进程中配置：neighbor 23.1.1.3 route-reflector-client，宣告23.1.1.3为本地的RRC
-7. Confederation
-考虑到在AS内部没有防环机制，iBGP之间传递路由只能有一跳。
-联邦，在一个AS之内，划分出多个子AS域，建立EBGP邻接关系，可以将路由母AS之内进行多跳的传递。
-举个例子：
-R1-R2-R3-R4
-R1在AS1，R2、R3、R4在AS2，R2,、R3在65002子AS，R4在65004子AS。
+* 路由反射器，简称RR；
+* Cluster，在同一个AS之内，RR所能涉及到的范围；
+* RRC，路由反射器客户端。
+* RR和RRC之间有IBGP邻接关系，而RRC之间没有邻接关系。
+### 工作机制
+* RR收到一条EBGP路由，会将其传递给其它EBGP对等体、IGBP对等体（包括RRC和non-RRC）；
+* RR收到一条RRC传递的IBGP路由，会将其发送给其他EBGP对等体、IGBP对等体（包括RRC和non-RRC）；
+* RR收到一条non-RRC传递的IBGP路由，会将其传递给其他EBGP对等体和RRC，不会传递给non-RRC。
+* 被RR反射的路由，不会修改任何BGP属性。
+### 配置
+在RR上BGP进程中配置：`neighbor 23.1.1.3 route-reflector-client`，宣告23.1.1.3为本地的RRC
+## Confederation
+### 定义
+* 考虑到在AS内部的防环机制，iBGP之间传递路由只能有一跳。
+* 联邦，在一个AS之内，划分出多个子AS域，建立EBGP邻接关系，可以将路由母AS之内进行多跳的传递。
+### 举个例子：
+* 拓扑
+> R1-R2-R3-R4
+
+> R1在AS1，R2、R3、R4在AS2，R2,、R3在65002子AS，R4在65004子AS。
 R1:
 router bgp 1
  bgp log-neighbor-changes
@@ -210,10 +212,10 @@ router bgp 65004
  bgp confederation identifier 2
  bgp confederation peers 65002 
  neighbor 34.1.1.3 remote-as 65002
+```
 可以将路由反射器和联邦联合使用，解决复杂问题。
 8. show ip bgp命令
-
- 
+【图片】 
 BGP表中，从左到右，*为合法路由，有资格加入路由表；r为RIB-failure路由，也有资格加表，但由于管理距离，无法加表；s为抑制路由；>为最优路由，实际加入路由表中的路由；i为路由通过ibgp学到的；后面的i标识起源属性，意为通过igp进入BGP的。
 同步概念：
 如果路由器通过IBGP学到一条路由，该路由器必须再通过IGP学到该路由才可以加表。
