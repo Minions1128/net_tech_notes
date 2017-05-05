@@ -107,8 +107,8 @@ route-map m permit 20
 router bgp 1
  neighbor 13.1.1.3 route-map m out
 ```
-将思科路由器缺省值改为最大值：`bgp bestpath med missing-as-worst`
-允许不同路由器发送来的同一条路由条目来比较其MED值：`bgp always-compare-med`
+* 将思科路由器缺省值改为最大值：`bgp bestpath med missing-as-worst`
+* 允许不同路由器发送来的同一条路由条目来比较其MED值：`bgp always-compare-med`
 ### 下一跳
 * 若将本地路由（直连路由和静态路由）通告进BGP进程，该路由器的本地BGP表关于它们的下一跳为0.0.0.0；
 * 若将IGP获悉的路由通告进BGP进程，该路由器本地BGP表关于它们的下一跳为IGP路由的下一跳地址；
@@ -117,10 +117,11 @@ router bgp 1
 * 若路由器通过BGP对等体学到一条路由，该路由器在传递给EBGP对等体时，下一跳会改变为本地对于EBGP对等体的更新源地址。
 ### Atomic aggregate和aggregator
 #### 路由聚合
-两种方式聚合路由：
-1，可以手动写一条精确聚合路由，指向null0，然后将其宣告进入BGP；
-2，使用network命令先宣告一条精确路由，然后使用aggregate-address 192.168.4.0 255.255.252.0聚合路由。此时会将聚合路由和明细路由同时传递，加summary-only可以抑制明细路由，也可以使用suppress-map来精确抑制。
-4.7.2.  Atomic aggregate
+两种方式聚合路由
+* 手动写一条精确聚合路由，指向null0，然后将其宣告进入BGP；
+* 使用network命令先宣告至少一条精确路由，然后使用`aggregate-address 192.168.4.0 255.255.252.0`宣告聚合路由。
+    *此时会将聚合路由和明细路由同时传递，加summary-only可以抑制明细路由，也可以使用suppress-map来精确抑制。
+#### Atomic aggregate
 在传递聚合路由时，使用summary-only参数，会导致AS-PATH属性丢失的情况，所以在传递聚合路由时，可以加入atomic aggregate属性来标识该路由为聚合路由。传递范围是整个Internet。
 可以添加as-set参数来显示原来所在的as-path。
 4.7.3.  aggregator
