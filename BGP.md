@@ -5,6 +5,7 @@
 * 管理距离：IBGP为200；EBGP为20
 * AS（Autonomous System，自治系统），唯一的标记一个园区网，其范围为0-65535。其中0-64511为公有AS号，64512-65535为私有号。
 * 防环机制：IBGP，收到IBGP对等体的路由不会再传给其他IBGP对等体；EBGP，通过AS path属性，不会将路由传给已包含的AS内的路由器。
+* 同步概念：如果路由器通过IBGP学到一条路由，该路由器必须再通过IGP学到该路由才可以加表。
 ## 报文类型
 * Open报文：用于交互邻居路由器信息，建立邻接关系；
 * Keepalive报文：用于维护邻接关系，每60s发送一次；
@@ -211,10 +212,13 @@ router bgp 65004
 可以将路由反射器和联邦联合使用，解决复杂问题。
 ## show ip bgp命令
 ![](https://github.com/Minions1128/net_tech_notes/blob/master/img/show_bgp_cmd.jpg)
-BGP表中，从左到右，*为合法路由，有资格加入路由表；r为RIB-failure路由，也有资格加表，但由于管理距离，无法加表；s为抑制路由；>为最优路由，实际加入路由表中的路由；i为路由通过ibgp学到的；后面的i标识起源属性，意为通过igp进入BGP的。
-同步概念：
-如果路由器通过IBGP学到一条路由，该路由器必须再通过IGP学到该路由才可以加表。
-9. 一些命令
+BGP表中，从左到右
+* *为合法路由，有资格加入路由表；
+* r为RIB-failure路由，也有资格加表，但由于管理距离，无法加表；
+* s为抑制路由；
+* >为最优路由，实际加入路由表中的路由；
+* i为路由通过ibgp学到的；后面的i标识起源属性，意为通过igp进入BGP的。
+## 一些命令
 BGP进程下：
 neighbor IP-ADD shutdown，用来将BGP邻居down
 neighbor IP-ADD update-source INTERFACE，修改更新源地址
@@ -225,4 +229,3 @@ neighbor IP-ADD soft-reconfiguration inbound允许sh ip bgp neighbors IP-ADD rec
 clear ip bgp * soft in/out软清除BGP邻接关系，重新发一次路由更新
 clear ip bgp *硬重置BGP邻接关系，使BGP重新进行三次握手
 show ip bgp summary查看邻居状态等信息
-
