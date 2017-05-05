@@ -119,11 +119,14 @@ router bgp 1
 #### 路由聚合
 两种方式聚合路由
 * 手动写一条精确聚合路由，指向null0，然后将其宣告进入BGP；
-* 使用network命令先宣告至少一条精确路由，然后使用`aggregate-address 192.168.4.0 255.255.252.0`宣告聚合路由。
-    *此时会将聚合路由和明细路由同时传递，加summary-only可以抑制明细路由，也可以使用suppress-map来精确抑制。
+* 使用network命令先宣告至少一条精确路由，然后使用`aggregate-address 192.168.4.0 255.255.252.0`宣告聚合路由。此时BGP会将聚合路由和明细路由同时传递，使用明林`aggregate-address 192.168.4.0 255.255.252.0 summary-only`可以抑制明细路由，也可以使用`suppress-map`来精确抑制。
 #### Atomic aggregate
-在传递聚合路由时，使用summary-only参数，会导致AS-PATH属性丢失的情况，所以在传递聚合路由时，可以加入atomic aggregate属性来标识该路由为聚合路由。传递范围是整个Internet。
-可以添加as-set参数来显示原来所在的as-path。
+* 原子聚合属性，传递范围是整个Internet。
+* 在传递聚合路由时，使用`summary-only`参数会导致AS-PATH属性丢失的情况，所以在传递聚合路由时，可以加入atomic aggregate属性来标识该路由为聚合路由。
+* 配置方法：
+```
+aggregate-address 192.168.4.0 255.255.252.0 as-set      # 显式原来所在的AS Path
+```
 4.7.3.  aggregator
 聚合路由会将aggregator一并传递给邻居，标识路由被聚合的路由器ID。
 4.8.    Community
@@ -214,7 +217,6 @@ router bgp 65004
 BGP表中，从左到右，*为合法路由，有资格加入路由表；r为RIB-failure路由，也有资格加表，但由于管理距离，无法加表；s为抑制路由；>为最优路由，实际加入路由表中的路由；i为路由通过ibgp学到的；后面的i标识起源属性，意为通过igp进入BGP的。
 同步概念：
 如果路由器通过IBGP学到一条路由，该路由器必须再通过IGP学到该路由才可以加表。
-
 9. 一些命令
 BGP进程下：
 neighbor IP-ADD shutdown，用来将BGP邻居down
@@ -223,7 +225,6 @@ neighbor IP-ADD ebgp-multihop TTL-VALUE，修改EBGP建立邻居的TTL值，默�
 neighbor IP-ADD next-hop-self，BGP对于IBGP邻居传递路由时，其下一条地址不变，配置该命令会将下一条指向自己。
 neighbor IP-ADD password PASSWORD
 neighbor IP-ADD soft-reconfiguration inbound允许sh ip bgp neighbors IP-ADD received-routes
-
 clear ip bgp * soft in/out软清除BGP邻接关系，重新发一次路由更新
 clear ip bgp *硬重置BGP邻接关系，使BGP重新进行三次握手
 show ip bgp summary查看邻居状态等信息
