@@ -68,21 +68,23 @@ router bgp 234
 access-list 10 permit 11.11.11.0
 route-map ap1 permit 10
  match ip address 10
- set as-path prepend 5 6 7 8 #可以添加相同的as
+ set as-path prepend 5 6 7 8        #可以添加相同的as
 route-map ap1 permit 20
 router bgp 234
  neighbor 12.1.1.1 route-map ap1 in
 ```
 * `show ip bgp`中，AS-Path显式的为数据层面的，分析控制层面的as path和数据层面相反。
 ```
-neighbor 4.4.4.4 allowas-in #允许向已有的AS-Path传递路由
-bgp maxas-limit 10 #允许最大传输的AS-Path数为10
-bgp bestpath as-path ignore #忽略AS-path属性
+neighbor 4.4.4.4 allowas-in         #允许向已有的AS-Path传递路由
+bgp maxas-limit 10                  #允许最大传输的AS-Path数为10
+bgp bestpath as-path ignore         #忽略AS-path属性
 ```
 ### Origin
-起源属性，公认强制属性，传递范围是整个Internet。
-描述路由以何种方式进入BGP中的，i为IGP宣告进入BGP的，？为重分发进入BGP的，e为通过EGP进入BGP的，可以通过route-map进行修改。i优于e优于？。
-配置举例：
+* 起源属性，公认强制属性，传递范围是整个Internet。
+* 描述路由以何种方式进入BGP中的，i为IGP宣告进入BGP的，？为重分发进入BGP的，e为通过EGP进入BGP的，可以通过route-map进行修改。
+* i优于e优于？。
+* 配置举例：
+```
 ip prefix-list 10 per 11.11.11.0/24
 route-map o per 10
  match ip add prefix-list 10
@@ -90,7 +92,8 @@ route-map o per 10
 route-map o per 20
 router bgp 234
  neighbor 4.4.4.4 route-map o out
-4.5.    MED
+```
+### MED
 Multi-Exit Discriminators，多出口鉴别器，在邻居的一跳AS传递，缺省值：IETF最大值，Cisco定义为0，越小越优。
 MED会影响入站流量，用于同一路由器告诉邻居AS，如何从邻居AS到达本地AS的路由最近。
 举例：
@@ -140,7 +143,7 @@ nei 1.1.1.1 route-map COM in
 4.9.    Originator ID和cluster list
 在RR传递RRC的路由给其他RRC时，会带有这两种属性。Originator ID表示通告者RRC，cluster list表示RR。
 可选属性，传递范围是一个RR域。
-## 5. 路由选路原则
+5. 路由选路原则
 1，较高的权重；
 2，较高的本地优先级；
 3，本地通告的路由优于邻居传递来的路由（可能产生路由环路）；
@@ -155,7 +158,7 @@ nei 1.1.1.1 route-map COM in
 12，如果没有BGP多路功能，选择RID最小的路由，
 13，最小的Cluster List长度
 14，较低的邻居IP地址的路由
-## 6. Route Reflector
+6. Route Reflector
 6.1.    定义
 路由反射器，简称RR；
 Cluster，在同一个AS之内，RR所能涉及到的范围；
@@ -168,7 +171,7 @@ RR收到一条non-RRC传递的IBGP路由，会将其传递给其他EBGP对等体
 被RR反射的路由，不会修改任何BGP属性。
 6.3.    配置
 在RR上BGP进程中配置：neighbor 23.1.1.3 route-reflector-client，宣告23.1.1.3为本地的RRC
-## 7. Confederation
+7. Confederation
 考虑到在AS内部没有防环机制，iBGP之间传递路由只能有一跳。
 联邦，在一个AS之内，划分出多个子AS域，建立EBGP邻接关系，可以将路由母AS之内进行多跳的传递。
 举个例子：
@@ -202,14 +205,14 @@ router bgp 65004
  bgp confederation peers 65002 
  neighbor 34.1.1.3 remote-as 65002
 可以将路由反射器和联邦联合使用，解决复杂问题。
-## 8. show ip bgp命令
+8. show ip bgp命令
 
  
 BGP表中，从左到右，*为合法路由，有资格加入路由表；r为RIB-failure路由，也有资格加表，但由于管理距离，无法加表；s为抑制路由；>为最优路由，实际加入路由表中的路由；i为路由通过ibgp学到的；后面的i标识起源属性，意为通过igp进入BGP的。
 同步概念：
 如果路由器通过IBGP学到一条路由，该路由器必须再通过IGP学到该路由才可以加表。
 
-## 9. 一些命令
+9. 一些命令
 BGP进程下：
 neighbor IP-ADD shutdown，用来将BGP邻居down
 neighbor IP-ADD update-source INTERFACE，修改更新源地址
