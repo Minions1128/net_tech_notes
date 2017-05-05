@@ -28,11 +28,11 @@
 * 权重属性，思科私有属性，不可传递
 * 取值范围：0 - 65535，越大越优。
 * 默认值：若其下一跳为0.0.0.0，则其缺省值为32768（包括本地network进入的非IGP路由以及重分发进入的路由）；若其下一跳不为0.0.0.0（包括本地network进入的IGP路由，以及邻居传递来的路由），则缺省值为0。
-指定邻居修改：
+* 指定邻居修改：
 ```
 neighbor 3.3.3.3 weight 1
 ```
-精确修改，调用route-map
+* 精确修改，调用route-map
 ```
 ip prefix-list wei_plist seq 5 permit 11.11.11.0/24
 route-map wei_map permit 10
@@ -46,11 +46,11 @@ router bgp 234
 * 本地优先级属性，公认自选属性，传递范围为一个AS
 * 通过该属性，区分AS内的同一条路由哪条最优。
 * 默认值：100，越大越优。
-全局修改：
+* 全局修改：
 ```
 bgp default local-preference 101
 ```
-精确修改：
+* 精确修改：
 ```
 ip prefix-list 10 seq 10 permit 111.111.111.0/24
 route-map local permit 10
@@ -61,8 +61,10 @@ router bgp 234
  neighbor 12.1.1.1 route-map local in
 ```
 ### AS-Path
-公认强制属性，传递范围是整个Internet，越短越优。
-用一串AS号描述目标路由经过哪些AS。
+* 公认强制属性，传递范围是整个Internet，越短越优。
+* 用一串AS号描述目标路由经过哪些AS。
+* 修改方式：
+```
 access-list 10 permit 11.11.11.0
 route-map ap1 permit 10
  match ip address 10
@@ -70,11 +72,14 @@ route-map ap1 permit 10
 route-map ap1 permit 20
 router bgp 234
  neighbor 12.1.1.1 route-map ap1 in
-Sh ip bgp中，AS-Path显式的为数据层面的，分析控制层面的as path和数据层面相反。
+```
+* `show ip bgp`中，AS-Path显式的为数据层面的，分析控制层面的as path和数据层面相反。
+```
 neighbor 4.4.4.4 allowas-in #允许向已有的AS-Path传递路由
 bgp maxas-limit 10 #允许最大传输的AS-Path数为10
 bgp bestpath as-path ignore #忽略AS-path属性
-4.4.    Origin
+```
+### Origin
 起源属性，公认强制属性，传递范围是整个Internet。
 描述路由以何种方式进入BGP中的，i为IGP宣告进入BGP的，？为重分发进入BGP的，e为通过EGP进入BGP的，可以通过route-map进行修改。i优于e优于？。
 配置举例：
