@@ -1,18 +1,18 @@
-#BGP
-##1. 概述
+# BGP
+## 1. 概述
 BGP为一种路径矢量协议，传递信息为路由条目，其为应用层协议，TCP 179端口，更新报文均为单播报文。
 AS，自制系统，唯一的标记一个园区网，其范围为0-65535，其中0-64511为公有AS号，64512-65535为私有号。
 三张表：邻居表、BGP表、路由表。
 管理距离：IBGP路由AD为200；EBGP路由AD为20
 IGBP防环机制：收到IBGP对等体的路由不会再传给其他IBGP对等体；
 EBGP防环机制：EBPG会通过AS path属性，不会将路由传给已包含的AS内的路由器
-##2. 报文类型
+## 2. 报文类型
 1，Open报文：用于建立邻接关系。交互BGP版本、AS号、Holdtime（默认180s）和RID信息。RID可以手动配置，也可以自动选举。自动选举的规则为：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。
 2，Keeplive报文：用于维护邻接关系，每60s发送一次。
 3，Update报文：交互路由掩码信息、路由属性以及撤销的路由。
 用于传递更新的路由条目的前缀掩码，下一跳以及BGP属性等信息。
 4，Notification报文：当BGP发生错误时，会发送该报文。
-##3. 邻居状态
+## 3. 邻居状态
 BGP有6中邻居状态：Idle，Connect，Open Sent，Open Confirm，Active和Established
 Idle：路由器通过路由表查找邻居的过程；
 Connect：路由器找到邻居，并且完成了TCP三次握手；
@@ -20,7 +20,7 @@ Open Sent：路由器将本地BGP进程参数以Open报文发送给对端；
 Open Confirm：路由器收到了对端的Open报文，并且参数正确；
 Active：如果路由器没有收到对端发送的Open报文，会进入该状态，此时会重新TCP三次握手；
 Established：邻居建立，开始传递路由
-##4. 属性
+## 4. 属性
 BGP属性有4类：公认强制属性（origin，AS-path，下一跳），公认自选属性（local preference，atomic aggregate），可选传递属性（aggregator，community），可选非传递属性（MED，originator ID，cluster list）以及其他属性。
 4.1.    Weight
 权重属性，思科私有属性，不可传递。
@@ -121,7 +121,7 @@ nei 1.1.1.1 route-map COM in
 4.9.    Originator ID和cluster list
 在RR传递RRC的路由给其他RRC时，会带有这两种属性。Originator ID表示通告者RRC，cluster list表示RR。
 可选属性，传递范围是一个RR域。
-##5. 路由选路原则
+## 5. 路由选路原则
 1，较高的权重；
 2，较高的本地优先级；
 3，本地通告的路由优于邻居传递来的路由（可能产生路由环路）；
@@ -136,7 +136,7 @@ nei 1.1.1.1 route-map COM in
 12，如果没有BGP多路功能，选择RID最小的路由，
 13，最小的Cluster List长度
 14，较低的邻居IP地址的路由
-##6. Route Reflector
+## 6. Route Reflector
 6.1.    定义
 路由反射器，简称RR；
 Cluster，在同一个AS之内，RR所能涉及到的范围；
@@ -149,7 +149,7 @@ RR收到一条non-RRC传递的IBGP路由，会将其传递给其他EBGP对等体
 被RR反射的路由，不会修改任何BGP属性。
 6.3.    配置
 在RR上BGP进程中配置：neighbor 23.1.1.3 route-reflector-client，宣告23.1.1.3为本地的RRC
-##7. Confederation
+## 7. Confederation
 考虑到在AS内部没有防环机制，iBGP之间传递路由只能有一跳。
 联邦，在一个AS之内，划分出多个子AS域，建立EBGP邻接关系，可以将路由母AS之内进行多跳的传递。
 举个例子：
@@ -183,14 +183,14 @@ router bgp 65004
  bgp confederation peers 65002 
  neighbor 34.1.1.3 remote-as 65002
 可以将路由反射器和联邦联合使用，解决复杂问题。
-##8. show ip bgp命令
+## 8. show ip bgp命令
 
  
 BGP表中，从左到右，*为合法路由，有资格加入路由表；r为RIB-failure路由，也有资格加表，但由于管理距离，无法加表；s为抑制路由；>为最优路由，实际加入路由表中的路由；i为路由通过ibgp学到的；后面的i标识起源属性，意为通过igp进入BGP的。
 同步概念：
 如果路由器通过IBGP学到一条路由，该路由器必须再通过IGP学到该路由才可以加表。
 
-##9. 一些命令
+## 9. 一些命令
 BGP进程下：
 neighbor IP-ADD shutdown，用来将BGP邻居down
 neighbor IP-ADD update-source INTERFACE，修改更新源地址
