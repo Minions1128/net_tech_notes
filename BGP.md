@@ -125,28 +125,28 @@ router bgp 1
 * 在传递聚合路由时，使用`summary-only`参数会导致AS-PATH属性丢失的情况，所以在传递聚合路由时，可以加入atomic aggregate属性来标识该路由为聚合路由。
 * 配置方法：
 ```
-aggregate-address 192.168.4.0 255.255.252.0 as-set      # 显式原来所在的AS Path
+aggregate-address 192.168.4.0 255.255.252.0 as-set summary-only      # 显式原来所在的AS Path
 ```
-4.7.3.  aggregator
-聚合路由会将aggregator一并传递给邻居，标识路由被聚合的路由器ID。
-4.8.    Community
-团体属性为公认自由属性，不可传递属性，只能传递一跳。
-4.8.1.  标准团体属性
-标准团体属性有三个值No-advertise，No-export，Local-AS。
-需要在传递路径上都配置团体属性，该属性才可以传递下去。
-1，  No-Advertise：收到携带该属性的BGP路由时，路由无法传递给其他BGP对等体；
-2，  No-Export：收到携带该属性的BGP路由时，路由无法传递给其他EBGP对等体。但若在联邦中，该属性可以在子AS之间进行传递；
-3，  Local-AS：收到携带该属性的BGP路由时，路由只能在本地AS内传递（包括联邦的子AS内传递）。
-4.8.2.  扩展团体属性
-XX：YY tag，可以使用该tag来过滤路由。
+#### aggregator
+* 聚合路由器属性，聚合路由会将该属性一起传递给邻居，标识路由被聚合的路由器ID，传递范围是整个Internet。
+### Community
+* 团体属性为公认自由属性，不可传递属性，只能传递一跳。
+#### 标准团体属性
+* No-Advertise：收到携带该属性的BGP路由时，路由无法传递给其他BGP对等体；
+* No-Export：收到携带该属性的BGP路由时，路由无法传递给其他EBGP对等体，只能在一个AS内传递。但若在联邦中，该属性可以在子AS之间进行传递；
+* Local-AS：收到携带该属性的BGP路由时，路由只能在本地AS内传递，包括在联邦的子AS内传递。
+#### 扩展团体属性
+* XX：YY tag，可以使用该tag来过滤路由。
 配置命令：
+```
 ip community-list standard DENY permit 50:50
 route-map COM deny 10
-match community DENY
+  match community DENY
 route-map COM per 20
 router bgp 65001
-nei 1.1.1.1 route-map COM in
-4.9.    Originator ID和cluster list
+  nei 1.1.1.1 route-map COM in
+```
+### Originator ID和cluster list
 在RR传递RRC的路由给其他RRC时，会带有这两种属性。Originator ID表示通告者RRC，cluster list表示RR。
 可选属性，传递范围是一个RR域。
 5. 路由选路原则
