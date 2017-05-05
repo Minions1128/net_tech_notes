@@ -147,24 +147,24 @@ router bgp 65001
   nei 1.1.1.1 route-map COM in
 ```
 ### Originator ID和cluster list
-在RR传递RRC的路由给其他RRC时，会带有这两种属性。Originator ID表示通告者RRC，cluster list表示RR。
-可选属性，传递范围是一个RR域。
-5. 路由选路原则
-1，较高的权重；
-2，较高的本地优先级；
-3，本地通告的路由优于邻居传递来的路由（可能产生路由环路）；
-4，最短的AS-Path
-5，起源属性：i>e>?
-6，较小的MED值
-7，EBGP路由优于联邦EBGP路由，优于IBGP路由
-8，如果为内部路由，选择到下一跳最近的路由，也就是IGP度量值最小的路由；
-9，如果外部路由，选择multipath
-10，较老的EBGP路由（一般不作为参考对象）
-11，如果均来自一个AS的路由，并且启用了BGP多路功能（命令为maximum-path），在路由表中安装等价路由；
-12，如果没有BGP多路功能，选择RID最小的路由，
-13，最小的Cluster List长度
-14，较低的邻居IP地址的路由
-6. Route Reflector
+* 可选属性，传递范围是一个RR域。在RR传递RRC的路由给其他RRC时，会带有这两种属性。
+* Originator ID表示通告者RRC，cluster list表示RR。
+## 路由选路原则
+* 较高的权重；
+* 较高的本地优先级；
+* 本地通告的路由优于邻居传递来的路由（可能产生路由环路）；
+* 最短的AS-Path
+* 起源属性：i>e>?
+* 较小的MED值
+* EBGP路由优于联邦EBGP路由，优于IBGP路由
+* 如果为内部路由，选择到下一跳最近的路由，也就是IGP度量值最小的路由；
+    * 如果外部路由，选择multipath
+    * 较老的EBGP路由（一般不作为参考对象）
+    * 如果均来自一个AS的路由，并且启用了BGP多路功能（命令为maximum-path），在路由表中安装等价路由；
+* 如果没有BGP多路功能，选择RID最小的路由，
+* 最小的Cluster List长度
+* 较低的邻居IP地址的路由
+## Route Reflector
 6.1.    定义
 路由反射器，简称RR；
 Cluster，在同一个AS之内，RR所能涉及到的范围；
