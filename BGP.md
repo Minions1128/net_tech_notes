@@ -14,17 +14,20 @@
 * Idle：路由器通过路由表查找邻居的过程；
 * Connect：路由器找到邻居，并且完成了TCP三次握手；
 * Open Sent：路由器将本地BGP进程参数以Open报文发送给对端；
-> 参数包括：BGP版本、AS号、Holdtime（默认180s）和RID。
-> RID可以手动配置，也可以自动选举，其规则和OSPF一致：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。
+> 参数包括：BGP版本、AS号、Holdtime（默认180s）和RID。RID可以手动配置，也可以自动选举，其规则和OSPF一致：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。
 * Open Confirm：路由器收到了对端的Open报文，并且参数正确；
 * Active：如果路由器没有收到对端发送的Open报文，或者受到的报文参数错误，会进入该状态，此时会重新TCP三次握手；
 * Established：邻居建立，开始传递路由
-## 4. 属性
-BGP属性有4类：公认强制属性（origin，AS-path，下一跳），公认自选属性（local preference，atomic aggregate），可选传递属性（aggregator，community），可选非传递属性（MED，originator ID，cluster list）以及其他属性。
-4.1.    Weight
+## 属性
+* 公认强制属性：origin，AS-path，下一跳
+* 公认自选属性：local preference，atomic aggregate
+* 可选传递属性：aggregator，community
+* 可选非传递属性：MED，originator ID，cluster list
+* 其他属性
+### Weight
 权重属性，思科私有属性，不可传递。
 缺省值：若其下一跳为0.0.0.0，则其缺省值为32768（包括本地network进入的非IGP路由以及重分发进入的路由）；若其下一跳不为0.0.0.0（包括本地network进入的IGP路由，以及邻居传递来的路由），则缺省值为0。其取值范围为0-65535，越大越优。
-从该邻居收到的所有路由修改weight属性：neighbor 3.3.3.3 weight 1
+从该邻居收到的所有路由修改weight属性：‘neighbor 3.3.3.3 weight 1’
 精确修改weight route map调用
 ip prefix-list wei_plist seq 5 permit 11.11.11.0/24
 route-map wei_map permit 10
