@@ -216,16 +216,16 @@ BGP表中，从左到右
 * *为合法路由，有资格加入路由表；
 * r为RIB-failure路由，也有资格加表，但由于管理距离，无法加表；
 * s为抑制路由；
-* >为最优路由，实际加入路由表中的路由；
+* `>`为最优路由，实际加入路由表中的路由；
 * i为路由通过ibgp学到的；后面的i标识起源属性，意为通过igp进入BGP的。
 ## 一些命令
 BGP进程下：
-neighbor IP-ADD shutdown，用来将BGP邻居down
-neighbor IP-ADD update-source INTERFACE，修改更新源地址
-neighbor IP-ADD ebgp-multihop TTL-VALUE，修改EBGP建立邻居的TTL值，默认为1.
-neighbor IP-ADD next-hop-self，BGP对于IBGP邻居传递路由时，其下一条地址不变，配置该命令会将下一条指向自己。
-neighbor IP-ADD password PASSWORD
-neighbor IP-ADD soft-reconfiguration inbound允许sh ip bgp neighbors IP-ADD received-routes
-clear ip bgp * soft in/out软清除BGP邻接关系，重新发一次路由更新
-clear ip bgp *硬重置BGP邻接关系，使BGP重新进行三次握手
-show ip bgp summary查看邻居状态等信息
+* neighbor IP-ADD shutdown，用来将BGP邻居down
+* neighbor IP-ADD update-source INTERFACE，修改更新源地址
+* neighbor IP-ADD ebgp-multihop TTL-VALUE，修改EBGP建立邻居的TTL值，默认为1.
+* neighbor IP-ADD next-hop-self，BGP对于IBGP邻居传递路由时，其下一条地址不变，配置该命令会将下一条指向自己。
+* neighbor IP-ADD password PASSWORD
+* neighbor IP-ADD soft-reconfiguration inbound允许sh ip bgp neighbors IP-ADD received-routes
+* clear ip bgp * soft in/out软清除BGP邻接关系，重新发一次路由更新
+* clear ip bgp *硬重置BGP邻接关系，使BGP重新进行三次握手
+* show ip bgp summary查看邻居状态等信息* 
