@@ -6,11 +6,21 @@
 * AS（Autonomous System，自治系统），唯一的标记一个园区网，其范围为0-65535。其中0-64511为公有AS号，64512-65535为私有号。
 * 防环机制：IBGP，收到IBGP对等体的路由不会再传给其他IBGP对等体；EBGP，通过AS path属性，不会将路由传给已包含的AS内的路由器。
 ## 报文类型
-1，Open报文：用于建立邻接关系。交互BGP版本、AS号、Holdtime（默认180s）和RID信息。RID可以手动配置，也可以自动选举。自动选举的规则为：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。
-2，Keeplive报文：用于维护邻接关系，每60s发送一次。
-3，Update报文：交互路由掩码信息、路由属性以及撤销的路由。
-用于传递更新的路由条目的前缀掩码，下一跳以及BGP属性等信息。
-4，Notification报文：当BGP发生错误时，会发送该报文。
+BGP有4种报文：Open，Keepalive，Update和Notification：
+* Open报文：用于交互邻居路由器信息，建立邻接关系；
+* Keepalive报文：用于维护邻接关系，每60s发送一次；
+* Update报文：用于交互路由、掩码等属性信息，也有用路由的撤销；
+* Notification报文：用于发送BGP错误信息。
+
+
+当BGP发生错误时，会发送该报文。
+
+交互BGP版本、AS号、Holdtime（默认180s）和RID信息。RID可以手动配置，也可以自动选举。自动选举的规则为：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。
+
+
+
+
+
 ## 3. 邻居状态
 BGP有6中邻居状态：Idle，Connect，Open Sent，Open Confirm，Active和Established
 Idle：路由器通过路由表查找邻居的过程；
