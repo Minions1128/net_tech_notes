@@ -94,9 +94,11 @@ router bgp 234
  neighbor 4.4.4.4 route-map o out
 ```
 ### MED
-Multi-Exit Discriminators，多出口鉴别器，在邻居的一跳AS传递，缺省值：IETF最大值，Cisco定义为0，越小越优。
-MED会影响入站流量，用于同一路由器告诉邻居AS，如何从邻居AS到达本地AS的路由最近。
+* Multi-Exit Discriminators，多出口鉴别器，在邻居的一跳AS传递
+* 缺省值：IETF最大值，Cisco定义为0，越小越优。
+* MED会影响入站流量，用于同一路由器告诉邻居AS，如何从邻居AS到达本地AS的路由最近。
 举例：
+```
 ip prefix-list 10 seq 5 permit 11.11.11.0/24 #将本地路由通告给邻居AS
 route-map m permit 10
  match ip address prefix-list 10
@@ -104,17 +106,17 @@ route-map m permit 10
 route-map m permit 20
 router bgp 1
  neighbor 13.1.1.3 route-map m out
-将思科路由器缺省值改为最大值：bgp bestpath med missing-as-worst
-允许不同路由器发送来的同一条路由条目来比较其MED值：
-bgp always-compare-med
-4.6.    下一跳
-1，  若将本地路由（直连路由和静态路由）通告进BGP进程，该路由器的本地BGP表关于它们的下一跳为0.0.0.0；
-2，  若将IGP获悉的路由通告进BGP进程，该路由器本地BGP表关于它们的下一跳为IGP路由的下一跳地址；
-3，  若路由器通过BGP对等体收到一条路由，则该路由的下一跳为邻居的更新源地址；
-4，  若路由器通过EBGP对等体学到一条路由，该路由器在传给其IBGP对等体时，默认情况下一跳不会改变（除非做next-hop-self，或者其IBGP对等体有本地关于EBGP的更新源地址路由）；
-5，  若路由器通过BGP对等体学到一条路由，该路由器在传递给EBGP对等体时，下一跳会改变为本地对于EBGP对等体的更新源地址。
-4.7.    Atomic aggregate和aggregator
-4.7.1.  路由聚合
+```
+将思科路由器缺省值改为最大值：`bgp bestpath med missing-as-worst`
+允许不同路由器发送来的同一条路由条目来比较其MED值：`bgp always-compare-med`
+### 下一跳
+* 若将本地路由（直连路由和静态路由）通告进BGP进程，该路由器的本地BGP表关于它们的下一跳为0.0.0.0；
+* 若将IGP获悉的路由通告进BGP进程，该路由器本地BGP表关于它们的下一跳为IGP路由的下一跳地址；
+* 若路由器通过BGP对等体收到一条路由，则该路由的下一跳为邻居的更新源地址；
+* 若路由器通过EBGP对等体学到一条路由，该路由器在传给其IBGP对等体时，默认情况下一跳不会改变（除非做next-hop-self，或者其IBGP对等体有本地关于EBGP的更新源地址路由）；
+* 若路由器通过BGP对等体学到一条路由，该路由器在传递给EBGP对等体时，下一跳会改变为本地对于EBGP对等体的更新源地址。
+### Atomic aggregate和aggregator
+#### 路由聚合
 两种方式聚合路由：
 1，可以手动写一条精确聚合路由，指向null0，然后将其宣告进入BGP；
 2，使用network命令先宣告一条精确路由，然后使用aggregate-address 192.168.4.0 255.255.252.0聚合路由。此时会将聚合路由和明细路由同时传递，加summary-only可以抑制明细路由，也可以使用suppress-map来精确抑制。
