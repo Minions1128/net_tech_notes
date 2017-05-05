@@ -6,29 +6,19 @@
 * AS（Autonomous System，自治系统），唯一的标记一个园区网，其范围为0-65535。其中0-64511为公有AS号，64512-65535为私有号。
 * 防环机制：IBGP，收到IBGP对等体的路由不会再传给其他IBGP对等体；EBGP，通过AS path属性，不会将路由传给已包含的AS内的路由器。
 ## 报文类型
-BGP有4种报文：Open，Keepalive，Update和Notification：
 * Open报文：用于交互邻居路由器信息，建立邻接关系；
 * Keepalive报文：用于维护邻接关系，每60s发送一次；
 * Update报文：用于交互路由、掩码等属性信息，也有用路由的撤销；
 * Notification报文：用于发送BGP错误信息。
-
-
-当BGP发生错误时，会发送该报文。
-
-交互BGP版本、AS号、Holdtime（默认180s）和RID信息。RID可以手动配置，也可以自动选举。自动选举的规则为：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。
-
-
-
-
-
-## 3. 邻居状态
-BGP有6中邻居状态：Idle，Connect，Open Sent，Open Confirm，Active和Established
-Idle：路由器通过路由表查找邻居的过程；
-Connect：路由器找到邻居，并且完成了TCP三次握手；
-Open Sent：路由器将本地BGP进程参数以Open报文发送给对端；
-Open Confirm：路由器收到了对端的Open报文，并且参数正确；
-Active：如果路由器没有收到对端发送的Open报文，会进入该状态，此时会重新TCP三次握手；
-Established：邻居建立，开始传递路由
+## 邻居状态
+* Idle：路由器通过路由表查找邻居的过程；
+* Connect：路由器找到邻居，并且完成了TCP三次握手；
+* Open Sent：路由器将本地BGP进程参数以Open报文发送给对端；
+> 参数包括：BGP版本、AS号、Holdtime（默认180s）和RID。
+> RID可以手动配置，也可以自动选举，其规则和OSPF一致：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。
+* Open Confirm：路由器收到了对端的Open报文，并且参数正确；
+* Active：如果路由器没有收到对端发送的Open报文，或者受到的报文参数错误，会进入该状态，此时会重新TCP三次握手；
+* Established：邻居建立，开始传递路由
 ## 4. 属性
 BGP属性有4类：公认强制属性（origin，AS-path，下一跳），公认自选属性（local preference，atomic aggregate），可选传递属性（aggregator，community），可选非传递属性（MED，originator ID，cluster list）以及其他属性。
 4.1.    Weight
