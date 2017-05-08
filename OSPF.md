@@ -159,5 +159,4 @@ MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR�
 * 区域级明文认证：接口下：`ip ospf authentication-key h3c`，进程下：`area 0 authentication`
 * 区域级密文认证：接口下：`ip ospf message-digest-key 12 md5 shenxinfu`，进程下：`ip ospf authentication message-digest`
 * 虚链路级明文认证：进程下：`area 2 virtual-link 91.1.1.1 authentication-key cisco`和`area 2 virtual-link 91.1.1.1 authentication`
-* 虚链路级密文认证：进程下：`area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 cisco`和`area 2 virtual-link 91.1.1.1 authentication`message-digest
-
+* 虚链路级密文认证：进程下：`area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 cisco`和`area 2 virtual-link 91.1.1.1 authentication message-digest`
