@@ -147,7 +147,7 @@ route-map COM per 20
 router bgp 65001
   nei 1.1.1.1 route-map COM in
 ```
-### Originator ID和cluster list
+### 4.9 Originator ID和cluster list
 * 可选属性，传递范围是一个RR域。在RR传递RRC的路由给其他RRC时，会带有这两种属性。
 * Originator ID表示通告者RRC，cluster list表示RR。
 ## 5. 路由选路原则
