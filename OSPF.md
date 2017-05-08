@@ -11,20 +11,20 @@
 * 非主干区域：regular area
 ### 2.2 特殊区域
 #### 2.2.1 Stub Area
-* 1，将4、5类LSA过滤；
-* 2，注入一条拥有默认路由的3类LSA到该区域。
+1. 将4、5类LSA过滤；
+2. 注入一条拥有默认路由的3类LSA到该区域。
 > 建议只有一个ABR；保证该区域所有 路由器均配置Stub属性；不允许有ASBR；不允许在Area 0；不允许有虚链路。
 #### 2.2.2 Totally Stubby Area
-* 1，将3、4、5类LSA过滤；
-* 2，注入一条拥有默认路由的3类LSA到该区域。
+1. 将3、4、5类LSA过滤；
+2. 注入一条拥有默认路由的3类LSA到该区域。
 #### 2.2.3 NSSA Area
-* 1，将4，5类LSA过滤；
-* 2，不会注入一条拥有默认路由的3类LSA到该区域；
-* 3，通过ASBR分发进OSPF的路由成为7类（nssa-external）LSA，可以在NSSA区域内传递；
-* 4，RID较大的ABR会将7类LSA转换成5类LSA在其他区域进行传递。
+1. 将4，5类LSA过滤；
+2. 不会注入一条拥有默认路由的3类LSA到该区域；
+3. 通过ASBR分发进OSPF的路由成为7类（nssa-external）LSA，可以在NSSA区域内传递；
+4. RID较大的ABR会将7类LSA转换成5类LSA在其他区域进行传递。
 #### 2.2.4 Total NSSA Area
-* 1，将3，4，5类LSA过滤；
-* 2，注入一条拥有默认路由的3类LSA到该区域；3,4同NSSA Area
+1. 将3，4，5类LSA过滤；
+2. 注入一条拥有默认路由的3类LSA到该区域；3,4同NSSA Area
 #### 2.2.5 4种区域对比
 | 区域  | 过滤掉的LSA  | 拥有的LSA  |
 | :------------: | :------------: | :------------: |
@@ -81,14 +81,16 @@ R4的路由表中
 ### 4.2 7类邻接关系
 1. Down，接口刚被宣告进入OSPF；
 2. Init，收到了邻居发来的hello报文，但是双向通信还没有建立；
-3. 2-way，收到一份neighbor字段有自己的RID的hello报文；MA网络中，第一台到达该状态的路由器宣布开始选择DR、BDR；
-4. Exstart，交互三个不带LSA的DBD，选出Master/Slave。接口MTU不一致会一直卡在这一状态。接口使用命令ip ospf mtu-ignore忽略MTU检查；
+3. 2-way，收到一份neighbor字段有自己的RID的hello报文；
+> MA网络中，第一台到达该状态的路由器宣布开始选择DR、BDR；
+4. Exstart，交互三个不带LSA的DBD，选出Master/Slave。
+> 接口MTU不一致会一直卡在这一状态。接口使用命令ip ospf mtu-ignore忽略MTU检查；
 5. Exchange，Master发出带有LSA的DBD；
 6. Loading，交互LSR、LSU以及LSAck；
 7. Full，LSDB同步完成。
-MA网络邻接关系
+### 4.3 MA网络邻接关系
 MA网络DR和BDR可以建立full邻接关系，others建立2-way邻接关系。
-LSA
+## 5. LSA
 每30分钟发一次，且都有序列号，最大为0x80000001，最小为0x7fffffff。
 当一个接口被宣告进入OSPF进程中，该端口会开始监听发往224.0.0.5的流量。MA网络中，DR和BDR会监听发往224.0.0.6的流量，DR Other利用224.0.0.6地址传递LSA，DR会将其进行综合，再利用224.0.0.5地址分发给大家。
 Router LSA
