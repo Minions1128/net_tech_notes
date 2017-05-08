@@ -134,7 +134,7 @@ MA网络DR和BDR可以建立full邻接关系，others建立2-way邻接关系。
 3. LSR 链路状态请求，用LSU确认
 4. LSU 链路状态更新，使用LSAck确认
 5. LSAck 链路状态确认。
-请参考：[OSPF报头及各种报文格式](http://blog.csdn.net/lycb_gz/article/details/9662965)
+* 请参考：[OSPF报头及各种报文格式](http://blog.csdn.net/lycb_gz/article/details/9662965)
 ## 7. DR与BDR
 MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR。
 ### 7.1 选择原则
@@ -148,18 +148,16 @@ MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR�
 ## 8. 路由汇总
 * 域间汇总：在ABR上部署，对3类LSA的汇总，命令：area 0 range 0.0.0.0 0.0.0.0。会生成Null 0路由；
 * 域外汇总：在ASBR上部署，对5类LSA的汇总。命令：summary-address 0.0.0.0 0.0.0.0。会产生Null 0路由。
-* 接口下修改cost命令：ip ospf cost 10
 ## 9. 连接非直连的普通区域和骨干区域
 如何连接：area2 -- area 1 -- area 0
 1. 两个OSPF进程相互重分布；
 2. 使用隧道技术，Tunnel；
 3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路：area 2 virtual-link 1.1.1.1
 ## 10. 认证
-链路级明文认证：接口下：ip ospf authentication-key cisco和ip ospf authentication
-链路级密文认证：接口下：ip ospf message-digest-key 13 md5 huawei和ip ospf authentication message-digest
-区域级明文认证：接口下：ip ospf authentication-key h3c，进程下：area 0 authentication
-区域级密文认证：接口下：ip ospf message-digest-key 12 md5 shenxinfu，进程下：ip ospf authentication message-digest
-虚链路级明文认证：进程下：area 2 virtual-link 91.1.1.1 authentication-key cisco和area 2 virtual-link 91.1.1.1 authentication
-虚链路级密文认证：进程下：area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 cisco和area 2 virtual-link 91.1.1.1 authentication message-digest
-一些命令
-查看OSPF接口：show ip ospf interface (brief)
+* 链路级明文认证：接口下：ip ospf authentication-key cisco和ip ospf authentication
+* 链路级密文认证：接口下：ip ospf message-digest-key 13 md5 huawei和ip ospf authentication message-digest
+* 区域级明文认证：接口下：ip ospf authentication-key h3c，进程下：area 0 authentication
+* 区域级密文认证：接口下：ip ospf message-digest-key 12 md5 shenxinfu，进程下：ip ospf authentication message-digest
+* 虚链路级明文认证：进程下：area 2 virtual-link 91.1.1.1 authentication-key cisco和area 2 virtual-link 91.1.1.1 authentication
+* 虚链路级密文认证：进程下：area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 cisco和area 2 virtual-link 91.1.1.1 authentication message-digest
+
