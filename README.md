@@ -1,5 +1,5 @@
 # net_tech_notes
 Network Technology Note Summaries
 
-## BGP
-## OSPF
+## [BGP](https://github.com/Minions1128/net_tech_notes/blob/master/BGP.md)
+## [OSPF](https://github.com/Minions1128/net_tech_notes/blob/master/OSPF.md)
