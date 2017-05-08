@@ -127,31 +127,34 @@ MA网络DR和BDR可以建立full邻接关系，others建立2-way邻接关系。
 * 通告者：ASBR
 * 传播范围：NSSA
 * 内容：一条OSPF域外路由条目
-报文类型
-1. Hello 建立和维护邻居关系。时间间隔10s或者30s，取决于链路类型*4为dead和wait时间。Hello时间可以修改，在接口下使用命令：ip ospf hello-interval 12，hello时间改为12秒，wait和dead时间自动改为48s；而单独修改wait和dead时间，hello时间不会跟着被修改。其还可以选择DR和BDR。
-2. DBD 包含LSA的包头、使用隐式确认。DBD中的flag位，I->M->M/S。
-3. LSR 用LSU确认
-4. LSU 使用LSAck确认
-5. LSAck
-http://blog.csdn.net/lycb_gz/article/details/9662965
-DR与BDR
+## 6. 报文类型
+1. Hello 用于建立和维护邻居关系。
+> 时间间隔10s或者30s，取决于链路类型。乘以4为dead和wait时间。Hello时间可以修改，在接口下使用命令：ip ospf hello-interval 12，hello时间改为12秒，wait和dead时间自动改为48s；而单独修改wait和dead时间，hello时间不会跟着被修改。其还可以选择DR和BDR。
+2. DBD 用于传递LSDB，其包含LSA的包头、使用隐式确认。DBD中的flag位，I->M->M/S。
+3. LSR 链路状态请求，用LSU确认
+4. LSU 链路状态更新，使用LSAck确认
+5. LSAck 链路状态确认。
+请参考：[OSPF报头及各种报文格式](http://blog.csdn.net/lycb_gz/article/details/9662965)
+## 7. DR与BDR
 MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR。
-选择原则
-1，优先级较高的端口，默认为1，范围是0-255，0代表不参选DR、BDR；
-2，该接口的路由器有较高的RID
-特点
-1，DR、BDR具有非抢占性；
-2，DR掉线之后，BDR成为DR，新的BDR需要在DR Other中选择；
-3，每个单独的MA网络，选择DR与BDR是单独进行的；
-4，如果一个MA网络中没DR、BDR，该网段中不会收发LSA；
-路由汇总
-域间汇总：在ABR上部署，对3类LSA的汇总，命令：area 0 range 0.0.0.0 0.0.0.0。会生成Null 0路由；
-域外汇总：在ASBR上部署，对5类LSA的汇总。命令：summary-address 0.0.0.0 0.0.0.0。会产生Null 0路由。
-接口下修改cost命令：ip ospf cost 10
-连接非直连的普通区域和骨干区域
+### 7.1 选择原则
+1. 优先级较高的端口，默认为1，范围是0-255，0代表不参选DR、BDR；
+2. 该接口的路由器有较高的RID
+### 7.2 特点
+1. DR、BDR具有非抢占性；
+2. DR掉线之后，BDR成为DR，新的BDR需要在DR Other中选择；
+3. 每个单独的MA网络，选择DR与BDR是单独进行的；
+4. 如果一个MA网络中没DR、BDR，该网段中不会收发LSA；
+## 8. 路由汇总
+* 域间汇总：在ABR上部署，对3类LSA的汇总，命令：area 0 range 0.0.0.0 0.0.0.0。会生成Null 0路由；
+* 域外汇总：在ASBR上部署，对5类LSA的汇总。命令：summary-address 0.0.0.0 0.0.0.0。会产生Null 0路由。
+* 接口下修改cost命令：ip ospf cost 10
+## 9. 连接非直连的普通区域和骨干区域
 如何连接：area2 -- area 1 -- area 0
-1，两个OSPF进程相互重分布；2，使用隧道技术，Tunnel；3，使用OSPF虚拟链路：在两个ABR之间建立虚拟链路：area 2 virtual-link 1.1.1.1
-认证
+1. 两个OSPF进程相互重分布；
+2. 使用隧道技术，Tunnel；
+3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路：area 2 virtual-link 1.1.1.1
+## 10. 认证
 链路级明文认证：接口下：ip ospf authentication-key cisco和ip ospf authentication
 链路级密文认证：接口下：ip ospf message-digest-key 13 md5 huawei和ip ospf authentication message-digest
 区域级明文认证：接口下：ip ospf authentication-key h3c，进程下：area 0 authentication
