@@ -146,18 +146,18 @@ MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR�
 3. 每个单独的MA网络，选择DR与BDR是单独进行的；
 4. 如果一个MA网络中没DR、BDR，该网段中不会收发LSA；
 ## 8. 路由汇总
-* 域间汇总：在ABR上部署，对3类LSA的汇总，命令：area 0 range 0.0.0.0 0.0.0.0。会生成Null 0路由；
-* 域外汇总：在ASBR上部署，对5类LSA的汇总。命令：summary-address 0.0.0.0 0.0.0.0。会产生Null 0路由。
+* 域间汇总：在ABR上部署，对3类LSA的汇总，命令：`area 0 range 0.0.0.0 0.0.0.0`。会生成Null 0路由；
+* 域外汇总：在ASBR上部署，对5类LSA的汇总。命令：`summary-address 0.0.0.0 0.0.0.0`。会产生Null 0路由。
 ## 9. 连接非直连的普通区域和骨干区域
 如何连接：area2 -- area 1 -- area 0
 1. 两个OSPF进程相互重分布；
 2. 使用隧道技术，Tunnel；
 3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路：area 2 virtual-link 1.1.1.1
 ## 10. 认证
-* 链路级明文认证：接口下：ip ospf authentication-key cisco和ip ospf authentication
-* 链路级密文认证：接口下：ip ospf message-digest-key 13 md5 huawei和ip ospf authentication message-digest
-* 区域级明文认证：接口下：ip ospf authentication-key h3c，进程下：area 0 authentication
-* 区域级密文认证：接口下：ip ospf message-digest-key 12 md5 shenxinfu，进程下：ip ospf authentication message-digest
-* 虚链路级明文认证：进程下：area 2 virtual-link 91.1.1.1 authentication-key cisco和area 2 virtual-link 91.1.1.1 authentication
-* 虚链路级密文认证：进程下：area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 cisco和area 2 virtual-link 91.1.1.1 authentication message-digest
+* 链路级明文认证：接口下：`ip ospf authentication-key cisco`和`ip ospf authentication`
+* 链路级密文认证：接口下：`ip ospf message-digest-key 13 md5 huawei`和`ip ospf authentication message-digest`
+* 区域级明文认证：接口下：`ip ospf authentication-key h3c`，进程下：`area 0 authentication`
+* 区域级密文认证：接口下：`ip ospf message-digest-key 12 md5 shenxinfu`，进程下：`ip ospf authentication message-digest`
+* 虚链路级明文认证：进程下：`area 2 virtual-link 91.1.1.1 authentication-key cisco`和`area 2 virtual-link 91.1.1.1 authentication`
+* 虚链路级密文认证：进程下：`area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 cisco`和`area 2 virtual-link 91.1.1.1 authentication`message-digest
 
