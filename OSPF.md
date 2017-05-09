@@ -38,7 +38,7 @@ O（域内路由） > O IA（域间路由） > O E1/E2（重分发路由，LSA5�
 ### 3 .2 路由计算
 * 域内的每台路由器有完全一致的LSDB，并可以将自己作为root，根据Dijkstra计算路径。通过分段带宽，COST计算方式为
 ```math
-\frac{10^8}{bandwidth(bit/s)}
+\frac{1}{e}
 ```
 〖10〗^8/(BW(bit/s))，可以通过命令auto-cost reference-bandwidth来修改108的值。
 * E路由为外部路由重分发进入OSPF的路由，E1类型的路由会计算OSPF和外部的cost值，而E2只会计算OSPF外部的值
