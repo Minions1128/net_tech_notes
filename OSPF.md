@@ -40,6 +40,24 @@ O（域内路由） > O IA（域间路由） > O E1/E2（重分发路由，LSA5�
 ```math
 \frac{1}{e}
 ```
+
+```katex
+\displaystyle 
+    \frac{1}{
+        \Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{
+        \frac25 \pi}} = 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {
+        1+\frac{e^{-6\pi}}
+        {1+\frac{e^{-8\pi}}
+         {1+\cdots} }
+        } 
+    }
+```
+
+```latex
+f(x) = \int_{-\infty}^\infty
+    \hat f(\xi)\,e^{2 \pi i \xi x}
+    \,d\xi
+```
 〖10〗^8/(BW(bit/s))，可以通过命令auto-cost reference-bandwidth来修改108的值。
 * E路由为外部路由重分发进入OSPF的路由，E1类型的路由会计算OSPF和外部的cost值，而E2只会计算OSPF外部的值
 ### 3.3 路由计算举例
