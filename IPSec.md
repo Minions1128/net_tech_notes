@@ -64,6 +64,7 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 支持邻居检测功能和NAT功能。
 ### 3.4 配置举例
 * 拓扑如图，R1和R3模拟两站点，使用环回口模拟内网，R2模拟运营商路由器
+
 ![IPSec topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.topo.jpg "IPSec topology")
 * 基本配置为：
 ```
