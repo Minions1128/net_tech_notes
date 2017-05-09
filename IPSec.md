@@ -45,18 +45,87 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 * 用HASH认证，HASH认证成分：sky_ID_a，两端cookie，预共享密钥，IKE SA，转换集、策略。
 #### 3.1.4 总结
 ![IKE SA](https://github.com/Minions1128/net_tech_notes/blob/master/img/ike.sa.jpg "IKE SA")
-
-
-
-
-
-
-
-
-
-
-
-
+### 3.2 第二阶段
+该阶段会利用IKE SA保护的，协商IPSec SA来保护IPSec数据：使用AH还是ESP，hash是MD5还是SHA，是tunnel还是transport模式。数据一直后，会建立SA。
+#### 3.2.1 消息1&2
+* 交换信息，包含HASH，IPSEC策略提议，NONCE和可选的DH，身份ID。
+* HASH：给接受方作完整性检查，用于再次认证对等体(必须)。和第一阶段5&6消息一样。
+* IPSec策略提议：其中包括了安全协议（AH或者ESP），SPI，散列算法，隧道模式，IPSEC SA生命周期(必须)。
+* NONCE：用于防重放攻击，还被用作密码生成的材料。仅当启用PFS时用到。
+* ID：描述IPSEC SA是为哪些地址、协议和端口建立的。
+* PFS （Perfect Forward Secrecy，利用DH交换，可选）：用了PFS后，就会在第二阶段重新DH出个数据加密KEY。新key和旧key没有关系，每次协商IPSec SA会重新生成，进一步提高安全性。
+* DH：重新协商IPSec SA使用（可选）。
+* SA由SPI（安全参数索引，唯一标识一个SA，在AH和ESP头中传输），目的IP地址、安全协议号（AH或者ESP）。
+#### 3.2.2 消息3
+发送方发送第三条消息，其中包含一个HASH，其作用是确认接受方的消息以及证明发送方处于Active状态（表示发送方的第一条消息不是伪造的，确认作用ACK)
+#### 3.2.3 总结
+![IPSec SA](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.sa.jpg "IPSec SA")
+### 3.3 其他功能
+支持邻居检测功能和NAT功能。
+### 3.4 配置举例
+![IPSec topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.topo.jpg "IPSec topology")
+* 拓扑如图，R1和R3模拟两站点，使用环回口模拟内网，R2模拟运营商路由器
+* 基本配置为：
+```
+R1
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.0
+interface FastEthernet0/0
+ ip address 12.1.1.1 255.255.255.0
+ no shutdown
+ip route 0.0.0.0 0.0.0.0 12.1.1.2
+R2
+interface FastEthernet0/0
+ ip address 12.1.1.2 255.255.255.0
+ no shutdown
+interface FastEthernet0/1
+ ip address 23.1.1.2 255.255.255.0
+ no shutdown
+R3
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.0
+interface FastEthernet0/1
+ ip address 23.1.1.3 255.255.255.0
+ no shutdown
+ip route 0.0.0.0 0.0.0.0 23.1.1.2
+```
+IPSec配置：
+```
+R1
+crypto isakmp policy 100
+ encr 3des
+ hash md5
+ authentication pre-share
+ group 2
+ lifetime 222
+crypto isakmp key p1_key address 23.1.1.3
+crypto ipsec transform-set r1_set esp-3des esp-md5-hmac 
+ mode tunnel
+access-list 100 per ip 1.1.1.0 0.0.0.255 3.3.3.0 0.0.0.255
+crypto map r1_map 10 ipsec-isakmp 
+ set peer 12.1.1.1
+ set transform-set r1_set 
+ match address 100
+int fa0/0
+ crypto map r1_map
+R3
+crypto isakmp policy 100
+ encr 3des
+ hash md5
+ authentication pre-share
+ group 2
+ lifetime 222
+crypto isakmp key p1_key address 12.1.1.1
+crypto ipsec transform-set r3_set esp-3des esp-md5-hmac 
+ mode tunnel
+access-list 100 per ip 3.3.3.0 0.0.0.255 1.1.1.0 0.0.0.255
+crypto map r3_map 10 ipsec-isakmp 
+ set peer 12.1.1.1
+ set transform-set r3_set 
+ match address 100
+int fa0/1
+ crypto map r3_map
+```
 4.  GRE over IPSec
 由于单独的IPSec协议需要配置感兴趣流，而且没有办法通告彼此的路由，而GRE技术又是明文传递。将二者结合，解决了传输路由和私密的问题。
 拓扑以及基本配置如上图所示。
