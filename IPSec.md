@@ -11,13 +11,12 @@
 * AH为IP 50号，由于AH只可以保障数据完整性，而不能做加密。所以现在用途较少。
 
 ## 2. ESP
+![ESP packet](https://github.com/Minions1128/net_tech_notes/blob/master/img/esp.jpg "ESP packet")
 ### 2.1 报文封装
-* IP 51号，其封装格式有两种模式：Transport Mode和Tunnel Mode
-[![ESP packet encapsulation](https://github.com/Minions1128/net_tech_notes/blob/master/img/esp.packet.e.jpg "ESP packet encapsulation")](https://github.com/Minions1128/net_tech_notes/blob/master/img/esp.packet.e.jpg "ESP packet encapsulation")
+IP 51号，其封装格式有两种模式：Transport Mode和Tunnel Mode
 * Transport模式：节省了20字节的IP报头，但却要将原IP报文拆分，并且需要读取器协议字段。GRE over IPSec协议、PC2PC可以使用该模式。
 * Tunnel模式：不需要拆包，直接可以封装，其效率较高。site to site VPN需要这种模式。
 ### 2.2 ESP报文
-[![ESP packet](https://github.com/Minions1128/net_tech_notes/blob/master/img/esp.packet.jpg "ESP packet")](https://github.com/Minions1128/net_tech_notes/blob/master/img/esp.packet.jpg "ESP packet")
 * SPI：安全参数索引；
 * 序列号：防止重复攻击
 * Next header：相当于IP报文的协议号字段。
