@@ -191,29 +191,34 @@ interface Tunnel0
 ```
 **其中，R1和R3采用了不同的部署方式，分别使用crypto map和crypto ipsec profile方式。**
 ## 5. DMVPN
-由于点到点VPN无法建立实现多点的通信，需要DMVPN技术来进行支持。
-拓扑如图，三台路由器模拟三个站点，Fa0/0口模拟运营商网络，环回口模拟内网
-基本配置为：
+* 由于点到点VPN无法建立实现多点的通信，需要DMVPN技术来进行支持。
+* 拓扑如图，三台路由器模拟三个站点，Fa0/0口模拟运营商网络，环回口模拟内网
+![dmvpn.topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/dmvpn.topo.jpg "dmvpn.topology")
+* 基本配置为：
+```
 R1：
 interface Loopback0
  ip address 1.1.1.1 255.255.255.255
 interface FastEthernet0/0
  ip address 123.1.1.1 255.255.255.0
  no shutdown
- 
+--------------------------------------------------
 R2：
 interface Loopback0
  ip address 2.2.2.2 255.255.255.255
 interface FastEthernet0/0
  ip address 123.1.1.2 255.255.255.0
  no shutdown
+--------------------------------------------------
 R3：
 interface Loopback0
  ip address 3.3.3.3 255.255.255.255
 interface FastEthernet0/0
  ip address 123.1.1.3 255.255.255.0
  no shutdown
+```
 GRE配置：
+```
 R1：
 interface Tunnel0
  ip address 192.168.1.1 255.255.255.0
@@ -225,6 +230,7 @@ ip nhrp map multicast dynamic
 router ospf 1
  network 1.1.1.1 0.0.0.0 area 0
  network 192.168.1.1 0.0.0.0 area 0
+--------------------------------------------------
 R2：
 interface Tunnel0
  ip address 192.168.1.2 255.255.255.0
@@ -240,6 +246,7 @@ interface Tunnel0
 router ospf 1
  network 2.2.2.2 0.0.0.0 area 0
  network 192.168.1.2 0.0.0.0 area 0
+--------------------------------------------------
 R3：
 interface Tunnel0
  ip address 192.168.1.3 255.255.255.0
@@ -255,7 +262,9 @@ interface Tunnel0
 router ospf 1
  network 3.3.3.3 0.0.0.0 area 0
  network 192.168.1.3 0.0.0.0 area 0
+```
 三台路由器的IPSec配置：
+```
 crypto isakmp policy 100
  encr 3des
  hash md5
@@ -270,5 +279,4 @@ crypto ipsec profile r_prof
 interface Tunnel0
  ip mtu 1440
  tunnel protection ipsec profile r_prof
-
-6.  End
+```
