@@ -64,7 +64,6 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 支持邻居检测功能和NAT功能。
 ### 3.4 配置举例
 * 拓扑如图，R1和R3模拟两站点，使用环回口模拟内网，R2模拟运营商路由器
-
 ![IPSec topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.topo.jpg "IPSec topology")
 * 基本配置为：
 ```
@@ -194,7 +193,9 @@ interface Tunnel0
 ## 5. DMVPN
 * 由于点到点VPN无法建立实现多点的通信，需要DMVPN技术来进行支持。
 * 拓扑如图，三台路由器模拟三个站点，Fa0/0口模拟运营商网络，环回口模拟内网
+
 ![dmvpn.topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/dmvpn.topo.jpg "dmvpn.topology")
+
 * 基本配置为：
 ```
 R1：
