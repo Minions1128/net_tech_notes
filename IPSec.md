@@ -65,7 +65,7 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 ### 3.4 配置举例
 * 拓扑如图，R1和R3模拟两站点，使用环回口模拟内网，R2模拟运营商路由器
 ![IPSec topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.topo.jpg "IPSec topology")
-基本配置为：
+* 基本配置为：
 ```
 R1
 interface Loopback0
@@ -91,7 +91,7 @@ interface FastEthernet0/1
  no shutdown
 ip route 0.0.0.0 0.0.0.0 23.1.1.2
 ```
-IPSec配置：
+* IPSec配置：
 ```
 R1
 crypto isakmp policy 100
@@ -130,9 +130,10 @@ int fa0/1
  crypto map r3_map
 ```
 ## 4. GRE over IPSec
-由于单独的IPSec协议需要配置感兴趣流，而且没有办法通告彼此的路由，而GRE技术又是明文传递。将二者结合，解决了传输路由和私密的问题。
-拓扑以及基本配置如上图所示。
-GRE配置：
+* 由于单独的IPSec协议需要配置感兴趣流，而且没有办法通告彼此的路由，而GRE技术又是明文传递。将二者结合，解决了传输路由和私密的问题。
+* 拓扑以及基本配置如上图所示。
+* GRE配置：
+```
 R1：
 interface Tunnel0
  ip address 192.168.1.1 255.255.255.0
@@ -141,6 +142,7 @@ interface Tunnel0
 router eigrp 1
  network 1.1.1.1 0.0.0.0
  network 192.168.1.1 0.0.0.0
+--------------------------------------------------
 R3：
 interface Tunnel0
  ip address 192.168.1.3 255.255.255.0
@@ -149,7 +151,9 @@ interface Tunnel0
 router eigrp 1
  network 3.3.3.3 0.0.0.0
  network 192.168.1.3 0.0.0.0
-IPSec配置：
+```
+* IPSec配置：
+```
 R1：
 crypto isakmp policy 100
  encr 3des
@@ -168,6 +172,7 @@ crypto map r1_map 10 ipsec-isakmp
  match address 100
 int fa0/0
  crypto map r1_map
+--------------------------------------------------
 R3：
 crypto isakmp policy 100
  encr 3des
@@ -183,9 +188,9 @@ crypto ipsec profile r3_prof
  set transform-set r3_set
 interface Tunnel0
  tunnel protection ipsec profile r3_prof
-其中，R1和R3采用了不同的部署方式，分别使用crypto map和crypto ipsec profile方式。
-
-5.  DMVPN
+```
+**其中，R1和R3采用了不同的部署方式，分别使用crypto map和crypto ipsec profile方式。**
+## 5. DMVPN
 由于点到点VPN无法建立实现多点的通信，需要DMVPN技术来进行支持。
 拓扑如图，三台路由器模拟三个站点，Fa0/0口模拟运营商网络，环回口模拟内网
 基本配置为：
