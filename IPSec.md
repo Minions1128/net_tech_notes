@@ -63,9 +63,9 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 ### 3.3 其他功能
 支持邻居检测功能和NAT功能。
 ### 3.4 配置举例
-![IPSec topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.topo.jpg "IPSec topology")
 * 拓扑如图，R1和R3模拟两站点，使用环回口模拟内网，R2模拟运营商路由器
-* 基本配置为：
+![IPSec topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.topo.jpg "IPSec topology")
+基本配置为：
 ```
 R1
 interface Loopback0
@@ -74,6 +74,7 @@ interface FastEthernet0/0
  ip address 12.1.1.1 255.255.255.0
  no shutdown
 ip route 0.0.0.0 0.0.0.0 12.1.1.2
+--------------------------------------------------
 R2
 interface FastEthernet0/0
  ip address 12.1.1.2 255.255.255.0
@@ -81,6 +82,7 @@ interface FastEthernet0/0
 interface FastEthernet0/1
  ip address 23.1.1.2 255.255.255.0
  no shutdown
+--------------------------------------------------
 R3
 interface Loopback0
  ip address 3.3.3.3 255.255.255.0
@@ -108,6 +110,7 @@ crypto map r1_map 10 ipsec-isakmp
  match address 100
 int fa0/0
  crypto map r1_map
+--------------------------------------------------
 R3
 crypto isakmp policy 100
  encr 3des
@@ -126,7 +129,7 @@ crypto map r3_map 10 ipsec-isakmp
 int fa0/1
  crypto map r3_map
 ```
-4.  GRE over IPSec
+## 4. GRE over IPSec
 由于单独的IPSec协议需要配置感兴趣流，而且没有办法通告彼此的路由，而GRE技术又是明文传递。将二者结合，解决了传输路由和私密的问题。
 拓扑以及基本配置如上图所示。
 GRE配置：
