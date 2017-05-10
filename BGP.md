@@ -11,6 +11,8 @@
 * Keepalive报文：用于维护邻接关系，每60s发送一次；
 * Update报文：用于交互路由、掩码等属性信息，也有用路由的撤销；
 * Notification报文：用于发送BGP错误信息。
+
+详细BGP报文格式：http://www.023wg.com/message/message/cd_feature_bgp_message.html
 ## 3. 邻居状态
 
 BGP要发送路由条目，需要先和其他路由器建立邻接关系，BGP有6中邻接关系：
