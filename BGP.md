@@ -19,12 +19,12 @@ BGP要发送路由条目，需要先和其他路由器建立邻接关系，BGP�
 
 * Idle：路由器通过路由表查找邻居的过程；
 * Connect：路由器找到邻居，并且完成了TCP三次握手；
-* Open Sent：路由器将本地BGP进程参数以Open报文发送给对端；
-> 参数包括：BGP版本、AS号、Holdtime（默认180s）和RID。RID可以手动配置，也可以自动选举，其规则和OSPF一致：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。
+* Open Sent：路由器将本地BGP进程参数以Open报文发送给对端；`参数包括：BGP版本、AS号、Holdtime（默认180s）和RID。RID可以手动配置，也可以自动选举，其规则和OSPF一致：（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；（2）选择物理口最大的IP地址作为RID。`
 * Open Confirm：路由器收到了对端的Open报文，并且参数正确；
 * Active：如果路由器没有收到对端发送的Open报文，或者受到的报文参数错误，会进入该状态，此时会重新TCP三次握手；
 * Established：邻居建立，开始传递路由
 ## 4. 属性
+BGP在进行路由条目的传递时，路由条目的的属性也一并会传递给邻居，这些属性可以判断路由条目的好坏。属性大致分为以下几类：
 * 公认强制属性：origin，AS-path，下一跳
 * 公认自选属性：local preference，atomic aggregate
 * 可选传递属性：aggregator，community
