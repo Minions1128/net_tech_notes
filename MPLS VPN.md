@@ -1,21 +1,20 @@
 # MPLS
 Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MPLS VPN以及MPLS TE。
 ## 1. IOS平台交换机制
-分为进程交换、快速交换和CEF（Cisco Express Forwarding，思科快速转发）
-进程交换：路由器对每个报文进行route表和arp表的查询。缺点消耗CPU资源以及增加延迟，优点支持各种负载均衡。
-快速交换：路由器会对报文进行分类，将去往相同目的地的报文分到一类。对每一类的第一个报文进行route表和arp表的查询，将结果存到cache中。后续报文会查看cache进行转发。缺点：第一个报文还是需要进程查表，无法实现基于报文的负载均衡。优点：比进程交换速度快。
-CEF：开启cef之后，路由器会生成两张表被ASIC调用：邻接表和FIB（Forwarding Information Base，转发信息库）。FIB为优化后的路由表，邻接表为优化后的二层表（ARP表）。
-标签是基于FIB分发的。
-2.  名词解释
-FEC, Forwarding Equivalent Class，转发等价类，具有相同属性的一类（报文），这种相同的属性可以是：L3 VPN地址，相同的目的地址。可以理解为一条路由条目，对应一个标签。
-LDP, Label Distribution Protocol，标签分发协议，基于TCP/UDP 646端口，与TDP相比，该协议支持认证。该协议用于标签的分发。
-LIB, Label Information Base，标签信息库，是一种拓扑表，存放路由条目与标签的映射关系。
-LFIB, Label Forwarding Information Base，标签转发信息库，发送带标签的报文时查询入标签与出标签映射的表。
-LSR, Label Switch Router，也成为P路由器。
-3.  MPLS体系结构
+* 思科IOS交换分为进程交换、快速交换和CEF（Cisco Express Forwarding，思科快速转发）
+* 进程交换：路由器对每个报文进行route表和arp表的查询。缺点消耗CPU资源以及增加延迟，优点支持各种负载均衡。
+* 快速交换：路由器会对报文进行分类，将去往相同目的地的报文分到一类。对每一类的第一个报文进行route表和arp表的查询，将结果存到cache中。后续报文会查看cache进行转发。缺点：第一个报文还是需要进程查表，无法实现基于报文的负载均衡。优点：比进程交换速度快。
+* CEF：开启cef之后，路由器会生成两张表被ASIC调用：邻接表和FIB（Forwarding Information Base，转发信息库）。FIB为优化后的路由表，邻接表为优化后的二层表（ARP表）。
+* 标签是基于FIB分发的。
+## 2. 名词解释
+* FEC, Forwarding Equivalent Class，转发等价类，具有相同属性的一类（报文），这种相同的属性可以是：L3 VPN地址，相同的目的地址。可以理解为一条路由条目，对应一个标签。
+* LDP, Label Distribution Protocol，标签分发协议，基于TCP/UDP 646端口，与TDP相比，该协议支持认证。该协议用于标签的分发。
+* LIB, Label Information Base，标签信息库，是一种拓扑表，存放路由条目与标签的映射关系。
+* LFIB, Label Forwarding Information Base，标签转发信息库，发送带标签的报文时查询入标签与出标签映射的表。
+* LSR, Label Switch Router，也成为P路由器。
+## 3. MPLS体系结构
 转发标签的协议有：LDP，BGP（MPLS VPN），RSVP（MPLS TE）
- 
-3.1.    标签
+### 3.1 标签
  
 Label：20 bit，取值范围是16 ~ 220-1
 EXP：3 bit，实验位，作QoS
