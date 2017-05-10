@@ -18,19 +18,21 @@ Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MP
 
 ![mpls label](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_label.jpg "mpls label")
 
-Label：20 bit，取值范围是16 ~ 220-1
-EXP：3 bit，实验位，作QoS
-S：1 bit，栈底标签标志位
-TTL：8 bit，防止出现环路
+* Label：20 bit，取值范围是16 ~ 220-1
+* EXP：3 bit，实验位，作QoS
+* S：1 bit，栈底标签标志位
+* TTL：8 bit，防止出现环路
 
 ![mpls multi label](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_multi_label.jpg "mpls multi label")
 
 该报文在二层到三层报文之间。以太网的类型值为0x8847（单播）, 0x8848（组播和广播）
 ### 3.2 LSR以及LSR Edge转发流程
-LSR（P路由器），LSR Edge（PE路由器）
- 
- 
-3.3.    分发标签的过程
+
+![mpls lsr](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_lsr_forwarding.jpg "mpls lsr")
+
+![mpls edge lsr](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_e_lsr_forwarding.jpg "mpls edge lsr")
+
+### 3.3 分发标签的过程
 1，通过路由协议建立IP路由表；
 2，为路由表中的每个条目分发标签，除了BGP路由条目；
 3，传递给其他LSR，标签只具有本地意义；
