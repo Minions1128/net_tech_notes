@@ -15,14 +15,18 @@ Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MP
 ## 3. MPLS体系结构
 转发标签的协议有：LDP，BGP（MPLS VPN），RSVP（MPLS TE）
 ### 3.1 标签
- 
+
+![mpls label](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_label.jpg "mpls label")
+
 Label：20 bit，取值范围是16 ~ 220-1
 EXP：3 bit，实验位，作QoS
 S：1 bit，栈底标签标志位
 TTL：8 bit，防止出现环路
- 
+
+![mpls multi label](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_multi_label.jpg "mpls multi label")
+
 该报文在二层到三层报文之间。以太网的类型值为0x8847（单播）, 0x8848（组播和广播）
-3.2.    LSR以及LSR Edge转发流程
+### 3.2 LSR以及LSR Edge转发流程
 LSR（P路由器），LSR Edge（PE路由器）
  
  
