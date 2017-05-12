@@ -167,7 +167,7 @@ router bgp 65001
 * 下一跳较近的路由，即，IGP度量值较小的路由；
 * 若均来自一个AS的路由，并且启用了BGP多路功能（命令为maximum-path），在路由表中安装等价路由；
 * 较老的EBGP路由（一般不作为参考对象）；
-* 若未开启BGP多路功能，选择RID最小的路由；
+* 若未开启BGP多路功能，选择邻居RID较小的路由；
 * 较短的Cluster List；
 * 邻居IP地址较低的路由。
 ## 6. Route Reflector
