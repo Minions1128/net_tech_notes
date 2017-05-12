@@ -154,23 +154,22 @@ router bgp 65001
 ```
 ### 4.9 Originator ID和cluster list
 * 可选属性，传递范围是一个RR域。在RR传递RRC的路由给其他RRC时，会带有这两种属性。
-* Originator ID表示通告者RRC，cluster list表示RR。
+* Originator ID表示通告者RRC，cluster list由RR组成，表示路由经过了几个RR。
 ## 5. 路由选路原则
-若BGP通过多个渠道获得一条路由条目，按照以下原则判断路由条目的好快：（其中9-12条有争议，需要实验来验证）
+若BGP通过多个渠道获得一条路由条目，按照以下原则判断路由条目的好坏：
 * 较高的权重；
 * 较高的本地优先级；
 * 本地通告的路由优于邻居传递来的路由（可能产生路由环路）；
-* 最短的AS-Path
-* 起源属性：i>e>?
-* 较小的MED值
-* EBGP路由优于联邦EBGP路由，优于IBGP路由
-* 如果为内部路由，选择到下一跳最近的路由，也就是IGP度量值最小的路由；
-    * 如果外部路由，选择multipath
-    * 较老的EBGP路由（一般不作为参考对象）
-    * 如果均来自一个AS的路由，并且启用了BGP多路功能（命令为maximum-path），在路由表中安装等价路由；
-* 如果没有BGP多路功能，选择RID最小的路由，
-* 最小的Cluster List长度
-* 较低的邻居IP地址的路由
+* 较短的AS-Path；
+* 起源属性：i>e>?；
+* 较小的MED值；
+* EBGP路由优于联邦EBGP路由，优于IBGP路由；
+* 下一跳较近的路由，即，IGP度量值较小的路由；
+* 若均来自一个AS的路由，并且启用了BGP多路功能（命令为maximum-path），在路由表中安装等价路由；
+* 较老的EBGP路由（一般不作为参考对象）；
+* 若未开启BGP多路功能，选择RID最小的路由；
+* 较短的Cluster List；
+* 邻居IP地址较低的路由。
 ## 6. Route Reflector
 * 路由反射器，简称RR；
 * Cluster，在同一个AS之内，RR所能涉及到的范围；
@@ -234,4 +233,4 @@ BGP进程下：
 * neighbor IP-ADD soft-reconfiguration inbound允许sh ip bgp neighbors IP-ADD received-routes
 * clear ip bgp * soft in/out软清除BGP邻接关系，重新发一次路由更新
 * clear ip bgp *硬重置BGP邻接关系，使BGP重新进行三次握手
-* show ip bgp summary查看邻居状态等信息* 
+* show ip bgp summary查看邻居状态等信息
