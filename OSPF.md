@@ -156,7 +156,66 @@ MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR�
 如何连接：area2 -- area 1 -- area 0
 1. 两个OSPF进程相互重分布；
 2. 使用隧道技术，Tunnel；
-3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路：area 2 virtual-link 1.1.1.1
+3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路，配置举例
+![ospf_vir_link_topo](https://github.com/Minions1128/net_tech_notes/blob/master/img/ospf_vir_link_topo.jpg "ospf_vir_link_topo")
+```
+基础配置：
+R1:
+interface Loopback0
+    ip address 1.1.1.1 255.255.255.255
+!
+interface FastEthernet0/0
+    ip address 12.1.1.1 255.255.255.0
+    no shutdown
+!
+router ospf 110
+    router-id 1.1.1.1
+    network 0.0.0.0 255.255.255.255 area 0
+!
+R2:
+interface Loopback0
+    ip address 2.2.2.2 255.255.255.255
+!
+interface FastEthernet0/0
+    ip address 12.1.1.2 255.255.255.0
+    no shutdown
+!
+interface FastEthernet0/1
+    ip address 23.1.1.2 255.255.255.0
+    no shutdown
+!
+router ospf 110
+    router-id 2.2.2.2
+    network 2.2.2.2 0.0.0.0 area 0
+    network 12.1.1.2 0.0.0.0 area 0
+    network 23.1.1.2 0.0.0.0 area 23
+!
+R3:
+interface Loopback0
+    ip address 3.3.3.3 255.255.255.0
+!
+interface Loopback10
+    ip address 10.10.10.3 255.255.255.255
+!
+interface FastEthernet0/1
+    ip address 23.1.1.3 255.255.255.0
+    no shutdown
+!
+router ospf 110
+    router-id 3.3.3.3
+    network 3.3.3.3 0.0.0.0 area 23
+    network 23.1.1.3 0.0.0.0 area 23
+!
+配置虚链路：
+R3:
+router ospf 110
+    network 10.10.10.3 0.0.0.0 area 10
+    area 23 virtual-link 2.2.2.2 ! 在area 23中穿越
+!
+R1:
+router ospf 110
+    area 23 virtual-link 3.3.3.3 ! 在area 23中穿越
+```
 ## 10. 认证
 * 链路级明文认证：
 ```
@@ -190,17 +249,17 @@ router ospf 110
 int fa0/0
     ip ospf message-digest-key 12 md5 area_md5_key
 ```
-虚链路级明文认证：
+* 虚链路级明文认证：
 ```
 ! 所有在该区域的路由器做相同配置
 router ospf 110
     area 2 virtual-link 91.1.1.1 authentication
-    area 2 virtual-link 91.1.1.1 authentication-key vir_area_plain_text
+    area 2 virtual-link 91.1.1.1 authentication-key vir_link_plain_text
 ```
-虚链路级密文认证：
+* 虚链路级密文认证：
 ```
 ! 所有在该区域的路由器做相同配置
 router ospf 110
     area 2 virtual-link 91.1.1.1 authentication message-digest
-    area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 vir_area_md5_key
+    area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 vir_link_md5_key
 ```
