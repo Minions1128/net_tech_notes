@@ -156,7 +156,7 @@ MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR�
 如何连接：area2 -- area 1 -- area 0
 1. 两个OSPF进程相互重分布；
 2. 使用隧道技术，Tunnel；
-3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路，配置举例
+3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路，配置举例：
 ![ospf_vir_link_topo](https://github.com/Minions1128/net_tech_notes/blob/master/img/ospf_vir_link_topo.jpg "ospf_vir_link_topo")
 ```
 基础配置：
@@ -194,9 +194,6 @@ R3:
 interface Loopback0
     ip address 3.3.3.3 255.255.255.0
 !
-interface Loopback10
-    ip address 10.10.10.3 255.255.255.255
-!
 interface FastEthernet0/1
     ip address 23.1.1.3 255.255.255.0
     no shutdown
@@ -208,6 +205,10 @@ router ospf 110
 !
 配置虚链路：
 R3:
+interface Loopback10
+    ip address 10.10.10.3 255.255.255.255
+    description add_to_area_10_to_simulate_vir_link
+!
 router ospf 110
     network 10.10.10.3 0.0.0.0 area 10
     area 23 virtual-link 2.2.2.2 ! 在area 23中穿越
