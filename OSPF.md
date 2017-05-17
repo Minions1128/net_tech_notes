@@ -94,7 +94,7 @@ R4的路由表中
 ### 4.3 MA网络邻接关系
 MA网络DR和BDR可以建立full邻接关系，others建立2-way邻接关系。
 ## 5. LSA
-* OSPF是通过传递LSA来获取整个网络的拓扑信息的，当邻居关系达到Loading，或者受到邻居发来的LSR时，会将LSA封装到LSU中传递给邻居，或者将其泛洪。
+* OSPF是通过传递LSA来获取整个网络的拓扑信息的，当邻居关系达到Loading，或者受到邻居发来的LSR时，路由器会将LSA封装到LSU中传递给邻居，或者将其泛洪。
 * 每30分钟发一次，且都有序列号，最大为0x80000001，最小为0x7fffffff。
 * 当一个接口被宣告进入OSPF进程中，该端口会开始监听发往224.0.0.5的流量。MA网络中，DR和BDR会监听发往224.0.0.6的流量，DR Other利用224.0.0.6地址传递LSA，DR会将其进行综合，再利用224.0.0.5地址分发给大家。
 ### 5.1 Router LSA
@@ -158,9 +158,49 @@ MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR�
 2. 使用隧道技术，Tunnel；
 3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路：area 2 virtual-link 1.1.1.1
 ## 10. 认证
-* 链路级明文认证：接口下：`ip ospf authentication-key cisco`和`ip ospf authentication`
-* 链路级密文认证：接口下：`ip ospf message-digest-key 13 md5 huawei`和`ip ospf authentication message-digest`
-* 区域级明文认证：接口下：`ip ospf authentication-key h3c`，进程下：`area 0 authentication`
-* 区域级密文认证：接口下：`ip ospf message-digest-key 12 md5 shenxinfu`，进程下：`ip ospf authentication message-digest`
-* 虚链路级明文认证：进程下：`area 2 virtual-link 91.1.1.1 authentication-key cisco`和`area 2 virtual-link 91.1.1.1 authentication`
-* 虚链路级密文认证：进程下：`area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 cisco`和`area 2 virtual-link 91.1.1.1 authentication message-digest`
+* 链路级明文认证：
+`
+! 在链路两端做相同的配置
+int fa0/0
+    ip ospf authentication
+    ip ospf authentication-key link_plain_text
+`
+* 链路级密文认证：
+`
+! 在链路两端做相同的配置
+int fa0/0
+    ip ospf authentication message-digest
+    ip ospf message-digest-key 13 md5 link_md5_key
+`
+* 区域级明文认证：
+`
+! 所有在该区域的路由器做相同配置
+router ospf 110
+    area 0 authentication
+! 在设备两（多）端做相同配置
+int fa0/0
+    ip ospf authentication-key area_plain_text
+`
+* 区域级密文认证：
+`
+! 所有在该区域的路由器做相同配置
+router ospf 110
+    area 0 authentication message-digest
+! 在设备两（多）端做相同配置
+int fa0/0
+    ip ospf message-digest-key 12 md5 area_md5_key
+`
+虚链路级明文认证：
+`
+! 所有在该区域的路由器做相同配置
+router ospf 110
+    area 2 virtual-link 91.1.1.1 authentication
+    area 2 virtual-link 91.1.1.1 authentication-key vir_area_plain_text
+`
+虚链路级密文认证：
+`
+! 所有在该区域的路由器做相同配置
+router ospf 110
+    area 2 virtual-link 91.1.1.1 authentication message-digest
+    area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 vir_area_md5_key
+`
