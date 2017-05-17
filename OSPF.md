@@ -159,48 +159,48 @@ MA网络中，第一台到达2-way状态的路由器宣布开始选择DR、BDR�
 3. 使用OSPF虚拟链路：在两个ABR之间建立虚拟链路：area 2 virtual-link 1.1.1.1
 ## 10. 认证
 * 链路级明文认证：
-`
+```
 ! 在链路两端做相同的配置
 int fa0/0
     ip ospf authentication
     ip ospf authentication-key link_plain_text
-`
+```
 * 链路级密文认证：
-`
+```
 ! 在链路两端做相同的配置
 int fa0/0
     ip ospf authentication message-digest
     ip ospf message-digest-key 13 md5 link_md5_key
-`
+```
 * 区域级明文认证：
-`
+```
 ! 所有在该区域的路由器做相同配置
 router ospf 110
     area 0 authentication
 ! 在设备两（多）端做相同配置
 int fa0/0
     ip ospf authentication-key area_plain_text
-`
+```
 * 区域级密文认证：
-`
+```
 ! 所有在该区域的路由器做相同配置
 router ospf 110
     area 0 authentication message-digest
 ! 在设备两（多）端做相同配置
 int fa0/0
     ip ospf message-digest-key 12 md5 area_md5_key
-`
+```
 虚链路级明文认证：
-`
+```
 ! 所有在该区域的路由器做相同配置
 router ospf 110
     area 2 virtual-link 91.1.1.1 authentication
     area 2 virtual-link 91.1.1.1 authentication-key vir_area_plain_text
-`
+```
 虚链路级密文认证：
-`
+```
 ! 所有在该区域的路由器做相同配置
 router ospf 110
     area 2 virtual-link 91.1.1.1 authentication message-digest
     area 2 virtual-link 91.1.1.1 message-digest-key 12 md5 vir_area_md5_key
-`
+```
