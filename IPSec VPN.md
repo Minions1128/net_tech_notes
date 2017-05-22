@@ -1,12 +1,12 @@
-# IPSec
+# IPSec VPN
 ## 1. 概述
 * IPSec为一组协议，包含两大部分：
 1. 安全交换要加密数据流的密钥，包括IKE（Internet Key Exchange）协议；
 2. 保护数据流，包括ESP（Encapsulating Security Payload）或者AH（Authentication Header）。
 * IPSec协议框架可以由4部分构成：
 1. IPSec Protocol，包括ESP和AH；
-2. 加密算法，DES、AES；
-3. 认证、MD5和SHA；
+2. 加密算法，DES、AES、RSA；
+3. 认证，MD5和SHA；
 4. DH。
 * AH为IP 50号，由于AH只可以保障数据完整性，而不能做加密。所以现在用途较少。
 ## 2. ESP
