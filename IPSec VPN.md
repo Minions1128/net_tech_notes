@@ -3,11 +3,6 @@
 * IPSec为一组协议，包含两大部分：
 1. 安全交换要加密数据流的密钥，包括IKE（Internet Key Exchange）协议；
 2. 保护数据流，包括ESP（Encapsulating Security Payload）或者AH（Authentication Header）。
-* IPSec协议框架可以由4部分构成：
-1. IPSec Protocol，包括ESP和AH；
-2. 加密算法，DES、AES、RSA；
-3. 认证，MD5和SHA；
-4. DH。
 * AH为IP 50号，由于AH只可以保障数据完整性，而不能做加密。所以现在用途较少。
 ## 2. ESP
 ![ESP packet](https://github.com/Minions1128/net_tech_notes/blob/master/img/esp.jpg "ESP packet")
@@ -24,7 +19,7 @@ IP 51号，其封装格式有两种模式：Transport Mode和Tunnel Mode
 IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动生成、交换key的问题。IKE拥有的协议有ISAKMP（Internet Security Association Key Management Protocol），SKEME和Oakley，SKEME和Oakley组成ISAKMP。
 ### 3.1 第一阶段
 * 该阶段会协商IKE安全策略，建立安全通道。
-* 先进行peer的认证，使用证书方式或者与共享密钥。
+* 先进行peer的认证，使用证书方式或者与共享密钥。（认证方式有3种：PSK，PKI以及RSA）
 * 创建DH key，DH协议会独立的在两端产生只能让对端知道的共享密钥。
 * 为第二阶段交换key材料，该key为数据实际加密的key。
 * 产生DH key的过程是缓慢的、消耗资源的。
