@@ -40,26 +40,30 @@ Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MP
 
 ![mpls edge lsr](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_e_lsr_forwarding.jpg "mpls edge lsr")
 ### 2.4 PHP
-* PHP（Penultimate Hop Popping，倒数第二跳弹出），关于一个目的网段的最后一跳路由器对目的网段不会发送常规标签，而会发送3号标签，意为弹出标签。倒数第二条路由器收到该标签后，并将其加入LFIB。当收到去往目的网段的数据包时，会执行弹出标签的操作，以常规报文发送给最后一跳路由器，最后一跳路由器只需查询FIB表就可以将报文进行转发。
+* PHP（Penultimate Hop Popping，倒数第二跳弹出），一个目的网段的最后一跳路由器对目的网段不会发送常规标签，而会发送3号标签，意为弹出标签。倒数第二条路由器收到该标签后，并将其加入LFIB。当收到去往目的网段的数据包时，会执行弹出标签的操作，以常规报文发送给最后一跳路由器，最后一跳路由器只需查询FIB表就可以将报文进行转发。
 * 最后一条路由器的定义：对去往目的网段接口没有启用MPLS，或者去往该接口的下一跳没有LDP邻居的路由器。
 ### 2.5 配置
 0. 启用IGP
-1. 启用cef，ip cef
-2. 开启mpls，接口上使用mpls ip
-3. 修改router-id（可选），全局模式下mpls ldp router-id loopback 0 force
-4. 修改接口MTU：mpls mtu 1504（VPN修改为1508，TE修改为1512）
+1. 启用cef，`ip cef`
+2. 开启mpls，接口上使用`mpls ip`
+3. 修改router-id（可选），全局模式下`mpls ldp router-id loopback 0 force`
+4. 修改接口MTU：`mpls mtu 1504`（VPN修改为1508，TE修改为1512）
 5. 相关show命令：
+'''
 查看邻居show mpls ldp neighbor
 查看fib：show ip cef [details]
 查看lib：sh mpls ldp bindings
 查看lfib：sh mpls forwarding-table
+'''
 6. 高级命令：
+'''
 修改Label范围：mpls label range 101 150
 不通告标签：no mpls ldp advertise-labels
 通告标签给某些ACL
 mpls ldp advertise-labels for 10 to 20
 acl 10为路由条目
-acl20 为通告给邻居的接口范围
+acl 20为通告给邻居的接口范围
+'''
 4.  MPLS VPN
 VRF（Virtual Routing Forwarding），一个VRF就是虚拟的路由器，可以逻辑的隔离路由。该例中，一个VRF就是一个MPLS VPN中的实例（进程），PE创建了VRF之后，要与相应的端口进行关联。VRF只是本地有意义。
 RD，Route Distinguisher，区分公司的的路由条目，RD只具有本地意义。不同VRF的路由条目通过该属性区分，RD+IPv4路由为VPNv4路由，可以使用MP BGP传递这种路由。
