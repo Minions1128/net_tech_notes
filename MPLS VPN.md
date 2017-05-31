@@ -49,22 +49,22 @@ Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MP
 3. 修改router-id（可选），全局模式下`mpls ldp router-id loopback 0 force`
 4. 修改接口MTU：`mpls mtu 1504`（VPN修改为1508，TE修改为1512）
 5. 相关show命令：
-'''
+```
 查看邻居show mpls ldp neighbor
 查看fib：show ip cef [details]
 查看lib：sh mpls ldp bindings
 查看lfib：sh mpls forwarding-table
-'''
+```
 6. 高级命令：
-'''
+```
 修改Label范围：mpls label range 101 150
 不通告标签：no mpls ldp advertise-labels
 通告标签给某些ACL
 mpls ldp advertise-labels for 10 to 20
 acl 10为路由条目
 acl 20为通告给邻居的接口范围
-'''
-4.  MPLS VPN
+```
+## 4. MPLS VPN
 VRF（Virtual Routing Forwarding），一个VRF就是虚拟的路由器，可以逻辑的隔离路由。该例中，一个VRF就是一个MPLS VPN中的实例（进程），PE创建了VRF之后，要与相应的端口进行关联。VRF只是本地有意义。
 RD，Route Distinguisher，区分公司的的路由条目，RD只具有本地意义。不同VRF的路由条目通过该属性区分，RD+IPv4路由为VPNv4路由，可以使用MP BGP传递这种路由。
 RT, Route Target，BGP community属性中的扩展属性，PE路由器收到VPNv4路由之后，会加上相应的RT之后，通告给BGP邻居，然后进行私网路由传递。根据target的不同，传递给不同的RD。
