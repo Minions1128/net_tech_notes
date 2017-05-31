@@ -19,7 +19,7 @@ Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MP
 
 ![mpls label](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_label.jpg "mpls label")
 
-* Label：20 bit，取值范围是16 ~ 220-1
+* Label：20 bit，取值范围是16 ~ 1048575(2^20-1)
 * EXP：3 bit，实验位，作QoS
 * S：1 bit，栈底标签标志位
 * TTL：8 bit，防止出现环路
@@ -27,28 +27,29 @@ Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MP
 ![mpls multi label](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_multi_label.jpg "mpls multi label")
 
 该报文在二层到三层报文之间。以太网的类型值为0x8847（单播）, 0x8848（组播和广播）
-### 3.2 LSR以及LSR Edge转发流程
+### 2.2 分发标签的过程
+1. 通过路由协议建立IP路由表；
+2. 为路由表中的每个条目分发标签，除了BGP路由条目；
+3. 传递给其他LSR，标签只具有本地意义；
+4. 建立LIB，LFIB以及FIB供数据传递；
+5. 由于MPLS分发标签给目的地的上游和上游的LSR。所以LDP建立传递邻居信息时，会将路由器所有物理接口的IP地址告诉邻居路由器，将这些信息存入到邻居表中；
+6. 当收到邻居的标签时，会结合自己的FIB，并且将适合的标签加入到LFIB中。
+### 2.3 数据转发
 
 ![mpls lsr](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_lsr_forwarding.jpg "mpls lsr")
 
 ![mpls edge lsr](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_e_lsr_forwarding.jpg "mpls edge lsr")
 
-### 3.3 分发标签的过程
-1，通过路由协议建立IP路由表；
-2，为路由表中的每个条目分发标签，除了BGP路由条目；
-3，传递给其他LSR，标签只具有本地意义；
-4，建立LIB，LFIB以及FIB供数据传递。
-加入LFIB的过程：
-LDP建立邻居是使用环回口建立邻居，并且该环回口需要路由可达，路由器会将自己的更新源地址以及所有物理接口的地址告诉邻居路由器，邻居路由器会将这些信息存入到邻居表中。
- 
-当B收到C的标签47以及E的标签26时，B会查看自己的邻居表以及FIB，确定C的标签加入到LFIB中。
-MPLS分发标签会将标签分发给目的地的上游和上游的LSR通告。
+路由器A收到邻居B发送来的标签，会将其加入FIB表和LFIB表。A收到去往X网络的报文，会查看其FIB表，然后对其加入标签发送给B，B路由器查询LFIB将标签去除，并且在查询FIB表将其转发给D。
+
+
+
+
+
 3.4.    PHP
 PHP（Penultimate Hop Popping，倒数第二跳弹出），关于一个目的网段的最后一跳路由器对目的网段不会发送常规标签，而会发送3号标签，意为弹出标签。倒数第二条路由器收到该标签后，并将其加入LFIB，当收到去往目的网段的数据包时，会执行弹出标签的操作，以常规报文发送给最后一跳路由器，最后一跳路由器只需查询FIB表就可以将报文进行转发。
 最后一条路由器的定义：对去往目的网段接口没有启用MPLS，或者去往该接口的下一跳没有LDP邻居的路由器。
-3.5.    数据转发
- 
-路由器A收到邻居B发送来的标签，会将其加入FIB表和LFIB表。A收到去往X网络的报文，会查看其FIB表，然后对其加入标签发送给B，B路由器查询LFIB将标签去除，并且在查询FIB表将其转发给D。
+
 3.6.    配置
 0. 启用IGP
 1. 启用cef，ip cef
