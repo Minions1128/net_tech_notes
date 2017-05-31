@@ -29,11 +29,16 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 * Cookie为源目IP，源目端口，本地生成的随机数，日期和时间的HASH值。其作为IKE协商的唯一标识，防止DOS攻击。
 * SA为匹配在策略提议中的5元组：加密算法、散列算法、DH、认证方法和IKE SA寿命。
 #### 3.1.2 消息3&4
-* DH密钥生成与交换，交换内容为Cookie、DH公开信息以及最大随机数。
-* 根据DH算法，算出双方相等的密值后，连同与共享密钥生成一个skyID，然后根据推算，算出一下几个skyID：
-* skyID_a：为后续的IKE消息协商以及IPSec SA协商进行完整性检查，（HMAC中的密钥）；
-* skeyID_d：用来协商后续IPSec SA加密使用的密钥；
-* skeyID_e：为后续的IKE消息协商以及IPSec SA协商进行加密
+* DH密钥生成与交换，根据DH算法，双方分别会生成私钥，分别计算出各自的公钥，然后进行交换。与此同时交换的还有双方产生的随机值。
+* 根据对方的公钥，算出双方相等的密值后，连同与共享密钥生成一个skyID（预共享密钥, 双方的随机值），作为第1阶段5,6报文的hash密钥。然后根据推算，算出一下几个skyID：
+* skyID_a（skyID，DH计算出的密值，Cookie）：第二阶段HASH密钥（HMAC中的密钥）；
+* skeyID_d（skyID，DH计算的密值）：用来协商后续IPSec SA加密使用的密钥；
+* skeyID_e（skyID，DH计算的密值，Cookie）：为第一阶段5,6报文消息以及第二阶段的密钥
+
+DH算法：
+https://zh.wikipedia.org/wiki/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B
+
+
 #### 3.1.3 消息5&6
 * 这2条消息用于双方彼此验证，用sky_ID_e加密保护。
 * 用HASH认证，HASH认证成分：sky_ID_a，两端cookie，预共享密钥，IKE SA，转换集、策略。
