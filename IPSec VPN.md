@@ -37,9 +37,11 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 * 所有负载已用skeyID_e进行加密。
 #### 3.1.4 总结
 * 消息传递
+
 ![ike](https://github.com/Minions1128/net_tech_notes/blob/master/img/ike_packet.jpg "ike")
-* [DH算法]([https://zh.wikipedia.org/wiki/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B](https://zh.wikipedia.org/wiki/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B) "DH算法")
+* [DH算法](https://zh.wikipedia.org/wiki/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B "DH算法")
 * IKE 过程
+
 ![IKE SA](https://github.com/Minions1128/net_tech_notes/blob/master/img/ike.sa.jpg "IKE SA")
 ### 3.2 第二阶段
 该阶段会利用IKE SA保护的，协商IPSec SA来保护IPSec数据：使用AH还是ESP，hash是MD5还是SHA，是tunnel还是transport模式。数据一直后，会建立SA。
