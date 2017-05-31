@@ -44,7 +44,7 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 
 ![IKE SA](https://github.com/Minions1128/net_tech_notes/blob/master/img/ike.sa.jpg "IKE SA")
 ### 3.2 第二阶段
-该阶段会利用IKE SA保护的，协商IPSec SA来保护IPSec数据：使用AH还是ESP，hash是MD5还是SHA，是tunnel还是transport模式。数据一直后，会建立SA。
+该阶段会利用IKE SA的保护，协商IPSec SA来保护IPSec数据：使用AH还是ESP，hash是MD5还是SHA，是tunnel还是transport模式。协商一致后，会建立IPSec SA。
 #### 3.2.1 消息1&2
 * 交换信息，包含HASH，IPSEC策略提议，NONCE和可选的DH，身份ID。
 * HASH：给接受方作完整性检查，用于再次认证对等体(必须)。和第一阶段5&6消息一样。
@@ -58,9 +58,7 @@ IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动�
 发送方发送第三条消息，其中包含一个HASH，其作用是确认接受方的消息以及证明发送方处于Active状态（表示发送方的第一条消息不是伪造的，确认作用ACK)
 #### 3.2.3 总结
 ![IPSec SA](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.sa.jpg "IPSec SA")
-### 3.3 其他功能
-支持邻居检测功能和NAT功能。
-### 3.4 配置举例
+### 3.3 配置举例
 * 拓扑如图，R1和R3模拟两站点，使用环回口模拟内网，R2模拟运营商路由器
 ![IPSec topology](https://github.com/Minions1128/net_tech_notes/blob/master/img/ipsec.topo.jpg "IPSec topology")
 * 基本配置为：
