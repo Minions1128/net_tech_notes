@@ -39,18 +39,10 @@ Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MP
 ![mpls lsr](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_lsr_forwarding.jpg "mpls lsr")
 
 ![mpls edge lsr](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls_e_lsr_forwarding.jpg "mpls edge lsr")
-
-路由器A收到邻居B发送来的标签，会将其加入FIB表和LFIB表。A收到去往X网络的报文，会查看其FIB表，然后对其加入标签发送给B，B路由器查询LFIB将标签去除，并且在查询FIB表将其转发给D。
-
-
-
-
-
-3.4.    PHP
-PHP（Penultimate Hop Popping，倒数第二跳弹出），关于一个目的网段的最后一跳路由器对目的网段不会发送常规标签，而会发送3号标签，意为弹出标签。倒数第二条路由器收到该标签后，并将其加入LFIB，当收到去往目的网段的数据包时，会执行弹出标签的操作，以常规报文发送给最后一跳路由器，最后一跳路由器只需查询FIB表就可以将报文进行转发。
-最后一条路由器的定义：对去往目的网段接口没有启用MPLS，或者去往该接口的下一跳没有LDP邻居的路由器。
-
-3.6.    配置
+### 2.4 PHP
+* PHP（Penultimate Hop Popping，倒数第二跳弹出），关于一个目的网段的最后一跳路由器对目的网段不会发送常规标签，而会发送3号标签，意为弹出标签。倒数第二条路由器收到该标签后，并将其加入LFIB。当收到去往目的网段的数据包时，会执行弹出标签的操作，以常规报文发送给最后一跳路由器，最后一跳路由器只需查询FIB表就可以将报文进行转发。
+* 最后一条路由器的定义：对去往目的网段接口没有启用MPLS，或者去往该接口的下一跳没有LDP邻居的路由器。
+### 2.5 配置
 0. 启用IGP
 1. 启用cef，ip cef
 2. 开启mpls，接口上使用mpls ip
