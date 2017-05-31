@@ -18,31 +18,26 @@ IP 51号，其封装格式有两种模式：Transport Mode和Tunnel Mode
 ## 3. IKE
 IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动生成、交换key的问题。IKE拥有的协议有ISAKMP（Internet Security Association Key Management Protocol），SKEME和Oakley，SKEME和Oakley组成ISAKMP。
 ### 3.1 第一阶段
-* 该阶段会协商IKE安全策略，建立安全通道。
-* 先进行peer的认证，使用共享密钥方式。（认证方式有3种：PSK，PKI以及RSA）
-* 创建DH key，DH协议会独立的在两端产生只能让对端知道的共享密钥。
+* 该阶段用于建立IKE SA
 * 为第二阶段交换key材料，该key为数据实际加密的key。
-* 产生DH key的过程是缓慢的、消耗资源的。
 * 分为两种模式：主模式和激进模式。先只讨论主模式。
+
 #### 3.1.1 消息1&2
 * 协商IKE SA以及交换cookie
+* SA为匹配在策略提议中的5元组：加密算法、散列算法、DH、认证方法（有3种：PSK，PKI以及RSA，这里讨论预共享密钥）和IKE SA寿命。
 * Cookie为源目IP，源目端口，本地生成的随机数，日期和时间的HASH值。其作为IKE协商的唯一标识，防止DOS攻击。
-* SA为匹配在策略提议中的5元组：加密算法、散列算法、DH、认证方法和IKE SA寿命。
 #### 3.1.2 消息3&4
 * DH密钥生成与交换，根据DH算法，双方分别会生成私钥，分别计算出各自的公钥，然后进行交换。与此同时交换的还有双方产生的随机值。
-* 根据对方的公钥，算出双方相等的密值后，连同与共享密钥生成一个skyID（预共享密钥, 双方的随机值），作为第1阶段5,6报文的hash密钥。然后根据推算，算出一下几个skyID：
-* skyID_a（skyID，DH计算出的密值，Cookie）：第二阶段HASH密钥（HMAC中的密钥）；
-* skeyID_d（skyID，DH计算的密值）：用来协商后续IPSec SA加密使用的密钥；
-* skeyID_e（skyID，DH计算的密值，Cookie）：为第一阶段5,6报文消息以及第二阶段的密钥
-
+* 根据对方的公钥，算出双方相等的密值后，连同与共享密钥生成一个skeyID（预共享密钥, 双方的随机值），作为第1阶段5,6报文的hash密钥。然后根据推算，算出一下几个skyID：
+* skyID_a（skeyID，DH计算出的密值，Cookie）：第二阶段HASH密钥（HMAC中的密钥）；
+* skeyID_d（skeyID，DH计算的密值）：用来协商后续IPSec SA加密使用的密钥；
+* skeyID_e（skeyID，DH计算的密值，Cookie）：为第一阶段5,6报文消息以及第二阶段的密钥
+#### 3.1.3 消息5&6
+* 用于身份验证，交换身份ID（IP地址或者hostname）等其他已经协商好的信息的hash值（skeyID，彼此公钥，Cookie，SA要素）。
+* 所有负载已用skeyID_e进行加密。
+#### 3.1.4 总结
 DH算法：
 https://zh.wikipedia.org/wiki/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B
-
-
-#### 3.1.3 消息5&6
-* 这2条消息用于双方彼此验证，用sky_ID_e加密保护。
-* 用HASH认证，HASH认证成分：sky_ID_a，两端cookie，预共享密钥，IKE SA，转换集、策略。
-#### 3.1.4 总结
 ![IKE SA](https://github.com/Minions1128/net_tech_notes/blob/master/img/ike.sa.jpg "IKE SA")
 ### 3.2 第二阶段
 该阶段会利用IKE SA保护的，协商IPSec SA来保护IPSec数据：使用AH还是ESP，hash是MD5还是SHA，是tunnel还是transport模式。数据一直后，会建立SA。
