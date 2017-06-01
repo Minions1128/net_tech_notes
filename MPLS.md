@@ -13,6 +13,7 @@ Multi-Protocol Label Switching，多协议标签交换。其应用最广的为MP
 * LIB, Label Information Base，标签信息库，是一种拓扑表，存放路由条目与标签的映射关系。
 * LFIB, Label Forwarding Information Base，标签转发信息库，发送带标签的报文时查询入标签与出标签映射的表。
 * LSR, Label Switch Router，也成为P路由器。
+* LSP, Label Switch Path，标签交换路径，使用MPLS建立起来的，由LSR分组转发路径。
 ## 2. MPLS
 转发标签的协议有：LDP，BGP（MPLS VPN），RSVP（MPLS TE）
 ### 2.1 标签
@@ -327,3 +328,15 @@ router ospf 110
  network 0.0.0.0 255.255.255.255 area 0
 ```
 ## 5. MPLS TE
+### 5.1 TE
+* TE（Traffic Engineering，流量工程）由于IGP选择的均为代价最小、距离最近的路由，所以导致链路利用率极不均衡的问题。TE对现有网络流量合理的规划和引导，实现资源的优化配置和提升网络性能。
+### 5.2 IP TE
+其使用广泛，但是非常粗糙，主要方法：
+1. 利用IGP协议，改变metric或者cost值，过滤路由，或者LSA的方法
+2. 利用BGP丰富的路由策略。
+* 其优点为简单，缺点为相互影响严重。
+* 主要实现方式有：RSVP TE，CR LDP TE。这里只讨论RSVP TE
+### 5.3 MPLS TE必要条件
+* 支持P2P的LSP流量tunnel，tunnel中的LSP是固定的，故，报文进入tunnel之后，只能从tunnel另一端出来。tunnel的建立支持自动建立和手动建立；
+* 根据不同的优先级进行隧道抢占；
+* 支持预建立备份路径的功能。
