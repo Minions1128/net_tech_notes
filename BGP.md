@@ -15,7 +15,7 @@
 详细BGP报文格式：http://www.023wg.com/message/message/cd_feature_bgp_message.html
 ## 3. 邻居状态
 
-BGP要发送路由条目，需要先和其他路由器建立邻接关系，BGP有6中邻接关系：
+BGP要发送路由条目，需要先和其他路由器建立邻接关系，BGP有6种邻接关系：
 
 * Idle：路由器通过路由表查找邻居的过程；
 * Connect：路由器找到邻居，并且完成了TCP三次握手；
