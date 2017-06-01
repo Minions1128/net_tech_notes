@@ -21,10 +21,10 @@ BGP要发送路由条目，需要先和其他路由器建立邻接关系，BGP�
 * Connect：路由器找到邻居，并且完成了TCP三次握手；
 * Open Sent：路由器将本地BGP进程参数以Open报文发送给对端；
 ```
-参数包括：BGP版本、AS号、Holdtime（默认180s）和RID。
-RID可以手动配置，也可以自动选举，其规则和OSPF一致：
-（1）选择BGP路由器中，在线环回口最大的IP地址作为RID；
-（2）选择物理口最大的IP地址作为RID。
+    参数包括：BGP版本、AS号、Holdtime（默认180s）和RID。
+    RID可以手动配置，也可以自动选举，其规则和OSPF一致：
+    （1）选择BGP路由器中，在线环回口最大的IP地址作为RID；
+    （2）选择物理口最大的IP地址作为RID。
 ```
 * Open Confirm：路由器收到了对端的Open报文，并且参数正确；
 * Active：如果路由器没有收到对端发送的Open报文，或者受到的报文参数错误，会进入该状态，此时会重新TCP三次握手；
@@ -93,7 +93,7 @@ bgp bestpath as-path ignore         #忽略AS-path属性
 ```
 ### 4.4 Origin
 * 起源属性，公认强制属性，传递范围是整个Internet。
-* 描述路由以何种方式进入BGP中的，i为IGP宣告进入BGP的，？为重分发进入BGP的，e为通过EGP进入BGP的，可以通过route-map进行修改。
+* 描述路由以何种方式进入BGP中的，i为IGP宣告进入BGP的，？为重分发进入BGP的，e为通过EGP进入BGP的，该EGP为BGP的前身，可以通过route-map进行修改。
 * i优于e优于？。
 * 配置举例：
 ```
