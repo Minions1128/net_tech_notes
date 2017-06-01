@@ -65,11 +65,66 @@ acl 10为路由条目
 acl 20为通告给邻居的接口范围
 ```
 ## 4. MPLS VPN
-### 4.1 概述
-VRF（Virtual Routing Forwarding），一个VRF就是虚拟的路由器，可以逻辑的隔离路由。该例中，一个VRF就是一个MPLS VPN中的实例（进程），PE创建了VRF之后，要与相应的端口进行关联。VRF只是本地有意义。
-RD，Route Distinguisher，区分公司的的路由条目，RD只具有本地意义。不同VRF的路由条目通过该属性区分，RD+IPv4路由为VPNv4路由，可以使用MP BGP传递这种路由。
-RT, Route Target，BGP community属性中的扩展属性，PE路由器收到VPNv4路由之后，会加上相应的RT之后，通告给BGP邻居，然后进行私网路由传递。根据target的不同，传递给不同的RD。
-### 4.2 MPLS VPN配置实例
+### 4.1 概念
+* VRF（Virtual Routing Forwarding），一个VRF就是虚拟的路由器，可以逻辑的隔离路由。该例中，一个VRF就是一个MPLS VPN中的实例（进程），PE创建了VRF之后，要与相应的端口进行关联。VRF只是本地有意义。
+* RD，Route Distinguisher，区分公司的的路由条目，RD只具有本地意义。不同VRF的路由条目通过该属性区分，RD+IPv4(96 bit)路由为VPNv4路由，可以使用MP BGP传递这种路由。
+* RT, Route Target，BGP community属性中的扩展属性，PE路由器收到VPNv4路由之后，会加上相应的RT之后，通告给BGP邻居，然后进行私网路由传递。根据target的不同，传递给不同的RD。
+### 4.2 VPN
+* 一种点到点的VPN
+* 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 4.3 MPLS VPN配置实例
 ```
 MPLS
 
