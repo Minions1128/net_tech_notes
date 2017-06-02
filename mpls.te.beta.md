@@ -17,6 +17,9 @@
 5. 支持LSP优先级隧道。
 * 四大基本组件：信息发布、路径计算、信令、报文转发组件
 * 扩展组件：FRR（Fast reRoute）、隧道的备份、宽带自动调整、路径的重优化
+
+![mpls.te.implement.framework](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls.te.implementation.frameworks.jpg "mpls.te.implement.framework")
+
 ### 5.4 
 
 
