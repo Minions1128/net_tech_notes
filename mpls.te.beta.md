@@ -6,19 +6,19 @@
 1. 利用IGP协议，改变metric或者cost值，过滤路由，或者LSA的方法
 2. 利用BGP丰富的路由策略。
 * 其优点为简单，缺点为相互影响严重。
+### 5.3 MPLS TE概述
+* 主要实现方式有：RSVP（Resource Reservation Protocol，资源预留协议）TE，CR LDP（Constraint-based Routing Label Distribution Protocol，基于路由受限标签分发协议）TE。这里只讨论RSVP TE。
+* 必要条件
+1. 支持P2P的LSP流量tunnel，tunnel中的LSP是固定的，故，报文进入tunnel之后，只能从tunnel另一端出来。
+2. LSP tunnel的建立支持自动建立和手动建立；
+3. 根据不同的优先级进行隧道抢占；
+4. 支持预建立备份路径的功能；
+5. 支持隧道随着网络环境的变化而重优化；
+5. 支持LSP优先级隧道。
+* 四大基本组件：信息发布、路径计算、信令、报文转发组件
+* 扩展组件：FRR（Fast reRoute）、隧道的备份、宽带自动调整、路径的重优化
+### 5.4 
 
-### 5.3 MPLS TE的必要条件
-* 主要实现方式有：RSVP TE，CR LDP TE。这里只讨论RSVP TE
-* 支持P2P的LSP流量tunnel，tunnel中的LSP是固定的，故，报文进入tunnel之后，只能从tunnel另一端出来。
-* LSP tunnel的建立支持自动建立和手动建立；
-* 根据不同的优先级进行隧道抢占；
-* 支持预建立备份路径的功能；
-* 支持隧道随着网络环境的变化而重优化；
-* 支持LSP优先级隧道。
-
-四大组件
-信息发布、路径计算、信令组件、报文转发
-FRR（Fast reRoute）、备份、宽带自动调整、路径的重优化
 
 检查mpls te环境ok
 show mpls traffic-eng topology brief
