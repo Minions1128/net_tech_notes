@@ -22,14 +22,30 @@
 
 ### 5.4 简单配置步骤
 1. 配置接口IP地址，OSPF或者ISIS协议
-2. 全局指定mpls traffic-eng tunnels
-3. 接口下启用mpls traffic-eng tunnels以及指定预留带宽
-3. 在OSPF中，指定mpls traffic的RID和area
-4. 配置tunnel接口：引用lo 0的IP地址，配置tun目的地，配置tunnel类型为mpls traffic，配置带宽和路由选择策略。
+2. 全局下配置
+```
+ip cef
+mpls traffic-eng tunnels
+```
+3. 接口下
+```
+mpls ip
+mpls traffic-eng tunnels
+ip rsvp bandwidth
+```
+3. 在OSPF或者ISIS中
+```
+mpls traffic-eng router-id Loopback0
+mpls traffic-eng area 0
+```
+4. 配置tunnel接口
+```
+interface Tunnel0
+ ip unnumbered Loopback0
+ tunnel mode mpls traffic-eng
+ tunnel destination 5.5.5.5
+ tunnel mpls traffic-eng bandwidth 1000
+ tunnel mpls traffic-eng path-option 10 dynamic
+```
 5. 检查mpls te环境：show mpls traffic-eng topology brief，还可以查看标签
-
-
-
-
-信息发布：
-
+### 5.5 信息发布
