@@ -129,11 +129,21 @@ R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修�
 * 仅在Path中：Label_Request，Explicit_Route，Session_Attribute（0x1，希望能FRR；0x2，希望进行标签记录；0x3，希望得到Share Explicit类型），Sender_Template（包含sender的IP和LSP ID），Sender_Tspec（流量信息）
 * 仅在Resv中：Label，Filter_Spec（包含sender的IP和LSP ID），Flowspec（流量信息）
 * 在Path和Resv中：Record_Route，Session（tunnel DIP，tunnel ID）
-### 7.5 Tunnel的维护
+### 7.5 Tunnel的操作
+1. 建立
+* 起点向终点发送Path消息（带宽预留请求，标签请求）进行申请，终点回复Resv消息完成资源的保留
+2. 维护
 * 与建立类似，上游每30s发送path，含50%抖动时间，
 * 下游每30s发送reserve信息
 * Path与Resv是独立异步消息
-
+3. 拆除
+* 一个节点需要拆除tunnel，沿着path路径发送PathRear，收到ResvTear之后tunnel就拆除了
+* 如果一条物理链路上有大量的TE tunnel，如果链路中断，会在
+瞬间产生大量的PathErr或者ResvErr，可以限制信令数量或者扩大输出队列数
+```
+(config)#ip rsvp signalling rate-limit limit 222 !限制信令数量
+(config-if)#hold-queue 222 in !扩大输出队列数
+```
 
 
 
