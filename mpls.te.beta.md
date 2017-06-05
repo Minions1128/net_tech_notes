@@ -54,9 +54,12 @@ show mpls traffic-eng tunnel tun 0
 ```
 6. 其他命令
 ```
-Router(config-if)# mpls traffic-eng administrative-weight 5    !修改管理权重
-Router# mpls traffic-eng reoptimize    !软重置tunnel
-Router(config)# mpls traffic-eng path-selection metric { igp | te }    !选择te metric的方式
+Router(config-if)# mpls traffic-eng administrative-weight 5             !修改管理权重
+Router(config)# mpls traffic-eng path-selection metric { igp | te }     !选择te metric的方式
+Router(config-if)# tunnel mpls traffic-eng priority 1 1                 !修改tunnel优先级
+Router(config-if)# mpls traffic-eng attribute-flags 0x5                 !修改物理接口亲和属性
+Router(config-if)# tunnel mpls traffic-eng affinity 0x0 mask 0x0        !tunnel配置亲和属性匹配值
+Router# mpls traffic-eng reoptimize                                     !软重置tunnel
 ```
 ### 5.5 信息发布
 信息发布的内容有：
@@ -64,5 +67,4 @@ Router(config)# mpls traffic-eng path-selection metric { igp | te }    !选择te
 2. TE Metric，默认状态下和IGP的值相等。手动在接口下修改。其描述在选择最优路径时，需要从metric值最小的路径进行选择，即路由最优。也可以使用igp作为其metric。
 3. 可用带宽，默认为bandwidth的75%，流量需要带宽超过 之后，该流量会被排除在外。在tunnel口上配置。
 4. 隧道优先级，有0-7，8个级别，值越小优先级越高。其有2种类型：建立优先级（攻）和保持优先级（守）。
-5. 亲和属性
-#### 5.5.1
+5. 亲和属性：描述该链路选择的要求。默认为0x0/0xffff，意为全匹配0x0。
