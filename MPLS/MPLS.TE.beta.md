@@ -7,7 +7,6 @@ TE（Traffic Engineering，流量工程）由于IGP选择的均为代价最小�
 2. 利用BGP丰富的路由策略。
 * 其优点为简单，缺点为相互影响严重。
 ## 3. MPLS TE概述
-* 主要实现方式有：RSVP（Resource Reservation Protocol，资源预留协议）TE，CR LDP（Constraint-based Routing Label Distribution Protocol，基于路由受限标签分发协议）TE。这里只讨论RSVP TE。
 * 必要条件
 1. 支持P2P的LSP流量tunnel，tunnel中的LSP是固定的，故，报文进入tunnel之后，只能从tunnel另一端出来。
 2. LSP tunnel的建立支持自动建立和手动建立；
@@ -62,9 +61,8 @@ R1(config-if)# tunnel mpls traffic-eng priority 1 1                 !修改tunne
 R1(config-if)# mpls traffic-eng attribute-flags 0x5                 !修改物理接口亲和属性
 R1(config-if)# tunnel mpls traffic-eng affinity 0x0 mask 0x0        !tunnel配置亲和属性匹配值
 R1# mpls traffic-eng reoptimize                                     !软重置tunnel
-
 R1(config-if)# mpls traffic-eng flooding thresholds { up | down } 15 30 45 60 75 80 85 90 95 96 97 98 99 100
-    !修改接口泛洪阈值
+!修改接口泛洪阈值
 R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修改周期泛洪时间
 ```
 ## 5. 信息发布
@@ -108,9 +106,23 @@ R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修�
 (cfg-ip-expl-path)# next-address loose 5.5.5.5   !松散下一跳
 (cfg-ip-expl-path)# exclude-address 3.3.3.3      !排除该地址
 # show ip explicit-paths
-(config)# interface Tunnel 26
+(config)# interface Tunnel 26   !在LSP tunnel里定义多种计算策略
 (config-if)# tunnel mpls traffic-eng path-option 10 explicit name st_asdf 
 (config-if)# tunnel mpls traffic-eng path-option 20 dynamic
-!在LSP tunnel里定义多种计算策略
 ```
-
+## 7. 路径建立
+信令协议有：RSVP（Resource Reservation Protocol，资源预留协议）TE，CR LDP（Constraint-based Routing Label Distribution Protocol，基于路由受限标签分发协议）TE。这里只讨论RSVP TE。
+### 7.1 RSVP
+* 典型的集成服务模型，是主机之间预留资源的协议。
+* 三个基本功能：路径的建立和维护、路径的拆除、错误通告。
+#### 7.1.1 RSVP消息类型
+1. Path：用于建立和维护保留
+2. Resv：响应Path消息，用来建立和维护保留
+3. PathTear：结构和Path类似，用于在网络中删除保留
+4. ResvTear：结构与Resv类似，用于在网络中删除保留
+5. PathErr：接收到错误的Path消息后发送
+6. ResvErr：接收到错误的Resv消息后发送
+#### 7.1.2 RSVP信令过程
+![rsvp.proc](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls.rsvp.proc.jpg "rsvp.proc")
+* 起点向终点发送Path消息进行申请，终点回复Resv消息完成资源的保留
+#### 7.1.3 
