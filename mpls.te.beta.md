@@ -29,7 +29,6 @@ mpls traffic-eng tunnels
 ```
 3. 接口下
 ```
-mpls ip
 mpls traffic-eng tunnels
 ip rsvp bandwidth
 ```
@@ -38,7 +37,7 @@ ip rsvp bandwidth
 mpls traffic-eng router-id Loopback0
 mpls traffic-eng area 0
 ```
-4. 配置tunnel接口
+4. 在tunnel两端配置tunnel接口
 ```
 interface Tunnel0
  ip unnumbered Loopback0
@@ -47,5 +46,17 @@ interface Tunnel0
  tunnel mpls traffic-eng bandwidth 1000
  tunnel mpls traffic-eng path-option 10 dynamic
 ```
-5. 检查mpls te环境：show mpls traffic-eng topology brief，还可以查看标签
+5. 检查mpls te环境
+```
+show mpls traffic-eng topology [brief]
+show mpls traffic-eng tunnel tun 0
+```
 ### 5.5 信息发布
+信息发布的内容有：
+1. 链路状态信息，同IGP
+2. TE Metric，默认情况下和IGP的值相等
+3. 可用带宽，默认为bandwidth的75%，流量需要带宽超过 之后，该流量会被排除在外。
+* 隧道优先级
+* 亲和属性
+* 管理权重
+#### 5.5.1
