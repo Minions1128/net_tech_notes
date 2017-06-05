@@ -69,16 +69,18 @@ R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修�
 ```
 ## 5. 信息发布
 ### 5.1 发布内容
+* 最终形成TE DB
 1. 链路状态信息，IGP会自动生成
 2. TE Metric：在选择最优路径时，需要从metric值最小的路径进行选择，即路由最优。默认状态下和IGP的值相等。可以使用igp作为其metric。
 3. 可用带宽：默认为bandwidth的75%，流量需要带宽超过之后，该流量会被排除在外。在tunnel口上配置。
 4. 隧道优先级：有0-7，8个级别，值越小优先级越高。其有2种类型，建立优先级（抢占）和保持优先级（守护）。
-5. 亲和属性：在选择路径时，接口匹配其亲和属性才有资格选择。默认为0x0/0xffff，意为完全匹配0x0。
+5. 亲和属性：在选择路径时，接口匹配其亲和属性才有资格选择。默认为0x0/0xffff，意为完全匹配0x0。由OSPF使用。
+6. 管理组：与亲和属性类似，供ISIS使用。
 ### 5.2 发布时间
 1. 周期性泛洪，默认180s
 2. 拓扑变更
 3. cost变更
-4. 链路带宽发生重大变化，
+4. 链路带宽发生重大变化
 5. LSP建立失败时
 ### 5.3 如何发布
 依靠现有链路状态协议OSPF和ISIS的扩展LSA，满足MPLS TE需求，默认仅支持单区域tunnel。使用区间隧道可以实现多区域运行MPLS TE。
@@ -89,3 +91,26 @@ R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修�
 * 9种链路子TLV：链路类型、链路ID、本地接口IP、远端接口地址、TE Metric、最大链路带宽、最大可保留带宽、当前可用带宽（基于每个优先级）、链路属性标志 。
 2. ISIS
 * 扩展了2中TLV：type=135，wide metric的扩展可达性路由信息；type=22，IS可达性TLV
+## 6. 路径计算
+* 此时已经拥有TE DB，利用CSPF（Constrained SPF，带约束的SPF算法）来计算路径，约束条件为可用带宽和链路属性。
+### 6.1 dynamic
+* 如果在SPF算法计算出有ECMP，CSPF需要进行最高仲裁（Tiebreaker）：
+1. 优选TE/IGP代价最小的;
+2. 最大的最小可用带宽；
+3. 最小跳数的；
+4. 如果还是无法区分，随机选择。
+### 6.2 explicit path
+* 其由一系列节点构成，其下一跳分为：严格下一跳（直连），松散下一跳（中间可以有其他路由器）
+* 配置：
+```
+(config)# ip explicit-path name path-name enable
+(cfg-ip-expl-path)# next-address strict 5.5.5.5  !严格下一跳
+(cfg-ip-expl-path)# next-address loose 5.5.5.5   !松散下一跳
+(cfg-ip-expl-path)# exclude-address 3.3.3.3      !排除该地址
+# show ip explicit-paths
+(config)# interface Tunnel 26
+(config-if)# tunnel mpls traffic-eng path-option 10 explicit name st_asdf 
+(config-if)# tunnel mpls traffic-eng path-option 20 dynamic
+!在LSP tunnel里定义多种计算策略
+```
+
