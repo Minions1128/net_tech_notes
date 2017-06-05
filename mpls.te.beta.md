@@ -1,6 +1,6 @@
 ## 5. MPLS TE
 ### 5.1 TE
-* TE（Traffic Engineering，流量工程）由于IGP选择的均为代价最小、距离最近的路由，所以导致链路利用率极不均衡的问题。TE对现有网络流量合理的规划和引导，实现资源的优化配置和提升网络性能。
+TE（Traffic Engineering，流量工程）由于IGP选择的均为代价最小、距离最近的路由，所以导致链路利用率极不均衡的问题。TE对现有网络流量合理的规划和引导，实现资源的优化配置和提升网络性能。
 ### 5.2 IP TE
 其使用广泛，但是非常粗糙，主要方法：
 1. 利用IGP协议，改变metric或者cost值，过滤路由，或者LSA的方法
@@ -48,15 +48,21 @@ interface Tunnel0
 ```
 5. 检查mpls te环境
 ```
+show ip rsvp interface
 show mpls traffic-eng topology [brief]
 show mpls traffic-eng tunnel tun 0
 ```
+6. 其他命令
+```
+(config-if)# mpls traffic-eng administrative-weight 5    !修改管理权重
+# mpls traffic-eng reoptimize    !软重置tunnel
+(config)# mpls traffic-eng path-selection metric { igp | te }    !选择te metric的方式
+```
 ### 5.5 信息发布
 信息发布的内容有：
-1. 链路状态信息，同IGP
-2. TE Metric，默认情况下和IGP的值相等
-3. 可用带宽，默认为bandwidth的75%，流量需要带宽超过 之后，该流量会被排除在外。
-* 隧道优先级
-* 亲和属性
-* 管理权重
+1. 链路状态信息，IGP会自动生成
+2. TE Metric，默认状态下和IGP的值相等。手动在接口下修改。其描述在选择最优路径时，需要从metric值最小的路径进行选择，即路由最优。也可以使用igp作为其metric。
+3. 可用带宽，默认为bandwidth的75%，流量需要带宽超过 之后，该流量会被排除在外。在tunnel口上配置。
+4. 隧道优先级，有0-7，8个级别，值越小优先级越高。其有2种类型：建立优先级（攻）和保持优先级（守）。
+5. 亲和属性
 #### 5.5.1
