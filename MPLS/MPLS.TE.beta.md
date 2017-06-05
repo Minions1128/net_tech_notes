@@ -115,14 +115,25 @@ R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修�
 ### 7.1 RSVP
 * 典型的集成服务模型，是主机之间预留资源的协议。
 * 三个基本功能：路径的建立和维护、路径的拆除、错误通告。
-#### 7.1.1 RSVP消息类型
+### 7.2 RSVP消息类型
 1. Path：用于建立和维护保留
 2. Resv：响应Path消息，用来建立和维护保留
 3. PathTear：结构和Path类似，用于在网络中删除保留
 4. ResvTear：结构与Resv类似，用于在网络中删除保留
 5. PathErr：接收到错误的Path消息后发送
 6. ResvErr：接收到错误的Resv消息后发送
-#### 7.1.2 RSVP信令过程
+### 7.3 RSVP信令过程
 ![rsvp.proc](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls.rsvp.proc.jpg "rsvp.proc")
-* 起点向终点发送Path消息进行申请，终点回复Resv消息完成资源的保留
-#### 7.1.3 
+* 起点向终点发送Path消息（带宽预留请求，标签请求）进行申请，终点回复Resv消息完成资源的保留
+### 7.4 RSVP对LSP Tunnel扩展的对象
+* 仅在Path中：Label_Request，Explicit_Route，Session_Attribute（0x1，希望能FRR；0x2，希望进行标签记录；0x3，希望得到Share Explicit类型），Sender_Template（包含sender的IP和LSP ID），Sender_Tspec（流量信息）
+* 仅在Resv中：Label，Filter_Spec（包含sender的IP和LSP ID），Flowspec（流量信息）
+* 在Path和Resv中：Record_Route，Session（tunnel DIP，tunnel ID）
+### 7.5 Tunnel的维护
+* 与建立类似，上游每30s发送path，含50%抖动时间，
+* 下游每30s发送reserve信息
+* Path与Resv是独立异步消息
+
+
+
+
