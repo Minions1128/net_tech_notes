@@ -51,20 +51,41 @@ interface Tunnel0
 show ip rsvp interface
 show mpls traffic-eng topology [brief]
 show mpls traffic-eng tunnel tun 0
+show mpls traffic-eng link-management bandwidth-allocation  !可以查看到通告阈值
+show mpls traffic-eng link-management summary               !查看其泛洪周期
 ```
 6. 其他命令
 ```
-Router(config-if)# mpls traffic-eng administrative-weight 5             !修改管理权重
-Router(config)# mpls traffic-eng path-selection metric { igp | te }     !选择te metric的方式
-Router(config-if)# tunnel mpls traffic-eng priority 1 1                 !修改tunnel优先级
-Router(config-if)# mpls traffic-eng attribute-flags 0x5                 !修改物理接口亲和属性
-Router(config-if)# tunnel mpls traffic-eng affinity 0x0 mask 0x0        !tunnel配置亲和属性匹配值
-Router# mpls traffic-eng reoptimize                                     !软重置tunnel
+R1(config-if)# mpls traffic-eng administrative-weight 5             !修改管理权重
+R1(config)# mpls traffic-eng path-selection metric { igp | te }     !选择te metric的方式
+R1(config-if)# tunnel mpls traffic-eng priority 1 1                 !修改tunnel优先级
+R1(config-if)# mpls traffic-eng attribute-flags 0x5                 !修改物理接口亲和属性
+R1(config-if)# tunnel mpls traffic-eng affinity 0x0 mask 0x0        !tunnel配置亲和属性匹配值
+R1# mpls traffic-eng reoptimize                                     !软重置tunnel
+
+R1(config-if)# mpls traffic-eng flooding thresholds { up | down } 15 30 45 60 75 80 85 90 95 96 97 98 99 100
+    !修改接口泛洪阈值
+R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修改周期泛洪时间
 ```
 ### 5.5 信息发布
-信息发布的内容有：
+#### 5.5.1 发布内容
 1. 链路状态信息，IGP会自动生成
 2. TE Metric：在选择最优路径时，需要从metric值最小的路径进行选择，即路由最优。默认状态下和IGP的值相等。可以使用igp作为其metric。
 3. 可用带宽：默认为bandwidth的75%，流量需要带宽超过之后，该流量会被排除在外。在tunnel口上配置。
 4. 隧道优先级：有0-7，8个级别，值越小优先级越高。其有2种类型，建立优先级（抢占）和保持优先级（守护）。
 5. 亲和属性：在选择路径时，接口匹配其亲和属性才有资格选择。默认为0x0/0xffff，意为完全匹配0x0。
+#### 5.5.2 发布时间
+1. 周期性泛洪，默认180s
+2. 拓扑变更
+3. cost变更
+4. 链路带宽发生重大变化，
+5. LSP建立失败时
+#### 5.5.3 如何发布
+依靠现有链路状态协议OSPF和ISIS的扩展LSA，满足MPLS TE需求，默认仅支持单区域tunnel。使用区间隧道可以实现多区域运行MPLS TE。
+1. OSPF
+* 增加了Type 10的LSA，其TLV有2种：
+* type=1，路由器地址TLV，包含了MPLS TE的RID；
+* type=2，链路TLV，有9种不同的子TLV组成，描述链路的各种参数。
+* 9种链路子TLV：链路类型、链路ID、本地接口IP、远端接口地址、TE Metric、最大链路带宽、最大可保留带宽、当前可用带宽（基于每个优先级）、链路属性标志 。
+2. ISIS
+* 扩展了2中TLV：type=135，wide metric的扩展可达性路由信息；type=22，IS可达性TLV
