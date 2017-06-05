@@ -2,7 +2,7 @@
 ### 5.1 TE
 TE（Traffic Engineering，流量工程）由于IGP选择的均为代价最小、距离最近的路由，所以导致链路利用率极不均衡的问题。TE对现有网络流量合理的规划和引导，实现资源的优化配置和提升网络性能。
 ### 5.2 IP TE
-其使用广泛，但是非常粗糙，主要方法：
+* 其使用广泛，但是非常粗糙，主要方法：
 1. 利用IGP协议，改变metric或者cost值，过滤路由，或者LSA的方法
 2. 利用BGP丰富的路由策略。
 * 其优点为简单，缺点为相互影响严重。
@@ -54,9 +54,9 @@ show mpls traffic-eng tunnel tun 0
 ```
 6. 其他命令
 ```
-(config-if)# mpls traffic-eng administrative-weight 5    !修改管理权重
-# mpls traffic-eng reoptimize    !软重置tunnel
-(config)# mpls traffic-eng path-selection metric { igp | te }    !选择te metric的方式
+Router(config-if)# mpls traffic-eng administrative-weight 5    !修改管理权重
+Router# mpls traffic-eng reoptimize    !软重置tunnel
+Router(config)# mpls traffic-eng path-selection metric { igp | te }    !选择te metric的方式
 ```
 ### 5.5 信息发布
 信息发布的内容有：
