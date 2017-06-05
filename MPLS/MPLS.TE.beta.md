@@ -147,11 +147,11 @@ R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修�
 ## 8. 流量转发
 将流量引入MPLS TE的方法：静态路由、自动路由、策略路由
 ### 8.1 静态路由和策略路由
-1. 静态路由
+* 静态路由
 ```
 ip route 5.5.5.5 255.255.255.255 Tunnel266
 ```
-2. 策略路由
+* 策略路由
 ```
 (config)# access-list 100 permit ip host 2.2.2.2 host 6.6.6.6
 (config)# route-map pbr permit 10
@@ -165,8 +165,12 @@ ip route 5.5.5.5 255.255.255.255 Tunnel266
 ### 8.2 自动路由
 * MPLS TE不支持IGP路由协议是由于：1，TE隧道是单向；2，TE DB拥有所有链路的状态信息，不需要在使用IGP
 * 其由分为auto route和转发邻接（Cisco不支持OSPF）
-** 自动路由
+1. auto route：只会影响TE隧道的首端，对其他路由器无法感知到TE隧道的存在
 ```
 (config-if)# tunnel mpls traffic-eng autoroute announce 
 ```
+2. 转发邻接：把TE隧道最为虚连接在IGP中进行通告，所有路由器都知道该链路的存在。
+* 转发邻接时，只是把TE隧道作为一个IP链路进行通告，不是TE隧道
+* 转发邻接的隧道首尾必须在一个区域中
+
 
