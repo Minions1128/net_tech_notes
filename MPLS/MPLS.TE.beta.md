@@ -1,12 +1,12 @@
-## 5. MPLS TE
-### 5.1 TE
+# MPLS TE
+## 1. TE
 TE（Traffic Engineering，流量工程）由于IGP选择的均为代价最小、距离最近的路由，所以导致链路利用率极不均衡的问题。TE对现有网络流量合理的规划和引导，实现资源的优化配置和提升网络性能。
-### 5.2 IP TE
+## 2. IP TE
 * 其使用广泛，但是非常粗糙，主要方法：
 1. 利用IGP协议，改变metric或者cost值，过滤路由，或者LSA的方法
 2. 利用BGP丰富的路由策略。
 * 其优点为简单，缺点为相互影响严重。
-### 5.3 MPLS TE概述
+## 3. MPLS TE概述
 * 主要实现方式有：RSVP（Resource Reservation Protocol，资源预留协议）TE，CR LDP（Constraint-based Routing Label Distribution Protocol，基于路由受限标签分发协议）TE。这里只讨论RSVP TE。
 * 必要条件
 1. 支持P2P的LSP流量tunnel，tunnel中的LSP是固定的，故，报文进入tunnel之后，只能从tunnel另一端出来。
@@ -20,7 +20,7 @@ TE（Traffic Engineering，流量工程）由于IGP选择的均为代价最小�
 
 ![mpls.te.implement.framework](https://github.com/Minions1128/net_tech_notes/blob/master/img/mpls.te.implementation.frameworks.jpg "mpls.te.implement.framework")
 
-### 5.4 简单配置步骤
+## 4. 简单配置步骤
 1. 配置接口IP地址，OSPF或者ISIS协议
 2. 全局下配置
 ```
@@ -67,20 +67,20 @@ R1(config-if)# mpls traffic-eng flooding thresholds { up | down } 15 30 45 60 75
     !修改接口泛洪阈值
 R1(config)# mpls traffic-eng link-management timers periodic-flooding 888 !修改周期泛洪时间
 ```
-### 5.5 信息发布
-#### 5.5.1 发布内容
+## 5. 信息发布
+### 5.1 发布内容
 1. 链路状态信息，IGP会自动生成
 2. TE Metric：在选择最优路径时，需要从metric值最小的路径进行选择，即路由最优。默认状态下和IGP的值相等。可以使用igp作为其metric。
 3. 可用带宽：默认为bandwidth的75%，流量需要带宽超过之后，该流量会被排除在外。在tunnel口上配置。
 4. 隧道优先级：有0-7，8个级别，值越小优先级越高。其有2种类型，建立优先级（抢占）和保持优先级（守护）。
 5. 亲和属性：在选择路径时，接口匹配其亲和属性才有资格选择。默认为0x0/0xffff，意为完全匹配0x0。
-#### 5.5.2 发布时间
+### 5.2 发布时间
 1. 周期性泛洪，默认180s
 2. 拓扑变更
 3. cost变更
 4. 链路带宽发生重大变化，
 5. LSP建立失败时
-#### 5.5.3 如何发布
+### 5.3 如何发布
 依靠现有链路状态协议OSPF和ISIS的扩展LSA，满足MPLS TE需求，默认仅支持单区域tunnel。使用区间隧道可以实现多区域运行MPLS TE。
 1. OSPF
 * 增加了Type 10的LSA，其TLV有2种：
