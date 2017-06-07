@@ -89,7 +89,7 @@ R4的路由表中
 4. Exstart，交互三个不带LSA的DBD，选出Master/Slave。
 > 接口MTU不一致会一直卡在这一状态。接口使用命令ip ospf mtu-ignore忽略MTU检查；
 5. Exchange，Master发出带有LSA的DBD；
-6. Loading，交互LSR、LSU以及LSAck；
+6. Loading，路由器的LSR列表还有LSR需要发送；
 7. Full，LSDB同步完成。
 ### 4.3 MA网络邻接关系
 MA网络DR和BDR可以建立full邻接关系，others建立2-way邻接关系。
