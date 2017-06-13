@@ -10,3 +10,4 @@ Secondary switch会变为可操作的primary switch，当原来的primary switch
 其流量不会造成影响，但建议尽早修复
 ### 5. vPC keepalive link and peer link both failure
 如果vPC keepalive link先down，然后peer link跟着down，primary和secondary switch同时成为primary switch，即脑裂。现有流量不会造成影响，但新的流量就不可用。同时单播mac地址和IGMP组，因此其无法维持单播和组播的转发，还可能导致duplicate包。
+
