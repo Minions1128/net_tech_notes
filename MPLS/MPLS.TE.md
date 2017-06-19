@@ -169,7 +169,6 @@ ip route 5.5.5.5 255.255.255.255 Tunnel266
 ```
 (config-if)# tunnel mpls traffic-eng autoroute announce 
 ```
-2. 转发邻接：把TE隧道最为虚连接在IGP中进行通告，所有路由器都知道该链路的存在。
+2. 转发邻接：把TE隧道最为虚连接在IGP中进行通告，所有路由器都知道该链路的存在。只支持ISIS协议。
 * 转发邻接时，只是把TE隧道作为一个IP链路进行通告，不是TE隧道
 * 转发邻接的隧道首尾必须在一个区域中
-
