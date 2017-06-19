@@ -1,6 +1,12 @@
 # vPC
-## 概述
+## 1. 概述
 * A virtual port channel (vPC) allows links that are physically connected to two different Cisco Nexus 7000 Series devices to appear as a single port channel to a third device. The third device can be a switch, server, or any other networking device that supports link aggregation technology.
+* 其优点有：屏蔽了STP，最大限度使用上联带宽。
+* 名词解释
+![vpc.component](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.components.jpg "vpc.component")
+* 防环机制：进入vPC peer link的流量，不会再从member port出去。
+* 其支持LACP active，passive以及ON mode
+
 
 
 
