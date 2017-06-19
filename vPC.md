@@ -7,8 +7,6 @@
 ![vpc.component](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.components.jpg "vpc.component")
 * 防环机制：进入vPC peer link的流量，不会再从member port出去。
 * 其支持LACP active，passive以及ON mode
-* Peer-Gateway
-
 ## Failure Scenarios
 ### 1. vPC member port fails
 下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer link可能会承数据流量。
