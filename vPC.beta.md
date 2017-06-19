@@ -1,4 +1,12 @@
 # vPC
+## 概述
+* A virtual port channel (vPC) allows links that are physically connected to two different Cisco Nexus 7000 Series devices to appear as a single port channel to a third device. The third device can be a switch, server, or any other networking device that supports link aggregation technology.
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------
 ## Failure Scenarios
 ### 1. vPC member port fails
 下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer link可能会承数据流量。
