@@ -156,11 +156,9 @@ interface FastEthernet0/1
 
 sh policy-map interface   # 可以show出每个接口的详细policy-map的情况
 ```
-3.6.3基于网络的应用识别
-Network Based Application Recognition， NBAR，当抓去的流量不关心源端和目的端时，可以只基于流量本身抓去，然后在做调整。我们可以基于源目IP，源目端口号等信息抓去流量。 
-NBAR是基于包描述语言模块（PDLM, Packet Description Language Module）抓去的，这种特征库可以在官网下载，使用命令ip nbar pdlm 名称来调用。还有应对改变端口号来屏蔽抓去的情况，NBAR可以基于协议。
-使用class-map，match相应的协议名称，最后端口使用命令ip nbar protocol-discovery调用nbar。
-4. 队列
+#### 3.4.3 基于网络的应用识别
+NBAR，Network Based Application Recognition，其作用主要是对动态分配TCP/UDP端口号的应用程序和HTTP流量等进行分类，在分类的同时，还可以对该分类数据流量进行统计。还可以基于包描述语言模块（PDLM, Packet Description Language Module）抓取，这种特征库可以在官网下载。参考：[http://7658423.blog.51cto.com/7648423/1346546](http://7658423.blog.51cto.com/7648423/1346546)
+## 4. 队列
 当报文即将要从路由器某个接口转发走时，路由器会给这些报文定义一段缓冲区buffer，即队列。当遇到接口带宽不匹配时，会出现拥塞。
 三层队列大致分为：FIFO、PQ、CQ、WFQ (FBWFQ)。默认存在的队列只有FIFO和WFQ，接口带宽大于2.048Mbps，默认使用FIFO，小于则使用WFQ。
 4.1 FIFO
