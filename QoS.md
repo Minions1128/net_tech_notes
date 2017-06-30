@@ -249,7 +249,7 @@ int fa0/0
  service-policy output CBWFQ
  ip nbar protocol-discovery
 ```
-4.7 CBLLQ
+### 4.7 CBLLQ
 * CBLLQ=PQ+CBWFQ，定义了一个强制优先级队列
 * 实验举例：VoIP流量占用带宽的20%（强制优先），Video占用30%，Business占用30%，控制流量2000kbps占用100K（强制优先），其余为Internet流量。
 ```
