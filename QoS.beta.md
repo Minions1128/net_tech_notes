@@ -57,8 +57,8 @@ ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口
 * 使用IP报文中的ToS字段中的前3 bit，来描述流量的类型以及需要提供的处理待遇。
 * 业界规定IP Precedence分为7类，由低到高的排序为：
 
-| tag | description | 描述 |
-| :------------: | :------------: | :------------ |
+| Tag | Description | 描述 |
+| :------------: | :------------ | :------------ |
 | 1 | priority | 垃圾流量 |
 | 0 | routine | 冲浪流量 |
 | 2 | immediated | 业务流量 |
@@ -68,14 +68,21 @@ ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口
 | 6 | internet | 控制层面的路由协议 |
 | 7 | network | 保留 |
 ### 3.2 DSCP
-由于IP Precedence可使用的数值较少，无法细分流量，IETF有定义了DSCP（Differ Service Code Point），使用ToS的前6 bit
- 
-前3 bit为X，值越大，优先级越高；然后2 bit为Y，丢弃优先级，值越低，优先级越高；最后1 bit保留。
-Default：X=Y=0（1个）
-CS类为IP Precedence：X<>0, Y=0，兼容IP Precedence（7个）
-AF：X=001, 010, 011, 100，Y=01,10,11。例如：10011000为AF43类（12个）
-EF：X=5，Y=3，在VoIP中使用（1个）
-3.3 以太网标记
+* 由于IP Precedence可使用的数值较少，无法细分流量，IETF有定义了DSCP（Differ Service Code Point），使用ToS的前6 bit
+![qos_dscp](https://github.com/Minions1128/net_tech_notes/blob/master/img/qos_dscp.jpg "qos_dscp")
+* 前3 bit为X，值越大，优先级越高；* 然后2 bit为Y，丢弃优先级，值越低，优先级越高；* 最后1 bit保留。
+* DCSP分为四类：
+1. Default：X==Y==0（1个）
+2. CS类为IP Precedence：X!=0, Y==0，兼容IP Precedence（7个）
+3. AF：X = {001, 010, 011, 100}，Y = {01, 10, 11}。例如：ToS字段为：10011000意为AF43类（12个）
+4. EF：X=5，Y=3，在VoIP中使用（1个）
+
+
+
+
+
+
+### 3.3 以太网标记
 不仅三层报文中可以加入标记，2层设备也可以添加标记，在802.1q中，PRI中有3 bit的CoS可以用来标记，标记之后的协议称之为802.1p
 
 CoS Application
