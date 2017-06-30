@@ -318,7 +318,7 @@ int fa0/0
  service-policy output CBWRED #需要先去掉其他RED
 ```
 ## 6. 整形与管制
-整形与管制用于对接口流量的限速，这两种机制的区别在于：1，对于过量（exceed）流量而言，整形会将过量的报文缓冲到整形队列中，而管制可能会将过量的报文进行丢弃；2，对于控制流量的方向上，整形只能基于流量的出向实现，而管制可以基于流量的出向和入向同时限制。在接口处，整形与管制优先级高于软件队列。这些机制都是基于令牌桶（Token-Bucket）算法来实现的。
+整形与管制用于对接口流量的限速，这些机制都是基于令牌桶（Token-Bucket）算法来实现的。
 ### 6.1 令牌桶算法
 #### 6.1.1 相关名字
 * CIR, Committed Information Rate，承诺信息率，即限速带宽。
@@ -327,15 +327,16 @@ int fa0/0
 * CIR=Bc/Tc
 * 根据流量类别以及速率限制的范围，算法可以分为三种：单速率双色令牌桶、单速率三色令牌桶以及双速率三色令牌桶。
 #### 6.1.2 单速率双色令牌桶
-当部署整形或者管制后，会生成一个桶，桶的大小为Bc大小，会在每个Tc内被装满，多余的令牌会被丢弃。报文在进入软件queue之前，会从令牌桶中抓取一个令牌，如果抓到令牌，则报文被标记为绿色，然后进入软件queue，如果软件queue没有排队，可以绕过软件queue，直接进入硬件queue，从而被转发；没有拿到令牌的报文会被标记为红色，称之为超速报文，对于管制和整形的处理方式不同：管制会丢弃（默认行为），或者将其加上其他标记进行转发。整形会放入shapping queue，该队列的报文会标记为优先级最高的报文，来到令牌桶中找令牌，如果找到令牌，则被标记为绿色报文，进而转发。
-6.1.3 单速率三色令牌桶
+当部署整形或者管制后，会生成一个桶，桶的大小为Bc大小，会在每个Tc内被装满，多余的令牌会被丢弃。报文在进入软件queue之前，会从令牌桶中抓取一个令牌，如果抓到令牌，则报文被标记为绿色，然后进入软件queue，如果软件queue没有排队，可以绕过软件queue，直接进入硬件queue，从而被转发；没有拿到令牌的报文会被标记为红色，称之为超速报文，对于管制和整形的处理方式不同：1，对于过量（exceed）流量而言，整形会将过量的报文放入shapping queue，该队列的报文会标记为优先级最高的报文，来到令牌桶中找令牌，如果找到令牌，则被标记为绿色报文，进而转发；而管制可能会将过量的报文进行丢弃；2，对于控制流量的方向上，整形只能基于流量的出向实现，而管制可以基于流量的出向和入向同时限制。在接口处，整形与管制优先级高于软件队列。
+#### 6.1.3 单速率三色令牌桶
 该机制在Bc的基础上定义了Be，Burst exceeded，装载过量突发的流量，其大小和Bc一致。令牌会在每个Tc中装在Bc中，当Bc装满之后，令牌才会被装到Be令牌桶中。若报文抓取的令牌为Bc桶中的，标记其为绿色，抓的报文为Be桶中的，标记其为黄色，没有抓取到令牌的，标记其为红色。其后的操作与单速率双色令牌桶。
-6.1.4 双速率三色令牌桶
+#### 6.1.4 双速率三色令牌桶
 这种机制在之前的基础之上，定义了PIR（Peak information rate，峰值信息率），即带宽在CIR到PIR之间浮动限制。由定义EIR（Exceeded information rate，过量信息率），EIR= PIR – CIR。该机制定义的Bc桶和Be桶，在每个Tc内均可以被填满令牌，均可以同时转发报文。这样就实现了带宽的浮动。
-6.2 整形机制
-整形机制有3中常规的部署方法：通用流量整形（GTS, Generic Traffic Shape）、帧中继流量整形（FRTS, Frame-Relay Traffic Shape）以及基于类的流量整形（CBTS, Class-based Traffic Shape）。
-6.2.1 GTS
+### 6.2 整形机制
+整形机制有3中常规的部署方法：通用流量整形（GTS, Generic Traffic Shape）以及基于类的流量整形（CBTS, Class-based Traffic Shape）。
+#### 6.2.1 GTS
 这种整形机制中，整形Queue只能为WFQ，可以使用任何软件Queue。配置命令以及相关解释如下：
+```
 traffic-shape rate 1000000 #开启GTS，CIR为1M
 show traffic-shape #查看整形流量
 Target Bit Rate, CIR
@@ -343,10 +344,10 @@ Bits per interval, sustained, Bc
 Bits per interval, excess in first interval, Be
 Set buffer limit, Shaping Queue
 traffic-shape group 100 #基于对ACL 100作整形
-6.2.2 FRTS
-FRTS，只能在Frame-Relay接口使用，只能使用FIFO队列
-6.2.3 CBTS
+```
+#### 6.2.2 CBTS
 CBTS，shaping-queue为WFQ，并且无法改变，可以在任何接口启用，不要求接口的队列使用特殊队列。
+```
 access-list 101 permit ip host 1.1.1.1 host 2.2.2.2
 access-list 102 permit ip host 1.1.1.1 host 3.3.3.3
 !
@@ -366,7 +367,8 @@ policy-map CBTS
 !
 interface FastEthernet0/0
  service-policy output CBTS
-6.3 管制
+```
+### 6.3 管制
 管制中对流量的定义有conform-action 绿色流量，exceed-action 红色流量，iolation-action 黄色流量。管制机制常规有2种方法：CAR (Committed Access Rate)以及CBPolicing。
 6.3.1 CAR
 举个例子，需求：R1到R3的所有流量，CIR 1M，BC 100K，BE 100K，TC 100ms，绿色流量转发，红色流量，1，丢弃；2，降格发送。
