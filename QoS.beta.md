@@ -279,7 +279,7 @@ show queueing random-detect #查看RED内容
 random-detect dscp-based #基于DSCP定义WRED
 random-detect dscp ef 39 45 20 #修改ef的低阈值为39，高阈值为45，丢弃概率为1/20
 ```
-5.3 FBWRED, CBWRED
+### 5.3 FBWRED & CBWRED
 FBWRED，基于流的WRED；CBWRED，基于类的WRED
 ```
 配置举例：
@@ -317,7 +317,7 @@ int fa0/0
  max-reserved-bandwidth 85
  service-policy output CBWRED #需要先去掉其他RED
 ```
-6. 整形与管制
+## 6. 整形与管制
 整形与管制用于对接口流量的限速，这两种机制的区别在于：1，对于过量（exceed）流量而言，整形会将过量的报文缓冲到整形队列中，而管制可能会将过量的报文进行丢弃；2，对于控制流量的方向上，整形只能基于流量的出向实现，而管制可以基于流量的出向和入向同时限制。在接口处，整形与管制优先级高于软件队列。这些机制都是基于令牌桶（Token-Bucket）算法来实现的。
 6.1 令牌桶算法
 6.1.1 相关名字
