@@ -18,12 +18,12 @@
 ## 2. 集成服务模型
 该模型可以使用RSVP（Resource Reservation Protocol）实现，使用IntServ的应用，大多数在应用软件中自带有客户端与服务器端，即会自身完成RSVP的信令连通。
 ### 2.1 RSVP报文类型
-
-有2种报文类型Path、Reserve报文。
-Path报文：沿着数据的传输方向，由源发送给目的，沿途路由器会缓存一份该报文，然后转发出去。
-Reserve报文：目的端收到Path报文之后，会向源回复该报文，在沿途路由器收到该报文之后，会做出2个判断：Admission Control，判断是否有足够的带宽；Policy Control，判断是否有资格预留带宽，即是否开启RSVP。满足这两个条件之后，才会预留带宽。
-报文封装有2种封装，一种是封装在IP报文中，协议号46，另一种封装在tcp/udp 3455
-2.2.2 配置命令
+* 有2种报文类型Path、Reserve报文。
+* Path报文：沿着数据的传输方向，由源发送给目的，沿途路由器会缓存一份该报文，然后转发出去。
+* Reserve报文：目的端收到Path报文之后，会向源回复该报文，在沿途路由器收到该报文之后，会做出2个判断：Admission Control，判断是否有足够的带宽；Policy Control，判断是否有资格预留带宽，即是否开启RSVP。满足这两个条件之后，才会预留带宽。
+* 报文封装有2种封装，一种是封装在IP报文中，协议号46，另一种封装在tcp/udp 3455
+* 详细报文格式参见：[http://www.023wg.com/message/message/cd_feature_rsvp_message_format.html](http://www.023wg.com/message/message/cd_feature_rsvp_message_format.html)
+### 2.2 配置命令
 如果应用程序不支持RSVP，需要路由器模拟源和目的。模拟拓扑为：R4(PC)--R2(源)--R1--R3(目的)--R5(PC)，R2代替R4发送Path给R5，R3代替R5发送Reserve给R4
 部署步骤：
 1. 配置地址，R1-3部署IGP。
