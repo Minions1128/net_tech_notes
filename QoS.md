@@ -5,16 +5,19 @@
 ### 1.1 QoS服务模型
 * QoS有三种服务模型
 1. 尽力而为（Best Effort）：报文按照IP的方式，自由发送，即不使用QoS，无法保证服务质量。
-2. IntServ集成服务模型：这种服务模型，会给流量预留带宽，即使链路空闲时其他流量无法占用此带宽。如：资源预留协议(RSVP，Resource Reservation Protocol)。将在第二部分讨论。
+2. IntServ集成服务模型：这种服务模型，会给流量预留带宽，即使链路空闲时其他流量无法占用此带宽。如：资源预留协议(RSVP，Resource Reservation Protocol)。将在第2部分讨论。
 3. DiffServ区分服务模型：这种服务模型，会抓去需要流量，然后给其较好的处理待遇。如：基于跳的处理(PHB，Per-hop Behavior)
 ### 1.2 区分服务模型
-* 这种服务模型是应用最多的应用模型。我们将由分类、队列，拥塞避免以及管制整形等4部分分别描述。
-1. 分类/标记：默认一些流量已经自动生成。在第3部分讨论。
+* 这种服务模型是应用最多的应用模型。将由分类、队列，拥塞避免以及管制整形4部分讨论，分别在第3-6部分。
+1. 分类/标记：默认一些流量已经自动生成。
 2. 管制/整形，主要作用为限速
 3. 拥塞避免：RED、WRED
 4. 队列：PQ，CQ，WFQ，FIFO，CBWFQ，LLQ，WRRQ，SRRQ，DRRQ
 * 其主流部署思路为：先将流量进行基于类进行划分，再使用ACL抓去流量，然后给抓取的流量打上标记，最后定义QoS的策略。
 流量优先级：语音，视频，重要的业务流量。
+### 1.3 名词
+* 承诺突发：将1s逻辑的分为多份，在每份时间间隔内，网络允许在虚电路上传送的数据总量。
+* 预留方式有：ff，独占欲流；se，共享式预留，可以知道源地址的方式；wf，共享式预留，无法知道源的位置。
 ## 2. 集成服务模型
 该模型可以使用RSVP（Resource Reservation Protocol）实现，使用IntServ的应用，大多数在应用软件中自带有客户端与服务器端，即会自身完成RSVP的信令连通。
 ### 2.1 RSVP报文类型
@@ -31,13 +34,22 @@ R4(PC)--R2(源)--R1--R3(目的)--R5(PC)
 ```
 R2代替R4发送Path给R5，R3代替R5发送Reserve给R4
 * 部署步骤：
-1. 配置地址，R1-3部署IGP。
-2. 开启cef
-3. 在接口开启RSVP：ip rsvp bandwidth #默认预留75%的带宽，ip rsvp bandwidth 2000 1000，为单股流量预留1000k，预留最大带宽2000k。ip rsvp bandwidth [interface-kbps [single-flow-kbps]]
-4. R2模拟R4发送Path报文给R5：ip rsvp sender 目的地址 源地址 tcp/udp 目的端口 源端口 接口 预留带宽 承诺突发
-承诺突发：将1s中划分为[200（前）/200（后）]份，每份分发200（后）
-5. R3代替R5发送Reserve给R4：ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口 预留方式 预留带宽 承诺突发
-预留方式为ff，独占欲流；se，共享式预留，可以知道源地址的方式；wf，共享式预留，无法知道源的位置。
+1. 配置地址，R1-R3部署IGP；
+2. 开启cef；
+3. 在接口开启RSVP：
+```
+ip rsvp bandwidth             #默认预留75%的带宽
+ip rsvp bandwidth 2000 1000   #为单股流量预留1000k，预留最大带宽2000k
+ip rsvp bandwidth [interface-kbps [single-flow-kbps]]
+```
+4. R2模拟R4发送Path报文给R5：
+```
+ip rsvp sender 目的地址 源地址 tcp/udp 目的端口 源端口 接口 预留带宽 承诺突发
+```
+5. R3代替R5发送Reserve给R4：
+```
+ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口 预留方式 预留带宽 承诺突发
+```
 如果R4，R5为自己部署预留带宽，则：将R4和R5运行IGP，在接口启用RSVP，配置命令中sender换为sender-host。
 ## 3. 分类
 
@@ -378,3 +390,4 @@ policy-map CBPolicyPM
 interface FastEthernet0/0
  service-policy output CBPolicyPM
 
+承诺突发：将1s中划分为[200（前）/200（后）]份，每份分发200（后）
