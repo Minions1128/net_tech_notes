@@ -56,6 +56,7 @@ ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口
 ### 3.1 IP Precedence
 * 使用IP报文中的ToS字段中的前3 bit，来描述流量的类型以及需要提供的处理待遇。
 * 业界规定IP Precedence分为7类，由低到高的排序为：
+
 | tag | description | 描述 |
 | :------------ | :------------ | :------------ |
 | 1 | priority | 垃圾流量 |
