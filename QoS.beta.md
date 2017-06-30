@@ -88,29 +88,23 @@ ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口
 | 2 | High-Priority Data |
 | 1 | Medium-Priority Data |
 | 0 | Best-Effort Data |
-## 3.6 打标记配置
+### 3.4 打标记配置举例
 标记建议在信任边界的位置打，即IP电话或者连接交换机的位置。如果终端电脑发出的报文带有异常的QoS标记，IP电话或者交换机会修改为正确的值之后，在帮其转发。
-打标记配置方法，需求：FTP流量设置为IP Precedence 1，HTTP为DSCP CS 2，Telnet为DSCP AF 31，Voice为DSCP 46，EIGRP为DSCP CS 6
-3.6.1 基于PBR实现
-使用ACL抓去流量，使用Route-map打标记。
+* 需求：FTP流量设置为IP Precedence 1，HTTP为DSCP CS 2，Telnet为DSCP AF 31，Voice为DSCP 46，EIGRP为DSCP CS 6
+#### 3.4.1 基于PBR实现
+使用ACL抓去流量，使用Route-map打标记。这种方式无法实现DSCP，而且只能调用入向，无法实现出向调用。
+```
 access-list 100 permit tcp any any range ftp-data ftp
 access-list 100 permit tcp any range ftp-data ftp any
-access-list 101 permit tcp any any eq www
-access-list 101 permit tcp any eq www any
-access-list 102 permit tcp any any eq telnet
-access-list 102 permit tcp any eq telnet any
-access-list 103 permit udp any any range 16384 32767
-access-list 103 permit udp any range 16384 32767 any
-access-list 104 permit eigrp any host 224.0.0.10
-access-list100-104分别对应上述5种流量，由于Route-map不支持DSCP，将全部需求改为IP Precedence
+...
 route-map PBR permit 10
  match ip address 100
  set ip precedence priority
-其余配置类似。
-然后在接口调用route-map
-ip policy route-map PBR
-这种方式无法实现DSCP，而且只能调用入向，无法实现出向调用。
-3.6.2 使用CBMarking
+...
+interface FastEthernet0/0
+ ip policy route-map PBR
+```
+#### 3.4.2 使用CB-Marking
 CBMarking使用MQC模块化部署，嵌套性强，便于实施。
 MQC的工具：class-map调用ACL，然后分类；Policy-map，调用Class-Map然后做QoS
 使用CBMarking实现上述需求：先使用ACL抓去流量
