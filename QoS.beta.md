@@ -68,35 +68,27 @@ ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口
 | 6 | internet | 控制层面的路由协议 |
 | 7 | network | 保留 |
 ### 3.2 DSCP
-* 由于IP Precedence可使用的数值较少，无法细分流量，IETF有定义了DSCP（Differ Service Code Point），使用ToS的前6 bit
 ![qos_dscp](https://github.com/Minions1128/net_tech_notes/blob/master/img/qos_dscp.jpg "qos_dscp")
-* 前3 bit为X，值越大，优先级越高；* 然后2 bit为Y，丢弃优先级，值越低，优先级越高；* 最后1 bit保留。
+* 由于IP Precedence可使用的数值较少，无法细分流量，IETF有定义了DSCP（Differ Service Code Point），使用ToS的前6 bit。前3 bit为X，值越大，优先级越高；* 然后2 bit为Y，丢弃优先级，值越低，优先级越高；* 最后1 bit保留。
 * DCSP分为四类：
 1. Default：X==Y==0（1个）
 2. CS类为IP Precedence：X!=0, Y==0，兼容IP Precedence（7个）
 3. AF：X = {001, 010, 011, 100}，Y = {01, 10, 11}。例如：ToS字段为：10011000意为AF43类（12个）
 4. EF：X=5，Y=3，在VoIP中使用（1个）
-
-
-
-
-
-
 ### 3.3 以太网标记
 不仅三层报文中可以加入标记，2层设备也可以添加标记，在802.1q中，PRI中有3 bit的CoS可以用来标记，标记之后的协议称之为802.1p
 
-CoS Application
-7   Reserved
-6   Reserved
-5   Voice Bearer
-4   Videoconferencing
-3   Call Signaling
-2   High-Priority Data
-1   Medium-Priority Data
-0   Best-Effort Data
-
-
-3.6 打标记配置
+| CoS | Application |
+| :------------: | :------------ |
+| 7 | Reserved |
+| 6 | Reserved |
+| 5 | Voice Bearer |
+| 4 | Videoconferencing |
+| 3 | Call Signaling |
+| 2 | High-Priority Data |
+| 1 | Medium-Priority Data |
+| 0 | Best-Effort Data |
+## 3.6 打标记配置
 标记建议在信任边界的位置打，即IP电话或者连接交换机的位置。如果终端电脑发出的报文带有异常的QoS标记，IP电话或者交换机会修改为正确的值之后，在帮其转发。
 打标记配置方法，需求：FTP流量设置为IP Precedence 1，HTTP为DSCP CS 2，Telnet为DSCP AF 31，Voice为DSCP 46，EIGRP为DSCP CS 6
 3.6.1 基于PBR实现
