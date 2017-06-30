@@ -373,9 +373,12 @@ interface FastEthernet0/0
 #### 6.3.1 CAR
 举个例子，需求：R1到R3的所有流量，CIR 1M，BC 100K，BE 100K，TC 100ms，绿色流量转发，红色流量，1，丢弃；2，降格发送。
 ```
-rate-limit output access-group 100 1000000 12500 12500 conform-action transmit exceed-action drop #在接口模式下，对出向流量抓取ACL 100，CIR为1M，BC为12500字节，be为12500字节对于绿色、黄色流量转发，红色流量丢弃。
-rate-limit output access-group 100 1000000 12500 12500 conform-action set-dscp-continue 32 exceed-action drop #对于拿到令牌的流量，设置dscp为32然后继续匹配下面的语句
-rate-limit output access-group 105 1000000 12500 12500 conform-action transmit exceed-action drop #两条语句中，均拿到令牌，则可以转发，否则丢弃
+rate-limit output access-group 100 1000000 12500 12500 conform-action transmit exceed-action drop
+#在接口模式下，对出向流量抓取ACL 100，CIR为1M，BC为12500字节，be为12500字节对于绿色、黄色流量转发，红色流量丢弃。
+rate-limit output access-group 100 1000000 12500 12500 conform-action set-dscp-continue 32 exceed-action drop 
+#对于拿到令牌的流量，设置dscp为32然后继续匹配下面的语句
+rate-limit output access-group 105 1000000 12500 12500 conform-action transmit exceed-action drop 
+#两条语句中，均拿到令牌，则可以转发，否则丢弃
 ```
 #### 6.3.2 CBPolicing
 举个例子
