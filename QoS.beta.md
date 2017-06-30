@@ -202,15 +202,20 @@ queue-list 10 queue 0 limit 30 #设置队列长度为30
 queue-list 10 queue 3 byte-count 3000 #轮巡队列默认一次发送1500字节，该命令将3队列每次发送3000字节
 ```
 ### 4.4 WFQ
-WFQ, Weighted Fair Queuing，又称为FBWFQ, Flow-Based WFQ，这种队列把队列分为若干个流，最大有256个队列，如果流的种类超过256，会将多种流放入同一种队列。不会计算每个队列的容纳报文数量，而会宏观调控，关注整个队列容纳报文数量。该机制定义了2个名词CDT和HQO。
-CDT, Congestive Discard Threshold，下限阈值，报文数到达下限阈值可能会被丢弃；HQO为上限阈值，到达HQO后，新来的报文一定会被丢弃。
-例如一个队列有3个子队列，每个子队列的容量为4个报文，CDT为8，第一个子队列有4个报文，队列已经满了，第二个队列中有3个报文，队列还可以容纳一个报文，第三个队列有1个报文，一共有8个报文，达到了CDT。这时如果有新报文想要加入到第一个子队列是无法加入，但其可以加入到第二个、第三个子队列中；如果该队列的HQO为8，则该队列中即使有子队列为空，新来的报文也无法加入。
-WFQ调度机制可以识别IP Precedence等参数，基于FT转发，FT, Finish Time=(packet length)/(precendence+1)，基于最小的FT转发最优先的报文，如果IP Precedence值一样，即优先转发小报文。
+* WFQ, Weighted Fair Queuing，又称为FBWFQ, Flow-Based WFQ。
+* 队列机制：基于IP地址，TCP/UDP端口号，IP协议号或者ToS值动态地创建队列，最大有256个队列，可扩充到4096个队列。若每个队列的ToS值相同，则带宽被均等地分配给所有队列，即，low-traffic优先。若ToS不同时，每个队列会将每个到达的报文分配一个序列号，该序列号乘以其inverse权重即为其转发序列号，队列会从转发序列号由低向高依次转发。这样高优先级会被先服务。
+```
+不会计算每个队列的容纳报文数量，而会宏观调控，关注整个队列容纳报文数量。定义了2个名词CDT和HQO：CDT, Congestive Discard Threshold，下限阈值，若报文数到达下限阈值，无法加入到已经满的子队列，但是可以加入到非满的队列中；HQO为上限阈值，到达HQO后，会丢弃所有后续报文。
+* 举个栗子：队列有3个子队列，每个子队列的容量为4个报文。第一个子队列有4个报文，队列已经满了；第二个子队列中有3个报文，队列还可以容纳一个报文；第三个子队列有1个报文，可以容纳3个报文。该队列一共有8个报文。如果CDT为8时，新报文想要加入到第一个子队列是无法加入，但其可以加入到第二个、第三个子队列中；如果该队列的HQO为8，则该队列中即使有子队列为空，新来的报文也无法加入。
+```
+配置命令：
+```
 fair-queue #在接口启用WFQ
 fair-queue cdt 活动队列数量 预留队列数量 #修改WFQ的参数
 hold-queue 3000 out #接口下修改FIFO和WFQ的HQO
 show queuing fair #查看WFQ详细信息
-4.5 LLQ
+```
+### 4.5 LLQ
 LLQ, Low-latency queue，其实LLQ也为Flow-based LLQ，即FBLLQ=PQ+FBWFQ。他会把FBWFQ基于优先级区分，高优先级的先被转发，然后其次是其他优先级的流量。
 ip rtp priority 16384 16383 200 #老版本的配置FBLLQ命令，接口先启用FBWFQ，然后使用该命令，为语音流量预留200k的流量
 4.6 CBWFQ
@@ -258,6 +263,7 @@ policy-map CBLLQ
 5.1 RED
 RED, Random Early Detection，早期随即检测，一种拥塞避免机制，在0到最大带宽之间定义一个阈值，当带宽达到阈值时，报文开始随机被丢弃，带宽越大，报文丢弃的概率会越大，达到最大会执行尾丢弃。避免多种流量在同一时间出现拥塞，造成带宽利用率较低。
 5.2 WRED
+图图图图图图图图图图图图图图图图图图图图图图图图图图图图图图图图
 WRED, Weighted Random Early Detection，加权的早期随即检测，权重一般为IP Precedence以及DSCP。以IP Precedence举例，WRED会根据阈值划分多个阈值，Precedence越大，子阈值也越大。该机制会将不同的流量根据不同的Precedence进行RED丢弃。 
 部署：
 random-detect #定义RED
