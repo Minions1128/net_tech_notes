@@ -52,31 +52,10 @@ ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口
 ```
 如果R4，R5为自己部署预留带宽，则：将R4和R5运行IGP，在接口启用RSVP，配置命令中sender换为sender-host。
 ## 3. 分类
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-流量可以基于入站端口、IP Precedence、DSCP、源目的地址以及应用。
-抓取主要的流量之后，可以打相应的标记，标记分为链路层标记，如CoS；以及网络层标记，如IP Precedence、DSCP
-3.1 IP Precedence
-使用IP报文中的ToS字段中的前3 bit，来描述流量的类型以及需要提供的处理待遇。
-业界规定IP Precedence分为7类：
+流量的分类可以基于：入站端口、IP Precedence、DSCP、源目的地址以及应用。然后将其打上不同的标记，如IP中的ToS，链路层的CoS。拆掉封装之后，其CoS的值要与ToS的值进行映射，以保证QoS的信息不丢失。
+### 3.1 IP Precedence
+* 使用IP报文中的ToS字段中的前3 bit，来描述流量的类型以及需要提供的处理待遇。
+* 业界规定IP Precedence分为7类：
 
 0   routine 冲浪流量
 1   priority    垃圾流量
@@ -109,10 +88,7 @@ CoS Application
 1   Medium-Priority Data
 0   Best-Effort Data
 
-3.4 MPLS中的标记
-MPLS帧中，有3 bitCoS为，可以继承IP Precedence的值
-3.5 CoS与ToS的映射
-拆掉风装扮报文之后，需要将二层的CoS与三层的ToS进行映射，以保证QoS的信息不丢失
+
 3.6 打标记配置
 标记建议在信任边界的位置打，即IP电话或者连接交换机的位置。如果终端电脑发出的报文带有异常的QoS标记，IP电话或者交换机会修改为正确的值之后，在帮其转发。
 打标记配置方法，需求：FTP流量设置为IP Precedence 1，HTTP为DSCP CS 2，Telnet为DSCP AF 31，Voice为DSCP 46，EIGRP为DSCP CS 6
