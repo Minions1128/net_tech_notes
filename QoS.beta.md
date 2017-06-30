@@ -162,25 +162,28 @@ NBAR，Network Based Application Recognition，其作用主要是对动态分配
 * 当报文即将要从路由器某个接口转发走时，路由器会给这些报文定义一段缓冲区buffer，即队列。
 * 默认存在的队列为：接口带宽大于2.048Mbps，默认使用FIFO，小于则使用WFQ。
 ### 4.1 FIFO
-FIFO, First In First Out，先进先出，不支持分类，执行尾丢弃。无法实现QoS标记识别，因此不被普遍使用。
+* FIFO, First In First Out，先进先出，不支持分类，执行尾丢弃。无法实现QoS标记识别，因此不被普遍使用。
 ```
-no fair-queue # 将该接口部署为FIFO
-hold-queue 300 in/out # 修改该接口的出入队列长度
-show interface fa0/0 # 查看队列类型
+no fair-queue            # 将该接口部署为FIFO
+hold-queue 300 in/out    # 修改该接口的出入队列长度
+show interface fa0/0     # 查看队列类型
 ```
 ### 4.2 PQ
-PQ, Priority Queue，支持分类，将队列分为4类：low，normal，medium以及high，默认队列为normal。也实行尾丢弃机制。转发机制为，只要高优先级队列中有报文就会现转发，高优先级队列为空之后才会转发中低优先级队列，每个优先级队列采用FIFO的模式。缺点为可以“饿死”其他优先级的流量。
-部署实验：将telnet流量放入high队列，ICMP、non-IP流量放入low队列，IP流量以及fa0/1进入的流量放入medium队列。
-priority-list 15 protocol ip high tcp telnet #在优先级列表15中，将telnet流量放入高优先级队列
+* PQ, Priority Queue，支持分类。
+* 队列机制为：将队列分为4类：low，normal（默认），medium以及high。如果高优先级的队列中有报文就会优先转发，只有高优先级队列为空之后才会转发中低优先级队列，每个优先级队列采用FIFO的模式。缺点为可以“饿死”其他优先级的流量。
+```
+实验：将telnet流量放入high队列，ICMP、non-IP流量放入low队列，IP流量以及fa0/1进入的流量放入medium队列。
+priority-list 15 protocol ip high tcp telnet  #在优先级列表15中，将telnet流量放入高优先级队列
 access-list 100 per icmp any any
-priority-list 15 protocol ip low list 100 #将ACL100的流量加入到low队列中
-priority-list 15 protocol ip medium #将其他IP流量加入到medium中
-priority-list 15 default low #将非IP流量缴入到low队列
-priority-list 15 interface fa0/1 medium #将fa0/1接受的流量放入到medium队列中
-priority-group 15 #在接口中调用该优先级列表
-priority-list 15 queue-limit 25 25 25 25 #修改队列长度
-debug priority #debug PQ
-4.3 CQ
+priority-list 15 protocol ip low list 100     #将ACL100的流量加入到low队列中
+priority-list 15 protocol ip medium           #将其他IP流量加入到medium中
+priority-list 15 default low                  #将非IP流量缴入到low队列
+priority-list 15 interface fa0/1 medium       #将fa0/1接受的流量放入到medium队列中
+priority-group 15                             #在接口中调用该优先级列表
+priority-list 15 queue-limit 25 25 25 25      #修改队列长度
+debug priority                                #debug PQ
+```
+### 4.3 CQ
 CQ, Custom Queue，支持分类，默认有17个队列，分为队列0和队列1-16两种，对其机制为尾丢弃，队列0为优先级队列缓存系统流量，当队列0为空时，队列1-16使用Round Robin轮巡调度转发流量。CQ可以自定义优先级队列，优先级比0低，比其他队列高。与PQ相比，不会饿死流量。缺点为无法保证优先级队列的带宽。
 实验部署：telnet流量放入队列3，ICMP流量放入队列4，fa0/1流量放入队列5，IP流量放入队列6，non IP流量放入队列7，将VoIP放入队列1
 queue-list 10 protocol ip 3 tcp telnet #将telnet流量放入到队列3中
