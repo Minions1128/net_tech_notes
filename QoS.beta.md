@@ -269,19 +269,21 @@ policy-map CBLLQ
 ### 5.1 RED
 RED, Random Early Detection，早期随即检测，一种拥塞避免机制，在0到最大带宽之间定义一个阈值，当带宽达到阈值时，报文开始随机被丢弃，带宽越大，报文丢弃的概率会越大，达到最大会执行尾丢弃。避免多种流量在同一时间出现拥塞，造成带宽利用率较低。
 ### 5.2 WRED
-图图图图图图图图图图图图图图图图图图图图图图图图图图图图图图图图
-WRED, Weighted Random Early Detection，加权的早期随即检测，权重一般为IP Precedence以及DSCP。以IP Precedence举例，WRED会根据阈值划分多个阈值，Precedence越大，子阈值也越大。该机制会将不同的流量根据不同的Precedence进行RED丢弃。 
-部署：
+![qos_cbred](https://github.com/Minions1128/net_tech_notes/blob/master/img/qos_cbred.png "qos_cbred")
+* WRED, Weighted Random Early Detection，加权的早期随即检测，权重一般为IP Precedence以及DSCP。以IP Precedence举例，WRED会根据阈值划分多个阈值，Precedence越大，子阈值也越大。该机制会将不同的流量根据不同的Precedence进行RED丢弃。 
+* 举例：
+```
 random-detect #定义RED
 random-detect prec-based #基于Precedence定义WRED
 show queueing random-detect #查看RED内容
 random-detect dscp-based #基于DSCP定义WRED
 random-detect dscp ef 39 45 20 #修改ef的低阈值为39，高阈值为45，丢弃概率为1/20
-5.3 FBWRED
-FBWRED，基于流的WRED，
+```
+5.3 FBWRED, CBWRED
+FBWRED，基于流的WRED；CBWRED，基于类的WRED
+```
+配置举例：
 random-detect flow #开启FBWRED
-5.4 CBWRED
-CBWRED，基于类的WRED，
 部署需求：Voice使用30%的Priority，重要Data使用30%的带宽，Business使用20%的带宽
 ip access-list extended Data
  permit tcp any any eq telnet
@@ -309,10 +311,12 @@ policy-map CBWRED
   random-detect dscp-based
  class class-default
   fair-queue
-  random-detect dscp-based ecn #ecn参数表示，这种流量不会被随机丢弃，而是产生一些日志警告
+  random-detect dscp-based ecn
+  #ecn参数表示，这种流量不会被随机丢弃，而是产生一些日志警告
 int fa0/0
  max-reserved-bandwidth 85
  service-policy output CBWRED #需要先去掉其他RED
+```
 6. 整形与管制
 整形与管制用于对接口流量的限速，这两种机制的区别在于：1，对于过量（exceed）流量而言，整形会将过量的报文缓冲到整形队列中，而管制可能会将过量的报文进行丢弃；2，对于控制流量的方向上，整形只能基于流量的出向实现，而管制可以基于流量的出向和入向同时限制。在接口处，整形与管制优先级高于软件队列。这些机制都是基于令牌桶（Token-Bucket）算法来实现的。
 6.1 令牌桶算法
