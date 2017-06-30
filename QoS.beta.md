@@ -55,19 +55,18 @@ ip rsvp reservation 源地址 目的地址 tcp/udp 源端口 目的端口 接口
 流量的分类可以基于：入站端口、IP Precedence、DSCP、源目的地址以及应用。然后将其打上不同的标记，如IP中的ToS，链路层的CoS。拆掉封装之后，其CoS的值要与ToS的值进行映射，以保证QoS的信息不丢失。
 ### 3.1 IP Precedence
 * 使用IP报文中的ToS字段中的前3 bit，来描述流量的类型以及需要提供的处理待遇。
-* 业界规定IP Precedence分为7类：
-
-0   routine 冲浪流量
-1   priority    垃圾流量
-2   immediated  业务流量
-3   flash   信令流量和重要业务流量
-4   flash-override  视频流量
-5   critical    VoIP
-6   internet    控制层面的路由协议
-7   network 保留
-
-处理待遇由低到高的排序为：1 < 0 < 2 < 3 < 4 < 5 < 6
-3.2 DSCP
+* 业界规定IP Precedence分为7类，由低到高的排序为：
+| tag | description | 描述 |
+| :------------ | :------------ | :------------ |
+| 1 | priority | 垃圾流量 |
+| 0 | routine | 冲浪流量 |
+| 2 | immediated | 业务流量 |
+| 3 | flash | 信令流量和重要业务流量 |
+| 4 | flash-override | 视频流量 |
+| 5 | critical | VoIP |
+| 6 | internet | 控制层面的路由协议 |
+| 7 | network | 保留 |
+### 3.2 DSCP
 由于IP Precedence可使用的数值较少，无法细分流量，IETF有定义了DSCP（Differ Service Code Point），使用ToS的前6 bit
  
 前3 bit为X，值越大，优先级越高；然后2 bit为Y，丢弃优先级，值越低，优先级越高；最后1 bit保留。
