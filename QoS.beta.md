@@ -9,10 +9,10 @@
 3. DiffServ区分服务模型：这种服务模型，会抓去需要流量，然后给其较好的处理待遇。如：基于跳的处理(PHB，Per-hop Behavior)
 ### 1.2 区分服务模型
 * 这种服务模型是应用最多的应用模型。将由分类、队列，拥塞避免以及管制整形4部分讨论，分别在第3-6部分。
-1. 分类/标记：默认一些流量已经自动生成。
-2. 管制/整形，主要作用为限速
-3. 拥塞避免：RED、WRED
-4. 队列：PQ，CQ，WFQ，FIFO，CBWFQ，LLQ，WRRQ，SRRQ，DRRQ
+1. 分类/标记：将一些流量进行标记与分类，便于以后的操作；
+2. 管制/整形：主要作用为限速；
+3. 拥塞避免：采用一些丢弃机制，如：RED、WRED
+4. 队列：主要描述软件队列，如：FIFO、PQ，CQ、WFQ、LLQ、CBWFQ、CBLLQ等
 * 其主流部署思路为：先将流量进行基于类进行划分，再使用ACL抓去流量，然后给抓取的流量打上标记，最后定义QoS的策略。
 流量优先级：语音，视频，重要的业务流量。
 ### 1.3 名词解释
@@ -25,7 +25,7 @@
 * Path报文：沿着数据的传输方向，由源发送给目的，沿途路由器会缓存一份该报文，然后转发出去。
 * Reserve报文：目的端收到Path报文之后，会向源回复该报文，在沿途路由器收到该报文之后，会做出2个判断：Admission Control，判断是否有足够的带宽；Policy Control，判断是否有资格预留带宽，即是否开启RSVP。满足这两个条件之后，才会预留带宽。
 * 报文封装有2种封装，一种是封装在IP报文中，协议号46，另一种封装在tcp/udp 3455
-* 详细报文格式参见：[http://www.023wg.com/message/message/cd_feature_rsvp_message_format.html](http://www.023wg.com/message/message/cd_feature_rsvp_message_format.html)
+* 详细报文格式参见：[RSVP报文格式](http://www.023wg.com/message/message/cd_feature_rsvp_message_format.html)
 ### 2.2 配置命令
 * 如果应用程序不支持RSVP，需要路由器模拟源和目的。
 * 模拟拓扑为：
@@ -157,16 +157,18 @@ interface FastEthernet0/1
 sh policy-map interface   # 可以show出每个接口的详细policy-map的情况
 ```
 #### 3.4.3 基于网络的应用识别
-NBAR，Network Based Application Recognition，其作用主要是对动态分配TCP/UDP端口号的应用程序和HTTP流量等进行分类，在分类的同时，还可以对该分类数据流量进行统计。还可以基于包描述语言模块（PDLM, Packet Description Language Module）抓取，这种特征库可以在官网下载。参考：[http://7658423.blog.51cto.com/7648423/1346546](http://7658423.blog.51cto.com/7648423/1346546)
+NBAR，Network Based Application Recognition，其作用主要是对动态分配TCP/UDP端口号的应用程序和HTTP流量等进行分类，在分类的同时，还可以对该分类数据流量进行统计。还可以基于包描述语言模块（PDLM, Packet Description Language Module）抓取，这种特征库可以在官网下载。参考：[使用NBAR统计与分析流量](http://7658423.blog.51cto.com/7648423/1346546)
 ## 4. 队列
-当报文即将要从路由器某个接口转发走时，路由器会给这些报文定义一段缓冲区buffer，即队列。当遇到接口带宽不匹配时，会出现拥塞。
-三层队列大致分为：FIFO、PQ、CQ、WFQ (FBWFQ)。默认存在的队列只有FIFO和WFQ，接口带宽大于2.048Mbps，默认使用FIFO，小于则使用WFQ。
-4.1 FIFO
-FIFO, First In First Out，顾名思义先进先出，不支持分类，执行尾丢弃。无法实现QoS标记识别，因此部署QoS不被普遍使用。
-部署命令：no fair-queue #将该接口部署为FIFO
-修改队列长度：hold-queue 300 in/out #修改该接口的出入队列长度
-使用命令show interface fa0/0查看队列类型
-4.2 PQ
+* 当报文即将要从路由器某个接口转发走时，路由器会给这些报文定义一段缓冲区buffer，即队列。
+* 默认存在的队列为：接口带宽大于2.048Mbps，默认使用FIFO，小于则使用WFQ。
+### 4.1 FIFO
+FIFO, First In First Out，先进先出，不支持分类，执行尾丢弃。无法实现QoS标记识别，因此不被普遍使用。
+```
+no fair-queue # 将该接口部署为FIFO
+hold-queue 300 in/out # 修改该接口的出入队列长度
+show interface fa0/0 # 查看队列类型
+```
+### 4.2 PQ
 PQ, Priority Queue，支持分类，将队列分为4类：low，normal，medium以及high，默认队列为normal。也实行尾丢弃机制。转发机制为，只要高优先级队列中有报文就会现转发，高优先级队列为空之后才会转发中低优先级队列，每个优先级队列采用FIFO的模式。缺点为可以“饿死”其他优先级的流量。
 部署实验：将telnet流量放入high队列，ICMP、non-IP流量放入low队列，IP流量以及fa0/1进入的流量放入medium队列。
 priority-list 15 protocol ip high tcp telnet #在优先级列表15中，将telnet流量放入高优先级队列
