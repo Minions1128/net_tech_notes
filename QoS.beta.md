@@ -105,9 +105,9 @@ interface FastEthernet0/0
  ip policy route-map PBR
 ```
 #### 3.4.2 使用CB-Marking
-CBMarking使用MQC模块化部署，嵌套性强，便于实施。
-MQC的工具：class-map调用ACL，然后分类；Policy-map，调用Class-Map然后做QoS
-使用CBMarking实现上述需求：先使用ACL抓去流量
+CBMarking使用MQC模块化部署，嵌套性强，便于实施。MQC的工具：class-map调用ACL，然后分类；Policy-map，调用Class-Map然后做QoS
+```
+# 先使用ACL抓去流量
 ip access-list extended EIGRP
  permit eigrp any host 224.0.0.10
 ip access-list extended FTP
@@ -122,7 +122,8 @@ ip access-list extended TELNET
 ip access-list extended VoIP
  permit udp any any range 16384 32767
  permit udp any range 16384 32767 any
-使用class-map调用acl，class-map中有match-all和match-any区分
+
+# 使用class-map调用acl，class-map中有match-all和match-any区分
 class-map match-all TELNET
  match access-group name TELNET
 class-map match-all HTTP
@@ -133,7 +134,8 @@ class-map match-all FTP
  match access-group name FTP
 class-map match-all EIGRP
  match access-group name EIGRP
-再使用policy-map调用每个class-map
+
+# 再使用policy-map调用每个class-map
 policy-map CBMarking
  class FTP
   set ip precedence 1
@@ -145,15 +147,17 @@ policy-map CBMarking
   set ip dscp 46
  class EIGRP
   set ip dscp cs6
-最后在接口应用
+
+# 最后在接口应用
 interface FastEthernet0/0
-service-policy input CBMarking
+ service-policy input CBMarking
 interface FastEthernet0/1
-service-policy output CBMarking
-sh policy-map interface可以show出每个接口的详细policy-map的情况
+ service-policy output CBMarking
+
+sh policy-map interface   # 可以show出每个接口的详细policy-map的情况
+```
 3.6.3基于网络的应用识别
-Network Based Application Recognition， NBAR，当抓去的流量不关心源端和目的端时，可以只基于流量本身抓去，然后在做调整。我们可以基于源目IP，源目端口号等信息抓去流量。
- 
+Network Based Application Recognition， NBAR，当抓去的流量不关心源端和目的端时，可以只基于流量本身抓去，然后在做调整。我们可以基于源目IP，源目端口号等信息抓去流量。 
 NBAR是基于包描述语言模块（PDLM, Packet Description Language Module）抓去的，这种特征库可以在官网下载，使用命令ip nbar pdlm 名称来调用。还有应对改变端口号来屏蔽抓去的情况，NBAR可以基于协议。
 使用class-map，match相应的协议名称，最后端口使用命令ip nbar protocol-discovery调用nbar。
 4. 队列
@@ -248,8 +252,7 @@ policy-map CBLLQ
 5.1 RED
 RED, Random Early Detection，早期随即检测，一种拥塞避免机制，在0到最大带宽之间定义一个阈值，当带宽达到阈值时，报文开始随机被丢弃，带宽越大，报文丢弃的概率会越大，达到最大会执行尾丢弃。避免多种流量在同一时间出现拥塞，造成带宽利用率较低。
 5.2 WRED
-WRED, Weighted Random Early Detection，加权的早期随即检测，权重一般为IP Precedence以及DSCP。以IP Precedence举例，WRED会根据阈值划分多个阈值，Precedence越大，子阈值也越大。该机制会将不同的流量根据不同的Precedence进行RED丢弃。
- 
+WRED, Weighted Random Early Detection，加权的早期随即检测，权重一般为IP Precedence以及DSCP。以IP Precedence举例，WRED会根据阈值划分多个阈值，Precedence越大，子阈值也越大。该机制会将不同的流量根据不同的Precedence进行RED丢弃。 
 部署：
 random-detect #定义RED
 random-detect prec-based #基于Precedence定义WRED
@@ -358,5 +361,4 @@ policy-map CBPolicyPM
   police cir 1000000 bc 12500 be 12500 conform-action transmit  exceed-action drop
 interface FastEthernet0/0
  service-policy output CBPolicyPM
-
 承诺突发：将1s中划分为[200（前）/200（后）]份，每份分发200（后）
