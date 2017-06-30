@@ -170,9 +170,9 @@ show interface fa0/0     # 查看队列类型
 ```
 ### 4.2 PQ
 * PQ, Priority Queue，支持分类。
-* 队列机制为：将队列分为4类：low，normal（默认），medium以及high。如果高优先级的队列中有报文就会优先转发，只有高优先级队列为空之后才会转发中低优先级队列，每个优先级队列采用FIFO的模式。缺点为可以“饿死”其他优先级的流量。
+* 队列机制：将队列分为4类：low，normal（默认），medium以及high。如果高优先级的队列中有报文就会优先转发，只有高优先级队列为空之后才会转发中低优先级队列，每个优先级队列采用FIFO的模式。缺点为可以“饿死”其他优先级的流量。
+* 实验：将telnet流量放入high队列，ICMP、non-IP流量放入low队列，IP流量以及fa0/1进入的流量放入medium队列。
 ```
-实验：将telnet流量放入high队列，ICMP、non-IP流量放入low队列，IP流量以及fa0/1进入的流量放入medium队列。
 priority-list 15 protocol ip high tcp telnet  #在优先级列表15中，将telnet流量放入高优先级队列
 access-list 100 per icmp any any
 priority-list 15 protocol ip low list 100     #将ACL100的流量加入到low队列中
@@ -184,8 +184,10 @@ priority-list 15 queue-limit 25 25 25 25      #修改队列长度
 debug priority                                #debug PQ
 ```
 ### 4.3 CQ
-CQ, Custom Queue，支持分类，默认有17个队列，分为队列0和队列1-16两种，对其机制为尾丢弃，队列0为优先级队列缓存系统流量，当队列0为空时，队列1-16使用Round Robin轮巡调度转发流量。CQ可以自定义优先级队列，优先级比0低，比其他队列高。与PQ相比，不会饿死流量。缺点为无法保证优先级队列的带宽。
-实验部署：telnet流量放入队列3，ICMP流量放入队列4，fa0/1流量放入队列5，IP流量放入队列6，non IP流量放入队列7，将VoIP放入队列1
+* CQ, Custom Queue，支持分类。
+* 队列机制：默认有17个队列，分为队列0和队列1-16两种，每个子队列采用FIFO。队列0为优先级队列缓存系统流量，当队列0为空时，队列1-16使用Round Robin轮巡调度转发流量。与PQ相比，不会饿死流量。缺点为无法保证优先级队列的带宽。
+* 实验部署：telnet流量放入队列3，ICMP流量放入队列4，fa0/1流量放入队列5，IP流量放入队列6，non IP流量放入队列7，将VoIP放入队列1
+```
 queue-list 10 protocol ip 3 tcp telnet #将telnet流量放入到队列3中
 queue-list 10 protocol ip 4 list 100 #将ACL 100的流量放入队列4
 queue-list 10 int fa0/1 5 #fa0/1流量放入队列5
@@ -198,7 +200,8 @@ queue-list 10 protocol ip 1 list 100
 queue-list 10 lowest-custom 2 #设置最低轮巡队列为2，则轮巡队列会设置为2-16
 queue-list 10 queue 0 limit 30 #设置队列长度为30
 queue-list 10 queue 3 byte-count 3000 #轮巡队列默认一次发送1500字节，该命令将3队列每次发送3000字节
-4.4 WFQ
+```
+### 4.4 WFQ
 WFQ, Weighted Fair Queuing，又称为FBWFQ, Flow-Based WFQ，这种队列把队列分为若干个流，最大有256个队列，如果流的种类超过256，会将多种流放入同一种队列。不会计算每个队列的容纳报文数量，而会宏观调控，关注整个队列容纳报文数量。该机制定义了2个名词CDT和HQO。
 CDT, Congestive Discard Threshold，下限阈值，报文数到达下限阈值可能会被丢弃；HQO为上限阈值，到达HQO后，新来的报文一定会被丢弃。
 例如一个队列有3个子队列，每个子队列的容量为4个报文，CDT为8，第一个子队列有4个报文，队列已经满了，第二个队列中有3个报文，队列还可以容纳一个报文，第三个队列有1个报文，一共有8个报文，达到了CDT。这时如果有新报文想要加入到第一个子队列是无法加入，但其可以加入到第二个、第三个子队列中；如果该队列的HQO为8，则该队列中即使有子队列为空，新来的报文也无法加入。
