@@ -131,8 +131,9 @@ else
   echo "Bad."
 fi
 ```
-1.9 循环语句
-1.9.1.  for语句
+## 9. 循环语句
+### 9.1 for语句
+```
 for var in item1 item2 ... itemN
 do
     command1
@@ -140,12 +141,14 @@ do
     ...
     commandN
 done
-或者
+
+# 或者
 for (( i = 0; i < 10; i++ )); do
     echo "haha"
     sleep 1
 done
-例子：从/home/szj/ip_list.txt
+
+# 例子：从/home/szj/ip_list.txt中读取IP地址，然后判断其是否在线
 HOST_LIST=`/home/szj/ip_list.txt`
 for IP in $HOST_LIST
 do
@@ -156,34 +159,40 @@ do
         echo "Host $IP is down."
     fi
 done
+```
 1.9.2.  while语句
+```
 while condition
 do
     command
 done
-例子：
+
+# 例子：
 i=1
 while [ $i -le 20 ]; do
     echo "$i, haha"
     sleep 1
     let i++
 done
+```
 1.10    case语句
+```
 case 值 in
 模式1)
-    command1
-    command2
+    command11
+    command12
     ...
-    commandN
+    command1N
     ;;
 模式2）
-    command1
-    command2
+    command21
+    command22
     ...
-    commandN
+    command2N
     ;;
 esac
-例如，重启服务：
+
+# 例如，重启服务：
 case "$1" in
   start )
     echo "Starting networking service"
@@ -195,11 +204,9 @@ case "$1" in
     echo "Stopping networking service"
     echo "Starting networking service"
     ;;
-  * )
+  * ) 
     echo "Usage: networking {start|stop|restart}"
 esac
-
+```
 1.11    其他
-笔记补充：http://www.runoob.com/linux/linux-shell.html
-
-
+笔记补充：[SHELL 教程](http://www.runoob.com/linux/linux-shell.html "SHELL 教程")
