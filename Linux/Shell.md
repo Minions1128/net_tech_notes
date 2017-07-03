@@ -160,7 +160,7 @@ do
     fi
 done
 ```
-1.9.2.  while语句
+### 9.2 while语句
 ```
 while condition
 do
@@ -175,7 +175,7 @@ while [ $i -le 20 ]; do
     let i++
 done
 ```
-1.10    case语句
+## 10. case语句
 ```
 case 值 in
 模式1)
@@ -208,5 +208,5 @@ case "$1" in
     echo "Usage: networking {start|stop|restart}"
 esac
 ```
-1.11    其他
+## 11. 其他
 笔记补充：[SHELL 教程](http://www.runoob.com/linux/linux-shell.html "SHELL 教程")
