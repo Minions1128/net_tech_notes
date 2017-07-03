@@ -12,14 +12,14 @@ mkdir is /bin/mkdir     #（文件命令）
 * 保存用户的SHELL信息：`/etc/passwd`
 * 查看当前系统默认使用的SHELL：`echo $SHELL`，切换shell后，使用exit 或ctrl+d关闭当前的shell
 ## 1. 系统默认执行配置文件
-~/.bash_profile：用户每次登录时执行【~/.profile】
-~/.bashrc：每次切换新的bash环境执行
-~/.bash_logout：用户每次退出登录时执行
-/etc/profile系统的初始配置文件
-1.2 SHELL的组成
-脚本声明：#!/bin/bash
-注释信息：以“#”开头
-可执行语句：脚本主体
+* 用户每次登录时执行：`~/.bash_profile【~/.profile】`
+* 每次切换新的bash环境执行：`~/.bashrc`
+* 用户每次退出登录时执行：`~/.bash_logout`
+* 系统的初始配置文件：`/etc/profile`
+## 2. SHELL的组成
+* 脚本声明：#!/bin/bash
+* 注释信息：以“#”开头
+* 可执行语句：脚本主体
 1.3 执行脚本
 执行脚本，不一定要有x权限
 1.执行脚本路径：./1.sh（要求要有x）
