@@ -10,7 +10,7 @@ Network Technology Note Summaries
 * [MPLS](https://github.com/Minions1128/net_tech_notes/blob/master/MPLS/MPLS.md)
 * [MPLS VPN](https://github.com/Minions1128/net_tech_notes/blob/master/MPLS/MPLS.VPN.md)
 * [MPLS TE](https://github.com/Minions1128/net_tech_notes/blob/master/MPLS/MPLS.TE.md)
-## Layer 2
+## Others
 * [vPC](https://github.com/Minions1128/net_tech_notes/blob/master/vPC.md "vPC")
 * [QoS](https://github.com/Minions1128/net_tech_notes/blob/master/QoS.md "QoS")
 ## Linux Tools
