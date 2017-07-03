@@ -20,15 +20,17 @@ mkdir is /bin/mkdir     #（文件命令）
 * 脚本声明：#!/bin/bash
 * 注释信息：以“#”开头
 * 可执行语句：脚本主体
-1.3 执行脚本
+## 3. 执行脚本
 执行脚本，不一定要有x权限
-1.执行脚本路径：./1.sh（要求要有x）
-2.用shell环境翻译脚本：bash 1.sh
-3.通过source或者.运行脚本：{ source | . } 1.sh
-1.4 交互式硬件设备
-标准输入    /dev/stdin  0
-标准输出    /dev/stdout 1
-标准错误输出  /dev/stderr 2
+1.执行脚本路径：`./1.sh`（要求要有x）
+2.用shell环境翻译脚本：`bash 1.sh`
+3.通过source或者.运行脚本：`{ source | . } 1.sh`
+## 4. 交互式硬件设备
+|  |  |
+| ------------ | ------------ |
+| 标准输入 | /dev/stdin | 0 |
+| 标准输出 | /dev/stdout | 1 |
+| 标准错误输出 | /dev/stderr | 2 |
 
 1.5 转义字符
 引号（单引号（无法识别变量）；双引号（可以识别变量）；反引号：$()等价于``，执行命令）
@@ -161,6 +163,6 @@ case "$1" in
 esac
 
 1.11    其他
-详细笔记：http://www.runoob.com/linux/linux-shell.html
+笔记补充：http://www.runoob.com/linux/linux-shell.html
 
 
