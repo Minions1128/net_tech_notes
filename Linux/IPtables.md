@@ -68,8 +68,29 @@ iptables -A INPUT -p icmp --icmp-type 8 -j DROP
 iptables -A INPUT -p icmp --icmp-type 0 -j ACCEPT
 iptables -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
 iptables -A OUTPUT -p icmp --icmp-type 0 -j DROP
+
+# 多端口应用
+iptables -A INPUT -p tcp -m multiport --sport 22,53,80,110
+
+# 速率的限制
+iptables -A INPUT -m limit --limit 300/s    # 限制速率为300个包每秒
+iptables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d192.168.3.3 \
+    --dport 80 -m limit --limit=500/s --limit-burst=1000  -j ACCEPT \
+    # 允许转发从eth0进来的源IP为192.168.2.3， \
+    # 去访问从eth1出去的目的IP为192.168.3.3的80端口（即http服务）的数据包, \
+    # 其中会对包的速率做匹配，是每秒转发500个包，初始的burst值是1000， \
+    # --limit-burst 表示允许触发 limit 限制的最大次数 (预设5)
+
+# NAT表
+iptables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT \
+    --to-source 123.123.123.123 \
+    # 内网源192.168.122.0/24地址映射到公网123.123.123.123出口
+iptables -t nat -A PREROUTING -d 123.123.123.123 -p tcp \
+    --dport 442 -j DNAT --to-destination 192.168.10.18:22
+    # 外部要访问内网服务器
 ```
 
 ## 6. 补充
-* [iptables配置实践](https://wsgzao.github.io/post/iptables/ "iptables配置实践")
 * [鸟哥私房菜-防火墙与NAT服务器](http://cn.linux.vbird.org/linux_server/0250simple_firewall.php "鸟哥私房菜-防火墙与NAT服务器")
+* [iptables配置实践](https://wsgzao.github.io/post/iptables/ "iptables配置实践")
+* [iptables的限速测试总结](http://ptallrights.blog.51cto.com/11151122/1841911 "iptables的限速测试总结")
