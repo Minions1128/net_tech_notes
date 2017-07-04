@@ -78,16 +78,28 @@ iptables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d192.168.3.3 \
     --dport 80 -m limit --limit=500/s --limit-burst=1000  -j ACCEPT \
     # 允许转发从eth0进来的源IP为192.168.2.3， \
     # 去访问从eth1出去的目的IP为192.168.3.3的80端口（即http服务）的数据包, \
-    # 其中会对包的速率做匹配，是每秒转发500个包，初始的burst值是1000， \
-    # --limit-burst 表示允许触发 limit 限制的最大次数 (预设5)
+    # 其中会对包的速率做匹配，是每秒转发500个包，burst值是1000， \
+    # --limit-burst 表示允许触发 limit 限制的最大次数 (预设5)，超出后将对其进行限制
 
 # NAT表
 iptables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT \
     --to-source 123.123.123.123 \
     # 内网源192.168.122.0/24地址映射到公网123.123.123.123出口
 iptables -t nat -A PREROUTING -d 123.123.123.123 -p tcp \
-    --dport 442 -j DNAT --to-destination 192.168.10.18:22
+    --dport 442 -j DNAT --to-destination 192.168.10.18:22 \
     # 外部要访问内网服务器
+
+# 负载均衡
+iptables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
+    --dport 8080 -m statistic --mode nth --every 2 --packet 0 \
+    -j DNAT --to-destination 10.1.160.14:8080
+iptables -t nat -A POSTROUTING -d 10.1.160.14/32 -p tcp -m tcp \
+    --dport 8080 -j SNAT --to-source 10.192.0.65
+iptables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
+    --dport 8080 -m statistic --mode nth --every 1 --packet 0 \
+    -j DNAT --to-destination 10.1.160.15:8080
+iptables -t nat -A POSTROUTING -d 10.1.160.15/32 -p tcp -m tcp \
+    --dport 8080 -j SNAT --to-source 10.192.0.65
 ```
 
 ## 6. 补充
