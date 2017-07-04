@@ -208,5 +208,6 @@ case "$1" in
     echo "Usage: networking {start|stop|restart}"
 esac
 ```
-## 11. 其他
-笔记补充：[SHELL 教程](http://www.runoob.com/linux/linux-shell.html "SHELL 教程")
+## 11. 补充
+* [SHELL 教程](http://www.runoob.com/linux/linux-shell.html "SHELL 教程")
+* [鸟哥私房菜-认识与学习BASH ](http://cn.linux.vbird.org/linux_basic/0320bash.php "鸟哥私房菜-认识与学习BASH ")
