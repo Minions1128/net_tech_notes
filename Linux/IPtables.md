@@ -68,10 +68,8 @@ iptables -A INPUT -p icmp --icmp-type 8 -j DROP
 iptables -A INPUT -p icmp --icmp-type 0 -j ACCEPT
 iptables -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
 iptables -A OUTPUT -p icmp --icmp-type 0 -j DROP
-
-
 ```
 
 ## 6. 补充
 * [iptables配置实践](https://wsgzao.github.io/post/iptables/ "iptables配置实践")
-* [鸟哥私房菜-防火墙与 NAT 服务器](http://cn.linux.vbird.org/linux_server/0250simple_firewall.php "鸟哥私房菜-防火墙与 NAT 服务器")
+* [鸟哥私房菜-防火墙与NAT服务器](http://cn.linux.vbird.org/linux_server/0250simple_firewall.php "鸟哥私房菜-防火墙与NAT服务器")
