@@ -10,7 +10,7 @@ IPtables由一些表组成，每个表由表链组成，表链包含了多个规
 该表可以基于数据包的分割与修改，如：ToS、CoS等QoS、TTL。包含：PREROUTING、INPUT、FORWARD、OUTPUT、POSTROUTING五个表链。
 ### 1.4 Raw表
 该表有较高优先级，其作用是为了不再让iptables做数据包的链接跟踪处理，提高性能。包含PREROUTING链和OUTPUT链上
-
+### 1.5 表执行过程
 [![](https://github.com/Minions1128/net_tech_notes/blob/master/img/iptables.proc.png)](https://github.com/Minions1128/net_tech_notes/blob/master/img/iptables.proc.png)
 ## 2. IPtables规则
 IPtables规则包含：一个条件和一个策略操作，从上到下一一查找规则，如果都为匹配到，则执行默认规则。
