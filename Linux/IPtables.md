@@ -11,19 +11,22 @@ IPtables由一些表组成，每个表由表链组成，表链包含了多个规
 ### 1.4 Raw表
 该表有较高优先级，其作用是为了不再让iptables做数据包的链接跟踪处理，提高性能。包含PREROUTING链和OUTPUT链上
 ## 2. IPtables规则
-一个条件（源目地址，源目mac，源目端口）和一个目标（per，deny）
-链表是从上到下一一查找规则，
-最后执行默认规则：
-一些参数：
+IPtables规则包含：一个条件和一个策略操作，从上到下一一查找规则，如果都为匹配到，则执行默认规则。
+* 配置规则的一些参数
+```
 -i, --in-interface name，输入网卡；
 -o, --out-interface name，输出网卡；
 -p, --protocol protocol，协议，如：TCP、UDP、ICMP等；
--s, --source address[/mask][,...]，源地址，可以是hostname，IP地址段以及单个的IP地址。可以使用指定多个地址，需要加参数-A添加，参数-D删除,-I value，将规则插入相应的行；
+-s, --source address[/mask][,...]，源地址，可以是hostname，IP地址段以及单个的IP地址；
 -d, --destination address[/mask][,...]，目的地址；
+-A，添加一条规则；
+-D，删除一条规则；
+-I value，将规则插入相应的行；
 --sport，源端口；
 --dport，目的端口；
 -j, --jump target，策略操作，即报文匹配之后做执行的操作；
 [!]，表示非运算
+```
 2.5 策略操作：
 ACCEPT，DROP（请求端没有任何回应），REJECT，REDIRECT，DNAT，SNAT
 
