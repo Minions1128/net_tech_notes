@@ -50,18 +50,16 @@ iptables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
 ### 3.4 INVALID
 数据包不能被识别属于哪个连接或没有任何状态。有几个原因可以产生这种情况，比如，内存溢出，收到不知属于哪个连接的ICMP错误信息。一般地，我们DROP这个状态的任何东西。
 ## 4. 管理
--t, --table table，指定具体表，filter，nat，mangle表等
-Chain INPUT (policy ACCEPT)默认规则
--L, --list [chain]，查看IPtables
--S, --list-rules [chain]，查看规则
--F, --flush [chain]，清空配置
--Z, --zero [chain [rulenum]]，清除某些规则
--N, --new-chain chain，新建表链
--X, --delete-chain [chain]，删除表链
--P, --policy [chain] {ACCEPT | DROP}，默认策略
-service iptables {restart | start | stop | status | save}
-iptables-save > ip_tab.rules，保存策略
-iptables-restore < ip_tab. rules，恢复策略
-
-service iptables status查看其状态
+* -t, --table table，指定具体表，filter，nat，mangle表等
+* -L, --list [chain]，查看IPtables
+* -S, --list-rules [chain]，查看规则
+* -F, --flush [chain]，清空配置
+* -Z, --zero [chain [rulenum]]，清除某些规则
+* -N, --new-chain chain，新建表链
+* -X, --delete-chain [chain]，删除表链
+* -P, --policy [chain] {ACCEPT | DROP}，默认策略
+* service iptables {restart | start | stop | status | save}
+* iptables-save > ip_tab.rules，保存策略
+* iptables-restore < ip_tab. rules，恢复策略
+* service iptables status查看其状态
 
