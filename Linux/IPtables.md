@@ -33,11 +33,6 @@ IPtables规则包含：一个条件和一个策略操作，从上到下一一查
 ```
 ACCEPT，DROP（请求端没有任何回应），REJECT，REDIRECT，DNAT，SNAT
 ```
-* 举个例子，拒绝192.168.1.22访问本地ssh服务：
-```
-iptables -A INPUT -i eth0 -p tcp -s 192.168.1.22 --dport 22 -j REJECT
-iptables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
-```
 ## 3. IPtables状态
 在IPtables上一共有四种状态，分别被称为NEW、ESTABLISHED、INVALID、RELATED，这四种状态对于TCP、UDP、ICMP三种协议均有效。
 ### 3.1 NEW
@@ -62,4 +57,15 @@ iptables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
 * iptables-save > ip_tab.rules，保存策略
 * iptables-restore < ip_tab. rules，恢复策略
 * service iptables status查看其状态
+## 5. 一些例子
+```
+# 拒绝192.168.1.22访问本地ssh服务：
+iptables -A INPUT -i eth0 -p tcp -s 192.168.1.22 --dport 22 -j REJECT
+iptables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
 
+# 只允许本机ping其他主机，不允许其他主机ping本机
+iptables -A INPUT -p icmp --icmp-type 8 -j DROP
+iptables -A INPUT -p icmp --icmp-type 0 -j ACCEPT
+iptables -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
+iptables -A OUTPUT -p icmp --icmp-type 0 -j DROP
+```
