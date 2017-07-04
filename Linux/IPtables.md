@@ -27,13 +27,15 @@ IPtables规则包含：一个条件和一个策略操作，从上到下一一查
 -j, --jump target，策略操作，即报文匹配之后做执行的操作；
 [!]，表示非运算
 ```
-2.5 策略操作：
+* 策略操作
+```
 ACCEPT，DROP（请求端没有任何回应），REJECT，REDIRECT，DNAT，SNAT
-
-举个例子，拒绝192.168.1.22访问本地ssh服务
+```
+* 举个例子，拒绝192.168.1.22访问本地ssh服务：
+```
 iptables -A INPUT -i eth0 -p tcp -s 192.168.1.22 --dport 22 -j REJECT
 iptables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
-
+```
 2.6 IPtables状态
 IPtables为网络连接是时，通信两端的连接状态，有4中类型：
 NEW，用户发出一个全新的请求，
