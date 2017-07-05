@@ -9,12 +9,13 @@
 1. 递归查询：如果主机所询问的本地域名服务器不知道被查询域名的 IP 地址，那么本地域名服务器就以 DNS 客户的身份，向其他根域名服务器继续发出查询请求报文。
 2. 迭代查询：当根域名服务器收到本地域名服务器的迭代查询请求报文时，要么给出所要查询的 IP 地址，要么告诉本地域名服务器：“你下一步应当向哪一个域名服务器进行查询”。然后让本地域名服务器进行后续的查询。
 ## Linux DNS配置
+解析IPv4地址
 ```
-# 解析IPv4地址
 vim /etc/default/bind9
 OPTIONS="-u bind -4"
-
-# 配置文件
+```
+服务器的配置
+```
 vim /etc/bind/named.conf.options
 options {
     directory "/var/cache/bind";    # DNS解析文件位置 
@@ -33,15 +34,17 @@ options {
         180.76.76.76;
     };    # 上游服务器
 }
-
-# 创建域名
+```
+添加一个zone
+```
 vim named.conf.local 
 zone "jesse.com"  {
     type master;
     file "/etc/bind/db.jesse.com";
 };
-
-# 解析地址
+```
+解析地址
+```
 cp db.local db.jesse.com
 vim db.jesse.com
 $TTL    604800 
