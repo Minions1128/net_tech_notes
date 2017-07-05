@@ -17,3 +17,4 @@ Network Technology Note Summaries
 * [iperf](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/iperf.md "iperf")
 * [shell](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/Shell.md "shell")
 * [IPtables](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/IPtables.md "IPtables")
+* [DNS](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/DNS.md "DNS")
