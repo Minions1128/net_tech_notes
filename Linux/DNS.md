@@ -37,7 +37,7 @@ options {
 ```
 添加一个zone
 ```
-vim named.conf.local 
+vim /etc/bind/named.conf.local 
 zone "jesse.com"  {
     type master;
     file "/etc/bind/db.jesse.com";
@@ -45,8 +45,8 @@ zone "jesse.com"  {
 ```
 解析地址
 ```
-cp db.local db.jesse.com
-vim db.jesse.com
+cp /etc/bind/db.local /etc/bind/db.jesse.com
+vim /etc/bind/db.jesse.com
 $TTL    604800 
 ; 记录在缓存中的生存时间
 ;@       IN      SOA     localhost. root.localhost. (
