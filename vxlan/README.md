@@ -17,7 +17,8 @@ IP接口有一个唯一的IP地址来标识VTEP设备，VTEP设备使用这个IP
 
 参考：http://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-729383.html
 ## 3. Implement VxLAN using Open vSwitch
-The topology is as follows. The eth0 IP addresses of VM 1 and 2 are  172.31.0.1/24 and 172.31.0.2/24 respectively.
+### 3.1 In Traditional Server
+The topology is as follows. The eth0 IP addresses of VM 1 and 2 are 172.31.0.1/24 and 172.31.0.2/24 respectively. And their default gateway is 172.31.0.254
 ```
     +------+          +------+
     |      |          |      |
@@ -66,20 +67,22 @@ ovs-vsctl add-port br0 vx1 -- set interface vx1 \
 Then, you can ping VM1 and VM2 each other using 100.64.1.0/30. Using iperf or other testing tool to verify its connectivity.
 * [*] In order to distinguish between control plane and data plane, we create two planes. Actually, only one ovs-bridge is needed.
 * If there is other futher applications need to use, change the MTU of each interface to 1450. The default value may be 1500. Using command `echo "1450" > /sys/class/net/br0/mtu` to change it.
-## 4. This documentation tells the methond to config vxlan using Open vSwitch in Docker.
+### 3.2 In Docker
+The topology is as follows. The eth0 IP addresses of Docker 1 and 2 are 172.31.0.1/24 and 172.31.0.2/24 respectively. And their default gateway is 172.31.0.254
+```
+    +-----------------+          +-----------------+
+    |                 |          |                 |
+    | +-------------+ |          | +-------------+ |
+    | | Container 1 | |          | | Container 2 | |
+    | +-------------+ |          | +-------------+ |
+    |                 |          |                 |
+    |     Docker1     |----------|     Docker2     |
+    |                 |          |                 |
+    +-----------------+          +-----------------+
+```
 
-Here is a method that config ovs on 2 Docker host.
-The topology is as follows:
-    +-----------+     +-----------+
-    |           |     |           |
-    |  Docker1  |-----|  Docker2  |
-    |           |     |           |
-    +-----------+     +-----------+
-IP addresses:
-    Docker1-eth0：172.31.0.1/24
-    Docker2-eth0：172.31.0.2/24
 
-We use the 2 Open vSwitch in each Docker.
+
 
 We will create vxbr on Docker1
     ovs-vsctl add-br vxbr
