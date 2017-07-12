@@ -30,13 +30,13 @@ Create 2 OvS in VM 1, br1 is as control plane, br0 is as data plane.
 ovs-vsctl add-br br0
 ovs-vsctl add-br br1
 ```
-Clear the eth0, assign the IP of eth0 to br1, and add the default gateway. [1]
+Clear the eth0, assign the IP of eth0 to br1, and add the default gateway. [*]
 ```
 ifconfig eth0 0 up
 ifconfig br1 172.31.0.1/24 up
 route add default gw 172.31.0.254
 ```
-Assign port eth0 to br1.[1]
+Assign port eth0 to br1.[*]
 ```
 ovs-vsctl add-port br1 eth0
 ```
@@ -63,12 +63,9 @@ ifconfig br0 100.64.1.2/30 up
 ovs-vsctl add-port br0 vx1 -- set interface vx1 \
     type=vxlan options:remote_ip=172.31.0.1
 ```
-Then, you can ping VM1 and VM2 each other using 100.64.1.0/30.
-
-* [1] In order to distinguish between control plane and data plane, we create two planes. Actually, only one ovs-bridge is needed.
-* *If there is other futher applications need to use, change the MTU of each interface to 1450. The default value may be 1500.`echo "1450" > /sys/class/net/br0/mtu`
-
-Using iperf or other testing tool to verify its connectivity.
+Then, you can ping VM1 and VM2 each other using 100.64.1.0/30. Using iperf or other testing tool to verify its connectivity.
+* [*] In order to distinguish between control plane and data plane, we create two planes. Actually, only one ovs-bridge is needed.
+* If there is other futher applications need to use, change the MTU of each interface to 1450. The default value may be 1500. Using command `echo "1450" > /sys/class/net/br0/mtu` to change it.
 ## 4. This documentation tells the methond to config vxlan using Open vSwitch in Docker.
 
 Here is a method that config ovs on 2 Docker host.
