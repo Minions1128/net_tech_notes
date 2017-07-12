@@ -126,7 +126,8 @@ Then, container-host1 and container-host2 can ping each other. Using iperf or ot
 The topology and IP addesses are same with above.
 
 We will create a new docker network, default gateway is 10.0.1.1
-```docker network create \
+```
+docker network create \
     --subnet=10.0.0.0/16
     --gateway=10.0.1.1 Jesse
 ```
