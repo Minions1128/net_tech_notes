@@ -123,35 +123,51 @@ Then, container-host1 and container-host2 can ping each other. Using iperf or ot
 * If there is other futher applications need to use, change the MTU of each interface to 1450. The default value may be 1500. Using command `echo "1450" > /sys/class/net/br0/mtu` to change it.
 * **But using this kinds of method, we cannot access to Internet from container. By solving this problems, we implement linux-bridge and Open vSwtich at the same time.**
 
-The topology and IP addesses are the same with above.
+The topology and IP addesses are same with above.
 
 We will create a new docker network, default gateway is 10.0.1.1
-    docker network create --subnet=10.0.0.0/16 --gateway=10.0.1.1 Jesse
+```docker network create \
+    --subnet=10.0.0.0/16
+    --gateway=10.0.1.1 Jesse
+```
 Run a Container with the following argument
-    docker run -it --rm  \
-        --name host1     \ (optional)
-        -h HOST1  \        (optional)
-        --net Jesse  \
-        --ip 10.0.1.2  \
-        minions1128/ubuntu /bin/bash
+```
+docker run -it --rm  \
+    --name host1     \ (optional)
+    -h HOST1  \        (optional)
+    --net Jesse  \
+    --ip 10.0.1.2  \
+    minions1128/ubuntu /bin/bash
+```
 Create a ovs, which includes a vxlan interface
-    ovs-vsctl add-br vxbr
-    ovs-vsctl add-port vxbr vx1 -- set interface vx1 type=vxlan options:remote_ip=172.31.0.2
+```
+ovs-vsctl add-br vxbr
+ovs-vsctl add-port vxbr vx1 -- set interface vx1 \
+    type=vxlan options:remote_ip=172.31.0.2
+```
 Add the ovs into Linux-Bridge
-    brctl addif br-ed82a9291ff2 vxbr
-    (Using command brctl show can get this brige name)
-    ip link set vxbr up
-
+```
+brctl addif br-ed82a9291ff2 vxbr
+(Using command brctl show can get this brige name)
+ip link set vxbr up
+```
+Change MTU of container if needed.
+```
+echo "1450" > /sys/class/net/br0/mtu
+```
 Do the same config in the other Docker host
-    docker network create --subnet=10.0.0.0/16 --gateway=10.0.2.1 Jesse
-    docker run -it --rm  \
-        --name host1     \ (optional)
-        -h HOST1  \        (optional)
-        --net Jesse  \
-        --ip 10.0.2.2  \
-        minions1128/ubuntu /bin/bash
-    ovs-vsctl add-br vxbr
-    ovs-vsctl add-port vxbr vx1 -- set interface vx1 type=vxlan options:remote_ip=172.31.0.1
-    brctl addif br-ed82a9291ff2 vxbr
-    (Using command brctl show can get this brige name)
-    ip link set vxbr up
+```
+docker network create --subnet=10.0.0.0/16 --gateway=10.0.2.1 Jesse
+docker run -it --rm  \
+    --name host1     \ (optional)
+    -h HOST1  \        (optional)
+    --net Jesse  \
+    --ip 10.0.2.2  \
+    minions1128/ubuntu /bin/bash
+ovs-vsctl add-br vxbr
+ovs-vsctl add-port vxbr vx1 -- set interface vx1 type=vxlan options:remote_ip=172.31.0.1
+brctl addif br-ed82a9291ff2 vxbr
+(Using command brctl show can get this brige name)
+ip link set vxbr up
+echo "1450" > /sys/class/net/br0/mtu
+```
