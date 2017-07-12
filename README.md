@@ -13,6 +13,7 @@ Network Technology Note Summaries
 ## Others
 * [vPC](https://github.com/Minions1128/net_tech_notes/blob/master/vPC.md "vPC")
 * [QoS](https://github.com/Minions1128/net_tech_notes/blob/master/QoS.md "QoS")
+* [VxLAN](https://github.com/Minions1128/net_tech_notes/tree/master/vxlan "VxLAN")
 ## Linux Tools
 * [iperf](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/iperf.md "iperf")
 * [shell](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/Shell.md "shell")
