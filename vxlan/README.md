@@ -72,3 +72,99 @@ Then, you can ping VM1 and VM2 each other using 100.64.1.0/30.
 **In order to distinguish between control plane and data plane, we create two planes. Actually, only one ovs-bridge is needed.
 
 Using iperf or other testing tool to verify its connectivity.
+
+
+
+
+===
+
+
+
+
+
+
+
+This documentation tells the methond to config vxlan using Open vSwitch in Docker.
+
+Here is a method that config ovs on 2 Docker host.
+The topology is as follows:
+    +-----------+     +-----------+
+    |           |     |           |
+    |  Docker1  |-----|  Docker2  |
+    |           |     |           |
+    +-----------+     +-----------+
+IP addresses:
+    Docker1-eth0：172.31.0.1/24
+    Docker2-eth0：172.31.0.2/24
+
+We use the 2 Open vSwitch in each Docker.
+
+We will create vxbr on Docker1
+    ovs-vsctl add-br vxbr
+    ifconfig vxbr 10.0.1.1/16
+Create interface vx1, add the interface to vxbr
+    ovs-vsctl add-port vxbr vx1 -- set interface vxlan type=vx1 options:remote_ip=172.31.0.2
+Run a Container
+    docker run -it --rm  \
+        --name host1  \
+        --net=none  \
+        --privileged=true \
+        minions1128/ubuntu /bin/bash
+Add the veth-pair of Docker into vxbr
+    /usr/bin/ovs-docker add-port vxbr eth0 b062406bc6b6(CONTAINER ID)
+Config the ip address of container
+    ifconfig eth0 10.0.1.2/16
+
+Do the same configure on Docker2
+    ovs-vsctl add-br vxbr
+    ifconfig vxbr 10.0.2.1/16
+    ovs-vsctl add-port vxbr vx1 -- set interface vxlan type=vx1 options:remote_ip=172.31.0.1
+    docker run -it --rm  \
+        --name host2  \
+        --net=none  \
+        --privileged=true \
+        minions1128/ubuntu /bin/bash
+    /usr/bin/ovs-docker add-port vxbr eth0 b062406bc6b6(CONTAINER ID)
+    ifconfig eth0 10.0.2.2/16
+
+Then, you can ping container-host1 and container-host2 on each container-host.
+
+*If there is other futher applications need to use, change the MTU of each interface to 1450. The default value may be 1500.
+    echo "1450" > /sys/class/net/eth0/mtu
+
+Using iperf or other testing tool to verify its connectivity.
+----------------------------------------------------------------------------------------------------------------------------------------
+***** But using this kinds of method, we cannot access to Internet from container. 
+By solving this problems, we implement linux-bridge and Open vSwtich at the same time.
+The topology and IP addesses are the same with above.
+
+We will create a new docker network, default gateway is 10.0.1.1
+    docker network create --subnet=10.0.0.0/16 --gateway=10.0.1.1 Jesse
+Run a Container with the following argument
+    docker run -it --rm  \
+        --name host1     \ (optional)
+        -h HOST1  \        (optional)
+        --net Jesse  \
+        --ip 10.0.1.2  \
+        minions1128/ubuntu /bin/bash
+Create a ovs, which includes a vxlan interface
+    ovs-vsctl add-br vxbr
+    ovs-vsctl add-port vxbr vx1 -- set interface vx1 type=vxlan options:remote_ip=172.31.0.2
+Add the ovs into Linux-Bridge
+    brctl addif br-ed82a9291ff2 vxbr
+    (Using command brctl show can get this brige name)
+    ip link set vxbr up
+
+Do the same config in the other Docker host
+    docker network create --subnet=10.0.0.0/16 --gateway=10.0.2.1 Jesse
+    docker run -it --rm  \
+        --name host1     \ (optional)
+        -h HOST1  \        (optional)
+        --net Jesse  \
+        --ip 10.0.2.2  \
+        minions1128/ubuntu /bin/bash
+    ovs-vsctl add-br vxbr
+    ovs-vsctl add-port vxbr vx1 -- set interface vx1 type=vxlan options:remote_ip=172.31.0.1
+    brctl addif br-ed82a9291ff2 vxbr
+    (Using command brctl show can get this brige name)
+    ip link set vxbr up
