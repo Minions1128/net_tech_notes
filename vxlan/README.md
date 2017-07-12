@@ -80,47 +80,49 @@ The topology is as follows. The eth0 IP addresses of Docker 1 and 2 are 172.31.0
     |                 |          |                 |
     +-----------------+          +-----------------+
 ```
-
-
-
-
-We will create vxbr on Docker1
-    ovs-vsctl add-br vxbr
-    ifconfig vxbr 10.0.1.1/16
+Create vxbr on Docker1
+```
+ovs-vsctl add-br vxbr
+ifconfig vxbr 10.0.1.1/16
+```
 Create interface vx1, add the interface to vxbr
-    ovs-vsctl add-port vxbr vx1 -- set interface vxlan type=vx1 options:remote_ip=172.31.0.2
+```
+ovs-vsctl add-port vxbr vx1 -- set interface vxlan \
+    type=vx1 options:remote_ip=172.31.0.2
+```
 Run a Container
-    docker run -it --rm  \
-        --name host1  \
-        --net=none  \
-        --privileged=true \
-        minions1128/ubuntu /bin/bash
+```
+docker run -it --rm  \
+    --name host1  \
+    --net=none  \
+    --privileged=true \
+    minions1128/ubuntu /bin/bash
+```
 Add the veth-pair of Docker into vxbr
-    /usr/bin/ovs-docker add-port vxbr eth0 b062406bc6b6(CONTAINER ID)
+```
+/usr/bin/ovs-docker add-port vxbr eth0 b062406bc6b6 [CONTAINER ID]
+```
 Config the ip address of container
-    ifconfig eth0 10.0.1.2/16
-
+```
+ifconfig eth0 10.0.1.2/16
+```
 Do the same configure on Docker2
-    ovs-vsctl add-br vxbr
-    ifconfig vxbr 10.0.2.1/16
-    ovs-vsctl add-port vxbr vx1 -- set interface vxlan type=vx1 options:remote_ip=172.31.0.1
-    docker run -it --rm  \
-        --name host2  \
-        --net=none  \
-        --privileged=true \
-        minions1128/ubuntu /bin/bash
-    /usr/bin/ovs-docker add-port vxbr eth0 b062406bc6b6(CONTAINER ID)
-    ifconfig eth0 10.0.2.2/16
+```
+ovs-vsctl add-br vxbr
+ifconfig vxbr 10.0.2.1/16
+ovs-vsctl add-port vxbr vx1 -- set interface vxlan type=vx1 options:remote_ip=172.31.0.1
+docker run -it --rm  \
+    --name host2  \
+    --net=none  \
+    --privileged=true \
+    minions1128/ubuntu /bin/bash
+/usr/bin/ovs-docker add-port vxbr eth0 b062406bc6b6 [CONTAINER ID]
+ifconfig eth0 10.0.2.2/16 # in container
+```
+Then, container-host1 and container-host2 can ping each other. Using iperf or other testing tool to verify its connectivity.
+* If there is other futher applications need to use, change the MTU of each interface to 1450. The default value may be 1500. Using command `echo "1450" > /sys/class/net/br0/mtu` to change it.
+* **But using this kinds of method, we cannot access to Internet from container. By solving this problems, we implement linux-bridge and Open vSwtich at the same time.**
 
-Then, you can ping container-host1 and container-host2 on each container-host.
-
-*If there is other futher applications need to use, change the MTU of each interface to 1450. The default value may be 1500.
-    echo "1450" > /sys/class/net/eth0/mtu
-
-Using iperf or other testing tool to verify its connectivity.
-----------------------------------------------------------------------------------------------------------------------------------------
-***** But using this kinds of method, we cannot access to Internet from container. 
-By solving this problems, we implement linux-bridge and Open vSwtich at the same time.
 The topology and IP addesses are the same with above.
 
 We will create a new docker network, default gateway is 10.0.1.1
