@@ -26,23 +26,11 @@
 2. 全局地址（Globally Scoped Address），即所谓的公网组播地址：范围是224.0.1.0 – 238.255.255.255。其中232.0.0.0 – 232.255.255.255为指定源组播（SSM, Source Specific Multicast）；GLOP地址，233.0.0.0 – 233.255.255.255，AS号与组播地址关联。
 3. 限制范围地址（Limited Scoped Address），即私网组播地址：范围是239.0.0.0 – 239.255.255.255。
 #### 1.2.2 组播MAC地址
-在以太网中，其MAC地址可以与IP地址进行映射：MAC地址的前25位为：00000001.00000000.01011110.0，即01.00.5e.00.00.00 - 01.00.5e.7f.ff.ff，后23位与组播IP地址相同。如：
+在以太网中，其MAC地址可以与IP地址进行映射：MAC地址的前25位为：00000001.00000000.01011110.0，即01.00.5e.00.00.00 - 01.00.5e.7f.ff.ff，后23位映射组播IP地址。如：
 
 ![multicast_l2_addr](https://github.com/Minions1128/net_tech_notes/blob/master/img/multicast_l2_addr.jpg "multicast_l2_addr")
- 
-这种映射会出现多个IP地址映射到一个MAC地址的情况，所以要避免这种情况。
-
-
-
-
-
-
-ASM, Any Source Multicast，任意源组播，路由器转发报文不关心是谁发送的报文，只负责转发报文。
-SSM, Source Specific Multicast，指定源组播，路由器只对某个路由器转发组播报文，这样底层客户端可以知道源地址。
-
-
-2. IGMP
-Internet Group Management Protocol，封装的IP报文之内，协议号为2，至今有三个版本，使用者最后一跳到终端。
+## 2. IGMP
+Internet Group Management Protocol，封装在IP内，协议号为2，至今有三个版本，使用者最后一跳到终端。
 2.1 IGMPv1
 2.1.1 报文类型
 该协议有2类报文——成员查询和成员通告报文：
@@ -105,6 +93,8 @@ show igmp snooping #查看IGMP Snooping信息
 在路由负载均衡的条件下，出站接口的IP地址越大，越有可能作为RPF接口。
 如果信源服务器有两个，我们任然需要做负载均衡，可以手动修改其RPF接口。通过修改组播路由条目，来修改服务器的出站接口，宠儿修改RPF接口。使用命令ip mroute x.x.x.x mask interface修改出站接口，x.x.x.x为服务器IP地址，使用命令show ip mroute static查看组播静态路由。
 4. PIM
+ASM, Any Source Multicast，任意源组播，路由器转发报文不关心是谁发送的报文，只负责转发报文。
+SSM, Source Specific Multicast，指定源组播，路由器只对某个路由器转发组播报文，这样底层客户端可以知道源地址。
 PIM (Protocols Independent Multicast)使用树形结构转发流量，组播分发树的类型：Source-rooted，也称为Shortest Path Trees（SPTs）还有Shared Trees，也叫Rendezvous Point（RP，集合点）树。
 这两种树对应2中协议：SPT对应Dense模式；RPT对应Sparse模式。
 组播流量部署完毕之后，路由器之间会建立邻居，但是不会立即发送彼此的路由条目，而是等有组播流量产生之后，才会传递路由条目。
