@@ -26,7 +26,9 @@
 2. 全局地址（Globally Scoped Address），即所谓的公网组播地址：范围是224.0.1.0 – 238.255.255.255。其中232.0.0.0 – 232.255.255.255为指定源组播（SSM, Source Specific Multicast）；GLOP地址，233.0.0.0 – 233.255.255.255，AS号与组播地址关联。
 3. 限制范围地址（Limited Scoped Address），即私网组播地址：范围是239.0.0.0 – 239.255.255.255。
 #### 1.2.2 组播MAC地址
-IP地址与MAC地址的映射方式：MAC地址的前25 bit强制规定为01.00.5e，后23 bit与IP组播地址的后23 bit相同：
+在以太网中，其MAC地址可以与IP地址进行映射：MAC地址的前25位为：00000001.00000000.01011110.0，即01.00.5e.00.00.00 - 01.00.5e.7f.ff.ff，后23位与组播IP地址相同。如：
+
+![multicast_l2_addr](https://github.com/Minions1128/net_tech_notes/blob/master/img/multicast_l2_addr.jpg "multicast_l2_addr")
  
 这种映射会出现多个IP地址映射到一个MAC地址的情况，所以要避免这种情况。
 
