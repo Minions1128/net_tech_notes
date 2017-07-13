@@ -63,7 +63,8 @@
 3. **转发流量**：同IGMPv1；
 4. **离组**：当某个终端想要离开组播组时，要发送离组报文。查询者收到离组报文之后，会将超时计时器由180s改为2s，然后发送指定组查询报文，其他PC收到该报文之后，会立即应答。如果Leaf Router在超时时间（2s）内没有收到应答，查询者认为该组中没有其他成员，会停止发送组播组消息。
 ### 2.3 IGMPv3
-IGMPv3增强了对主机的控制能力，可以基于组播源地址进行过滤，使主机在加入某组播组的同时，能够明确要求接收或拒绝来自某特定组播源的组播信息。
+* IGMPv3增强了对主机的控制能力，可以基于组播源地址进行过滤，使主机在加入某组播组的同时，能够明确要求接收或拒绝来自某特定组播源的组播信息。
+* IGMPv1&2都是基于ASM（Any Source Multicast，任意源组播，路由器转发报文不关心是谁发送的报文，只负责转发报文），IGMPv3可以基于SSM（Source Specific Multicast，指定源组播，路由器只对某个路由器转发组播报文，这样底层客户端可以知道源地址）。
 ### 2.4 配置命令
 ```
 ip multicast-routing            # 开启组播路由
@@ -108,9 +109,7 @@ ip mroute 1.1.1.2 255.255.255.255 fa0/1
 show ip mroute static   # 查看组播静态路由
 ```
 通过添加两条组播静态路由，将组播源1.1.1.1的PRF接口改为fa0/0，组播源1.1.1.2的PRF接口改为fa0/1。
-## 4. PIM
-ASM, Any Source Multicast，任意源组播，路由器转发报文不关心是谁发送的报文，只负责转发报文。
-SSM, Source Specific Multicast，指定源组播，路由器只对某个路由器转发组播报文，这样底层客户端可以知道源地址。
+## 4. PIM 25 min
 PIM (Protocols Independent Multicast)使用树形结构转发流量，组播分发树的类型：Source-rooted，也称为Shortest Path Trees（SPTs）还有Shared Trees，也叫Rendezvous Point（RP，集合点）树。
 这两种树对应2中协议：SPT对应Dense模式；RPT对应Sparse模式。
 组播流量部署完毕之后，路由器之间会建立邻居，但是不会立即发送彼此的路由条目，而是等有组播流量产生之后，才会传递路由条目。
