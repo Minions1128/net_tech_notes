@@ -30,8 +30,10 @@
 
 ![multicast_l2_addr](https://github.com/Minions1128/net_tech_notes/blob/master/img/multicast_l2_addr.jpg "multicast_l2_addr")
 ## 2. IGMP
-Internet Group Management Protocol，封装在IP内，协议号为2，至今有三个版本，使用者最后一跳到终端。
-2.1 IGMPv1
+* Internet Group Management Protocol，封装在IP内，协议号为2。
+* 该协议定义的过程为最后一条路由器到接受终端的通信过程。
+* 有三个版本，使用者最后一跳到终端。
+### 2.1 IGMPv1
 2.1.1 报文类型
 该协议有2类报文——成员查询和成员通告报文：
  
