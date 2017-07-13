@@ -35,7 +35,7 @@
 * 有三个版本，这里只讨论IGMPv1和IGMPv2。
 ### 2.1 IGMPv1
 定义在RFC 1112，是一个C/S协议，Client为PC，Server为Leaf Router。
-#### 2.1.1 报文类型
+#### 2.1.1 报文格式
 该协议有2类报文：成员查询和成员通告报文：
 
 ![multicast_igmpv1_pkg](https://github.com/Minions1128/net_tech_notes/blob/master/img/multicast_igmpv1_pkg.jpg "multicast_igmpv1_pkg")
@@ -50,12 +50,13 @@
 3. **流量转发**：Leaf Router收到Report报文之后，会对每个组播组建立的相应表项，同时建立一个180s的Holdtime计时器，在计时器到期之前，没有收到任何Report报文，就会停止转发该类报文。同时也会保持60s一次的查询报文的发送。终端收到查询报文之后，也会回复Report报文；
 4. **离组**：终端离开组播组的过程成为静悄悄地离组，不会通知Leaf Router。当Holdtime计时器超时时，才会停止转发流量，这为IGMPv1的硬伤。
 ### 2.2 IGMPv2
-#### 2.2.1 报文类型
+#### 2.2.1 报文格式
 ![multicast_igmpv2_pkg](https://github.com/Minions1128/net_tech_notes/blob/master/img/multicast_igmpv2_pkg.jpg "multicast_igmpv2_pkg")
 * Max.Resp.Time：最大相应时间，将其时间优化为可以为小数秒
-* 相比IGMPv1，新定义了2个报文：指定组查询（Group-Specific Query）和离组消息（Leave Group Message）。
-* 指定组查询报文，源地址为本地地址，目的地址和组地址为224.1.1.1。
-* 离组报文，源地址为本机地址，目的地址为224.0.0.2，组播组地址为想要离开的组，即224.1.1.1。
+
+相比IGMPv1，新定义了2个报文：指定组查询（Group-Specific Query）和离组消息（Leave Group Message）。
+- **指定组查询报文**：源地址为本地地址，目的地址和组地址为224.1.1.1。
+- **离组报文**：源地址为本机地址，目的地址为224.0.0.2，组播组地址为想要离开的组，即224.1.1.1。
 #### 2.2.2 通信过程
 1. **选举查询者**：IGMPv2定义了查询者机制，多个Leaf Router需要选出接口IP地址最小的作为查询者，由他来周期性的发送查询报文。选举报文由第一次的查询报文来决定。如果120s之内没有收到查询报文，会重新根据查询者选举机制来确定新的查询者；
 2. **加组**：同IGMPv1；
