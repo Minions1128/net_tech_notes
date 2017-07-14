@@ -165,11 +165,10 @@ RPT中，由管理员定义一个RP，第一跳路由器收到流量之后，不
 #### 4.2.3 RP的选举
 选举RP有三种方式，静态RP、auto-RP以及BSR
 1. **静态RP**：有网络管理员手动指定。
-2. **Auto-RP**：该选举方式为C/S模型，C为CRP（Candidate RP），S为MA（Mapping Agency）。CRP周期性地向224.0.1.39发送announce报文，MA会监听224.0.1.39和224.0.1.40地址，仲裁出RP，然后通过224.0.1.40发送discovery报文，告知所有路由器RP的地址，所有路由器会监听该地址。
-由于纯PIM-SM使用auto-RP时需要以组播方式发送announce报文，而发送的组播报文需要发送给RP，这使得纯PIM-SM模式下无法使用auto-RP模式，解决方案有：整网迁移使用sparse-dense-mode；或者所有路由器接口启用ip pim auto-rp listener，该命令可以在224.0.1.39和224.0.1.40组播组使用dense-mode。
-默认情况下，静态RP的优先级会比auto-RP的优先级低。
-3. **BSR**与auto-RP的用法类似，使用优先级来控制RP仲裁者BSRC来仲裁RP。
-#### 4.2.4   配置命令
+2. **Auto-RP**：该选举方式为C/S模型，C为CRP（Candidate RP），S为MA（Mapping Agency）。CRP周期性地向224.0.1.39发送announce报文，MA会监听224.0.1.39和224.0.1.40地址，仲裁出RP，然后通过224.0.1.40发送discovery报文，告知所有路由器RP的地址，所有路由器会监听该地址。`由于纯PIM-SM使用auto-RP时需要以组播方式发送announce报文，而发送的组播报文需要发送给RP，这使得纯PIM-SM模式下无法使用auto-RP模式，解决方案有：整网迁移使用sparse-dense-mode；或者所有路由器接口启用ip pim auto-rp listener，该命令可以在224.0.1.39和224.0.1.40组播组使用dense-mode。
+默认情况下，静态RP的优先级会比auto-RP的优先级低。`
+3. **BSR**：与auto-RP的用法类似，使用优先级来控制RP仲裁者BSRC来仲裁RP。
+#### 4.2.4 配置命令
 ```
 ip pim rp-address x.x.x.x acl #在组播域内静态指定RP地址，acl参数表示指定组播组的RP
 ip pim rp-address x.x.x.x override #使静态RP的优先级高于auto-rp
