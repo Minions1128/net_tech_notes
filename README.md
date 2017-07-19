@@ -22,3 +22,5 @@ Network Technology Note Summaries
 * [DNS](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/DNS.md "DNS")
 * [DHCP](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/DHCP.md "DHCP")
 * [tcpdump](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/tcpdump.md "tcpdump")
+* [tcpdump](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/tcpdump.md "tcpdump")
+* [cacti](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/cacti.md "cacti")

@@ -91,7 +91,7 @@ rrdtool update test.rrd N:$RANDOM
 rrdtool fetch [-r 10] test.rrd AVERAGE      # 查看数据源[指定解析度为10的数据]
 ```
 编写脚本：gen.sh
-```
+```shell
 while true; do
   rrdtool update test.rrd N:$RANDOM
   sleep 5
