@@ -147,26 +147,25 @@ done
 - 绘制图像
 ```
 rrdtool graph ifrx.png \
--s 1494576879 -t "if ens32" \
--v "if ens32/3" \
-DEF:if3=ifrx.rrd:ifrxds:AVERAGE:step=3 \
-LINE1:if3#ff0000:"if3"
+    -s 1494576879 -t "if ens32" \
+    -v "if ens32/3" \
+    DEF:if3=ifrx.rrd:ifrxds:AVERAGE:step=3 \
+    LINE1:if3#ff0000:"if3"
 ```
 ## 3. CACTI
-Cacti是基于RRDTool的一款展示工具，可以建立，周期性的更新数据，并生成图，支持多种模版来展示数据，支持插件，thold具有报警功能。
+Cacti是基于RRDTool的一款集成工具，可以建立，周期性的更新数据，展示生成的图，支持多种模版来展示数据，支持插件，thold具有报警功能。
+
 安装cacti：http://os.51cto.com/art/201404/434909_all.htm
-3.1 收集方法
+### 3.1 收集方法
 分为数据查询和数据输入方法。数据查询使用xml语言。数据输入方法使用命令或者脚本，使用的脚本是需要指定如何获取数据，并且获取到的数据经过处理后要按照规定输入：TAG:data TAG:data
-3.2 主要添加步骤
-add device  add graph  add data source  add graph trees
-3.3 创建模版
-1，撰写脚本，输出格式为：【TAG1:data1 TAG2:data2】；2，添加数据收集方法（Data Input Methods）；3，创建数据模版（Data Template）&数据源（Data Source）；4，创建图像模版（Graph Template）&图片（Graph Management）
-3.4 报警插件
-thold-v0.4.9-3.tgz    settings-v0.71-1.tgz
+### 3.2 主要添加步骤
+add device --> add graph --> add data source --> add graph trees
+### 3.3 创建模版
+1. 撰写脚本，输出格式为：【TAG1:data1 TAG2:data2】；
+2. 添加数据收集方法（Data Input Methods）；
+3. 创建数据模版（Data Template）&数据源（Data Source）；
+4. 创建图像模版（Graph Template）&图片（Graph Management）
+### 3.4 报警插件
+thold-v0.4.9-3.tgz
 
-
-
-
-
-
-
+settings-v0.71-1.tgz
