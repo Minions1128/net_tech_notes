@@ -128,25 +128,30 @@ rrdtool graph a.png \   #画一个图，文件名为a.png
 ````
 ### 2.3 完整的例子
 每个3s钟抓取一次ens32口的发出的字节数，并且将其绘制成表
-创建数据库：
+- 创建数据库
+```
 rrdtool create ifrx.rrd --step 3 \
-DS:ifrxds:GAUGE:5:0:U \
-RRA:AVERAGE:0.5:1:28800 \
-RRA:AVERAGE:0.5:10:2880 \
-RRA:MAX:0.5:10:100
-撰写脚本，输入数据：
+    DS:ifrxds:GAUGE:5:0:U \
+    RRA:AVERAGE:0.5:1:28800 \
+    RRA:AVERAGE:0.5:10:2880 \
+    RRA:MAX:0.5:10:100
+- 撰写脚本，输入数据
+```shell
 while true; do
   RX=`/sbin/ifconfig ens32 | grep "RX bytes" | awk -F'[ :]+' '{print $4}'`
   rrdtool update ifrx.rrd N:$RX
   sleep 2
 done
-绘制图像：
+```
+- 绘制图像
+```
 rrdtool graph ifrx.png \
 -s 1494576879 -t "if ens32" \
 -v "if ens32/3" \
 DEF:if3=ifrx.rrd:ifrxds:AVERAGE:step=3 \
 LINE1:if3#ff0000:"if3"
-3．  CACTI
+```
+## 3. CACTI
 Cacti是基于RRDTool的一款展示工具，可以建立，周期性的更新数据，并生成图，支持多种模版来展示数据，支持插件，thold具有报警功能。
 安装cacti：http://os.51cto.com/art/201404/434909_all.htm
 3.1 收集方法
