@@ -11,8 +11,7 @@ SNMP，Simple Network Management Protocol，简单网络管理协议，其支持
 - NMS：一个运行在管理节点上的软件，其定期会将被管设备发送处理器、内存状态等请求信息，这些请求信息会发送给被管设备的agent。
 - Agent：一个运行在被管理设备上的软件模块，通过接受NMS发送来的请求，查询本地MIB之后，返回给NMS。
 
-双方通过community进行通信，community有三类：read-only、read-write和trap。设备默认会有两类community，一个是public为read-only，一个是private为read-write。
-- Trap：agent会主动发送消息给NMS，通常为故障信息。
+双方通过community进行通信，community有三类：read-only、read-write和trap。设备默认会有两类community，一个是public为read-only，一个是private为read-write。Trap：agent会主动发送消息给NMS，通常为故障信息。
 ### 1.2 版本及操作
 * SNMP v1：get（获取指定OID信息）、getnext（获取指定叶子的父节点的OID以及其叶子节点的相关信息，）、set、getresponse（响应消息）、trap
 * SNMP v2c，v3：getbulk（获取指定OID及其所有子节点的信息）、notification、inform、report
@@ -21,7 +20,7 @@ SNMP，Simple Network Management Protocol，简单网络管理协议，其支持
 * 设备网络接口信息为1.3.6.1.2.1.2，Host管理OID为1.3.6.1.2.1.25
 * 在/etc/snmp/snmpd.conf中会有可以查看的mib库
 ### 1.4 通信过程
-![snmp_com](http://z.cn/ "snmp_com")
+![snmp_com](https://github.com/Minions1128/net_tech_notes/blob/master/img/snmp_com.jpg "snmp_com")
 ### 1.5 相关命令
 Redhat中两个snmp软件包net-snmp（发包）以及net-snmp-utils（收包）
 ```
