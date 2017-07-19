@@ -73,7 +73,8 @@ rrdtool create test.rrd --step 5 \ # 创建一个RRDTool文件名为test.rrd，�
                                  \ # 要保存1210(CDP)*5(s/PDP)*100(PDP/CDP)=7天
     rrdtool info test.rrd        \ # 查看该数据库文件格式
 ```
-2.2.2   填充数据
+#### 2.2.2 填充数据
+```
 rrdtool {update | updatev} filename [--template | -t ds-name[:ds-name[:…]]] timestamp:time:value1[:value2[…]]
 filename：数据库文件
 timestamp：时间戳；value1：对应第一个ds的值；value2：对应第二个ds的值……
@@ -90,6 +91,7 @@ while true; do
 done
 bash -n gen.sh      #检查是否有语法错误
 bash -x gen.sh      #让程序在前台执行
+```
 2.2.3   绘图数据
 rrdtool {graph | graphy} filename-pic [option…] [data definetion] [data calculation]
 option：[-s | --start time] [-e | --end time] [-S | --step seconds] [-t | --title string] [-v | --vertical-label string] [-w | --width pixels] [-h | --height pixels] [-j | --only-graph] [-D | --full-size-mode] [-a | --imgformat PNG|SVG|EPS|PDF] [13min]
