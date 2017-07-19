@@ -99,18 +99,34 @@ done
 bash -n gen.sh      #检查是否有语法错误
 bash -x gen.sh      #让程序在前台执行
 ```
-2.2.3   绘图数据
-rrdtool {graph | graphy} filename-pic [option…] [data definetion] [data calculation]
-option：[-s | --start time] [-e | --end time] [-S | --step seconds] [-t | --title string] [-v | --vertical-label string] [-w | --width pixels] [-h | --height pixels] [-j | --only-graph] [-D | --full-size-mode] [-a | --imgformat PNG|SVG|EPS|PDF] [13min]
-data definetion：DEF（vname=rrdfile:ds-name:CF[:step =step][:start =time][:end =time]）、CDEF、VDEF
+#### 2.2.3 绘图数据
+```
+rrdtool {graph | graphy} filename-pic [option…] \
+    [data definetion] [data calculation]
+option：[-s | --start time] [-e | --end time] \
+    [-S | --step seconds] [-t | --title string] \
+    [-v | --vertical-label string] [-w | --width pixels] \
+    [-h | --height pixels] [-j | --only-graph] \
+    [-D | --full-size-mode] [-a | --imgformat PNG|SVG|EPS|PDF] [13min]
+data definetion：
+    DEF（vname=rrdfile:ds-name:CF[:step =step][:start =time][:end =time]）
+    CDEF
+    VDEF
+```
 举个例子：
+````
 rrdtool graph a.png \   #画一个图，文件名为a.png
--s 1494568250 \     #开始时间为1494568250
-DEF:vartest5=test.rrd:testds:AVERAGE:step=5 \   #定义DEF：vartest5，其数据库为test.rrd，聚合方法为AVERAGE，聚合度为5
-DEF:vartest50=test.rrd:testds:AVERAGE:step=50 \     #定义DEF：vartest50，其数据库为test.rrd，聚合方法为AVERAGE，聚合度为50
-LINE1:vartest5#0000FF:"5 sec" \     #利用DEF：vartest5绘制线条，颜色为蓝色，显式为‘5 sec’
-LINE1:vartest50#FF0000:"50 sec"     #利用DEF：vartest50绘制线条，颜色为红色，显式为‘50 sec’
-2.3 完整的例子
+    -s 1494568250 \     #开始时间为1494568250
+    DEF:vartest5=test.rrd:testds:AVERAGE:step=5 \   
+    \ # 定义DEF：vartest5，其数据库为test.rrd，聚合方法为AVERAGE，聚合度为5
+    DEF:vartest50=test.rrd:testds:AVERAGE:step=50 \
+    \ # 定义DEF：vartest50，其数据库为test.rrd，聚合方法为AVERAGE，聚合度为50
+    LINE1:vartest5#0000FF:"5 sec" \     # 利用DEF：vartest5绘制线条，
+                                    \   # 颜色为蓝色，显式为‘5 sec’
+    LINE1:vartest50#FF0000:"50 sec" \   # 利用DEF：vartest50绘制线条，
+                                        # 颜色为红色，显式为‘50 sec’
+````
+### 2.3 完整的例子
 每个3s钟抓取一次ens32口的发出的字节数，并且将其绘制成表
 创建数据库：
 rrdtool create ifrx.rrd --step 3 \
