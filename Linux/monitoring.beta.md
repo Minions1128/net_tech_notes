@@ -135,6 +135,7 @@ rrdtool create ifrx.rrd --step 3 \
     RRA:AVERAGE:0.5:1:28800 \
     RRA:AVERAGE:0.5:10:2880 \
     RRA:MAX:0.5:10:100
+```
 - 撰写脚本，输入数据
 ```shell
 while true; do
