@@ -41,22 +41,38 @@ rrd create filename \   # filename：保存文件的文件名
     [DS:ds-name:DST:dst arguments] \
     [RRA:CF:cf argument]
 # DS：指定数据源；
-  ds-name：数据源名称；
-  DST：对数据如何聚合，数据源类型有gauge（保存PDP精确数值），counter（递增数据的相对值），derive（任意数据的相对值），absolute（与初始值的相对值），compute（自定义计算）；
-  dst arguments：heartbeat（描述数据在某个时间内达到有效，如step为5s，数据在10s以内达到都有效），min，max（描述可以接受值的范围）
+#   ds-name：数据源名称；
+#   DST：对数据如何聚合，数据源类型有：
+#     gauge，保存PDP精确数值；
+#     counter，递增数据的相对值；
+#     derive，任意数据的相对值；
+#     absolute，与初始值的相对值；
+#     compute，自定义计算；
+#   dst arguments：
+#     heartbeat（描述数据在某个时间内达到有效，如step为5s，数据在10s以内达到都有效）
+#     min，max（描述可以接受值的范围）
 # RRA：如何聚合，average，min，max，last；
-  CF：聚合参数，xff（描述PDP比例为多大时，还可以进行计算CDP，unknown值会进行智能计算），steps（聚合跨度），rows（保存结果的数量）
+#   CF：聚合参数：
+#     xff（描述PDP比例为多大时，还可以进行计算CDP，unknown值会进行智能计算）
+#     steps（聚合跨度）
+#     rows（保存结果的数量）
 ```
 举个例子
 ```
-rrdtool create test.rrd --step 5 \  #创建一个RRDTool文件名为test.rrd，每5s收集一次数据
-DS:testds:GAUGE:8:0:U \         #数据源名称为testds，保存的数据类型为GAUGE，数据在8s以内到达都有效，数值的范围是0到无穷大
-RRA:AVERAGE:0.5:1:17280 \   #聚合方法为取平均数，50%的PDP为unknown时，CDP为unknown，CDP对每1个PDP进行聚合，要保存17280(CDP)*5(s/PDP)*1(PDP/CDP)=1天
-RRA:AVERAGE:0.5:10:3456 \   #聚合方法为取平均数，50%的PDP为unknown时，CDP为unknown，CDP对每10个PDP进行聚合，要保存3456(CDP)*5(s/PDP)*10(PDP/CDP)=2天
-RRA:AVERAGE:0.5:100:1210    #聚合方法为取平均数，50%的PDP为unknown时，CDP为unknown，CDP对每100个PDP进行聚合，要保存1210(CDP)*5(s/PDP)*100(PDP/CDP)=7天
-rrdtool info test.rrd   #查看该数据库文件格式
+rrdtool create test.rrd --step 5 \ # 创建一个RRDTool文件名为test.rrd，每5s收集一次数据
+    DS:testds:GAUGE:8:0:U        \ # 数据源名称为testds，保存的数据类型为GAUGE，
+                                 \ # 数据在8s以内到达都有效，数值的范围是0到无穷大
+    RRA:AVERAGE:0.5:1:17280      \ # 聚合方法为取平均数，50%的PDP为unknown时，
+                                 \ # CDP为unknown，CDP对每1个PDP进行聚合，
+                                 \ # 要保存17280(CDP)*5(s/PDP)*1(PDP/CDP)=1天
+    RRA:AVERAGE:0.5:10:3456      \ # 聚合方法为取平均数，50%的PDP为unknown时，
+                                 \ # CDP为unknown，CDP对每10个PDP进行聚合，
+                                 \ # 要保存3456(CDP)*5(s/PDP)*10(PDP/CDP)=2天
+    RRA:AVERAGE:0.5:100:1210     \ # 聚合方法为取平均数，50%的PDP为unknown时，
+                                 \ # CDP为unknown，CDP对每100个PDP进行聚合，
+                                 \ # 要保存1210(CDP)*5(s/PDP)*100(PDP/CDP)=7天
+    rrdtool info test.rrd        \ # 查看该数据库文件格式
 ```
-
 2.2.2   填充数据
 rrdtool {update | updatev} filename [--template | -t ds-name[:ds-name[:…]]] timestamp:time:value1[:value2[…]]
 filename：数据库文件
