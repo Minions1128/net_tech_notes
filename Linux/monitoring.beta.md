@@ -75,16 +75,23 @@ rrdtool create test.rrd --step 5 \ # 创建一个RRDTool文件名为test.rrd，�
 ```
 #### 2.2.2 填充数据
 ```
-rrdtool {update | updatev} filename [--template | -t ds-name[:ds-name[:…]]] timestamp:time:value1[:value2[…]]
-filename：数据库文件
-timestamp：时间戳；value1：对应第一个ds的值；value2：对应第二个ds的值……
-template：指定ds的顺序，如：
-rrdtool create test.rrd DS:ds1 DS:ds2
-rrdtool update test.rrd N:30:40     #or rrdtool update test.rrd -t ds2:ds1 40:30
+rrdtool {update | updatev} \    
+    filename \  # filename：数据库文件
+    [--template | -t ds-name[:ds-name[:…]]] \
+    timestamp:time:value1[:value2[…]]   # timestamp：时间戳；
+                                        # value1：对应第一个ds的值；
+                                        # value2：对应第二个ds的值……
+# template：指定ds的顺序，如：
+# rrdtool create test.rrd DS:ds1 DS:ds2
+# rrdtool update test.rrd N:30:40     #or rrdtool update test.rrd -t ds2:ds1 40:30
+```
 举个例子：
+```
 rrdtool update test.rrd N:$RANDOM
-rrdtool fetch [-r 10] test.rrd AVERAGE      #查看数据源[指定解析度为10的数据]
+rrdtool fetch [-r 10] test.rrd AVERAGE      # 查看数据源[指定解析度为10的数据]
+```
 编写脚本：gen.sh
+```
 while true; do
   rrdtool update test.rrd N:$RANDOM
   sleep 5
