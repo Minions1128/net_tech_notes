@@ -27,25 +27,36 @@ Redhat中两个snmp软件包net-snmp（发包）以及net-snmp-utils（收包）
 snmpwalk -v 2c -c public 127.0.0.1
 ```
 ## 2. RRDTool
-2.1 名词解释
-轮询数据库（Round Robin Database，RRD）为环形数据库，分为许多扇形，数据会存在这些扇形里，每个扇形称之为time slot。当数据存满后，会将最初的数据覆盖，其数据库大小不会改变。
-当抓取到数据时，先会放到PDP（Primary Data Point，主数据节点），将其进行聚合计算，得到CDP（Consolidation Data Point，聚合数据点）才会保存到time slot中。
-RRA：Round Robin Archive，轮转归档信息，描述CDP聚合PDP的数量。
-2.2 相关命令
-2.2.1   创建数据库
-rrd create filename [--start | -b start time] [--step | -s step] [--no | -overwrite] [DS:ds-name:DST:dst arguments] [RRA:CF:cf argument]
-filename：保存文件的文件名
---start：开始时间，默认10s之前
---step：接受数据的时间跨度
-DS：指定数据源；ds-name：数据源名称；DST：对数据如何聚合，数据源类型有gauge（保存PDP精确数值），counter（递增数据的相对值），derive（任意数据的相对值），absolute（与初始值的相对值），compute（自定义计算）；dst arguments：heartbeat（描述数据在某个时间内达到有效，如step为5s，数据在10s以内达到都有效），min，max（描述可以接受值的范围）
-RRA：如何聚合，average，min，max，last；CF：聚合参数，xff（描述PDP比例为多大时，还可以进行计算CDP，unknown值会进行智能计算），steps（聚合跨度），rows（保存结果的数量）
+### 2.1 名词解释
+* RRD，Round Robin Database，轮询数据库，为环形数据库，分为许多扇形，数据会存在这些扇形里，每个扇形称之为time slot。当数据存满后，会将最初的数据覆盖，其数据库大小不会改变。
+* RRA：Round Robin Archive，轮转归档信息，描述CDP聚合PDP的数量。
+* 当抓取到数据时，先会放到PDP（Primary Data Point，主数据节点），将其进行聚合计算，得到CDP（Consolidation Data Point，聚合数据点）才会保存到time slot中。
+### 2.2 相关命令
+#### 2.2.1 创建数据库
+```
+rrd create filename \   # filename：保存文件的文件名
+    [--start | -b start time] \     # --start：开始时间，默认10s之前
+    [--step | -s step] \    # --step：接受数据的时间跨度
+    [--no | -overwrite] \
+    [DS:ds-name:DST:dst arguments] \
+    [RRA:CF:cf argument]
+# DS：指定数据源；
+  ds-name：数据源名称；
+  DST：对数据如何聚合，数据源类型有gauge（保存PDP精确数值），counter（递增数据的相对值），derive（任意数据的相对值），absolute（与初始值的相对值），compute（自定义计算）；
+  dst arguments：heartbeat（描述数据在某个时间内达到有效，如step为5s，数据在10s以内达到都有效），min，max（描述可以接受值的范围）
+# RRA：如何聚合，average，min，max，last；
+  CF：聚合参数，xff（描述PDP比例为多大时，还可以进行计算CDP，unknown值会进行智能计算），steps（聚合跨度），rows（保存结果的数量）
+```
 举个例子
+```
 rrdtool create test.rrd --step 5 \  #创建一个RRDTool文件名为test.rrd，每5s收集一次数据
 DS:testds:GAUGE:8:0:U \         #数据源名称为testds，保存的数据类型为GAUGE，数据在8s以内到达都有效，数值的范围是0到无穷大
 RRA:AVERAGE:0.5:1:17280 \   #聚合方法为取平均数，50%的PDP为unknown时，CDP为unknown，CDP对每1个PDP进行聚合，要保存17280(CDP)*5(s/PDP)*1(PDP/CDP)=1天
 RRA:AVERAGE:0.5:10:3456 \   #聚合方法为取平均数，50%的PDP为unknown时，CDP为unknown，CDP对每10个PDP进行聚合，要保存3456(CDP)*5(s/PDP)*10(PDP/CDP)=2天
 RRA:AVERAGE:0.5:100:1210    #聚合方法为取平均数，50%的PDP为unknown时，CDP为unknown，CDP对每100个PDP进行聚合，要保存1210(CDP)*5(s/PDP)*100(PDP/CDP)=7天
 rrdtool info test.rrd   #查看该数据库文件格式
+```
+
 2.2.2   填充数据
 rrdtool {update | updatev} filename [--template | -t ds-name[:ds-name[:…]]] timestamp:time:value1[:value2[…]]
 filename：数据库文件
