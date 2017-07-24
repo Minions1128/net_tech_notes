@@ -34,7 +34,7 @@ option voip-cfg code 242 = string;  # 自定义option
 subnet 10.10.51.0 netmask 255.255.255.0 {
     option routers              10.10.51.1;
     option subnet-mask          255.255.255.0;
-    option domain-search        "leju.com";
+    option domain-search        "example.com";
     option domain-name-servers  10.10.51.121;
     option voip-cfg             "MCIPADD=10.0.0.1,HTTPSRVR=10.0.0.2";
     range   10.10.51.10    10.10.51.20;
