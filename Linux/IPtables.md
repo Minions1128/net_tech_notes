@@ -74,7 +74,7 @@ iptables -A INPUT -p tcp -m multiport --sport 22,53,80,110
 
 # 速率的限制
 iptables -A INPUT -m limit --limit 300/s    # 限制速率为300个包每秒
-iptables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d192.168.3.3 \
+iptables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d 192.168.3.3 \
     --dport 80 -m limit --limit=500/s --limit-burst=1000  -j ACCEPT \
     # 允许转发从eth0进来的源IP为192.168.2.3， \
     # 去访问从eth1出去的目的IP为192.168.3.3的80端口（即http服务）的数据包, \
@@ -104,5 +104,4 @@ iptables -t nat -A POSTROUTING -d 10.1.160.15/32 -p tcp -m tcp \
 
 ## 6. 补充
 * [鸟哥私房菜-防火墙与NAT服务器](http://cn.linux.vbird.org/linux_server/0250simple_firewall.php "鸟哥私房菜-防火墙与NAT服务器")
-* [iptables配置实践](https://wsgzao.github.io/post/iptables/ "iptables配置实践")
 * [iptables的限速测试总结](http://ptallrights.blog.51cto.com/11151122/1841911 "iptables的限速测试总结")
