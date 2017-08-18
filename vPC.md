@@ -1,4 +1,7 @@
 # vPC
+[TOCM]
+
+[TOC]
 ## 概述
 * A virtual port channel (vPC) allows links that are physically connected to two different Cisco Nexus Series devices to appear as a single port channel to a third device. The third device can be a switch, server, or any other networking device that supports link aggregation technology.
 * 其优点有：屏蔽了STP，最大限度使用上联带宽，提供了快速聚合上联链路，为服务器提供双active的默认网关。
@@ -6,8 +9,9 @@
 
 ![vpc.component](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.components.jpg "vpc.component")
 * 防环机制：在数据层面
-1. vPC peer-link通常不转发数据，通常认为是在稳定网络中，控制平面的扩展，用来传输mac地址，vpc member port状态以及IGMP；
-2. 来自vPC member port的流量，然后穿过vPC peer-link之后，不会被允许再从其他member port出去，但可以从其他类型端口转发，如L3口，orphan port等；
+1. vPC peer-link通常不转发数据，通常认为是在稳定网络中，控制平面的扩展，用来传输mac地址，vPC member port状态以及IGMP；
+2. 来自vPC member port的流量，然后穿过vPC peer-link之后，不会被允许再从其他member port出去，但可以从其他类型端口转发，如L3口，orphan port等。
+## 部署场景
 
 
 
