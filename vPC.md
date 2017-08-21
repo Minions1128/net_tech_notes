@@ -50,7 +50,31 @@ show vdc    # 查看vdc的系统mac
 ![vpc.sys_mac](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.sys_mac.jpg "vpc.sys_mac")
 
 1. N5K-1和N7K-1形成local port-channel，N7K-1会用其vPC local system-mac和N5K-1交换LACP信息；
-2. N5K-2和N7K-1和N7K-2形成了vPC，N7K-1和N7K-2会用其system-mac与N5K-2交换LACP
+2. N5K-2和N7K-1和N7K-2形成了vPC，N7K-1和N7K-2会用其system-mac与N5K-2交换LACP信息。
+### 3.3 vPC role
+vPC定义了两种角色：primary和secondary，primary会传递BPDU以及应答ARP，可以通过`role priority <value>`修改，较小的为primary
+### 3.4 CFS
+* CFS，Cisco Fabric Services协议，在两台运行vPC的设备，提供稳定的同步和一致性检测机制。
+* 其可以提供vPC member port状态通告、生成树管理、同步HSRP和IGMP信息。
+* 当vPC部署成功后，CFS自动开启。
+* 其封装在以太网帧中，在vPC peer-link中传输，并且使用其CoS=4
+#### 3.4.1 一致性检测
+vPC每台设备有着不同的控制平面（control planes），CFS会将两台设备的状态进行同步，包括mac地址表，IGMP协议状态以及vPC状态等。系统配置必须一致，然后其会自动进行一致性检测来确保网络的正确性。有两类一致性检测：
+1. Type 1，会将对端设备或者接口暂停状态，当为graceful一致性检测时，仅暂停secondary设备，
+* 其全局检测的内容有
+    * STP模式
+    * 每个VLAN的STP状态
+    * MST
+    * STP的全局配置，如Bridge Assurance、端口类型、Loop Guard、BPDU过滤等
+* 接口下检测的内容
+    * LACP模式
+    * 速度、双工模式、switchport模式、MTU
+    * STP接口设置：端口类型、Loop Guard、根防护等
+2. Type 2，对端设备或者接口依然转发流量，但其会收到非正常报文转发的影响。
+
+
+
+
 
 ```
 vpc domain 10   # 必须与对端设备的ID一致
