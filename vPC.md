@@ -15,9 +15,10 @@
 + DCI部署vPC
     * 多层vPC，用于汇聚层和DCI
     * 双2层/3层Pod连接
+### Single-sided vPC
+![vpc.single_side_topo](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc_single_side_topo.jpg "vpc.single_side_topo")
 
-
-
+接入设备直接双上联到思科Spine设备，形成vPC域
 
 * 其支持LACP active，passive以及ON mode和
 ## Failure Scenarios
