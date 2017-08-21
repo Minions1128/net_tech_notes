@@ -98,9 +98,17 @@ interface port-channel11    # vPC member port
 ```
 ## 4. 配置vPC
 ### 4.1 vPC peer-keepalive link
-该链路承载了vPC设备周期性的心跳，消息类型封装在UDP中。该两路有两个作用：
+* 该链路承载了vPC设备周期性的心跳，消息类型封装在UDP 3200端口中。该两路有两个作用：
 1. 在系统启动后，vPC域形成之前，来保证两端设备都是up的；
 2. 当vPC peer-link down后，用来检测是否有脑裂现象，即active/active状态。
+* 计时器
+| 计时器 | 默认值 |
+| :------------ | :------------ |
+| Keepalive interval | 1s |
+| Keepalive hold timeout | 3s |
+| Keepalive timeout | 5s |
+1. Keepalive hold timeout：peer-link down失效之后，会触发keepalive hold计时器，在此期间，secondary设备会忽略peer-keepalive的hello消息。为了避免网络聚合时，对其产生的影响；
+2. Keepalive timeout：若peer-link还是没有up，会触发该计时器。在此期间，secondary会寻找vPC peer-keepalive的hello消息：如果secondary收到了hello消息，则可以推断出有脑裂发生，secondary会关闭其所有vPC member port
 
 
 
