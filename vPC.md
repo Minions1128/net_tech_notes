@@ -33,12 +33,22 @@
 
 这种方式没有专门的vPC通信层来提供DCI。
 ## 配置vPC
-### 基本步骤：
+### 基本步骤
 1. 配置vPC域ID，两端设备必须一致，由于使用LACP的一些信息，配置double-sited vPC时，两层的ID不可以一致；
 2. 配置vPC peer-keepalive link；
 3. 配置vPC peer-link；
 4. 配置vPC member port.
-
+### vPC system-mac和local system-mac
+* 我们配置完vPC域ID之后，会自动分配一个system mac，两端的system mac都一样
+```
+vPC system-mac = 00:23:04:ee:be:<vpc domian-id的16进制>
+```
+* 每台peer device都有自己的vPC local system-mac，该地址从系统或者VDC系统mac中获取
+```
+show vpc role   # 查看vPC system-mac和local system-mac
+show vdc    # 查看vdc的系统mac
+```
+* vPC system-mac和local system-mac均被用作LACP的LACP system ID
 
 ```
 vpc domain 10   # 必须与对端设备的ID一致
