@@ -32,6 +32,36 @@
 ![vpc.dci.dual.l2.l3.pod](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.dci.dual.l2.l3.pod.jpg "vpc.dci.dual.l2.l3.pod")
 
 这种方式没有专门的vPC通信层来提供DCI。
+## 配置vPC
+### 基本步骤：
+1. 配置vPC域ID，两端设备必须一致，由于使用LACP的一些信息，配置double-sited vPC时，两层的ID不可以一致；
+2. 配置vPC peer-keepalive link；
+3. 配置vPC peer-link；
+4. 配置vPC member port.
+
+
+```
+vpc domain 10   # 必须与对端设备的ID一致
+  role priority 1000
+  peer-keepalive destination 1.1.1.2 source 1.1.1.1 vrf keepalive
+  peer-gateway
+  ip arp synchronize
+interface Ethernet1/1  # 配置vPC keepalive link
+  vrf member keepalive
+  ip address 1.1.1.1/30
+  no sh
+interface port-channel 100  # vPC peer-link通常
+  spanning-tree port type network
+  vpc peer-link
+interface Ethernet4/1
+  channel-group 11 mode active
+  no sh
+interface port-channel11    # vPC member port
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1-1000,1002-4094
+  vpc 11
+```
 
 ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
