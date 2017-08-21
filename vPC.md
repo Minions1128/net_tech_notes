@@ -13,15 +13,27 @@
     * Single-sided vPC，在接入层和汇聚层
     * Double-sided vPC，也叫多层vPC，接入层和汇聚层同时使用vPC，并且相互连接
 + DCI部署vPC
-    * 多层vPC，用于汇聚层和DCI
+    * 多层vPC，汇聚层的DCI
     * 双2层/3层Pod连接
 ### Single-sided vPC
 ![vpc.single_side_topo](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc_single_side_topo.jpg "vpc.single_side_topo")
 
-接入设备直接双上联到思科Spine设备，形成vPC域
+接入设备直接双上联到思科Spine设备，形成vPC域，支持LACP active，passive以及static bundling(ON mode)
+* 强烈建议：接入设备连接vPC时，用LACP协议
+### Double-sided vPC
+![vpc.double_sided_topo](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.double_sided_topo.jpg "vpc.double_sided_topo")
 
-* 其支持LACP active，passive以及ON mode和
-## Failure Scenarios
+这种拓扑叠加了两层vPC的区域，并且使用自己的vPC的链路连接起来。底层的vPC使用active/active连接终端设备和接入交换机；顶层vPC使用active/active FHRP在L2/L3边界的汇聚层。
+### 多层vPC，汇聚层的DCI
+![vpc.dci.agg.topo](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.dci.agg.topo.jpg "vpc.vpc.dci.agg.topo")
+
+这种场景中，一个vPC区域的专门通信层（连接汇聚层的也运行了vPC）用来连接两个DC
+### 双2层/3层Pod连接
+![vpc.dci.dual.l2.l3.pod](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.dci.dual.l2.l3.pod.jpg "vpc.dci.dual.l2.l3.pod")
+
+这种方式没有专门的vPC通信层来提供DCI。
+
+## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭。
 * vPC primary switch failure：Secondary switch会变为可操作的primary switch，当原来的primary switch恢复之后，其又会变为secondary switch
