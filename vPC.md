@@ -58,10 +58,11 @@ vPC定义了两种角色：primary和secondary，primary会传递BPDU以及应�
 * 其可以提供vPC member port状态通告、生成树管理、同步HSRP和IGMP信息。
 * 当vPC部署成功后，CFS自动开启。
 * 其封装在以太网帧中，在vPC peer-link中传输，并且使用其CoS=4
-#### 3.4.1 一致性检测
+### 3.5 一致性检测
 vPC每台设备有着不同的控制平面（control planes），CFS会将两台设备的状态进行同步，包括mac地址表，IGMP协议状态以及vPC状态等。系统配置必须一致，然后其会自动进行一致性检测来确保网络的正确性。有两类一致性检测：
-1. Type 1，会将对端设备或者接口暂停状态，当为graceful一致性检测时，仅暂停secondary设备，
-* 其全局检测的内容有
+#### 3.5.1 Type 1
+会将对端设备或者接口暂停状态，当为graceful一致性检测时，仅暂停secondary设备，
+* 全局检测的内容有
     * STP模式
     * 每个VLAN的STP状态
     * MST
@@ -70,18 +71,12 @@ vPC每台设备有着不同的控制平面（control planes），CFS会将两台
     * LACP模式
     * 速度、双工模式、switchport模式、MTU
     * STP接口设置：端口类型、Loop Guard、根防护等
-2. Type 2，对端设备或者接口依然转发流量，但其会收到非正常报文转发的影响。
-
-
-
-
-
+#### 3.5.2 Type 2
+对端设备或者接口依然转发流量，但其会收到非正常报文转发的影响，所有vPC member port保持挂起状态，vPC系统会触发保护动作
+### 3.6 配置建议
 ```
-vpc domain 10   # 必须与对端设备的ID一致
-  role priority 1000
-  peer-keepalive destination 1.1.1.2 source 1.1.1.1 vrf keepalive
-  peer-gateway
-  ip arp synchronize
+vlan 1-4096     # 建议提前规划好vlan
+feature vpc
 interface Ethernet1/1  # 配置vPC keepalive link
   vrf member keepalive
   ip address 1.1.1.1/30
@@ -89,19 +84,31 @@ interface Ethernet1/1  # 配置vPC keepalive link
 interface port-channel 100  # vPC peer-link通常
   spanning-tree port type network
   vpc peer-link
+vpc domain 10
+  # vPC域ID必须和对端相同，double-sided两个ID不同
+  role priority 1
+  peer-keepalive destination 1.1.1.2 source 1.1.1.1 vrf keepalive
+  ip arp synchronize
 interface Ethernet4/1
-  channel-group 11 mode active
-  no sh
+  channel-group 11 mode active      # 配置LACP建议使用active模式
 interface port-channel11    # vPC member port
   switchport
-  switchport mode trunk
-  switchport trunk allowed vlan 1-1000,1002-4094
+  switchport mode trunk     # member port只能为2层端口
   vpc 11
 ```
+## 4. 配置vPC
+### 4.1 vPC peer-keepalive link
+该链路承载了vPC设备周期性的心跳，消息类型封装在UDP中。该两路有两个作用：
+1. 在系统启动后，vPC域形成之前，来保证两端设备都是up的；
+2. 当vPC peer-link down后，用来检测是否有脑裂现象，即active/active状态。
+
+
+
+
 
 ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭。
 * vPC primary switch failure：Secondary switch会变为可操作的primary switch，当原来的primary switch恢复之后，其又会变为secondary switch
-* vPC keepalive link failure：其流量不会造成影响，但建议尽早修复
+* vPC keepalive link failure：其转发流量不会造成影响，但建议尽早修复
 * vPC keepalive link and peer-link both failure：如果vPC keepalive link先down，然后peer-link跟着down，primary和secondary switch同时成为primary switch，即脑裂。现有流量不会造成影响，但新的流量就不可用。同时单播mac地址和IGMP组，因此其无法维持单播和组播的转发，还可能导致duplicate包。
