@@ -1,6 +1,3 @@
-[TOCM]
-
-[TOC]
 # vPC
 ## 概述
 * A virtual port channel (vPC) allows links that are physically connected to two different Cisco Nexus Series devices to appear as a single port channel to a third device. The third device can be a switch, server, or any other networking device that supports link aggregation technology.
@@ -12,10 +9,17 @@
 1. vPC peer-link通常不转发数据，通常认为是在稳定网络中，控制平面的扩展，用来传输mac地址，vPC member port状态以及IGMP；
 2. 来自vPC member port的流量，然后穿过vPC peer-link之后，不会被允许再从其他member port出去，但可以从其他类型端口转发，如L3口，orphan port等。
 ## 部署场景
++ DC内部部署vPC
+    * Single-sided vPC，在接入层和汇聚层
+    * Double-sided vPC，也叫多层vPC，接入层和汇聚层同时使用vPC，并且相互连接
++ DCI部署vPC
+    * 多层vPC，用于汇聚层和DCI
+    * 双2层/3层Pod连接
 
 
 
-* 其支持LACP active，passive以及ON mode
+
+* 其支持LACP active，passive以及ON mode和
 ## Failure Scenarios
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭。
