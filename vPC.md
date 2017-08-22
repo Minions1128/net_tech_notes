@@ -46,11 +46,6 @@ show vpc role   # 查看vPC system-mac和local system-mac
 show vdc    # 查看vdc的系统mac
 ```
 * vPC system-mac和local system-mac均被用作LACP的LACP system ID，具体用法：
-
-|   |   |
-| :------------: | :------------: |
-|  ![vpc.sys_mac](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.sys_mac.jpg "vpc.sys_mac") | ![vpc.sys_mac](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.sys_mac.jpg "vpc.sys_mac")  |
-
 1. N5K-1和N7K-1形成local port-channel，N7K-1会用其vPC local system-mac和N5K-1交换LACP信息；
 2. N5K-2和N7K-1和N7K-2形成了vPC，N7K-1和N7K-2会用其system-mac与N5K-2交换LACP信息。
 ### 3.3 vPC role
@@ -117,15 +112,54 @@ interface port-channel11    # vPC member port
 2. Mgmt0口；
 3. 最后可以使用三层链路使其达到路有通常。
 4. 双引擎交换机并且使用它们的mgmt0口来充当peer-keepalive link时，不能直接将mgmt0口直接插到相同的引擎中（如，一台交换机的sup1的管理口直接插到另一台交换机的sup1的管理口），应该使用一台中间设备。
-5. 
+5. 建议使用不同的vrf来配置peer-keepalive link
 
+![vpc.pkl.2sup.mgmt](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.pkl.2sup.mgmt.jpg "vpc.pkl.2sup.mgmt")
+### 4.2 peer link
+peer link为标准的802.1q trunk链路，可以承载vPC和非vPC vlan；承载CFS消息，消息中CoS为4；可以泛洪流量到其他vPC设备；可以传递BPDU，HSRP的hello，以及IGMP的更新等。其防环机制由硬件完成。
+#### 4.2.1 配置建议
+1. 成员端口为10G的以太网端口；
+2. 使用至少2根10G的以太网端口，其线卡类型必须相同；
+3. 建议使用2种不同的线卡来部署port-channel；
+4. peer-link之间不要添加任何设备。
+#### 4.2.2 转发
+1. 单播：一般单播流量会本地转发，除非vPC member port fail；
+2. 组播：一般peer-link会将组播流量复制给peer-link，除非在其组播环境中，不支持DR
+3. peer-link也支持vlan裁剪，前提是这些vlan在member port是允许的
+4. 遇到孤立端口连接到secondary switch上时，如果peer-link down之后，其会变为孤立端口，解决方法是配置命令`dual-active exclude interface-vlan <vlan-list>`
+#### 4.2.3 vPC Object Tracking
+* 使用场景：当设备只有一块线卡时，或设备的上联链路和vPC peer-link在一个线卡上时，如果线卡损坏，peer-link和上联链路同时down，并且这台设备是2层和3层的边界，如果这台设备为primary，secondary会将所有member port关闭，这会造成流量黑洞。
 
+![vpc.track](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.track.jpg "vpc.track")
+* 解决办法：vPC object tracking，可以暂停损坏的设备，以保证业务的正常。
+* 配置举例：
+```
+! Track the vpc peer link
+track 1 interface port-channel11 line-protocol
+! Track the uplinks to the core
+track 2 interface Ethernet1/1 line-protocol
+track 3 interface Ethernet1/2 line-protocol
+track 10 list boolean OR
+    ! Combine all tracked objects into one.
+    ! “OR” means if ALL objects are down, 
+    ! ==> this object will go down.
+    ! ==> We have lost all connectivity 
+    ! ==> to the L3 core and the peer link.
+    object 1
+    object 2
+    object 3
+! If object 10 goes down on the primary vPC peer,
+! system will switch over to other vPC peer 
+! and disable all local vPCs
+vpc domain 1
+    track 10
+```
 
 
 
 ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
-* vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭。
+* vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭，也包括SVI。orphan port如果连接在secondary switch上，会变为孤立端口
 * vPC primary switch failure：Secondary switch会变为可操作的primary switch，当原来的primary switch恢复之后，其又会变为secondary switch
 * vPC keepalive link failure：其转发流量不会造成影响，但建议尽早修复
 * vPC keepalive link and peer-link both failure：如果vPC keepalive link先down，然后peer-link跟着down，primary和secondary switch同时成为primary switch，即脑裂。现有流量不会造成影响，但新的流量就不可用。同时单播mac地址和IGMP组，因此其无法维持单播和组播的转发，还可能导致duplicate包。
