@@ -47,7 +47,9 @@ show vdc    # 查看vdc的系统mac
 ```
 * vPC system-mac和local system-mac均被用作LACP的LACP system ID，具体用法：
 
-![vpc.sys_mac](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.sys_mac.jpg "vpc.sys_mac")
+|   |   |
+| :------------: | :------------: |
+|  ![vpc.sys_mac](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.sys_mac.jpg "vpc.sys_mac") | ![vpc.sys_mac](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.sys_mac.jpg "vpc.sys_mac")  |
 
 1. N5K-1和N7K-1形成local port-channel，N7K-1会用其vPC local system-mac和N5K-1交换LACP信息；
 2. N5K-2和N7K-1和N7K-2形成了vPC，N7K-1和N7K-2会用其system-mac与N5K-2交换LACP信息。
@@ -101,7 +103,8 @@ interface port-channel11    # vPC member port
 * 该链路承载了vPC设备周期性的心跳，消息类型封装在UDP 3200端口中。该两路有两个作用：
 1. 在系统启动后，vPC域形成之前，来保证两端设备都是up的；
 2. 当vPC peer-link down后，用来检测是否有脑裂现象，即active/active状态。
-* 计时器
+#### 4.1.1 计时器
+
 | 计时器 | 默认值 |
 | :------------ | :------------ |
 | Keepalive interval | 1s |
@@ -109,6 +112,12 @@ interface port-channel11    # vPC member port
 | Keepalive timeout | 5s |
 1. Keepalive hold timeout：peer-link down失效之后，会触发keepalive hold计时器，在此期间，secondary设备会忽略peer-keepalive的hello消息。为了避免网络聚合时，对其产生的影响；
 2. Keepalive timeout：若peer-link还是没有up，会触发该计时器。在此期间，secondary会寻找vPC peer-keepalive的hello消息：如果secondary收到了hello消息，则可以推断出有脑裂发生，secondary会关闭其所有vPC member port
+#### 4.1.2 部署建议
+1. 使用专用1G的链路来进行部署；
+2. Mgmt0口；
+3. 最后可以使用三层链路使其达到路有通常。
+4. 双引擎交换机并且使用它们的mgmt0口来充当peer-keepalive link时，不能直接将mgmt0口直接插到相同的引擎中（如，一台交换机的sup1的管理口直接插到另一台交换机的sup1的管理口），应该使用一台中间设备。
+5. 
 
 
 
