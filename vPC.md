@@ -154,6 +154,28 @@ track 10 list boolean OR
 vpc domain 1
     track 10
 ```
+### 4.3 vPC member port
+vPC member port是port-channel的一个端口，并且仅支持2层网络。定义时，需要指定关键字`vpc <id>`。
+
+```
+! 两台交换机配置必须相同，如果配置不同，会导致一致性检测
+! 7K1:
+interface port-channel201
+  switchport mode trunk
+  switchport trunk native vlan 100
+  switchport trunk allowed vlan 100-105
+  vpc 201
+  ! 为了方便管理，vpc id和port-channel应该相同
+! 7K2:
+interface port-channel201
+  switchport mode trunk
+  switchport trunk native vlan 100
+  switchport trunk allowed vlan 100-105
+  vpc 201
+! 配置物理口到port-channel时，
+! ==> 根据线卡的不同，并且注意，
+! ==> 划入一个port-channel的口应该属于同类板卡。
+```
 
 
 
