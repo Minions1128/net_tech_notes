@@ -317,8 +317,10 @@ interface port-channel10
 ![vpc.1up.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.2.jpg "vpc.1up.2")
 * 3. 使用orphan port。即交换机单挂在peer switch上，但使用vPC的vlan，如果不适用vPC的vlan，就不用定义orphan port。建议在primary挂orphan port。
 ![vpc.1up.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.3.jpg "vpc.1up.3")
-
-
+### 5.4 将STP连接到vPC
+与上述方法类似：
+1. 使用非vPC的vlan连接STP设备到vPC中，在两台peer switch之间添加额外的链路
+2. 使用vPC的vlan连接到vPC中，建议连接到primary交换机上
 
 
 
