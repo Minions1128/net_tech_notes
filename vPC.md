@@ -311,14 +311,11 @@ interface port-channel10
 ```
 ### 5.3 单上联到vPC
 如果无法实现双上联到vPC，可以用以下三种方法单挂到vPC中
-1. 连接到可以双上联到vPC的交换机上。当peer-link失效后，这种方式可以保持双活下vPC的处理机制
-
+* 1. 连接到可以双上联到vPC的交换机上。当peer-link失效后，这种方式可以保持双活下vPC的处理机制
 ![vpc.1up.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.1.jpg "vpc.1up.1")
-2. 连接到vPC peer设备的非vPC vlan中。非vPC vlan是没有划入vPC member port和peer-link的vlan，并且再添加另一条链路使两台peer switch互连，即使用传统STP协议。
-
+* 2. 连接到vPC peer设备的非vPC vlan中。非vPC vlan是没有划入vPC member port和peer-link的vlan，并且再添加另一条链路使两台peer switch互连，即使用传统STP协议。
 ![vpc.1up.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.2.jpg "vpc.1up.2")
-3. 使用orphan port。即交换机单挂在peer switch上，但使用vPC的vlan，如果不适用vPC的vlan，就不用定义orphan port。建议在primary挂orphan port。
-
+* 3. 使用orphan port。即交换机单挂在peer switch上，但使用vPC的vlan，如果不适用vPC的vlan，就不用定义orphan port。建议在primary挂orphan port。
 ![vpc.1up.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.3.jpg "vpc.1up.3")
 
 
