@@ -111,7 +111,7 @@ interface port-channel11    # vPC member port
 1. 使用专用1G的链路来进行部署；
 2. 使用Mgmt0口；
 3. 最后可以使用三层链路使其达到路有通常。
-4. 双引擎交换机并且使用它们的mgmt0口来充当peer-keepalive link时，不能直接将mgmt0口直接插到相同的引擎中（如，一台交换机的sup1的管理口直接插到另一台交换机的sup1的管理口），应该使用一台中间设备。
+4. 双引擎交换机并且使用它们的mgmt0口来充当peer-keepalive link时，不能直接将mgmt0口直接插到相同的引擎中（如，一台交换机的sup1的管理口直接插到另一台交换机的sup1的管理口），应该使用一台中间设备，如下图所示。
 5. 建议使用不同的vrf来配置peer-keepalive link
 
 ![vpc.pkl.2sup.mgmt](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.pkl.2sup.mgmt.jpg "vpc.pkl.2sup.mgmt")
@@ -140,17 +140,14 @@ track 1 interface port-channel11 line-protocol
 track 2 interface Ethernet1/1 line-protocol
 track 3 interface Ethernet1/2 line-protocol
 track 10 list boolean OR
-    ! Combine all tracked objects into one.
-    ! “OR” means if ALL objects are down, 
-    ! ==> this object will go down.
-    ! ==> We have lost all connectivity 
-    ! ==> to the L3 core and the peer link.
+    ! 将所有track归入track 10，并且使用or规则
+    ! ==> or为，所有track只要有一个为真，所有为真
+    ! ==> 即，所有track失效后，该track才会失效。
     object 1
     object 2
     object 3
-! If object 10 goes down on the primary vPC peer,
-! system will switch over to other vPC peer 
-! and disable all local vPCs
+! 如果object 10在primary失效后，primary会切换到其他设备
+! ==> 切原来的primary会关闭所有的member port
 vpc domain 1
     track 10
 ```
