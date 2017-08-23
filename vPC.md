@@ -93,7 +93,7 @@ interface port-channel11    # vPC member port
   switchport mode trunk     # member port只能为2层端口
   vpc 11
 ```
-## 4. 配置vPC
+## 4. vPC的组成部分的配置
 ### 4.1 vPC peer-keepalive link
 * 该链路承载了vPC设备周期性的心跳，消息类型封装在UDP 3200端口中。该两路有两个作用：
 1. 在系统启动后，vPC域形成之前，来保证两端设备都是up的；
@@ -182,11 +182,78 @@ interface port-channel201
 * 建议使用混合chassis时，建议使用2块以上的M1线卡来保证3层 uplinks, SVI以及HSRP/VRRP特性。
 * 在混合chassis中，如果使用1块M1线卡和F1线卡混合使用时，当M1失效后：由于vPC放环机制，VLAN间的流量会有黑洞
 ，up的M1模块会处理所有的目的mac或者hsrp/vrrp的vmac；3层流量（南北向流量）没有问题。
+## 5. 将设备加入到vPC域
+* 加入的设备类型有多种：交换机、服务器、防火墙、负载均衡器、NAS（Network Attached Service）等，这些设备必须：支持802.1ad标准，或者支持配置为on模式
+* N7K不支持PAgP
+* N7K的port-channel支持不同类哈希算法，在默认VDC中配置`port-channel load-balance`
+* 强烈建议使用LACP协议来配置vPC，由于active-active模式比active-passive模式初始化速度快，所以建议使用active/active模式
+* 若不支持LACP，可以手动绑定机制，采用on模式；
+* 如果下联设备为思科Nexus交换机，建议开启LACP的graceful-convergence选项（默认开启的）；若不为思科设备，建议将该功能关闭
+### 5.1 Single-sided vPC
+* 最大支持16根链路，每台vPC交换机8根
+* 从北向南的流量，vPC设备会在本地执行负载均衡，然后将其转发出vPC member port，除非去往南向的唯一路径要穿越vPC peer-link
+### 5.2 Double-sided vPC
+* 这种vPC配置在2个接入交换机形成的vPC域中，在链接汇聚层交换机时形成另一个vPC域，成为一个big fat vPC，其成员端口也上升到32个。
+* 上层vPC域通常作为汇聚层，2、3层的边界
+* 下层vPC域作为接入层，仅仅有2层网络
+* 配置举例
 
+![vpc.double.sided.cfg.eg](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.double.sided.cfg.eg.jpg "vpc.double.sided.cfg.eg")
 
-
-
-
+7K1 configuration:
+```
+interface port-channel1
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  vpc 1
+interface Ethernet1/1-4
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  channel-group 1 mode active
+  no shutdown
+interface Ethernet1/5-8
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  channel-group 1 mode active
+  no shutdown
+! vPC peer-link
+interface port-channel10
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  spanning-tree port type network
+  vpc peer-link
+```
+7K2 configuration:
+```
+interface port-channel1
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  vpc 1
+interface Ethernet1/1-4
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  channel-group 1 mode active
+  no shutdown
+interface Ethernet1/5-8
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  channel-group 1 mode active
+  no shutdown
+! vPC peer-link
+interface port-channel10
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  spanning-tree port type network
+  vpc peer-link
+```
 
 
 
