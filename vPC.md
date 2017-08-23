@@ -171,8 +171,24 @@ interface port-channel201
   vpc 201
 ! 配置物理口到port-channel时，
 ! ==> 根据线卡的不同，并且注意，
-! ==> 划入一个port-channel的口应该属于同类板卡。
+! ==> 划入一个port-channel的口应该属于同类线卡。
 ```
+### 4.4 混合chassis模式
+* F1系列线卡提供2层以太网交换服务，M1于F1之间相互操作时。
+* 需要L3代理路由：F1的流量可以传递（单播流量）或复制（组播流量）到任意M1端口。
+* 可以使用命令来`hardware proxy layer-3 forwarding`修改M1的端口或者端口组为3层代理路由，使用命令`show hardware proxy layer-3 detail`来查看详细情况
+* 使用F1线卡为peer-link时，需要开启命令`peer-gateway exclude-vlan <VLAN list>`来排除那些备份路由的vlan
+* 使用M1线卡为peer-link时，不需要开启`peer-gateway exclude-vlan <VLAN list>`
+* 建议使用混合chassis时，建议使用2块以上的M1线卡来保证3层 uplinks, SVI以及HSRP/VRRP特性。
+* 在混合chassis中，如果使用1块M1线卡和F1线卡混合使用时，当M1失效后：由于vPC放环机制，VLAN间的流量会有黑洞
+，up的M1模块会处理所有的目的mac或者hsrp/vrrp的vmac；3层流量（南北向流量）没有问题。
+
+
+
+
+
+
+
 
 
 
