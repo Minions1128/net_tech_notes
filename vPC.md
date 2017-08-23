@@ -321,9 +321,11 @@ interface port-channel10
 与上述方法类似：
 1. 使用非vPC的vlan连接STP设备到vPC中，在两台peer switch之间添加额外的链路
 2. 使用vPC的vlan连接到vPC中，建议连接到primary交换机上
+3. 配置建议全局或者接口开启开启：STP端口类型（edge, normal还是network），Loop guard，BPDU guard，BPDU filter，并且peer switch配置要相同以免进行一致性检测
 
+![vpc.stp.blutprint](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.stp.blutprint.jpg "vpc.stp.blutprint")
 
-
+## DCI以及加密
 ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭，也包括SVI。orphan port如果连接在secondary switch上，会变为孤立端口
