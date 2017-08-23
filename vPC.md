@@ -58,7 +58,7 @@ vPC定义了两种角色：primary和secondary，primary会传递BPDU以及应�
 ### 3.5 一致性检测
 vPC每台设备有着不同的控制平面（control planes），CFS会将两台设备的状态进行同步，包括mac地址表，IGMP协议状态以及vPC状态等。系统配置必须一致，然后其会自动进行一致性检测来确保网络的正确性。有两类一致性检测：
 #### 3.5.1 Type 1
-会将对端设备或者接口暂停状态，当为graceful一致性检测时，仅暂停secondary设备，
+会将peer switch或者接口暂停状态，当为graceful一致性检测时，仅暂停secondary设备，
 * 全局检测的内容有
     * STP模式
     * 每个VLAN的STP状态
@@ -69,7 +69,7 @@ vPC每台设备有着不同的控制平面（control planes），CFS会将两台
     * 速度、双工模式、switchport模式、MTU
     * STP接口设置：端口类型、Loop Guard、根防护等
 #### 3.5.2 Type 2
-对端设备或者接口依然转发流量，但其会收到非正常报文转发的影响，所有vPC member port保持挂起状态，vPC系统会触发保护动作
+peer switch或者接口依然转发流量，但其会收到非正常报文转发的影响，所有vPC member port保持挂起状态，vPC系统会触发保护动作
 ### 3.6 配置建议
 ```
 vlan 1-4096     # 建议提前规划好vlan
@@ -257,10 +257,11 @@ interface port-channel10
 5K1 configuration:
 ```
 interface port-channel1
+  ! 在接入层，也要配置上联的port-channel
   switchport
   switchport mode trunk
   switchport trunk allowed vlan 1000-1100
-  vpc 1
+  vpc 1 ! 上联vPC id必须与N7K一致
 interface Ethernet1/1-4
   switchport
   switchport mode trunk
@@ -308,6 +309,19 @@ interface port-channel10
   spanning-tree port type network
   vpc peer-link
 ```
+### 5.3 单上联到vPC
+如果无法实现双上联到vPC，可以用以下三种方法单挂到vPC中
+1. 连接到可以双上联到vPC的交换机上。当peer-link失效后，这种方式可以保持双活下vPC的处理机制
+
+![vpc.1up.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.1.jpg "vpc.1up.1")
+2. 连接到vPC peer设备的非vPC vlan中。非vPC vlan是没有划入vPC member port和peer-link的vlan，并且再添加另一条链路使两台peer switch互连，即使用传统STP协议。
+
+![vpc.1up.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.2.jpg "vpc.1up.2")
+3. 使用orphan port。即交换机单挂在peer switch上，但使用vPC的vlan，如果不适用vPC的vlan，就不用定义orphan port。建议在primary挂orphan port。
+
+![vpc.1up.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.3.jpg "vpc.1up.3")
+
+
 
 
 
