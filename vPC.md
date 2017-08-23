@@ -254,8 +254,60 @@ interface port-channel10
   spanning-tree port type network
   vpc peer-link
 ```
-
-
+5K1 configuration:
+```
+interface port-channel1
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  vpc 1
+interface Ethernet1/1-4
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  channel-group 1 mode active
+  no shutdown
+interface Ethernet1/5-8
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  channel-group 1 mode active
+  no shutdown
+! vPC peer-link
+interface port-channel10
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  spanning-tree port type network
+  vpc peer-link
+```
+5K2 configuration:
+```
+interface port-channel1
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  vpc 1
+interface Ethernet1/1-4
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  channel-group 1 mode active
+  no shutdown
+interface Ethernet1/5-8
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  channel-group 1 mode active
+  no shutdown
+! vPC peer-link
+interface port-channel10
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 1000-1100
+  spanning-tree port type network
+  vpc peer-link
+```
 
 
 
