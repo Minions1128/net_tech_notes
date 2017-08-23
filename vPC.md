@@ -109,7 +109,7 @@ interface port-channel11    # vPC member port
 2. Keepalive timeout：若peer-link还是没有up，会触发该计时器。在此期间，secondary会寻找vPC peer-keepalive的hello消息：如果secondary收到了hello消息，则可以推断出有脑裂发生，secondary会关闭其所有vPC member port
 #### 4.1.2 部署建议
 1. 使用专用1G的链路来进行部署；
-2. Mgmt0口；
+2. 使用Mgmt0口；
 3. 最后可以使用三层链路使其达到路有通常。
 4. 双引擎交换机并且使用它们的mgmt0口来充当peer-keepalive link时，不能直接将mgmt0口直接插到相同的引擎中（如，一台交换机的sup1的管理口直接插到另一台交换机的sup1的管理口），应该使用一台中间设备。
 5. 建议使用不同的vrf来配置peer-keepalive link
