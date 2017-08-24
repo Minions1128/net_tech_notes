@@ -318,12 +318,36 @@ interface port-channel10
 * 3. 使用orphan port。即交换机单挂在peer switch上，但使用vPC的vlan，如果不适用vPC的vlan，就不用定义orphan port。建议在primary挂orphan port。
 ![vpc.1up.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.1up.3.jpg "vpc.1up.3")
 ### 5.4 将STP连接到vPC
+#### 5.4.1 连接方法
 与上述方法类似：
 1. 使用非vPC的vlan连接STP设备到vPC中，在两台peer switch之间添加额外的链路
 2. 使用vPC的vlan连接到vPC中，建议连接到primary交换机上
-3. 配置建议全局或者接口开启开启：STP端口类型（edge, normal还是network），Loop guard，BPDU guard，BPDU filter，并且peer switch配置要相同以免进行一致性检测
+#### 5.4.2 配置建议
+1. 配置建议全局或者接口开启开启：STP端口类型（edge, normal还是network），Loop guard，BPDU guard，BPDU filter，并且peer switch配置要相同以免进行一致性检测
+2. 默认vPC peer-link是开启Bridge Assurance（开启BA之后，不管什么状态，所有端口都会发送和接受BPDU，即，使用BPDU建立了双向确认机制，当一台交换机没有收到BPDU时，该端口会被置为inconsistent状态，这种机制可以防止环路的产生），不要将其关闭。
+3. 与普通端口类似，如果遇到接入端口，建议配置port fast（port type edge）以及BPDU guard策略
+4. vPC与STP设计蓝图
 
 ![vpc.stp.blutprint](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.stp.blutprint.jpg "vpc.stp.blutprint")
+
+#### 5.4.3 vPC与STP的BPDU
+* vPC的STP只由primary控制，即只有这台交换机产生和发送BPDU，即使STP的根不为vPC的primary。
+* Secondary也要启用STP功能，其会充当代理的身份，将受到的BPDU转发给primary
+* vPC的member port会共享器STP的端口状态
+* 强烈配置建议：
+1. 建议将vPC作为STP所有vlan的根
+2. 在orphan port出开启根防护
+3. 在STP端口处开启edge或者trunk edge
+2. 建议全局开启根防护、BPDU guard，不要关闭Loop guard、BA等，尤其是peer-link上的BA，但在member port上不要开启BA
+
+
+
+
+For vPC ports only the vPC primary switch runs the STP topology for those vPC ports. In other words, Spanning
+Tree Protocol for vPCs is controlled by the vPC primary peer device, and only this device generates then sends out
+Bridge Protocol Data Units (BPDUs) on Spanning Tree Protocol designated ports. This happens irrespectively of
+where the designated Spanning Tree Protocol root is located.
+
 
 ## DCI以及加密
 ## 故障场景
