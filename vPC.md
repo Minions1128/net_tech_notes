@@ -341,7 +341,7 @@ interface port-channel10
 2. 建议全局开启根防护、BPDU guard，不要关闭Loop guard、BA等，尤其是peer-link上的BA，但在member port上不要开启BA
 ### 6.4 Peer-switch
 #### 6.4.1 用法
-vPC的peer-switch特性要求两台vPC设备作为STP的一个整体，以根的形式存在，配置命令为`peer-switch`需要在两台设备上同时配置。由于之前由primary充当根，当primary失效以后，需要一段时间的收敛，这一特性避免了收敛时间。配置举例：
+vPC的peer-switch特性要求两台vPC设备作为STP的一个整体，以根的形式存在，配置命令为`peer-switch`。需要在两台设备上同时配置。由于之前由primary充当根，当primary失效以后，需要一段时间的收敛，这一特性避免了收敛时间。配置举例：
 ```
 ! 两台设备的必须配置相同的配置
 spanning-tree vlan 10-101 priority 8192
@@ -351,13 +351,32 @@ vpc domain 1
 ```
 部署该特性之后，vPC逻辑的根会将BPDU发送给其他设备，vPC双连设备就会收到两份相同的BPDU。当vPC peer-switch激活之后，BPDU代理就不会再通过peer-link来转发BPDU了。
 #### 6.4.2 Hybird拓扑
-在一些vPC域中，可能会同时存在vPC连接的设备以及STP连接的设备共同存在
+在一些vPC域中，可能会同时存在vPC连接的设备以及STP连接的设备共同存在，需要对STP网络进行根桥的设置，需要用到spanning-tree pseudo-information特性，这条命令有2条子命令：
+1. Designated priority：定义了vlan在交换机（peer switch）上的STP优先级，用于在不同vlan有效的负载均衡；
+2. Root priority：用于当其中一台vPC交换机失效又恢复后的场景：在hybrid拓扑中，由于STP的网络比vPC恢复的速度要快，这时正好这台设备的本地MAC地址比vPC系统的MAC地址更好，这时会触发STP拓扑变更。为了避免这种情况，STP中，vPC系统的优先级要比每台交换机的本地优先级要低
 
+配置举例
 
+![vpc.pseudo.info](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.pseudo.info.jpg "vpc.pseudo.info")
+```
+S1 configuration:
+S1(config)# spanning-tree pseudo-information
+S1(config-pseudo)# vlan 1 designated priority 4096
+S1(config-pseudo)# vlan 2 designated priority 8192
+S1(config-pseudo)# vlan 1 root priority 4096
+S1(config-pseudo)# vlan 2 root priority 4096
+S1(config)# vpc domain 1
+S1(config-vpc-domain)# peer-switch
 
-
-
-
+S2 configuration:
+S2(config)# spanning-tree pseudo-information
+S2(config-pseudo)# vlan 1 designated priority 8192
+S2(config-pseudo)# vlan 2 designated priority 4096
+S2(config-pseudo)# vlan 1 root priority 4096
+S2(config-pseudo)# vlan 2 root priority 4096
+S2(config)# vpc domain 1
+S2(config-vpc-domain)# peer-switch
+```
 
 ## DCI以及加密
 ## 故障场景
