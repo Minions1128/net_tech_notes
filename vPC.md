@@ -382,10 +382,23 @@ S2(config-vpc-domain)# peer-switch
 * 在vPC member port不要开启
 * 在vPC peer-link上已经自动开启
 * 即使在vPC上应用了peer-switch，还是建议在vPC上关闭BA
-## 7. L3
+## 7. vPC的L3
 不同网络的层次看待vPC的拓扑：
 
 ![vpc.l3.views](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.views.jpg "vpc.l3.views")
+
+### 7.1 设计建议
+1. 在三层与vPC之间，加入一台支持port-channel的2层设备；
+2. 不要使用2层vPC连接3层设备，除非3层设备可以静态的路由到vPC peer switch的HSRP地址；
+3. 如果同时需要2层流量和3层流量时，使用单独的3层链路来跑3层流量，将2层port-channel和3层路由流量区分开；
+4. 通过配置SVI或者特定的链路来使得两台peer switch3层可达，以达到路由备份的目的
+### 7.2 设计举例
+|  |  |  |  |
+| :------------: | :------------: | :------------: | :------------: |
+| ![vpc.l3.topo.ok.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.1.jpg "vpc.l3.topo.ok.1") | ![vpc.l3.topo.ok.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.2.jpg "vpc.l3.topo.ok.2") | ![vpc.l3.topo.ok.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.3.jpg "vpc.l3.topo.ok.3") | ![vpc.l3.topo.ok.5](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.4.jpg "vpc.l3.topo.ok.5") |
+
+
+
 
 
 
