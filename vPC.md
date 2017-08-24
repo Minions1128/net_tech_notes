@@ -394,10 +394,21 @@ S2(config-vpc-domain)# peer-switch
 4. 通过配置SVI或者特定的链路来使得两台peer switch3层可达，以达到路由备份的目的
 ### 7.2 设计举例
 一些推荐的设计拓扑
+* 这种设计在3层设备与vPC之间，添加了一台2层设备，使vPC仅有2层流量
 
-| ![vpc.l3.topo.ok.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.1.jpg "vpc.l3.topo.ok.1") | ![vpc.l3.topo.ok.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.2.jpg "vpc.l3.topo.ok.2") |
-| :------------: | :------------: |
-| ![vpc.l3.topo.ok.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.3.jpg "vpc.l3.topo.ok.3") | ![vpc.l3.topo.ok.5](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.4.jpg "vpc.l3.topo.ok.5") |
+![vpc.l3.topo.ok.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.1.jpg "vpc.l3.topo.ok.1")
+
+* 这种设计使用额外的3层链路
+
+![vpc.l3.topo.ok.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.2.jpg "vpc.l3.topo.ok.2")
+
+* 这种设计使2台peer switch建立起动态路由协议邻接关系，提供备用链路
+
+![vpc.l3.topo.ok.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.3.jpg "vpc.l3.topo.ok.3")
+
+* 在peer switch之间使用额外的3层链路，形成非vPC的STP
+
+![vpc.l3.topo.ok.5](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.4.jpg "vpc.l3.topo.ok.5")
 
 一些正确和错误的设计对比
 
