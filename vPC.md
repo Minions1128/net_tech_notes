@@ -417,7 +417,11 @@ S2(config-vpc-domain)# peer-switch
 | ![vpc.l3.topo.ok.6](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.6.jpg "vpc.l3.topo.ok.6") | ![vpc.l3.topo.no.6](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.no.6.jpg "vpc.l3.topo.no.6") |
 | ![vpc.l3.topo.ok.7](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.7.jpg "vpc.l3.topo.ok.7") | ![vpc.l3.topo.no.7](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.no.7.jpg "vpc.l3.topo.no.7") |
 | ![vpc.l3.topo.ok.8](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.8.jpg "vpc.l3.topo.ok.8") | ![vpc.l3.topo.no.8](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.no.8.jpg "vpc.l3.topo.no.8") |
-
+### 7.3 备用路径
+建立备份路径有以下3种方法，推荐度由高到低以此为：
+1. 使用单独的3层点到点链路建立vPC peer switch时间的备份路径；
+2. 使用已存在的vPC peer-link上，使用非vPC的vlan来建立SVI来建立邻居；
+3. 使用vPC peer-link，并且使用vPC的vlan来建立3层邻居（最不推荐）。
 
 
 
