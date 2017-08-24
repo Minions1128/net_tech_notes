@@ -393,9 +393,11 @@ S2(config-vpc-domain)# peer-switch
 3. 如果同时需要2层流量和3层流量时，使用单独的3层链路来跑3层流量，将2层port-channel和3层路由流量区分开；
 4. 通过配置SVI或者特定的链路来使得两台peer switch3层可达，以达到路由备份的目的
 ### 7.2 设计举例
-|  |  |  |  |
-| :------------: | :------------: | :------------: | :------------: |
-| ![vpc.l3.topo.ok.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.1.jpg "vpc.l3.topo.ok.1") | ![vpc.l3.topo.ok.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.2.jpg "vpc.l3.topo.ok.2") | ![vpc.l3.topo.ok.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.3.jpg "vpc.l3.topo.ok.3") | ![vpc.l3.topo.ok.5](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.4.jpg "vpc.l3.topo.ok.5") |
+一些推荐的设计拓扑
+
+| ![vpc.l3.topo.ok.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.1.jpg "vpc.l3.topo.ok.1") | ![vpc.l3.topo.ok.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.2.jpg "vpc.l3.topo.ok.2") |
+| :------------: | :------------: |
+| ![vpc.l3.topo.ok.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.3.jpg "vpc.l3.topo.ok.3") | ![vpc.l3.topo.ok.5](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.4.jpg "vpc.l3.topo.ok.5") |
 
 
 
