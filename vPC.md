@@ -69,7 +69,7 @@ vPC每台设备有着不同的控制平面（control planes），CFS会将两台
     * 速度、双工模式、switchport模式、MTU
     * STP接口设置：端口类型、Loop Guard、根防护等
 #### 3.5.2 Type 2
-peer switch或者接口依然转发流量，但其会收到非正常报文转发的影响，所有vPC member port保持挂起状态，vPC系统会触发保护动作
+peer switch或者接口依然转发流量，但其会收到非正常报文转发的影响，所有vPC member port保持挂起状态，vPC系统会触发保护动作，如：MAC超时时间、静态mac表项、SVI、ACL、QoS等
 ### 3.6 配置建议
 ```
 vlan 1-4096     # 建议提前规划好vlan
@@ -324,7 +324,7 @@ interface port-channel10
 2. 使用vPC的vlan连接到vPC中，建议连接到primary交换机上
 ### 6.2 配置建议
 1. 配置建议全局或者接口开启开启：STP端口类型（edge, normal还是network），Loop guard，BPDU guard，BPDU filter，并且peer switch配置要相同以免进行一致性检测
-2. 默认vPC peer-link是开启Bridge Assurance（开启BA之后，不管什么状态，所有端口都会发送和接受BPDU，即，使用BPDU建立了双向确认机制，当一台交换机没有收到BPDU时，该端口会被置为inconsistent状态，这种机制可以防止环路的产生），不要将其关闭。
+2. 默认vPC peer-link是开启Bridge Assurance，不要将其关闭。
 3. 与普通端口类似，如果遇到接入端口，建议配置port fast（port type edge）以及BPDU guard策略
 4. vPC与STP设计蓝图
 
@@ -377,7 +377,31 @@ S2(config-pseudo)# vlan 2 root priority 4096
 S2(config)# vpc domain 1
 S2(config-vpc-domain)# peer-switch
 ```
+### 6.5 BA with vPC
+开启Bridge Assurance之后，不管端口什么状态，所有端口都会发送和接受BPDU，即，使用BPDU建立了双向确认机制，当一台交换机没有收到BPDU时，该端口会被置为inconsistent状态，这种机制可以防止环路的产生。当STP端口类型为network时，自动开启。在vPC的配置建议：
+* 在vPC member port不要开启
+* 在vPC peer-link上已经自动开启
+* 即使在vPC上应用了peer-switch，还是建议在vPC上关闭BA
+## 7. L3
+不同网络的层次看待vPC的拓扑：
 
+![vpc.l3.views](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.views.jpg "vpc.l3.views")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## --------------------------------
 ## DCI以及加密
 ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
