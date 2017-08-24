@@ -399,9 +399,13 @@ S2(config-vpc-domain)# peer-switch
 | :------------: | :------------: |
 | ![vpc.l3.topo.ok.3](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.3.jpg "vpc.l3.topo.ok.3") | ![vpc.l3.topo.ok.5](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.4.jpg "vpc.l3.topo.ok.5") |
 
+一些正确和错误的设计对比
 
-
-
+| ![vpc.l3.topo.ok.4](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.4.jpg "vpc.l3.topo.ok.4") | ![vpc.l3.topo.no.4](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.no.4.jpg "vpc.l3.topo.no.4") |
+| :------------: | :------------: |
+| ![vpc.l3.topo.ok.6](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.6.jpg "vpc.l3.topo.ok.6") | ![vpc.l3.topo.no.6](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.no.6.jpg "vpc.l3.topo.no.6") |
+| ![vpc.l3.topo.ok.7](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.7.jpg "vpc.l3.topo.ok.7") | ![vpc.l3.topo.no.7](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.no.7.jpg "vpc.l3.topo.no.7") |
+| ![vpc.l3.topo.ok.8](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.ok.8.jpg "vpc.l3.topo.ok.8") | ![vpc.l3.topo.no.8](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.l3.topo.no.8.jpg "vpc.l3.topo.no.8") |
 
 
 
