@@ -432,16 +432,16 @@ S2(config-vpc-domain)# peer-switch
 ### 9.1 基本设计建议
 ![vpc.net.srv.desgin](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.net.srv.desgin.jpg "vpc.net.srv.desgin")
 
-1. 在两台N7K的VDC之间插入网络服务设备（包括防火墙、服务器以及负载均衡器），网络服务设备使用穿透模式；
+1. 在两台N7K的VDC之间插入网络服务设备（包括防火墙、服务器以及负载均衡器），网络服务设备使用transparent模式；
 2. 设计3层vPC时，如果对端在3层，需要穿过2个vPC，不建议使用vPC，而使用STP
-### 9.2 网络服务使用穿透模式
+### 9.2 网络服务使用transparent模式
 这种方式不需要再进行额外的配置，只需要设备支持port-channel以及vlan透传即可。
 
-ASA与vPC使用穿透模式连接配置举例
+ASA与vPC使用transparent模式连接配置举例
 
 ![vpc.asa.trans](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.asa.trans.jpg "vpc.asa.trans")
 
-ASA-1和ASA-2运行了HA，vlan 100用于inside，vlan 200用于outside，他们共同使用IP为100.100.100.0/24
+ASA-1和ASA-2运行了HA，vlan 100用于inside，vlan 200用于outside，他们共同使用IP为100.100.100.0/24，逻辑拓扑如下图
 
 ![vpc.asa.trans.log](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.asa.trans.log.jpg "vpc.asa.trans.log")
 
@@ -501,6 +501,90 @@ interface Vlan200
     ip 100.100.100.254
   no shutdown
 ```
+### 9.3 网络服务使用routed模式
+使用routed模式连接vPC，建议直接使用3层链路，这种方式最为推荐。还可以使用vPC链路或者单独的一个链路连接，要考虑避免3层链路直接穿越vPC的问题，并且要考虑使用特定的port-channel来承载网络应用设备之间的状态的保活vlan。有两种办法来解决这一问题
+#### 9.3.1 使用vPC链路
+![vpc.routed.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.routed.1.jpg "vpc.routed.1")
+
+为了避免违反vPC防环机制，在3层网络应用设备创建静态路由，也可以是默认路由，指向vPC的HSRP/VRRP的虚地址。在vPC设备的反向路由，指向两台网络应用设备的虚地址。
+#### 9.3.2 使用单独链路
+![vpc.routed.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.routed.2.jpg "vpc.routed.2")
+
+一般情况下，当设备需要单链接到vPC域时，需要特定链路，并且使用非vPC vlan来承载这些流量。3层网络应用设备利用3层路由协议，建立邻接关系，流量会根据路由协议的策略，来选择特定的路径。
+#### 9.3.3 ASA与vPC使用routed模式连接配置举例
+![vpc.asa.trans](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.asa.trans.jpg "vpc.asa.trans")
+
+ASA-1和ASA-2运行了HA，vlan 100用于inside，其IP段为100.100.100.0/24，vlan 200用于outside，其IP段为200.200.200.0/24，默认网关均为x.x.x.1/24。逻辑拓扑如下图
+
+![vpc.routed.log](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.routed.log.jpg "vpc.routed.log")
+
+ASA配置：
+```
+interface GigabitEthernet0/0
+  channel-group 1 mode active
+interface GigabitEthernet0/2
+  channel-group 1 mode active
+interface Port-channel1
+  port-channel load-balance vlan-src-dst-ip
+  ! 其负载均衡算法要与N7K的相同
+interface Port-channel1.100
+  vlan 100
+  nameif inside
+  security-level 99
+  ip address 100.100.100.1 255.255.255.0 standby 100.100.100.2
+interface Port-channel1.200
+  vlan 200
+  nameif outside
+  security-level 1
+  ip address 200.200.200.1 255.255.255.0 standby 200.200.200.2
+route outside 0.0.0.0 0.0.0.0 200.200.200.200 1
+```
+N7K连接ASA-1的配置：
+```
+interface port-channel1
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 100,200
+  vpc 1
+```
+N7K连接ASA-2的配置：
+```
+interface port-channel2
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 100,200
+  vpc 2
+```
+7K1配置：
+```
+interface Vlan200
+  ip address 200.200.200.10/24
+  no ip redirect
+  hsrp 200
+    ip 200.200.200.200
+  no sh
+ip route 100.100.100.0/24 Vlan200 200.200.200.1 name ASA
+```
+7K2配置：
+```
+interface Vlan200
+  ip address 200.200.200.11/24
+  no ip redirect
+  hsrp 200
+    ip 200.200.200.200
+  no sh
+ip route 100.100.100.0/24 Vlan200 200.200.200.1 name ASA
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
