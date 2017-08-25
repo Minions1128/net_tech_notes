@@ -422,6 +422,15 @@ S2(config-vpc-domain)# peer-switch
 1. 使用单独的3层点到点链路建立vPC peer switch时间的备份路径；
 2. 使用已存在的vPC peer-link上，使用非vPC的vlan来建立SVI来建立邻居；
 3. 使用vPC peer-link，并且使用vPC的vlan来建立3层邻居（最不推荐）。
+## 8. vPC与HSRP/VRRP
+### 8.1 基本配置建议
+1. 为了避免在vPC peer-link上形成路由邻接关系，定义的SVI关联HSRP/VRRP时，要作为被动路由接口。
+2. 为了便于管理，将vPC的primary定义为HSRP的active，secondary定义为standy
+3. 将所有SVI上的重定向关闭，以便管理，命令为`no ip redirect`
+
+
+
+
 
 
 
