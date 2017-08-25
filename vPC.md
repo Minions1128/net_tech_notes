@@ -435,7 +435,15 @@ S2(config-vpc-domain)# peer-switch
 1. 在两台N7K的VDC之间插入网络服务设备（包括防火墙、服务器以及负载均衡器），网络服务设备使用穿透模式；
 2. 设计3层vPC时，如果对端在3层，需要穿过2个vPC，不建议使用vPC，而使用STP
 ### 9.2 网络服务使用穿透模式
-这种方式不需要再进行额外的配置，只需要设备支持port-channel以及vlan透传即可
+这种方式不需要再进行额外的配置，只需要设备支持port-channel以及vlan透传即可。
+
+ASA与vPC使用穿透模式连接配置举例
+
+![vpc.asa.trans](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.asa.trans.jpg "vpc.asa.trans")
+
+ASA-1和ASA-2运行了HA，vlan 100用于inside，vlan 200用于outside，他们共同使用IP为100.100.100.0/24
+
+![vpc.asa.trans.log](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.asa.trans.log.jpg "vpc.asa.trans.log")
 
 
 
