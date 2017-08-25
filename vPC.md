@@ -467,6 +467,41 @@ interface Port-channel1.200
 interface BVI1
   ip address 100.100.100.5 255.255.255.0 standby 100.100.100.6
 ```
+N7K连接ASA-1的配置：
+```
+interface port-channel1
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 100,200
+  vpc 1
+```
+N7K连接ASA-2的配置：
+```
+interface port-channel2
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan 100,200
+  vpc 2
+```
+N7K-1的配置：
+```
+interface Vlan200
+  ip address 100.100.100.1/24
+  no ip redirect
+  hsrp 200
+    ip 100.100.100.254
+  no shutdown
+```
+N7K-2的配置：
+```
+interface Vlan200
+  ip address 100.100.100.2/24
+  no ip redirect
+  hsrp 200
+    ip 100.100.100.254
+  no shutdown
+```
+
 
 
 
