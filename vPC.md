@@ -445,7 +445,28 @@ ASA-1和ASA-2运行了HA，vlan 100用于inside，vlan 200用于outside，他们
 
 ![vpc.asa.trans.log](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.asa.trans.log.jpg "vpc.asa.trans.log")
 
-
+ASA配置：
+```
+interface GigabitEthernet0/0
+  channel-group 1 mode active
+interface GigabitEthernet0/2
+  channel-group 1 mode active
+interface Port-channel1
+  port-channel load-balance vlan-src-dst-ip
+  ! 其负载均衡策略要与N7K保持一致
+interface Port-channel1.100
+  vlan 100
+  nameif inside
+  bridge-group 1
+  security-level 99
+interface Port-channel1.200
+  vlan 200
+  nameif outside
+  bridge-group 1
+  security-level 1
+interface BVI1
+  ip address 100.100.100.5 255.255.255.0 standby 100.100.100.6
+```
 
 
 
