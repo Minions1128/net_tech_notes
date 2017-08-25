@@ -423,15 +423,18 @@ S2(config-vpc-domain)# peer-switch
 2. 使用已存在的vPC peer-link上，使用非vPC的vlan来建立SVI来建立邻居；
 3. 使用vPC peer-link，并且使用vPC的vlan来建立3层邻居（最不推荐）。
 ## 8. vPC与HSRP/VRRP
-### 8.1 基本配置建议
 1. 为了避免在vPC peer-link上形成路由邻接关系，定义的SVI关联HSRP/VRRP时，要作为被动路由接口。
 2. 为了便于管理，将vPC的primary定义为HSRP的active，secondary定义为standy
 3. 将所有SVI上的重定向关闭，以便管理，命令为`no ip redirect`
+4. 不建议使用HSRP/VRRP的Object Tracking功能。如果配置了object tracking，假设N7K-2的上联链路失效，N7K-2收到的目的为vMAC的帧会通过peer-link发送给N7K-1，如果该IP报文目的网段在member port中，根据vPC放环规则，该报文会被丢弃。
+5. 在DCI部署HSRP时，需要注意过滤DCI之间的HSRP的hello报文，以免出现在某个DC中，无active的现象。
+## 9. vPC与网络服务
+### 9.1 基本设计建议
+![vpc.net.srv.desgin](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.net.srv.desgin.jpg "vpc.net.srv.desgin")
 
-
-
-
-
+1. 在两台N7K的VDC之间插入网络服务设备（包括防火墙、服务器以及负载均衡器），网络服务设备使用穿透模式；
+2. 设计3层vPC时，如果对端在3层，需要穿过2个vPC，不建议使用vPC，而使用STP
+### 9.2 网络服务使用穿透模式
 
 
 
