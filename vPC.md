@@ -594,6 +594,14 @@ FEX支持与不支持vPC的场景
 |  |  |  |
 | :------------: | :------------: | :------------: |
 | ![vpc.fex.yes](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.fex.yes.png "vpc.fex.yes") | ![vpc.fex.no.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.fex.no.1.png "vpc.fex.no.1") | ![vpc.fex.no.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.fex.no.2.png "vpc.fex.no.2") |
+### 10.3 vPC与VDC
+vPC在VDC中的设计，不建议在一台N7K上的两个VDC之间建立vPC，且需要8GB的RAM的引擎模块才支持VDC的vPC设计，
+
+![vpc.vdc](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.vdc.png "vpc.vdc")
+### 10.4 vPC与ISSU
+* 在软件更新中，使用ISSU（In-Service Software Upgrade）[或者ISSD（In-Service Software Downgrade）]可以实现无中断系统升级（降级）。
+* 在默认VDC中，使用命令`install all kickstart <bootflash_kickstart-image> system <bootflash_system-image>`实现系统ISSU/ISSD，一次对primary和secondary进行系统的ISSU/ISSD。
+## 11. vPC增强特性
 
 
 
