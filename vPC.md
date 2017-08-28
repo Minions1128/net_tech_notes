@@ -659,16 +659,17 @@ N7K(config-vpc-domain)# auto-recovery
 ```
 建议在vPC两台设备上始终配置该命令
 #### 11.5.2 vPC auto-recovery reload-delay feature
-这种特性用于处理，当两台vPC peer switch均重启后，没有活着的交换机的情形。
-
-
-
-
-
-### Orphan ports禁用
-
-
-
+这种特性用于处理，当两台vPC peer switch均重启后，只有一个重启完成的交换机的情形。这时，vPC member port任然是关闭状态，直到peer邻接关系重新建立起来。vPC auto-recovery reload-delay特性允许单独的vPC交换机在一段时间内作为vPC的primary，并且将所有端口启用。时长在240s到3600s不等。配置命令为：
+```
+N7K(config-vpc-domain)# auto-recovery reload-delay <240-3600 seconds>
+```
+建议在两台vPC交换机上部署该命令
+### 11.6 Orphan ports禁用
+当vPC peer-link失效后，secondary会将所有member ports关闭，但是不会关闭orphan ports，启用该特性后，发生上述情况后，orphan ports也会自动关闭。在orphan ports下配置：
+```
+N7K (config)# int eth 1/1
+N7K (config-if)# vpc orphan-ports suspend
+```
 12. ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭，也包括SVI。orphan port如果连接在secondary switch上，会变为孤立端口
