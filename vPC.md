@@ -611,12 +611,64 @@ vPC在VDC中的设计，不建议在一台N7K上的两个VDC之间建立vPC，�
 N7k(config-vpc-domain)# peer-gateway
 ```
 建议在配置vPC时添加该命令
+#### 11.1.3 vPC Peer-Gateway Exclude-Vlan
+这条命令主要为：使用一个专门的vlan来穿越peer-link（通常叫作transit vlan）来充当备份路径。这个vlan里的流量穿越peer-link时，不会将流量上升到CPU进行转发，而是仅通过硬件进行转发。在混合板卡部署vPC时，只有以下这一拓扑会使用该功能
 
-### ARP同步
-### 延迟回复
-### Graceful type-1 check
-### 自动回复
+![vpc.peer.gateway](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.peer.gateway.png "vpc.peer.gateway")
+
+配置命令：
+```
+N7k(config-vpc-domain)# peer-gateway exclude-vlan <vlan list>
+```
+### 11.2 ARP同步
+ARP同步功能用于协议3层流量，主要是南向流量。当peer-link失效又恢复后，ARP同步功能可以将大量的ARP同步信息通过CFS，从vPC primary同步到secondary。配置命令：
+```
+N7k(config-vpc-domain)# ip arp synchronize
+```
+建议始终在vPC两台设备启用该功能
+### 11.3 延迟恢复
+当vPC重启之后，一些动态路由协议需要时间来进行收敛。延迟恢复feature目的在于拖慢vPC恢复的时间，让3层路由有足够的时间进行收敛。结果为在恢复阶段，流量仍然转移到active vPC对等设备上，使得流量更平稳的恢复以及零丢包。这种特性默认启用，切延迟时间为30s可以从1-3600进行修改。命令为：
+```
+N7K(config-vpc-domain)# delay restore <1-3600 sec>
+```
+类似命令：
+```
+delay restore interface-vlan <1-3600 sec >
+```
+可以被用作当vPC设备失效又恢复后，延迟SVI的回复时间
+### 11.4 Graceful type-1 check
+如果vPC的一致性检测时，发现有type 1的不一致，就会造成所有的vPC member port关闭。启用graceful type-1 check特性后，vPC只会关闭secondary的member port，开启命令：
+```
+N7K(config-vpc-domain)# graceful consistency-check
+```
+建议始终开启该命令
+### 11.5 自动恢复
+该特性有2种应用：
+#### 11.5.1 vPC auto-recovery feature
+这种特性提供了一种备份机制，即，vPC peer-link失效之后，vPC primary也随之失效。举个例子：在不同的失效阶段以及vPC的行为：
+
+![vpc.auto.rec.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.auto.rec.1.png "vpc.auto.rec.1")
+
+1. vPC peer-link失效，secondary（7K2）将其所有的member port关闭；
+2. primary（7K1）然后失效。7K2通过peer-keepalive link没有再收到任何信息；
+3. 在3倍的keepalive超时时间后，vPC secondary（7K2）切换为操作的primary并恢复其member port。
+
+部署命令：
+```
+N7K(config-vpc-domain)# auto-recovery
+```
+建议在vPC两台设备上始终配置该命令
+#### 11.5.2 vPC auto-recovery reload-delay feature
+这种特性用于处理，当两台vPC peer switch均重启后，没有活着的交换机的情形。
+
+
+
+
+
 ### Orphan ports禁用
+
+
+
 12. ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭，也包括SVI。orphan port如果连接在secondary switch上，会变为孤立端口
