@@ -670,7 +670,7 @@ N7K(config-vpc-domain)# auto-recovery reload-delay <240-3600 seconds>
 N7K (config)# int eth 1/1
 N7K (config-if)# vpc orphan-ports suspend
 ```
-12. ## 故障场景
+## 12. 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭，也包括SVI。orphan port如果连接在secondary switch上，会变为孤立端口
 * vPC primary switch failure：Secondary switch会变为可操作的primary switch，当原来的primary switch恢复之后，其又会变为secondary switch
