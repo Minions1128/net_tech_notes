@@ -603,12 +603,21 @@ vPC在VDC中的设计，不建议在一台N7K上的两个VDC之间建立vPC，�
 * 在默认VDC中，使用命令`install all kickstart <bootflash_kickstart-image> system <bootflash_system-image>`实现系统ISSU/ISSD，一次对primary和secondary进行系统的ISSU/ISSD。
 ## 11. vPC增强特性
 ### 11.1 Peer-gateway
+#### 11.1.1 应用场景
+一些设备（如NAS，Network-attached Storage）在启动时不会发送对默认网关的ARP请求，其学习MAC地址的方式为，侦听网络流量，选择收到的第一个源MAC地址作为其默认网关的MAC地址。当其部署到vPC中时，NAS正好先学习到vPC peer switch N7K-2的MAC地址，其会使用N7K-2中的VLAN interface作为默认网关的MAC地址。这样，NAS的所有流量会先发往N7K-2。如果VLAN间的流量，access交换机正好将报文hash到N7K-1，N7K-1又不得不将报文通过peer-link转发给N7K-2。如果这时需要将报文发送到member port，则会受到vPC放环规则的限制，从而丢弃报文。
+#### 11.1.2 解决办法
+启用peer-gateway之后，每台vPC交换机会将自己本地vlan接口的MAC添加G位后，复制到peer switch上。配置方法：在两台vPC交换机上配置
+```
+N7k(config-vpc-domain)# peer-gateway
+```
+建议在配置vPC时添加该命令
+
 ### ARP同步
 ### 延迟回复
 ### Graceful type-1 check
 ### 自动回复
 ### Orphan ports禁用
-## 故障场景
+12. ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭，也包括SVI。orphan port如果连接在secondary switch上，会变为孤立端口
 * vPC primary switch failure：Secondary switch会变为可操作的primary switch，当原来的primary switch恢复之后，其又会变为secondary switch
