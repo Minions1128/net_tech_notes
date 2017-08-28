@@ -575,6 +575,25 @@ interface Vlan200
   no sh
 ip route 100.100.100.0/24 Vlan200 200.200.200.1 name ASA
 ```
+## 10. vPC与其他技术
+### 10.1 vPC与主播
+vPC与组播
+* 在vPC拓扑下部署组播时，组播源和目的可以以2层的方式连接到vPC域中；
+* 3层组播路由协议中，完全支持PIM SM，在N7K中，(*, G)和(S, G)均为靠硬件转发。
+* PIM-SSM和PIM Bidir在vPC环境中不支持。
+
+![vpc.multi.desgin](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.multi.desgin.png "vpc.multi.desgin")
+
+* vPC通过CFS来同步IGMP信息，在vPC两端的设备可以建立相同的状态，若组播源在vPC中，两台peer switch均会active转发，复制的报文遵循vPC的放环逻辑。
+* 如果vPC member链路失效，组播在vPC云中的接受者将会收到重复报文。
+* 根据组播协议转发规则，vPC peer switch的单播路由中，到达源最优的路由会成为转发者，CFS协议会协商转发者，如果两台交换机到达源的路由等价，则选择primary进行转发。
+* 在部署组播时，可以使用命令`ip pim pre-build-spt`来提前将SPT建立好
+### 10.2 vPC与FEX
+FEX支持与不支持vPC的场景
+
+|  |  |  |
+| :------------: | :------------: | :------------: |
+| ![vpc.fex.yes](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.fex.yes.png "vpc.fex.yes") | ![vpc.fex.no.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.fex.no.1.png "vpc.fex.no.1") | ![vpc.fex.no.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.fex.no.2.png "vpc.fex.no.2") |
 
 
 
