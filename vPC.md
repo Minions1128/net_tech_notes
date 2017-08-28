@@ -602,33 +602,15 @@ vPC在VDC中的设计，不建议在一台N7K上的两个VDC之间建立vPC，�
 * 在软件更新中，使用ISSU（In-Service Software Upgrade）[或者ISSD（In-Service Software Downgrade）]可以实现无中断系统升级（降级）。
 * 在默认VDC中，使用命令`install all kickstart <bootflash_kickstart-image> system <bootflash_system-image>`实现系统ISSU/ISSD，一次对primary和secondary进行系统的ISSU/ISSD。
 ## 11. vPC增强特性
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## --------------------------------
+### 11.1 Peer-gateway
+### ARP同步
+### 延迟回复
+### Graceful type-1 check
+### 自动回复
+### Orphan ports禁用
 ## 故障场景
 * vPC member port fails：下联设备会通过PortChannel感知到故障，会将流量切换到另一个接口上。这种情况下，vPC peer-link可能会承数据流量。
 * vPC peer-link failure：当keepalive link还可用时，secondary switch会将其所有的member port关闭，也包括SVI。orphan port如果连接在secondary switch上，会变为孤立端口
 * vPC primary switch failure：Secondary switch会变为可操作的primary switch，当原来的primary switch恢复之后，其又会变为secondary switch
 * vPC keepalive link failure：其转发流量不会造成影响，但建议尽早修复
 * vPC keepalive link and peer-link both failure：如果vPC keepalive link先down，然后peer-link跟着down，primary和secondary switch同时成为primary switch，即脑裂。现有流量不会造成影响，但新的流量就不可用。同时单播mac地址和IGMP组，因此其无法维持单播和组播的转发，还可能导致duplicate包。
-## 未涉及内容
-1. DCI以及加密
