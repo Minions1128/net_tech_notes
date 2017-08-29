@@ -5,7 +5,7 @@
 * 名词解释
 
 ![vpc.component](https://github.com/Minions1128/net_tech_notes/blob/master/img/vpc.components.jpg "vpc.component")
-* 防环机制：在数据层面
+* 防环机制：在数据层面，如果数据帧穿越vPC peer-link，该数据帧不会从任何vPC member port转发出。
 1. vPC peer-link通常不转发数据，通常认为是在稳定网络中，控制平面的扩展，用来传输mac地址，vPC member port状态以及IGMP；
 2. 来自vPC member port的流量，然后穿过vPC peer-link之后，不会被允许再从其他member port出去，但可以从其他类型端口转发，如L3口，orphan port等。
 ## 2. 部署场景
