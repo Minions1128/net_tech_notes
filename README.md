@@ -11,7 +11,7 @@ Network Technology Note Summaries
 * [MPLS VPN](https://github.com/Minions1128/net_tech_notes/blob/master/MPLS/MPLS.VPN.md)
 * [MPLS TE](https://github.com/Minions1128/net_tech_notes/blob/master/MPLS/MPLS.TE.md)
 ## Others
-* [vPC](https://github.com/Minions1128/net_tech_notes/blob/master/vPC.md "vPC")
+* [vPC](https://github.com/Minions1128/net_tech_notes/tree/master/vPC "vPC")
 * [QoS](https://github.com/Minions1128/net_tech_notes/blob/master/QoS.md "QoS")
 * [VxLAN](https://github.com/Minions1128/net_tech_notes/tree/master/vxlan "VxLAN")
 * [Multicast](https://github.com/Minions1128/net_tech_notes/blob/master/Multicast.md "Multicast")
