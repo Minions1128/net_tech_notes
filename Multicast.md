@@ -234,3 +234,4 @@ ip pim spt-threshold traffic [infinity] #最后一跳路由器上设置切换阈
 ```
 #### 4.2.5 DR的作用
 在密集模式中，DR无用，稀疏模式中DR发送（*，G）join和（S，G）register报文。
+#### 4.2.6 配置举例
