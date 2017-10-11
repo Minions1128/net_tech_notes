@@ -169,6 +169,38 @@ R5, R6
 interface range fastEthernet 0/1
  ip igmp join-group 239.2.2.2
 ```
+R5，R6加入到组播组239.2.2.2之后，R4上有了(* , 239.2.2.2)的组播路由
+```
+(*, 239.2.2.2), 00:03:34/00:02:29, RP 0.0.0.0, flags: DC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Dense, 00:03:34/stopped
+    FastEthernet0/0, Forward/Dense, 00:03:34/stopped
+```
+使用R1 ping 239.2.2.2，模拟R1向R5和R6发送组播流量：
+```
+R1#ping 239.2.2.2 repeat 3
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 239.2.2.2, timeout is 2 seconds:
+.
+Reply to request 1 from 45.1.1.5, 428 ms
+Reply to request 1 from 45.1.1.6, 428 ms
+Reply to request 2 from 45.1.1.5, 96 ms
+Reply to request 2 from 45.1.1.6, 96 ms
+```
+同时，所有组播路由器里有了(* , 239.2.2.2)和(12.1.1.1, 239.2.2.2)两条组播路由
+```
+(*, 239.2.2.2), 00:01:22/stopped, RP 0.0.0.0, flags: D
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Dense, 00:01:22/stopped
+    FastEthernet0/0, Forward/Dense, 00:01:22/stopped
+
+(12.1.1.1, 239.2.2.2), 00:01:22/00:01:37, flags: T
+  Incoming interface: FastEthernet0/1, RPF nbr 23.1.1.2
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Dense, 00:01:22/stopped
+```
 ### 4.2 PIM-SM
 #### 4.2.1 RPT
 RPT中，由管理员定义一个RP，第一跳路由器收到流量之后，不会发往目的地，而是现发送给RP，然后再由RP转发给接受者。RP下游的路由器生成（*，G）表项，信源到RP仍为（S，G）表项。
