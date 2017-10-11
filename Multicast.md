@@ -116,7 +116,7 @@ PIM (Protocols Independent Multicast)，报文封装在IP报文之内，协议�
 
 组播路由协议部署完毕之后，路由器之间会建立邻居，但是不会立即发送彼此的路由条目，而是等有组播流量产生之后，才会传递路由条目。
 
-**邻居**：PIM建立邻居使用的链路有2种类型，P2P和MA。使用MA建立邻居时需要选出DR，DR的选举方式与OSPF一样，其可以抢占。维护邻居关系的Hello报文发送时间为30s，Holdtime为3.5*30=105s。
+**邻居**：PIM建立邻居使用的链路有2种类型，P2P和MA。使用MA建立邻居时需要选出DR，DR的选举方式与OSPF一样，其可以抢占。维护邻居关系的Hello报文发送时间为30s，Holdtime为3.5 * 30=105s。
 
 **接口**：当一些接口没有启用PIM的情况：
 1. 第一跳路由器的接受端口没有启用PIM，接收到所有组播报文都会拆包丢弃；
@@ -147,6 +147,27 @@ show ip pim neighbor    # 检查pim邻居
 show ip mroute          # 查看组播路由表
 # （表项中的路由条目会对应有端口，以及是否有剪裁）
 ping                    # 在信源ping组播地址
+```
+#### 4.1.4 配置举例
+拓扑如下所示：R1为组播源，R5为接受源
+```
+                                                           +---(0/1)R6
+                                                           |
+    R1(0/0)---(0/0)R2(0/1)---(0/1)R3(0/0)---(0/0)R4(0/1)---+---(0/1)R5
+
+```
+基础配置有：配置IP地址，配置动态路由协议，使得全网通。组播配置有：
+```
+R2, R3, R4
+ip multicast-routing
+interface range fastEthernet 0/0-1
+ ip pim dense-mode
+```
+R5，R6加入到组播组239.2.2.2
+```
+R5, R6
+interface range fastEthernet 0/1
+ ip igmp join-group 239.2.2.2
 ```
 ### 4.2 PIM-SM
 #### 4.2.1 RPT
