@@ -294,3 +294,5 @@ Reply to request 2 from 56.1.1.6, 160 ms
   Outgoing interface list:
     FastEthernet0/1, Forward/Sparse, 00:00:16/00:03:29
 ```
+## 5. MSDP
+MSDP用于连接多个组播路由域，其通常运行在PIM-SM中，
