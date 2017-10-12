@@ -265,14 +265,12 @@ interface range fastEthernet 0/0-1
  ip pim sparse-mode
 ip pim rp-address 2.2.2.2
 ```
-将R6加入到组播组239.2.2.2之后，从R5到RP上（R2，R3，R5）都有了(* , 239.2.2.2)的组播路由
+将R6加入到组播组239.2.2.2之后，从R5到RP上（R2，R4，R5）都有了(* , 239.2.2.2)的组播路由
 ```
-(*, 239.2.2.2), 00:00:11/00:02:59, RP 0.0.0.0, flags: DC
+(*, 239.2.2.2), 00:02:11/00:03:17, RP 2.2.2.2, flags: S
   Incoming interface: Null, RPF nbr 0.0.0.0
   Outgoing interface list:
-    FastEthernet1/1, Forward/Dense, 00:00:11/stopped
-    FastEthernet1/0, Forward/Dense, 00:00:11/stopped
-    FastEthernet0/0, Forward/Dense, 00:00:11/stopped
+    FastEthernet1/1, Forward/Sparse, 00:02:11/00:03:17
 ```
 使用R1 ping 239.2.2.2，模拟R1向R6发送组播流量：
 ```
@@ -286,15 +284,13 @@ Reply to request 2 from 56.1.1.6, 160 ms
 ```
 同时，所有组播路由器里有了(* , 239.2.2.2)和(12.1.1.1, 239.2.2.2)两条组播路由
 ```
-(*, 239.2.2.2), 00:00:45/stopped, RP 0.0.0.0, flags: D
-  Incoming interface: Null, RPF nbr 0.0.0.0
+(*, 239.2.2.2), 00:02:56/00:03:29, RP 2.2.2.2, flags: S
+  Incoming interface: FastEthernet0/0, RPF nbr 24.1.1.2
   Outgoing interface list:
-    FastEthernet1/1, Forward/Dense, 00:00:45/stopped
-    FastEthernet1/0, Forward/Dense, 00:00:45/stopped
+    FastEthernet0/1, Forward/Sparse, 00:02:56/00:03:29
 
-(12.1.1.1, 239.2.2.2), 00:00:45/00:02:14, flags: T
-  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0
+(12.1.1.1, 239.2.2.2), 00:00:16/00:02:43, flags: T
+  Incoming interface: FastEthernet0/0, RPF nbr 24.1.1.2
   Outgoing interface list:
-    FastEthernet1/0, Prune/Dense, 00:00:45/00:02:14
-    FastEthernet1/1, Forward/Dense, 00:00:45/stopped
+    FastEthernet0/1, Forward/Sparse, 00:00:16/00:03:29
 ```
