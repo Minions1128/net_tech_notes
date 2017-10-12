@@ -149,7 +149,7 @@ show ip mroute          # 查看组播路由表
 ping                    # 在信源ping组播地址
 ```
 #### 4.1.4 配置举例
-拓扑如下所示：R1为组播源，R6为接收端
+拓扑如下所示：R1为组播源，R6为接收端，R2 - R6模拟组播网络
 ```
 
                         +---(0/0)R3(0/1)---+
@@ -159,50 +159,60 @@ ping                    # 在信源ping组播地址
                         +---(0/0)R4(0/1)---+
 
 ```
-基础配置有：配置IP地址，配置动态路由协议，使得全网通。组播配置有：
+先进行基础配置：IP地址、动态路由协议等，使全网路由可达。组播配置有：
 ```
-R2, R3, R4
+R2, R5
+ip multicast-routing
+interface fa0/0
+ ip pim dense-mode
+interface fa1/0
+ ip pim dense-mode
+interface fa1/1
+ ip pim dense-mode
+
+R3, R4
 ip multicast-routing
 interface range fastEthernet 0/0-1
  ip pim dense-mode
 ```
-R5，R6加入到组播组239.2.2.2
+R6加入到组播组239.2.2.2
 ```
-R5, R6
-interface range fastEthernet 0/1
+R6
+interface range fastEthernet 0/0
  ip igmp join-group 239.2.2.2
 ```
-R5，R6加入到组播组239.2.2.2之后，R4上有了(* , 239.2.2.2)的组播路由
+R6加入到组播组239.2.2.2之后，R5上有了(* , 239.2.2.2)的组播路由
 ```
-(*, 239.2.2.2), 00:03:34/00:02:29, RP 0.0.0.0, flags: DC
+(*, 239.2.2.2), 00:00:11/00:02:59, RP 0.0.0.0, flags: DC
   Incoming interface: Null, RPF nbr 0.0.0.0
   Outgoing interface list:
-    FastEthernet0/1, Forward/Dense, 00:03:34/stopped
-    FastEthernet0/0, Forward/Dense, 00:03:34/stopped
+    FastEthernet1/1, Forward/Dense, 00:00:11/stopped
+    FastEthernet1/0, Forward/Dense, 00:00:11/stopped
+    FastEthernet0/0, Forward/Dense, 00:00:11/stopped
 ```
-使用R1 ping 239.2.2.2，模拟R1向R5和R6发送组播流量：
+使用R1 ping 239.2.2.2，模拟R1向R6发送组播流量：
 ```
 R1#ping 239.2.2.2 repeat 3
 Type escape sequence to abort.
-Sending 5, 100-byte ICMP Echos to 239.2.2.2, timeout is 2 seconds:
+Sending 3, 100-byte ICMP Echos to 239.2.2.2, timeout is 2 seconds:
+
 .
-Reply to request 1 from 45.1.1.5, 428 ms
-Reply to request 1 from 45.1.1.6, 428 ms
-Reply to request 2 from 45.1.1.5, 96 ms
-Reply to request 2 from 45.1.1.6, 96 ms
+Reply to request 1 from 56.1.1.6, 508 ms
+Reply to request 2 from 56.1.1.6, 160 ms
 ```
 同时，所有组播路由器里有了(* , 239.2.2.2)和(12.1.1.1, 239.2.2.2)两条组播路由
 ```
-(*, 239.2.2.2), 00:01:22/stopped, RP 0.0.0.0, flags: D
+(*, 239.2.2.2), 00:00:45/stopped, RP 0.0.0.0, flags: D
   Incoming interface: Null, RPF nbr 0.0.0.0
   Outgoing interface list:
-    FastEthernet0/1, Forward/Dense, 00:01:22/stopped
-    FastEthernet0/0, Forward/Dense, 00:01:22/stopped
+    FastEthernet1/1, Forward/Dense, 00:00:45/stopped
+    FastEthernet1/0, Forward/Dense, 00:00:45/stopped
 
-(12.1.1.1, 239.2.2.2), 00:01:22/00:01:37, flags: T
-  Incoming interface: FastEthernet0/1, RPF nbr 23.1.1.2
+(12.1.1.1, 239.2.2.2), 00:00:45/00:02:14, flags: T
+  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0
   Outgoing interface list:
-    FastEthernet0/0, Forward/Dense, 00:01:22/stopped
+    FastEthernet1/0, Prune/Dense, 00:00:45/00:02:14
+    FastEthernet1/1, Forward/Dense, 00:00:45/stopped
 ```
 ### 4.2 PIM-SM
 #### 4.2.1 RPT
