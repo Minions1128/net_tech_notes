@@ -248,4 +248,53 @@ ip pim spt-threshold traffic [infinity] #最后一跳路由器上设置切换阈
 #### 4.2.5 DR的作用
 在密集模式中，DR无用，稀疏模式中DR发送（* ，G）join和（S，G）register报文。
 #### 4.2.6 配置举例
-拓扑如4.1.4中相同，组播配置为：
+拓扑如4.1.4中相同，组播中，将R2配置为RP
+```
+R2, R5
+ip multicast-routing
+interface fa0/0
+ ip pim sparse-mode
+interface fa1/0
+ ip pim sparse-mode
+interface fa1/1
+ ip pim sparse-mode
+ip pim rp-address 2.2.2.2
+R3, R4
+ip multicast-routing
+interface range fastEthernet 0/0-1
+ ip pim sparse-mode
+ip pim rp-address 2.2.2.2
+```
+将R6加入到组播组239.2.2.2之后，从R5到RP上（R2，R3，R5）都有了(* , 239.2.2.2)的组播路由
+```
+(*, 239.2.2.2), 00:00:11/00:02:59, RP 0.0.0.0, flags: DC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/1, Forward/Dense, 00:00:11/stopped
+    FastEthernet1/0, Forward/Dense, 00:00:11/stopped
+    FastEthernet0/0, Forward/Dense, 00:00:11/stopped
+```
+使用R1 ping 239.2.2.2，模拟R1向R6发送组播流量：
+```
+R1#ping 239.2.2.2 repeat 3
+Type escape sequence to abort.
+Sending 3, 100-byte ICMP Echos to 239.2.2.2, timeout is 2 seconds:
+
+.
+Reply to request 1 from 56.1.1.6, 508 ms
+Reply to request 2 from 56.1.1.6, 160 ms
+```
+同时，所有组播路由器里有了(* , 239.2.2.2)和(12.1.1.1, 239.2.2.2)两条组播路由
+```
+(*, 239.2.2.2), 00:00:45/stopped, RP 0.0.0.0, flags: D
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/1, Forward/Dense, 00:00:45/stopped
+    FastEthernet1/0, Forward/Dense, 00:00:45/stopped
+
+(12.1.1.1, 239.2.2.2), 00:00:45/00:02:14, flags: T
+  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Prune/Dense, 00:00:45/00:02:14
+    FastEthernet1/1, Forward/Dense, 00:00:45/stopped
+```
