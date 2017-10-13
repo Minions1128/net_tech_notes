@@ -302,3 +302,5 @@ MSDP用于连接多个组播路由域，其通常运行在PIM-SM中，每台MSDP
 3. 由于配置了MSDP，RP也会将跃源（SA）type，length，value（TLV）消息给MSPD对端，SA消息中标识源、源发往的组播组和RP地址或者发送者的ID；
 4. 邻居收到SA TLV时会进行peer-RPF校验，来确保路径可以回到原始的RP：如果通过peer-RPF校验本地RP可以作为该组播源的RP，如果没有通过则会丢弃SA TLV消息；
 5. MSDP的peer-RPF和普通的RPF校验是不同的：peer-RPF校验的目的在于防止SA消息发生环路。RPF-peer校验可以使用6条规则（[Juniper的6条peer-RPF规则](https://www.juniper.net/documentation/en_US/junos/topics/concept/multicast-msdp-overview.html "Juniper的6条peer-RPF规则"))，或者通过BGP/MBGP路由表来发现哪个peer是对应相应RP的下一跳。
+### 5.2 配置举例
+[MSDP配置举例.cisco](http://blog.sina.com.cn/s/blog_7000d3860102ux2p.html "MSDP配置举例.cisco")
