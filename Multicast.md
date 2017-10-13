@@ -295,17 +295,28 @@ Reply to request 2 from 56.1.1.6, 160 ms
     FastEthernet0/1, Forward/Sparse, 00:00:16/00:03:29
 ```
 ## 5. MSDP
-MSDP用于连接多个组播路由域，其通常运行在PIM-SM中，每台MSDP路由器彼此建立内部、外部邻接关系形成MSDP peer，类似于BGP的peer。本地路由器会通告彼此在本区域的active组播源，当邻居路由器检测到active组播源时，他们会向active组播源发送PIM-SM join信息
+MSDP用于连接多个组播路由域，其通常运行在PIM-SM中，每台MSDP路由器彼此建立内部、外部邻接关系形成MSDP peer，类似于BGP的peer。本地路由器会通告彼此在本区域的active组播源，当邻居路由器检测到active组播源时，他们会向active组播源发送PIM-SM join信息。
+### 5.1 ？？？
+1. MSDP路由器使用TCP 639端口，较大的IP端口侦听，较低的IP端口建立TCP连接。
+2. 当运行了MSDP的PIM-SM RP成为新的本地源（local source）时，其会发送活跃源（SA）type，length，value（TLV）消息给MSPD对端。
+3. 邻居收到SA TLV时会进行peer-RPF校验，来确保路径可以回到原始的RP。
+4. 如果通过peer-RPF校验本地RP可以作为该组播源的RP；如果没有通过则会丢弃SA TLV消息。
+5. MSDP的peer-RPF和普通的RPF校验是不同的：peer-RPF校验的目的在于
 
 
 
 
-
-
-The peer with the higher IP address passively listens to a well-known port number and waits for the side with the lower IP address to establish a Transmission Control Protocol (TCP) connection. When a PIM sparse-mode RP that is running MSDP becomes aware of a new local source, it sends source-active type, length, and values (TLVs) to its MSDP peers. When a source-active TLV is received, a peer-reverse-path-forwarding (peer-RPF) check (not the same as a multicast RPF check) is done to make sure that this peer is in the path that leads back to the originating RP. If not, the source-active TLV is dropped. This TLV is counted as a “rejected” source-active message.
 
 The MSDP peer-RPF check is different from the normal RPF checks done by non-MSDP multicast routers. The goal of the peer-RPF check is to stop source-active messages from looping. Router R accepts source-active messages originated by Router S only from neighbor Router N or an MSDP mesh group member. For more information about configuring MSDP mesh groups, see Example: Configuring MSDP with Active Source Limits and Mesh Groups.
 
 Router R locates its MSDP peer-RPF neighbor (Router N) deterministically. A series of rules is applied in a particular order to received source-active messages, and the first rule that applies determines the peer-RPF neighbor. All source-active messages from other routers are rejected.
 
+The six rules applied to source-active messages originating at Router S received at Router R from Router X are as follows:
 
+If Router X originated the source-active message (Router X is Router S), then Router X is also the peer-RPF neighbor, and its source-active messages are accepted.
+If Router X is a member of the Router R mesh group, or is the configured peer, then Router X is the peer-RPF neighbor, and its source-active messages are accepted.
+If Router X is the BGP next hop of the active multicast RPF route toward Router S (Router X installed the route on Router R), then Router X is the peer-RPF neighbor, and its source-active messages are accepted.
+If Router X is an external BGP (EBGP) or internal BGP (IBGP) peer of Router R, and the last autonomous system (AS) number in the BGP AS-path to Router S is the same as Router X's AS number, then Router X is the peer-RPF neighbor, and its source-active messages are accepted.
+If Router X uses the same next hop as the next hop to Router S, then Router X is the peer-RPF neighbor, and its source-active messages are accepted.
+If Router X fits none of these criteria, then Router X is not an MSDP peer-RPF neighbor, and its source-active messages are rejected.
+The MSDP peers that receive source-active TLVs can be constrained by BGP reachability information. If the AS path of the network layer reachability information (NLRI) contains the receiving peer's AS number prepended second to last, the sending peer is using the receiving peer as a next hop for this source. If the split horizon information is not being received, the peer can be pruned from the source-active TLV distribution list.
