@@ -296,9 +296,9 @@ Reply to request 2 from 56.1.1.6, 160 ms
 ```
 ## 5. MSDP
 MSDP用于连接多个组播路由域，其通常运行在PIM-SM中，每台MSDP路由器彼此建立内部、外部邻接关系形成MSDP peer，类似于BGP的peer。本地路由器会通告彼此在本区域的active组播源，当邻居路由器检测到active组播源时，他们会向active组播源发送PIM-SM join信息。
-### 5.1 ？？？
-* MSDP路由器使用TCP 639端口，较大的IP端口侦听，较低的IP端口建立TCP连接。
-* 当运行了MSDP的PIM-SM RP成为新的本地源（local source）时，其会发送活跃源（SA）type，length，value（TLV）消息给MSPD对端。
-* 邻居收到SA TLV时会进行peer-RPF校验，来确保路径可以回到原始的RP。
-* 如果通过peer-RPF校验本地RP可以作为该组播源的RP；如果没有通过则会丢弃SA TLV消息。
-* MSDP的peer-RPF和普通的RPF校验是不同的：peer-RPF校验的目的在于防止SA消息发生环路。当路由器R确定了路由器N为其邻居，一系列按照特定的顺序应用于接受SA，第一条规则来决定peer-RPF邻居。有六条规则约束：[Understanding MSDP](https://www.juniper.net/documentation/en_US/junos/topics/concept/multicast-msdp-overview.html "Understanding MSDP")
+### 5.1 MSDP过程
+1. MSDP路由器使用TCP 639端口，较大的IP端口侦听，较低的IP端口建立TCP连接；
+2. 当组播源要发送第一个组播报文时，第一跳路由器会直接发送一个PIM注册消息给RP，RP使用注册消息来注册active组播源，以及将组播报文发送到本区域的共享树上；
+3. 由于配置了MSDP，RP也会将跃源（SA）type，length，value（TLV）消息给MSPD对端，SA消息中标识源、源发往的组播组和RP地址或者发送者的ID；
+4. 邻居收到SA TLV时会进行peer-RPF校验，来确保路径可以回到原始的RP：如果通过peer-RPF校验本地RP可以作为该组播源的RP，如果没有通过则会丢弃SA TLV消息；
+5. MSDP的peer-RPF和普通的RPF校验是不同的：peer-RPF校验的目的在于防止SA消息发生环路。RPF-peer校验可以使用6条规则（[Juniper的6条peer-RPF规则](https://www.juniper.net/documentation/en_US/junos/topics/concept/multicast-msdp-overview.html "Juniper的6条peer-RPF规则"))，或者通过BGP/MBGP路由表来发现哪个peer是对应相应RP的下一跳。
