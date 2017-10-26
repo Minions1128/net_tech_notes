@@ -15,6 +15,7 @@ Network Technology Note Summaries
 * [QoS](https://github.com/Minions1128/net_tech_notes/blob/master/QoS.md "QoS")
 * [VxLAN](https://github.com/Minions1128/net_tech_notes/tree/master/vxlan "VxLAN")
 * [Multicast](https://github.com/Minions1128/net_tech_notes/blob/master/Multicast.md "Multicast")
+* [hillstone command](https://github.com/Minions1128/net_tech_notes/blob/master/hillstone%20command.md "hillstone command")
 ## Linux Tools
 * [iperf](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/iperf.md "iperf")
 * [shell](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/Shell.md "shell")
