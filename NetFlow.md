@@ -47,8 +47,8 @@ h ip cache verbose flow
 mls netflow     # 启动netflow
 mls flow ip destination-source  # 启动netflow 的双向流量
 
-mls nde sender [version {5 | 7}] 
-选择版本如果只输入mls nde sender 系统默认启用的是版本7，如果需要版本5，则mls nde sender version 5 ，目前版本能配的是5或7，这两个版本WEB均能出现正常的数据。对于Cisco IOS 12.17以下版本的交换机，只有版本7。
+mls nde sender [version {5 | 7}]    # 选择版本
+                                    # 系统默认启用的是版本7；对于Cisco IOS 12.17以下版本的交换机，只有版本7。
 interface vlan 5    # 进入SVI配置netflow
  ip flow-export ingress
  ip route-cache flow
