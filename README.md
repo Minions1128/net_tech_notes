@@ -18,6 +18,7 @@ Network Technology Note Summaries
 * [hillstone command](https://github.com/Minions1128/net_tech_notes/blob/master/hillstone%20command.md "hillstone command")
 * [H3C VLAN](https://github.com/Minions1128/net_tech_notes/blob/master/VLAN.md "H3C VLAN")
 * [Troubleshooting High CPU Utilization](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750/software/troubleshooting/cpu_util.html "Troubleshooting High CPU Utilization")
+* [NetFlow](https://github.com/Minions1128/net_tech_notes/blob/master/NetFlow.md "NetFlow")
 
 ## Linux Tools
 * [iperf](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/iperf.md "iperf")
