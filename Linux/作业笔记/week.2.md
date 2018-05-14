@@ -1,4 +1,4 @@
-# Linux基础目录名称命名法则及功用
+# Linux基础目录
 Linux发行版基础目录名称命名法和用途规定的标准
 FHS：Filesystem Hierarchy Standard
 * /bin，供所有用户使用的，基本命令程序文件
