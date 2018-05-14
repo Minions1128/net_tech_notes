@@ -1,4 +1,5 @@
-# Linux基础目录名称命名法则及功用规定
+# Linux基础目录名称命名法则及功用
+Linux发行版基础目录名称命名法和用途规定的标准
 FHS：Filesystem Hierarchy Standard
 * /bin，供所有用户使用的，基本命令程序文件
 * /sbin，/usr/sbin, /local/usr/sbin，供系统管理使用的工具程序；
@@ -33,6 +34,10 @@ FHS：Filesystem Hierarchy Standard
     * run，运行中的进程相关数据
     * spool，应用程序的数据池
     * tmp，保存系统两次重启之间产生的临时数据
+* /proc，基于内存的，内核和进程信息的虚拟文件系统，多为内核参数；
+    * 例如：net.ipv4.ip_forward，虚拟为net/ipv4/ip_forward。存储于/proc/sys/，其完整路径为/proc/sys/ipv4/ip_forward；
+* /sys，sysfs虚拟文件系统，提供了一种比proc更为理想的访问内核数据的途径；
+    * 主要作用：为管理Linux设备提供一种统一模型的接口；
 
 ----------------------------------------------------------------------------
 # 1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
