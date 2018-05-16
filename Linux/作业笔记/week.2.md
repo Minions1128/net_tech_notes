@@ -16,7 +16,7 @@ FHS：Filesystem Hierarchy Standard
 * /media，便携性设备实现挂载，cdrom，floppy等；
 * /mnt，其他文件的临时挂载点；
 * /opt，附加程序的安装位置；
-* /src，当前主机为服务提供的数据；
+* /srv，当前主机为服务提供的数据；
 * /tmp，临时文件，可供所有用户执行写入操作，有特殊权限；
 * /usr，第二重要的文件，为universal shareable read-only，
     * bin, sbin, lib, lib64等；
