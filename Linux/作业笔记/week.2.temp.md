@@ -1,4 +1,5 @@
 # Linux基础目录
+## Linux目录构成
 Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesystem Hierarchy Standard
 * /bin，供所有用户使用的，基本命令程序文件，二进制可执行命令
 * /sbin，/usr/sbin, /local/usr/sbin，供系统管理使用的工具程序；
@@ -166,10 +167,34 @@ mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-script
   - ctrl+l：清屏，相当于clear
 
 ### 文本查看类命令：
-- head
-- tail
-- more
-- less
+- **head**：查看文件前n行，默认前10行
+  - `head [-20 | -n 20] 1.txt`
+- **tail**：查看文件后n行，默认为10
+  - -f --follow：查看文件尾部结束后，跟随显示的新增行
+- 分屏查看命令
+  - **more**：`more FILE`
+    - 特点：翻屏查看文件尾部后自动推出
+  - **less**：`less FILE`
+- **stat**：显示文件的状态
+  - 文件有两类数据：
+    - 元数据：metadata
+  - 数据：data
+  - touch命令更改这三个时间，还可以创建文件，
+    - -c，可以不创建不存在的文件
+  - -a，至修改access time
+  - -m，只修改modify time
+  - -t，改为指定时间
+
+```
+]# stat known_hosts.bak 
+Size: 26011           Blocks: 56         IO Block: 4096   regular file
+Device: 806h/2054d      Inode: 526224      Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2018-05-14 13:12:26.921902662 +0800     # 最后访问
+Modify: 2018-01-18 10:28:22.928253961 +0800    # 最后更改，更改数据，即文件内容
+Change: 2018-01-18 10:41:46.563200338 +0800# 最后改动，更改元数据，即不变文件内容
+Birth: -
+```
 
 
 ----------------------------------------------------------------------------
