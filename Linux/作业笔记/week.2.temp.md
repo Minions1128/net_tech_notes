@@ -104,6 +104,52 @@ Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesyst
     * ignoreboth：忽略以上两种
     * 修改方式：`HISTCONTROL=ignorespace`，仅对当前shell有效
 
+### 目录管理类的命令
+- **mkdir**：make directory，创建目录的基目录必须存在
+  - -p：递归创建目录
+  - -v：verbose，显示过程
+  - -m：直接设定目录权限
+- **rmdir**：remove empty directory，只用于删除空目录
+  - -p：递归删除空目录，
+  - -v：verbose，显示过程
+
+### 命令行展开
+- ~：自动展开为用户的家目录
+- {}：实现多个变量的复合使用：
+```
+mkdir ./{a,b,c}d{e,f,g}
+在当前目录下创建，ade adf adg bde bdf bdg cde cdf cdg
+
+mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-scripts},lib/modules,lib64,proc,sbin,sys,tmp,usr/local/{bin,sbin},var/{lock,log,run}}
+在当前目录下创建，如下目录
+./mylixux/
+├── bin
+├── boot
+│   └── grub
+├── dev
+├── etc
+│   ├── rc.d
+│   │   └── init.d
+│   └── sysconfig
+│       └── network-scripts
+├── lib
+│   └── modules
+├── lib64
+├── proc
+├── sbin
+├── sys
+├── tmp
+├── usr
+│   └── local
+│       ├── bin
+│       └── sbin
+└── var
+    ├── lock
+    ├── log
+    └── run
+```
+- tree：以树形结构展示目录
+
 
 ----------------------------------------------------------------------------
 # 1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
@@ -115,6 +161,7 @@ Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesyst
 
 # 3、请使用命令行展开功能来完成以下练习：
    (1)、创建/tmp目录下的：a_c, a_d, b_c, b_d
+
    (2)、创建/tmp/mylinux目录下的：
 mylinux/
     ├── bin
@@ -141,3 +188,29 @@ mylinux/
         ├── lock
         ├── log
         └── run
+./mylixux/
+├── bin
+├── boot
+│   └── grub
+├── dev
+├── etc
+│   ├── rc.d
+│   │   └── init.d
+│   └── sysconfig
+│       └── network-scripts
+├── lib
+│   └── modules
+├── lib64
+├── proc
+├── sbin
+├── sys
+├── tmp
+├── usr
+│   └── local
+│       ├── bin
+│       └── sbin
+└── var
+    ├── lock
+    ├── log
+    └── run
+mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-scripts},lib/modules,lib64,proc,sbin,sys,tmp,usr/local/{bin,sbin},var/{lock,log,run}}
