@@ -120,7 +120,8 @@ Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesyst
 mkdir ./{a,b,c}d{e,f,g}
 在当前目录下创建，ade adf adg bde bdf bdg cde cdf cdg
 
-mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-scripts},lib/modules,lib64,proc,sbin,sys,tmp,usr/local/{bin,sbin},var/{lock,log,run}}
+mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-scripts},lib/modules,lib64 \
+  ,proc,sbin,sys,tmp,usr/local/{bin,sbin},var/{lock,log,run}}
 在当前目录下创建，如下目录
 ./mylixux/
 ├── bin
@@ -157,6 +158,19 @@ mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-script
   - 强引用''
   - 弱引用""
   - 命令引用\`\`
+- 快捷键：
+  - ctrl+a：跳转至命令行首
+  - ctrl+e：跳转至命令行尾
+  - ctrl+u：删除行首到光标所在处之间的所有字符
+  - ctrl+k：删除光标所在处到行尾之间的所有字符
+  - ctrl+l：清屏，相当于clear
+
+### 文本查看类命令：
+- head
+- tail
+- more
+- less
+
 
 ----------------------------------------------------------------------------
 # 1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
