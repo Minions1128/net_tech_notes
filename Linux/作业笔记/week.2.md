@@ -89,8 +89,27 @@ FHS：Filesystem Hierarchy Standard
   * `echo $HISTSIZE`：命令历史的条数
   * `echo $HISTFILE`：查看当前用户持久保存命令历史的文件路径
   * `echo $HISTFILESIZE`：查看HISTFILE中的命令大小
-  * 选项：
-    * 53：00
+  * 用法：
+    * `history [-c] [-d 偏移量] [n]`：对历史命令进行操作
+      * **-c**：清空命令历史
+      * **-c -d 偏移量**：从指定偏移量清除历史，偏移量标识
+      * `history 10`：显示最近10条命令
+    * `history -anrw [filename]`：操作历史文件
+      * **-r**：从文件中，读取历史命令到缓存中（read the history file and append the contents to the history list）
+      * **-w**：读取缓存中的历史命令，追加到文件中（write the current history to the history file and append them to the history list）
+* 调用history中的命令：
+  * `!10`，再次执行第10条命令
+* 调用上一条命令的最后一个参数：`ESC .`、`!$`
+* 控制命令历史的方式：
+  * HISTCONTROL，其取值有：
+    * ignoredups：忽略重复命令
+    * ignorespace：忽略以空白开头的命令
+    * ignoreboth：忽略以上两种
+    * 修改方式：`HISTCONTROL=ignorespace`，仅对当前shell有效
+
+
+
+
 3、请使用命令行展开功能来完成以下练习：
    (1)、创建/tmp目录下的：a_c, a_d, b_c, b_d
    (2)、创建/tmp/mylinux目录下的：
