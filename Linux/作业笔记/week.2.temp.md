@@ -150,6 +150,13 @@ mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-script
 ```
 - tree：以树形结构展示目录
 
+### bash的基本特性
+- 命令执行的状态结果：bash通过状态返回值，成功0，失败用非0（1-255）值。其会在命令执行完成之后，保存在$?的变量中
+- 命令执行结果：引用命令的执行结果$(COMMAND)或者\`COMMAND\`来应用命令的执行结果
+- 引用：
+  - 强引用''
+  - 弱引用""
+  - 命令引用\`\`
 
 ----------------------------------------------------------------------------
 # 1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
@@ -158,59 +165,3 @@ mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-script
 
 # 2、bash的工作特性之命令执行状态返回值和命令行展开所涉及的内容及其示例演示。
 ## bash的基础特性
-
-# 3、请使用命令行展开功能来完成以下练习：
-   (1)、创建/tmp目录下的：a_c, a_d, b_c, b_d
-
-   (2)、创建/tmp/mylinux目录下的：
-mylinux/
-    ├── bin
-    ├── boot
-    │   └── grub
-    ├── dev
-    ├── etc
-    │   ├── rc.d
-    │   │   └── init.d
-    │   └── sysconfig
-    │       └── network-scripts
-    ├── lib
-    │   └── modules
-    ├── lib64
-    ├── proc
-    ├── sbin
-    ├── sys
-    ├── tmp
-    ├── usr
-    │   └── local
-    │       ├── bin
-    │       └── sbin
-    └── var
-        ├── lock
-        ├── log
-        └── run
-./mylixux/
-├── bin
-├── boot
-│   └── grub
-├── dev
-├── etc
-│   ├── rc.d
-│   │   └── init.d
-│   └── sysconfig
-│       └── network-scripts
-├── lib
-│   └── modules
-├── lib64
-├── proc
-├── sbin
-├── sys
-├── tmp
-├── usr
-│   └── local
-│       ├── bin
-│       └── sbin
-└── var
-    ├── lock
-    ├── log
-    └── run
-mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-scripts},lib/modules,lib64,proc,sbin,sys,tmp,usr/local/{bin,sbin},var/{lock,log,run}}
