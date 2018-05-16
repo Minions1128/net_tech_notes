@@ -42,8 +42,55 @@ FHS：Filesystem Hierarchy Standard
 ----------------------------------------------------------------------------
 # 1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
 从根开始，自顶向下
+## Linux系统上的文件类型
+* **-**：常规文件，即，f
+* **d**：目录文件
+* **b**：block device：块设备文件，支持以“block”为单位进行随机线性访问
+* **c**：character device，字符设备文件，支持以“character”为单位线性访问
+  * 设备类型文件中，其文件大小的位置有两个数字，其含义为：
+    * major number：主设备号，标识设备类型，进而确定要加载的驱动程序
+    * minor number：次设备好，标识同种设备的不同设备
+* **l**：symbolic link：符号连接文件，类似于快捷方式
+* **p**：pipe，命名管道
+* **s**：socket，套接字文件，两个进程进行通信时使用。
+
+## 基本命令
+命令类型：内部命令、外部命令。通过`type COMMAND`类查看。命令有别名，别名可以与原名相同，此时原名被隐藏。如果要运行原命令，需要在使用`/`
+### 别名
+* 查看所有可用的别名定义：`aslias`
+* 定义别名：`alias fping='ping -w 1 -n 10 -i 0.01'`，仅本次登录有效
+* 撤销别名：`unalias fping`
+
+### 命令用法
+* **witch**：显示命令的完整路径
+  * 用法：which [options] [--] programname [...]
+  * 参数：
+    * --skip-alias：忽略别名
+* **whereis**：显示二进制程序路径、手册路径和源地址路径
+  * 用法：whereis [options] [-BMS directory... -f] name...
+  * 选项：
+    * -b：仅显示二进制程序路径
+    * -m：Search only for manuals.
+    * -s：Search only for sources.
+* **who**：登录当前系统的用户
+  * 选项：
+    * -b：系统上一次的启动时间
+    * -r：运行级别
+* w：增强版的who命令
+
+
+
 
 # 2、bash的工作特性之命令执行状态返回值和命令行展开所涉及的内容及其示例演示。
+## bash的基础特性
+### 命令历史
+* shell进程会在其会话中，保存此前用户提交执行的命令。使用`history`命令查看
+* 定制history的功能，可通过环境变量来实现：
+  * `echo $HISTSIZE`：命令历史的条数
+  * `echo $HISTFILE`：查看当前用户持久保存命令历史的文件路径
+  * `echo $HISTFILESIZE`：查看HISTFILE中的命令大小
+  * 选项：
+    * 53：00
 3、请使用命令行展开功能来完成以下练习：
    (1)、创建/tmp目录下的：a_c, a_d, b_c, b_d
    (2)、创建/tmp/mylinux目录下的：
