@@ -1,7 +1,6 @@
 # Linux基础目录
-Linux发行版基础目录名称命名法和用途规定的标准
-FHS：Filesystem Hierarchy Standard
-* /bin，供所有用户使用的，基本命令程序文件
+Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesystem Hierarchy Standard
+* /bin，供所有用户使用的，基本命令程序文件，二进制可执行命令
 * /sbin，/usr/sbin, /local/usr/sbin，供系统管理使用的工具程序；
 * /boot，引导加载器必须用到的各静态文件：kernel，initramfs（initrd），grub等；
 * /dev，设备文件或设备文件；
@@ -39,9 +38,6 @@ FHS：Filesystem Hierarchy Standard
 * /sys，sysfs虚拟文件系统，提供了一种比proc更为理想的访问内核数据的途径；
     * 主要作用：为管理Linux设备提供一种统一模型的接口；
 
-----------------------------------------------------------------------------
-# 1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
-从根开始，自顶向下
 ## Linux系统上的文件类型
 * **-**：常规文件，即，f
 * **d**：目录文件
@@ -56,34 +52,35 @@ FHS：Filesystem Hierarchy Standard
 
 ## 基本命令
 命令类型：内部命令、外部命令。通过`type COMMAND`类查看。命令有别名，别名可以与原名相同，此时原名被隐藏。如果要运行原命令，需要在使用`/`
-### 别名
+### aslias
 * 查看所有可用的别名定义：`aslias`
 * 定义别名：`alias fping='ping -w 1 -n 10 -i 0.01'`，仅本次登录有效
 * 撤销别名：`unalias fping`
 
-### 命令用法
+### witch
 * **witch**：显示命令的完整路径
   * 用法：which [options] [--] programname [...]
   * 参数：
     * --skip-alias：忽略别名
+
+### whereis
 * **whereis**：显示二进制程序路径、手册路径和源地址路径
   * 用法：whereis [options] [-BMS directory... -f] name...
   * 选项：
     * -b：仅显示二进制程序路径
     * -m：Search only for manuals.
     * -s：Search only for sources.
+
+### who
 * **who**：登录当前系统的用户
   * 选项：
     * -b：系统上一次的启动时间
     * -r：运行级别
+
+### w
 * w：增强版的who命令
 
-
-
-
-# 2、bash的工作特性之命令执行状态返回值和命令行展开所涉及的内容及其示例演示。
-## bash的基础特性
-### 命令历史
+### history
 * shell进程会在其会话中，保存此前用户提交执行的命令。使用`history`命令查看
 * 定制history的功能，可通过环境变量来实现：
   * `echo $HISTSIZE`：命令历史的条数
@@ -108,9 +105,15 @@ FHS：Filesystem Hierarchy Standard
     * 修改方式：`HISTCONTROL=ignorespace`，仅对当前shell有效
 
 
+----------------------------------------------------------------------------
+# 1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
+从根开始，自顶向下
 
 
-3、请使用命令行展开功能来完成以下练习：
+# 2、bash的工作特性之命令执行状态返回值和命令行展开所涉及的内容及其示例演示。
+## bash的基础特性
+
+# 3、请使用命令行展开功能来完成以下练习：
    (1)、创建/tmp目录下的：a_c, a_d, b_c, b_d
    (2)、创建/tmp/mylinux目录下的：
 mylinux/
