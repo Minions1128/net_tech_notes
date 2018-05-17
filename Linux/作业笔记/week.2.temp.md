@@ -192,7 +192,7 @@ Device: 806h/2054d      Inode: 526224      Links: 1
 Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
 Access: 2018-05-14 13:12:26.921902662 +0800     # 最后访问
 Modify: 2018-01-18 10:28:22.928253961 +0800    # 最后更改，更改数据，即文件内容
-Change: 2018-01-18 10:41:46.563200338 +0800# 最后改动，更改元数据，即不变文件内容
+Change: 2018-01-18 10:41:46.563200338 +0800 # 最后改动，更改元数据，即不变文件内容
 Birth: -
 ```
 ### 文件管理工具
@@ -232,3 +232,29 @@ Birth: -
     - -i：prompt before every removal
   - -f, --force：ignore nonexistent files and arguments, never prompt
   - -r, -R, --recursive：remove directories and their contents recursively
+
+### bash 基础特性：globbing
+文件名通配
+- 匹配模式：元字符
+  - \*：任意长度的任意字符
+  - ?：任意单个字符
+  - []：匹配指定范围内的任意单个字符
+    - [a-z]：任意单个字母a-z
+  - [0-9]：任意单个数字
+  - [a-z0-9]：任意单个字母或者数字
+  - [abcxyz]：a, b, c, x, y, z中的任意单个字符
+  - [[:upper:]]：所有大写字母
+  - [[:lower:]]：所有小写字母
+  - [[:alpha:]：所有字母
+  - [[:digit:]]：所有数字
+  - [[:alnum:]]：所有字母和数字
+  - [[:space:]]：空白字符
+    - \为转义字符
+  - [[:punct:]]：所有标点符号
+  - [^]：匹配指定范围外的任意单个字符：
+    - [^[:alnum:]]：任意非字母和数字的字符
+
+### I/0重定向及管道
+程序三种数据流：
+- 输入的数据流：
+48：51
