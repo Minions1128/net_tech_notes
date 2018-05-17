@@ -195,7 +195,43 @@ Modify: 2018-01-18 10:28:22.928253961 +0800    # 最后更改，更改数据，�
 Change: 2018-01-18 10:41:46.563200338 +0800# 最后改动，更改元数据，即不变文件内容
 Birth: -
 ```
-
+### 文件管理工具
+- cp：copy，复制文件的数据
+  - `cp [OPTION]... [-T] SOURCE DEST`：单文件复制
+    - 若DEST不存在：创建此文件，然后将数据流填充到该文件中
+  - 若DEST存在：
+    - 若DEST是非目录文件：覆盖目标文件
+    - 若DEST是目录文件：现在DEST目录下创建一个与源文件同名文件，并复制其数据流。
+  - `cp [OPTION]... SOURCE... DIRECTORY`，或者`cp [OPTION]... -t DIRECTORY SOURCE...`：多源复制
+    - 若DEST不存在：错误
+  - 若DEST存在：
+    - 若DEST为非目录文件：错误
+    - 所DEST为目录文件：将所有文件复制到目标目录
+  - 选项：
+    - -i, --interactive：交互式复制，提示是否覆盖已有文件
+  - -f, --force：强制复制目标文件
+  - -R, -r, --recursive：递归复制目录
+  - -d：只复制符号连接文件本身，不是连接的目标文件本身
+  - --preserve={mode | ownership | timestamps}：
+    - mode：保留原来权限
+    - ownership：从属关系
+    - timestamps：时间戳
+    - context：安全标签
+    - xazttr：扩展属性
+    - links：符号连接
+    - all：上述所有属性
+  - -a, --archive：用于实现归档，其等价于：-dR --preserve=all
+- mv：move，移动或者重命名文件
+  - 用法和cp类似：其没有-r选项
+  - 选项：
+    - -i, --interactive：prompt before overwrite
+    - -f, --force：do not prompt before overwriting
+- rm：remove
+  - rm [OPTION]... FILE...
+  - 选项：
+    - -i：prompt before every removal
+  - -f, --force：ignore nonexistent files and arguments, never prompt
+  - -r, -R, --recursive：remove directories and their contents recursively
 
 ----------------------------------------------------------------------------
 # 1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
