@@ -152,20 +152,6 @@ mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-script
 ```
 - tree：以树形结构展示目录
 
-## bash的基本特性
-- 命令执行的状态结果：bash通过状态返回值，成功0，失败用非0（1-255）值。其会在命令执行完成之后，保存在$?的变量中
-- 命令执行结果：引用命令的执行结果$(COMMAND)或者\`COMMAND\`来应用命令的执行结果
-- 引用：
-  - 强引用''
-  - 弱引用""
-  - 命令引用\`\`
-- 快捷键：
-  - ctrl+a：跳转至命令行首
-  - ctrl+e：跳转至命令行尾
-  - ctrl+u：删除行首到光标所在处之间的所有字符
-  - ctrl+k：删除光标所在处到行尾之间的所有字符
-  - ctrl+l：清屏，相当于clear
-
 ### 文本查看类命令：
 - **head**：查看文件前n行，默认前10行
   - `head [-20 | -n 20] 1.txt`
@@ -233,7 +219,21 @@ Birth: -
   - -f, --force：ignore nonexistent files and arguments, never prompt
   - -r, -R, --recursive：remove directories and their contents recursively
 
-### bash 基础特性：globbing
+## bash的基本特性
+- 命令执行的状态结果：bash通过状态返回值，成功0，失败用非0（1-255）值。其会在命令执行完成之后，保存在$?的变量中
+- 命令执行结果：引用命令的执行结果$(COMMAND)或者\`COMMAND\`来应用命令的执行结果
+- 引用：
+  - 强引用''
+  - 弱引用""
+  - 命令引用\`\`
+- 快捷键：
+  - ctrl+a：跳转至命令行首
+  - ctrl+e：跳转至命令行尾
+  - ctrl+u：删除行首到光标所在处之间的所有字符
+  - ctrl+k：删除光标所在处到行尾之间的所有字符
+  - ctrl+l：清屏，相当于clear
+
+## bash 基础特性：globbing
 文件名通配
 - 匹配模式：元字符
   - \*：任意长度的任意字符
