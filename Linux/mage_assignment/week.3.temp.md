@@ -1,0 +1,26 @@
+# 权限管理
+## 权限：
+- r：readable，4，可获取文件的数据；或者可以使用`ls`获取其目录下的所有文件列表，；
+- w：writable，2，可修改文件的数据；或者修改其目录下的文件列表，即创建、删除文件；
+- x：executable，1，可将文件运行为进程；或者可`cd`到其目录中；且可使用`ls -l`来获取所有文件的详细属性
+
+## 权限管理命令：
+- chmod：
+  - 三类用户：u(ser), g(roup), o(ther), a(ll)
+  - chmod [OPTION]... MODE[,MODE]... FILE...：对文件单独操作
+    - MODE表示法：
+      - 赋值表示：操作一类用户的所有权限位，`chmod g=rx FILE`, `chmod ug=r FILE`，`chmod u=rwx,g=rw,o= FILE` 
+      - 授权表示：操作一类用户的一个权限位，`chmod o+r FILE`，`chmod go-x FILE`，`chmod u+x,g+r FILE`
+  - chmod [OPTION]... OCTAL-MODE FILE...：将文件修为对应的8进制标识的权限：`chmod 777 FILE`
+  - chmod [OPTION]... --reference=RFILE FILE...：将RFILE所对应的权限也赋给FILE：`chmod --reference=RFILE FILE`
+  - 选项：
+    - -R, --recursive：递归修改
+- chown：修改属主属组命令
+  - chown [OPTION]... [OWNER][:[GROUP]] FILE...
+  - chown [OPTION]... --reference=RFILE FILE...
+  - 选项：
+    - -R, --recursive，递归修改
+- chgrp：修改属组的命令
+  - chgrp [OPTION]... GROUP FILE...
+  - chgrp [OPTION]... --reference=RFILE FILE...
+- 用户对目录有写权限，对目录下的文件无写权限，无法修改该目录，可以删除该文件。
