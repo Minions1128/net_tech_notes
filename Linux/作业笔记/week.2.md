@@ -1,4 +1,4 @@
-# Linux基础目录
+# Linux 文件
 ## Linux目录构成
 Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesystem Hierarchy Standard
 * /bin，供所有用户使用的，基本命令程序文件，二进制可执行命令
@@ -51,7 +51,7 @@ Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesyst
 * **p**：pipe，命名管道
 * **s**：socket，套接字文件，两个进程进行通信时使用。
 
-## 基本命令
+## 文件相关基本命令
 命令类型：内部命令、外部命令。通过`type COMMAND`类查看。命令有别名，别名可以与原名相同，此时原名被隐藏。如果要运行原命令，需要在使用`/`
 ### aslias
 * 查看所有可用的别名定义：`aslias`
@@ -152,7 +152,7 @@ mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-script
 ```
 - tree：以树形结构展示目录
 
-### bash的基本特性
+## bash的基本特性
 - 命令执行的状态结果：bash通过状态返回值，成功0，失败用非0（1-255）值。其会在命令执行完成之后，保存在$?的变量中
 - 命令执行结果：引用命令的执行结果$(COMMAND)或者\`COMMAND\`来应用命令的执行结果
 - 引用：
@@ -403,30 +403,3 @@ Birth: -
         - 管理员切换到任何用户都无需密码
     - -c 'COMMAND'：不切换用户，仅以用户的身份执行命令：`su - USERNAME -c 'whoami'`
 - 其他命令：chsh, chfn, finger, whoami, pwck, grpck
-
-### 权限管理
-- 权限：
-  - r：readable，4，可获取文件的数据；或者可以使用`ls`获取其目录下的所有文件列表，；
-  - w：writable，2，可修改文件的数据；或者修改其目录下的文件列表，即创建、删除文件；
-  - x：executable，1，可将文件运行为进程；或者可`cd`到其目录中；且可使用`ls -l`来获取所有文件的详细属性
-- 权限管理命令：
-  - chmod：
-    - 三类用户：u(ser), g(roup), o(ther), a(ll)
-    - chmod [OPTION]... MODE[,MODE]... FILE...：对文件单独操作
-      - MODE表示法：
-        - 赋值表示：操作一类用户的所有权限位，`chmod g=rx FILE`, `chmod ug=r FILE`，`chmod u=rwx,g=rw,o= FILE` 
-        - 授权表示：操作一类用户的一个权限位，`chmod o+r FILE`，`chmod go-x FILE`，`chmod u+x,g+r FILE`
-    - chmod [OPTION]... OCTAL-MODE FILE...：将文件修为对应的8进制标识的权限：`chmod 777 FILE`
-    - chmod [OPTION]... --reference=RFILE FILE...：将RFILE所对应的权限也赋给FILE：`chmod --reference=RFILE FILE`
-    - 选项：
-      - -R, --recursive：递归修改
-  - chown：修改属主属组命令
-    - chown [OPTION]... [OWNER][:[GROUP]] FILE...
-    - chown [OPTION]... --reference=RFILE FILE...
-    - 选项：
-      - -R, --recursive，递归修改
-  - chgrp：修改属组的命令
-    - chgrp [OPTION]... GROUP FILE...
-    - chgrp [OPTION]... --reference=RFILE FILE...
-  - 用户对目录有写权限，对目录下的文件无写权限，无法修改该目录，可以删除该文件。
-51：  35
