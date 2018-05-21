@@ -218,6 +218,8 @@ Birth: -
     - -i：prompt before every removal
   - -f, --force：ignore nonexistent files and arguments, never prompt
   - -r, -R, --recursive：remove directories and their contents recursively
+- install命令：
+
 
 ## bash的基本特性
 - 命令执行的状态结果：bash通过状态返回值，成功0，失败用非0（1-255）值。其会在命令执行完成之后，保存在$?的变量中

@@ -1,9 +1,4 @@
 # 权限管理
-## 权限：
-- r：readable，4，可获取文件的数据；或者可以使用`ls`获取其目录下的所有文件列表，；
-- w：writable，2，可修改文件的数据；或者修改其目录下的文件列表，即创建、删除文件；
-- x：executable，1，可将文件运行为进程；或者可`cd`到其目录中；且可使用`ls -l`来获取所有文件的详细属性
-
 ## 权限管理命令：
 - chmod：
   - 三类用户：u(ser), g(roup), o(ther), a(ll)
@@ -15,12 +10,57 @@
   - chmod [OPTION]... --reference=RFILE FILE...：将RFILE所对应的权限也赋给FILE：`chmod --reference=RFILE FILE`
   - 选项：
     - -R, --recursive：递归修改
+  - 修改文件权限，仅管理员可以修改文件权限
 - chown：修改属主属组命令
   - chown [OPTION]... [OWNER][:[GROUP]] FILE...
   - chown [OPTION]... --reference=RFILE FILE...
   - 选项：
     - -R, --recursive，递归修改
+  - 修改文件属主，仅仅是管理员，或者文件属主为自己的文件
 - chgrp：修改属组的命令
   - chgrp [OPTION]... GROUP FILE...
   - chgrp [OPTION]... --reference=RFILE FILE...
 - 用户对目录有写权限，对目录下的文件无写权限，无法修改该目录，可以删除该文件。
+- umask：文件权限反向掩码，遮罩码；
+  - 文件默认权限：使用`666-umask`，默认不可以有执行权限，如果得到的结果有执行权限，则需要将其+1
+  - 目录默认权限：使用`777-umask`，默认可以有执行权限
+  - umask命令：
+    - 查看umask：`umask`
+    - 修改umask：`umask 027`
+    - 此类命令仅对当前shell有效
+- install命令：copy files and **set attributes**
+  - install [OPTION]... [-T] SOURCE DEST：将单个源文件复制到目的
+  - install [OPTION]... SOURCE... DIRECTORY：将多个源复制到目的
+  - install [OPTION]... -t DIRECTORY SOURCE...：同上
+  - install [OPTION]... -d DIRECTORY...：创建空目录
+  - 选线：
+    - -m, --mode=MODE：设定目标文件权限，默认为755
+    - -o, --owner=OWNER：设定文件属主
+    - -g, --group=GROUP：设定文件属组
+    - -d, --directory：创建目录
+- mktemp：创建临时文件、目录
+  - mktemp [OPTION]... [TEMPLATE]：`mktemp ./1.tXXXX`，在当前目录下，创建名为1.XXXX的文件，XXX为随机字符，且至少为3个X
+  - 选项：
+    - -d, --directory：创建临时目录
+    - -u, --dry-run：用于测试，不会真正创建出文件
+  - 该命令会将文件名直接返回，可以将其文件名保存起来
+
+# BASH基础
+# BASH基础
+- 终端：附着在终端的接口程序：
+  - GUI：KDE，GNome，Xfce
+  - CLI：/etc/shells
+- bash特性：
+  - 命令行展开：~，｛｝
+  - 命令别名：alias
+  - 命令历史：history
+  - 文件名通配：glob
+  - 快捷键：
+  - 命令补全：
+  - 路径补全：
+  - 命令hash：缓存此前命令的查找结果：key-value（搜索键-值）
+    - 命令：
+      - `hash`：列出
+      - `hash -d COMMAND`：删除相关命令
+      - 26：24
+# shell编程初步
