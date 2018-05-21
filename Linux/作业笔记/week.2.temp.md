@@ -403,3 +403,4 @@ Birth: -
         - 管理员切换到任何用户都无需密码
     - -c 'COMMAND'：不切换用户，仅以用户的身份执行命令：`su - USERNAME -c 'whoami'`
 - 其他命令：chsh, chfn, finger, whoami, pwck, grpck
+
