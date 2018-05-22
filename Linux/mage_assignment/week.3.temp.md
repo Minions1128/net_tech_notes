@@ -46,6 +46,7 @@
   - 该命令会将文件名直接返回，可以将其文件名保存起来
 
 # BASH基础
+## 回顾
 - 终端：附着在终端的接口程序：
   - GUI：KDE，GNome，Xfce
   - CLI：/etc/shells
