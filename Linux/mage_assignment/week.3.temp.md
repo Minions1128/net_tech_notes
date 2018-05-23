@@ -156,12 +156,12 @@
         - 全局文件：对所有用户都有效，如：`/etc/profile`，`/etc/profiled.d/*.sh`
         - 用户个人：对当前用户有效：如`~/.bash_profile`
         - 用途：用于定义环境变量，用于运行命令、脚本
-        - 读取顺序：`/etc/profile` --> `/etc/profile.d/*` --> `~/.bash_profile` --> `~/.bashrc` --> `/etc/bashrc`
+        - 读取顺序：`/etc/profile` --> `/etc/profile.d/*.sh` --> `~/.bash_profile` --> `~/.bashrc` --> `/etc/bashrc`
       - bashrc类：为非交互式登录的shell提供配置
         - 全局文件：`/etc/bashrc`
         - 用户个人：`~/.bashrc`
         - 用途：用途定义本地变量，定义命令别名
-        - 读取顺序：`~/.bashrc` --> `/etc/bashrc` --> `/etc/profile.d/*`
+        - 读取顺序：`~/.bashrc` --> `/etc/bashrc` --> `/etc/profile.d/*.sh`
     - 仅有管理员可以定义配置文件
     - 特性的定义：
       - 命令行中定义的：例如变量和别名作用域为当前shell进程的生命周期；
@@ -169,4 +169,48 @@
         1. 通过命令行重复定义一次；
         2. 强制shell进程重读配置文件：`~]# {source | .} /PATH/FROM/CONF_FILE`
 
+# 文本处理工具
+- Linux文本处理三剑客
+  - grep：文本过滤工具，以模式（pattern）进行过滤
+  - sed：stream editor，流编辑器，文本编辑工具
+  - (g)awk：文本报告生成器，可以格式化文本
+
+- **grep**：Global search REgular expression and Print out the line
+  - 模式：由正则表达式的元字符及文本字符所编写的过滤条件
+  - 用法：
+    - grep [OPTIONS] PATTERN [FILE...]：直接使用pattern
+    - grep [OPTIONS] [-e PATTERN | -f FILE] [FILE...]，将pattern 放在文件中使用
+  - 选项：
+    - -i, --ignore-case：不区分字符大小写
+    - -o, --only-matching：近显示其字符串本身
+    - -v, --invert-match：显示不能被模式匹配的
+    - -E, --extended-regexp：支持使用扩展的正则表达式
+    - -q, --quiet, --silent：不输出任何信息
+    - -A #：after，同时输出匹配到的字符的前#行
+    - -B #：before，同时输出匹配到的字符的后#行
+    - -C #：context，同时输出匹配到的字符的前后#行
+
+## 正则表达式
+Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式，其中有些字符不表示其字面意义，而表示控制、通配的功能。
+- 分为两类：
+  - 基本正则表达式：BRE
+  - 扩展正则表达式：ERE
+  - 其元字符不一致
+- 基本正则的元字符
+  - 字符匹配：
+    - `.`：匹配任意单个字符
+    - `[]`：匹配指定范围内的任意单个字符
+    - `[^]`：匹配指定范围外的任意单个字符
+  - 匹配次数：用于要指定其出现的次数的字符后面，用于限制其前面字符出现的次数，默认工作于贪婪模式
+    - `*`：匹配其前面的字符任意次
+    - `.*`：匹配任意表达式的任意字符
+    - `\?`：匹配其前面的字符匹配0次或1次
+    - `\+`：匹配前面的字符1次或者多次
+    - `\{m\}`：匹配前面的字符m次
+    - `\{m, n\}`：匹配前面的字符，至少m次，最多n次
+    - `\{m,\}`：匹配前面的字符，至少m次
+  - 位置锚定
+    - 
+  - 分组以及引用
+# 6.3 0:55:00
 # 6.4 0:14:00
