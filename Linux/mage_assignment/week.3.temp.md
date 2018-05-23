@@ -155,11 +155,11 @@
         - 全局文件：对所有用户都有效，如：`/etc/profile`，`/etc/profiled.d/*.sh`
         - 用户个人：对当前用户有效：如`~/.bash_profile`
         - 用途：用于定义环境变量，用于运行命令、脚本
-        - 读取顺序：`/etc/profile --> /etc/profile.d/* --> /.bash_profile --> /.bashrc --> /etc/bashrc`
+        - 读取顺序：`/etc/profile --> /etc/profile.d/* --> ~/.bash_profile --> ~/.bashrc --> /etc/bashrc`
       - bashrc类：为非交互式登录的shell提供配置
         - 全局文件：`/etc/bashrc`
         - 用户个人：`~/.bashrc`
         - 用途：用途定义本地变量，定义命令别名
-        - 读取顺序：`/.bashrc --> /etc/bashrc --> /etc/profile.d/*`
+        - 读取顺序：`~/.bashrc --> /etc/bashrc --> /etc/profile.d/*`
     - 仅有管理员可以定义配置文件
     - 命令行中的定义的特性：例如，变量和别名，作用于01:05:00
