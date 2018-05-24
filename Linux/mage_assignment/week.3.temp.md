@@ -261,4 +261,49 @@ Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式�
     - `C|cat`：表示C或者cat
     - `(C|c)at`：表示Cat或者cat
 
+## 文本查看及处理工具
+- wc：word count
+  - `wc [OPTION]... [FILE]...`：查看文件的行数、单词数、字节数
+  - 选项：
+    - -l, --lines：行数
+    - -w, --words：单词数
+    - -c, --bytes：字节数
+- cut：文本截取工具
+  - `cut OPTION... [FILE]...`
+  - 选项：
+    - -d, --delimiter=DELIM，直接跟分隔符
+    - -f, --fields=LIST，截取的范围：
+      - #，一个字段
+      - #-#，连续字段
+      - #，#，离散字段
+    - `cut -d: -f1,7 /etc/passwd`：将`/etc/passwd`文件中，以`:`分割，输出第1部分和第7部分
+- sort：排序命令
+  - `sort [OPTION]... [FILE]...`
+  - 选项：
+    - -t, --field-separator=SEP：指定分隔符
+    - -k, --key=KEYDEF：用于排序比较的字段
+    - -n, --numeric-sort：基于数值大小排序，而非字符
+    - -r, --reverse：逆序排序
+    - -f, --ignore-case：忽略字符大小写
+    - -u, --unique：重复数据只保留一次
+- uniq：报告或移除重复行
+  - `uniq [OPTION]... [INPUT [OUTPUT]]`
+  - 选项：
+    - -c, --count：统计分别出现的次数
+    - -d, --repeated：仅显示有重复的行
+    - -u, --unique：仅显示无重复的行
+- diff：compare files line by line
+  - `diff [OPTION]... FILES`
+  - 生成补丁：`diff /PATH/OLD_FILE /PATH/NEW_FILE > /PATH/PATCH_FILE`
+  - 选项：
+    - -u, -U NUM, --unified[=NUM]：显示修改行的上下文，默认为3行
+  - 还可以对比两个目录中所有的文件，并且均生成所有的补丁文件
+- patch：apply a diff file to an original
+  - `patch [options] [originalfile [patchfile]]`
+  - 打补丁：`patch -i /PATH/PATCH_FILE /PATH/OLD_FILE`or`patch /PATH/OLD_FILE < /PATH/PATCH_FILE`
+
+
+
+
+
 # 7.1 56 min
