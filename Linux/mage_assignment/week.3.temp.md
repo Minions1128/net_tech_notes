@@ -341,9 +341,44 @@ Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式�
   - `find [选项] [查找起始路径] [查找条件] [处理动作]`
     - 查找起始路径：默认为当前目录
     - 查找条件：文件名、大小、类型、从属关系、权限等；默认为所有文件
-      - 根据文件名查找：
+      - 根据文件名查找：支持glob风格的通配符查找：`*`，?，[]，[^]
         - -name：根据文件名查找
-        - -iname：忽略文件名大小写。支持glob风格的通配符查找。
-    - 处理动作：删除等，默认为输出到屏幕
+        - -iname：忽略文件名大小写。
+      - 根据文件从属关系：
+        - -user：根据属主查找
+        - -group：根据属组查找
+        - -uid：根据uid查找文件
+        - -gid：根据gid查找文件
+        - -nouser：查找没有属主的文件
+        - -nogroup：查找没有属组的文件
+      - 根据文件类型查找：-type TYPE
+      - 根据文件大小查找：-size [+ | -]#UNIT
+        - `find /tmp -size 172k`
+        - 常用单位：k，M，G
+        - #UNIT：(#-1, #]
+        - -#UNIT：[0, #-1]
+        - +#UNIT：(#, +oo]
+      - 根据时间戳查找：-OP [+-]#
+        - 计算方法：#：(now-#-1, now-#]，第#天；+#：(-oo, now-#-1]，#天外；-#：(now-#, now)，#天内
+        - 以天为单位：-atime，-mtime，-ctime
+        - 以分钟为单位：-amin，-mmin，-cmin
+      - 根据权限查找：
+        - `-perm [/|-] mode`：
+          - mode：精确选线查找：`find ./ -perm 644`，精确查找权限为644的文件
+          - /mode：任何一类用户(u,g,o)的任何一位(r,w,x)符合条件，即满足
+          - -mode：任何一类用户(u,g,o)的任何一位(r,w,x)同时符合条件，即满足
+      - 组合测试：
+        - 与：-a，`find /tmp -user root -type f -ls`
+        - 或：-o，`find /tmp -nouser -o -type f -ls`
+        - 非：-not，!，`find /tmp {-not | !} -type f -ls`
+        - 组合举例：`find /tmp -not  \( -user root -o -iname "*fstab*" \) -ls`
+    - 处理动作：先查找文件，将查找到的文件路径一次性传递给命令
+      - -print：显示到屏幕
+      - -ls：将结果ls到屏幕
+      - -delete：删除查找到的文件
+      - -fls /PATH/FILE：将文件ls到屏幕，且保存到/PATH/FILE中
+      - `-ok COMMAND {} \;`：对查找到的文件进行执行，COMMAND表示执行命令，每次需要确认
+      - `-exec COMMAND {} \;`：对查找到的文件进行执行，COMMAND表示执行命令，不需要每次确认
+      - find .... | xargs：将find到的内容传递给xargs
 
-# 7.3 26 min
+# 7.4 15 min
