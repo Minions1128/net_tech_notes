@@ -411,5 +411,10 @@ suid sgid sticky
 1    1    0          6
 1    1    1          7
 ```
-
-# 7.4 69 min
+  - 举例：`chmod 1777 FILE`，加在最左侧
+- facl：file access control lists
+  - 文件的额外的赋权机制：在原有的ugo之外的另一层让普通用户能控制赋权给另外的用户或组的赋权机制；
+  - 相关命令：
+    - `getfacl FILE`：查看该文件的其他权限
+    - `setfacl -m {u:USER|g:GROUP}:MODE FILE`：让某一用户、组拥有MODE（读、写、执行，或者为空）的权限
+    - `setfac; -x {user:USER|group:GROUP} FILE`：撤销赋权
