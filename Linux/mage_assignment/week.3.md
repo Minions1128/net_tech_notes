@@ -1,15 +1,99 @@
 # 练习：
 1. 列出当前系统上所有已经登录的用户的用户名，注意：同一个用户登录多次，则只显示一次即可
+
 ```
-magedu]# who
-root     tty1         2017-09-25 12:33
-shenzj   pts/0        2018-06-01 10:31 (172.30.50.141)
-root     pts/6        2018-03-09 11:22 (172:S.0)
-magedu]# who | cut -d ' ' -f1 | sort -u
-root
-shenzj
-magedu]# 
+who | cut -d ' ' -f1 | sort -u
 ```
+
+2. 取出最后登录到当前系统的用户的相关信息
+
+```
+last | head -1
+```
+
+3. 取出当前系统上被用户当作其默认shell的最多的那个shell
+
+
+```
+cat /etc/passwd | cut -d ':' -f7 | uniq -c | sort -n | tail -1
+```
+
+4. 将/etc/passwd中的第三个字段数字最大的后10个用户的信息全部改为大写后保存至/tmp/maxusers.txt文件中
+
+```
+cat /etc/passwd | sort -t : -k 3 -n | tail -10 | tr "a-z" "A-Z" > /tmp/maxusers.txt
+```
+
+5. 取出当前主机的ip地址,提示:对ifconfig命令的结果进行切分
+
+```
+ifconfig | grep inet | cut -d ' ' -f10
+```
+
+6. 列出/etc目录下所有以.conf结尾的文件的文件名,并将其名字转换为大写后保存至/tmp/etc.conf文件中
+
+```
+ls -la  /etc/ | grep "\.conf$" | tr "a-z" "A-Z" > /tmp/etc.conf
+```
+
+7. 显示/var目录下一级子目录或文件的总个数。
+
+```
+ll /var/* | sort | wc
+```
+
+8. 取出/etc/group文件中第三个字段数值最小的10个组的名字。
+
+```
+cat /etc/group | sort -t : -k3 -n | cut -d: -f1 | head -10
+```
+
+9. 将/etc/fstab和/etc/issue文件的内容合并为同一个内容后保存至/tmp/etc.conf文件中
+```
+cat /etc/fstab /etc/issue > /tmp/etc.conf
+```
+
+10. 请总结描述用户和组管理类命令的使用方法并完成以下练习
+```
+groupadd -g 2016 distro
+cat /etc/group | grep distro
+distro:x:2016:
+
+useradd -u 1005 -g distro mandriva
+id mandriva
+uid=1005(mandriva) gid=2016(distro) groups=2016(distro)
+
+useradd -u 1100 -d /home/linux mageia 
+cat /etc/passwd | grep 1100
+mageia:x:1100:1100::/home/linux:/bin/bash
+
+passwd mageia
+Changing password for user mageia.
+New password: 
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+
+userdel mandriva
+ll /home/     
+total 40
+drwx------   3 mandriva    distro      4096 Jun  1 17:44 mandriva
+
+groupadd peguin
+useradd slackware -u 2002 -g idstro -G peguin
+id slackware
+uid=2002(slackware) gid=2016(distro) groups=2016(distro),2017(peguin)
+
+usermod -s /bin/tcsh slackware
+cat /etc/passwd | grep slack
+slackware:x:2002:2016::/home/slackware:/bin/tcsh
+
+groupadd admins
+usermod -a -G admins slackware
+d slackware
+uid=2002(slackware) gid=2016(distro) groups=2016(distro),2017(peguin),2019(admins)
+```
+
 # 权限管理
 ## 权限管理命令：
 - chmod：
