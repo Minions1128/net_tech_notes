@@ -88,7 +88,5 @@ useradd -s /sbin/nologin nologin
 cat /etc/passwd |grep "^\(\<.*\>\).*\1$"
 ```
 
-# Linux系统管理
-- 磁盘分区及文件系统管理
-- RAID
-- LVM
+# 磁盘分区及文件系统管理
+`8.1 30 min`
