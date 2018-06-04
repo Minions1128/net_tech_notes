@@ -115,8 +115,9 @@ cat /etc/passwd |grep "^\(\<.*\>\).*\1$"
     - GPT：
 - fdisk：manipulate disk partition table
     - fdisk -l [-u] [device...]：查看分区
-    - fdisk device：管理分区，提供了一个交互式接口，有多种子命令来管理分区，其所有操作均在内存中完成，没有同步到磁盘，直到w命令保存到磁盘上，[命令介绍](http://cache.baiducontent.com/c?m=9d78d513d99717f419b480394d48d83c5f12c2222bd6a3086284cd15c6735b361627b5e7302267588483613f52fe1017adf431712a5060f1c099d61dc0edc56e7cd379756d1b874317d11dadce&p=882a9e4ec7904ead0db3dc295f00&newp=882a9e4ea4af50f90dbe9b7c5a5192695d0fc20e3dd4d701298ffe0cc4241a1a1a3aecbf2026120fd9c1766d04a9495fecf033763d0034f1f689df08d2ecce7e5de4366225&user=baidu&fm=sc&query=fdisk&qid=c88d74e600023eb0&p1=1)
+    - fdisk device：管理分区，提供了一个交互式接口，有多种子命令来管理分区，其所有操作均在内存中完成，没有同步到磁盘，直到w命令保存到磁盘上
+    - [其他命令介绍](http://cache.baiducontent.com/c?m=9d78d513d99717f419b480394d48d83c5f12c2222bd6a3086284cd15c6735b361627b5e7302267588483613f52fe1017adf431712a5060f1c099d61dc0edc56e7cd379756d1b874317d11dadce&p=882a9e4ec7904ead0db3dc295f00&newp=882a9e4ea4af50f90dbe9b7c5a5192695d0fc20e3dd4d701298ffe0cc4241a1a1a3aecbf2026120fd9c1766d04a9495fecf033763d0034f1f689df08d2ecce7e5de4366225&user=baidu&fm=sc&query=fdisk&qid=c88d74e600023eb0&p1=1)
 
 
 
-`8.1 30 min`
+`8.2 0 min`
