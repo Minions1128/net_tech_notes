@@ -117,7 +117,30 @@ cat /etc/passwd |grep "^\(\<.*\>\).*\1$"
     - fdisk -l [-u] [device...]：查看分区
     - fdisk device：管理分区，提供了一个交互式接口，有多种子命令来管理分区，其所有操作均在内存中完成，没有同步到磁盘，直到w命令保存到磁盘上
     - [其他命令介绍](http://cache.baiducontent.com/c?m=9d78d513d99717f419b480394d48d83c5f12c2222bd6a3086284cd15c6735b361627b5e7302267588483613f52fe1017adf431712a5060f1c099d61dc0edc56e7cd379756d1b874317d11dadce&p=882a9e4ec7904ead0db3dc295f00&newp=882a9e4ea4af50f90dbe9b7c5a5192695d0fc20e3dd4d701298ffe0cc4241a1a1a3aecbf2026120fd9c1766d04a9495fecf033763d0034f1f689df08d2ecce7e5de4366225&user=baidu&fm=sc&query=fdisk&qid=c88d74e600023eb0&p1=1)
+    - 注意：在已经分区并且已经挂载其中某个分区的磁盘设备上创建的新分区，内核可能在创建完成后无法直接识别，在`/proc/partitions`中查看
+        - 让内核强制重读磁盘分区表
+            - centos 5：partprobe [device]
+            - centos 6, 7：`partx -a [device]`或者`kpartx -af [device]`
+    - 分区创建工具：parted，sfdisk
+- 创建文件系统
+    - 格式化：
+        - 低级格式化：区分之前进行，划分磁道
+        - 高级格式化：分区之后记性，创建文件系统
+    - 元数据区、数据区：
+        - 元数据区：
+            - 文件元数据（inode，index node）：大小，权限，属主属组、时间戳，数据块指针
+        - 连接文件：存储数据指针的空间当中存储的是真是文件的访问路径，没有占用的数据空间
+        - 设备文件：存储数据指针的空间当中存储的是设备号，没有占用的数据空间
+    - bitmap index：位图索引
+- VFS：virtual file system
+    - Linux文件系统：ext2, ext3, ext4, xfs, reiserfs, btrfs
+    - 光盘：iso 9660
+    - 网络文件系统：nfs，cifs
+    - 集群文件系统：gfs2，ocfs2
+    - windows文件系统：vfat，ntfs
+    - 伪文件系统：proc，sysfs，tmpfs，hugepagefs
+    - unix文件系统：UFS，FFS，JFS
+    - 交换分区文件熊：swap
 
 
-
-`8.2 0 min`
+`8.2 70 min`
