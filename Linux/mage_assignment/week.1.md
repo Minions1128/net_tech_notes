@@ -67,3 +67,6 @@ Debian、Slackware、RedHat，三个大的发行版都是属于类UNIX计算机�
   * 切换方式：ctrl-alt-F[1-6]
 * 图形终端：
 * 伪终端：/dev/pst/#
+
+* 150Linux命令
+![](https://github.com/Minions1128/net_tech_notes/blob/master/img/linux.150.cmd.jpg)
