@@ -163,6 +163,23 @@ cat /etc/passwd |grep "^\(\<.*\>\).*\1$"
             4. 文件大小是指定的文件的路径字符串字节数
         - 创建：`ln -s SRC LINK_FILE`
     - -v，--verbose：
+- https://www.jianshu.com/p/bf939474d69b
+- 内核级文件系统的组成部分：文件系统驱动：由内核提供；文件系统管理工具：由用户空间的应用程序提供
+- ext系列文件系统的创建工具：mkfs.ext2, mkfs.ext3, mkfs.ext4
+    - mke2fs：
+        - mke2fs [OP] device
+            - -t {ext2 | ext3 | ext4}：指定文件系统类型：mkfs.ext4 = mkfs -t ext4 = mke2fs -t ext4
+            - -b {1024 | 2048 | 4096}：指定块大小
+            - -L new-volume-label：打标
+            - -j：创建有日志功能的文件系统ext3：              
+            - -i #：每多少字节创建一个inode
+            - -N #：指定inode数
+            - -O ：指定区特性：`mke2fs -j = mke2fs -t ext3 = mkfs -t ext3 = mkfs.ext3 = mke2fs -O has_journal`
+            - -m：指定预留空间占整个分区空间的百分比，默认为5%
+- blkid：查看指定块设备的属性信息：`blkid [-L label | -U uuid] DEVIC`
+- e2label：卷标的查看与设定：`e2label device [LABEL]`
+- tune2fs：查看或修改ext系列文件系统的某些属性
+- dumpe2fs
+- 文件系统检测
 
-
-`8.3 0 min`
+`8.3 65 min`
