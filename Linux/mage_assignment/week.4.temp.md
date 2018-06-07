@@ -133,7 +133,7 @@ cat /etc/passwd |grep "^\(\<.*\>\).*\1$"
         - 设备文件：存储数据指针的空间当中存储的是设备号，没有占用的数据空间
     - bitmap index：位图索引
 - VFS：virtual file system
-    - Linux文件系统：ext2, ext3, ext4, xfs, reiserfs, btrfs
+    - Linux文件系统：ext2（无日志）, ext3, ext4, xfs, reiserfs, btrfs
     - 光盘：iso 9660
     - 网络文件系统：nfs，cifs
     - 集群文件系统：gfs2，ocfs2
@@ -141,6 +141,28 @@ cat /etc/passwd |grep "^\(\<.*\>\).*\1$"
     - 伪文件系统：proc，sysfs，tmpfs，hugepagefs
     - unix文件系统：UFS，FFS，JFS
     - 交换分区文件熊：swap
+- 文件系统的管理工具：
+    - 创建文件系统的工具：mkfs：mkfs.ext2, ...
+    - 检测及修复文件系统的工具：fsck：fsck.ext2, ...
+    - 查看其属性的工具：dumpe2fs, tune2fs
+    - 调整文件系统特性：tune2fs
+- journal：
+- 链接文件
+    - 硬链接：指向同一个inode的多个文件路径
+        - 特性：
+            1. 目录不支持链接；
+            2. 硬链接不能跨文件系统；
+            3. 创建硬链接会增加inode引用次数
+            4. 文件大小和原文件相同
+        - 创建：`ln SOURCE LINK_FILE`
+    - 软链接：符号链接，指向一个文件路径的另外一个文件路径
+        - 特性：
+            1. 符号链接与文件是两人各自独立的文件，各有自己的inode。对原文件创建符号链接不会增加引用计数；
+            2. 支持对目录创建符号链接，可以跨文件系统；
+            3. 删除符号链接文件不影响原文件；但删除原文件，符号指定的路径即不存在，此时会变成无效链接
+            4. 文件大小是指定的文件的路径字符串字节数
+        - 创建：`ln -s SRC LINK_FILE`
+    - -v，--verbose：
 
 
-`8.2 70 min`
+`8.3 0 min`
