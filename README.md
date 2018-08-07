@@ -5,6 +5,7 @@ Network Technology Note Summaries
 ## Routing
 * [BGP](https://github.com/Minions1128/net_tech_notes/blob/master/BGP.md)
 * [OSPF](https://github.com/Minions1128/net_tech_notes/blob/master/OSPF.md)
+* [IPv6 BGP](https://github.com/Minions1128/net_tech_notes/blob/master/IPv6%20BGP.md)
 
 ## Security
 * [IPSec VPN](https://github.com/Minions1128/net_tech_notes/blob/master/IPSec%20VPN.md)
