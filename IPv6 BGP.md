@@ -460,7 +460,8 @@ return
 
 #### VxLAN的建立
 
-- 我们要建立两对BGP的邻居，所以VxLAN里要透传两个VLAN，VLAN 500为两台Cisco 2901路由器的对接，VLAN 600为asr 9k与2901的对接。
+- 我们要建立两对BGP的邻居，用来测试测试IOS之，IOS和IOS XR之间建立BGP邻居关系的方法。
+- 所以这里VxLAN里要透传两个VLAN，VLAN 500为两台Cisco 2901路由器的对接，VLAN 600为asr 9k与2901的对接。
 ```
 system-view
 #
@@ -565,9 +566,6 @@ router bgp 100
  no bgp default ipv4-unicast
  neighbor 15::5 remote-as 500
  !
- address-family ipv4
- exit-address-family
- !
  address-family ipv6
   network 1::1/128
   neighbor 15::5 activate
@@ -601,7 +599,7 @@ router bgp 500
  exit-address-family
 ```
 
-#### Cisco IOS和ASR 9K建立IPv6 BGP
+#### Cisco IOS和IOS XR建立IPv6 BGP
 
 
 ```
@@ -656,4 +654,193 @@ router bgp 600
  !
 !
 end
+```
+
+### 相关状态
+
+#### VxLAN Tunnel状态
+
+```
+<H3C-6800-2>display interface Tunnel 1
+Tunnel1
+Current state: UP
+Line protocol state: UP
+Description: Tunnel1 Interface
+Bandwidth: 64 kbps
+Maximum transmission unit: 1464
+Internet protocol processing: Disabled
+Last clearing of counters: Never
+Tunnel source 2.2.2.2 (LoopBack0), destination 4.4.4.4
+Tunnel protocol/transport UDP_VXLAN/IP
+
+##################################################
+
+<H3C-6800-4>display interface Tunnel 1
+Tunnel1
+Current state: UP
+Line protocol state: UP
+Description: Tunnel1 Interface
+Bandwidth: 64 kbps
+Maximum transmission unit: 1464
+Internet protocol processing: Disabled
+Last clearing of counters: Never
+Tunnel source 4.4.4.4 (LoopBack0), destination 2.2.2.2
+Tunnel protocol/transport UDP_VXLAN/IP
+```
+
+#### VxLAN的MAC地址表
+
+```
+<H3C-6800-2>display l2vpn mac-address 
+MAC Address    State    VSI Name                        Link ID/Name    Aging   
+4c4e-35cf-ae31 Dynamic  vpna                            Tunnel1         Aging   
+4c4e-35e9-8309 Dynamic  vpna                            XGE1/0/2        Aging   
+4c4e-35e9-8309 Dynamic  vpnb                            XGE1/0/2        Aging   
+d46d-500d-d298 Dynamic  vpnb                            Tunnel1         Aging  
+
+##################################################
+
+<H3C-6800-4>display l2vpn mac-address 
+MAC Address    State    VSI Name                        Link ID/Name    Aging   
+4c4e-35cf-ae31 Dynamic  vpna                            XGE1/0/2        Aging   
+4c4e-35e9-8309 Dynamic  vpna                            Tunnel1         Aging   
+4c4e-35e9-8309 Dynamic  vpnb                            Tunnel1         Aging   
+d46d-500d-d298 Dynamic  vpnb                            XGE1/0/3        Aging 
+```
+
+#### BGP 邻居关系
+
+```
+Cisco-2901-1#show bgp ipv6 unicast summary 
+BGP router identifier 1.1.1.1, local AS number 100
+BGP table version is 6, main routing table version 6
+3 network entries using 516 bytes of memory
+3 path entries using 264 bytes of memory
+3/3 BGP path/bestpath attribute entries using 408 bytes of memory
+2 BGP AS-PATH entries using 48 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 1236 total bytes of memory
+BGP activity 19/16 prefixes, 27/24 paths, scan interval 60 secs
+
+Neighbor  V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+15::5     4          500    4392    4403        6    0    0 2d18h           1
+16::6     4          600    3982    4380        6    0    0 2d18h           1
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Cisco-2901-5#sh bgp ipv6 unicast summary 
+BGP router identifier 5.5.5.5, local AS number 500
+BGP table version is 10, main routing table version 10
+3 network entries using 516 bytes of memory
+3 path entries using 264 bytes of memory
+3/3 BGP path/bestpath attribute entries using 408 bytes of memory
+2 BGP AS-PATH entries using 48 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 1236 total bytes of memory
+BGP activity 31/28 prefixes, 40/37 paths, scan interval 60 secs
+
+Neighbor  V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+15::1     4          100    4406    4394       10    0    0 2d18h           2
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+RP/0/RSP0/CPU0:ASR-9K#show bgp ipv6 unicast summary 
+Thu Aug 16 01:41:38.159 UTC
+BGP router identifier 6.6.6.6, local AS number 600
+BGP generic scan interval 60 secs
+BGP table state: Active
+Table ID: 0xe0800000   RD version: 11
+BGP main routing table version 11
+BGP scan interval 60 secs
+
+BGP is operating in STANDALONE mode.
+
+
+Process       RcvTblVer   bRIB/RIB   LabelVer  ImportVer  SendTblVer  StandbyVer
+Speaker              11         11         11         11          11          11
+
+Neighbor        Spk    AS MsgRcvd MsgSent   TblVer  InQ OutQ  Up/Down  St/PfxRcd
+16::1             0   100    4384    3986       11    0    0    2d18h          2
+```
+
+#### BGP路由条目
+
+```
+Cisco-2901-1#show bgp ipv6 unicast         
+BGP table version is 6, local router ID is 1.1.1.1
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal, 
+              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter, 
+              x best-external, a additional-path, c RIB-compressed, 
+Origin codes: i - IGP, e - EGP, ? - incomplete
+RPKI validation codes: V valid, I invalid, N Not found
+
+     Network     Next Hop            Metric LocPrf Weight Path
+ *>  1::1/128    ::                       0         32768 i
+ *>  5::5/128    15::5                    0             0 200 i
+ *>  6::6/128    16::6                    0             0 300 i
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Cisco-2901-5#sh bgp ipv6 unicast         
+BGP table version is 10, local router ID is 5.5.5.5
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal, 
+              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter, 
+              x best-external, a additional-path, c RIB-compressed, 
+Origin codes: i - IGP, e - EGP, ? - incomplete
+RPKI validation codes: V valid, I invalid, N Not found
+
+     Network          Next Hop            Metric LocPrf Weight Path
+ *>  1::1/128         15::1                    0             0 100 i
+ *>  5::5/128         ::                       0         32768 i
+ *>  6::6/128         15::1                                  0 100 300 i
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+RP/0/RSP0/CPU0:ASR-9K#show bgp ipv6 unicast         
+Thu Aug 16 01:42:54.887 UTC
+BGP router identifier 6.6.6.6, local AS number 600
+BGP generic scan interval 60 secs
+BGP table state: Active
+Table ID: 0xe0800000   RD version: 11
+BGP main routing table version 11
+BGP scan interval 60 secs
+
+Status codes: s suppressed, d damped, h history, * valid, > best
+              i - internal, r RIB-failure, S stale, N Nexthop-discard
+Origin codes: i - IGP, e - EGP, ? - incomplete
+   Network            Next Hop            Metric LocPrf Weight Path
+*> 1::1/128           16::1                    0             0 100 i
+*> 5::5/128           16::1                                  0 100 200 i
+*> 6::6/128           ::                       0         32768 i
+```
+
+#### 路由表
+
+```
+Cisco-2901-1#show ipv6 route bgp 
+B   5::5/128 [20/0]
+     via FE80::4E4E:35FF:FECF:AE31, GigabitEthernet0/1.500
+B   6::6/128 [20/0]
+     via FE80::D66D:50FF:FE0D:D298, GigabitEthernet0/1.600
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Cisco-2901-5#show ipv6 route bgp 
+IPv6 Routing Table - default - 12 entries
+B   1::1/128 [20/0]
+     via FE80::4E4E:35FF:FEE9:8309, GigabitEthernet0/1.500
+B   6::6/128 [20/0]
+     via FE80::4E4E:35FF:FEE9:8309, GigabitEthernet0/1.500
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+RP/0/RSP0/CPU0:ASR-9K#show route ipv6 bgp 
+Thu Aug 16 01:52:25.134 UTC
+
+B    1::1/128 
+      [20/0] via 16::1, 2d18h
+B    5::5/128 
+      [20/0] via 16::1, 2d18h
 ```
