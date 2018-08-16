@@ -488,7 +488,8 @@ vsi vpnb
 interface Ten-GigabitEthernet1/0/2
  port link-mode bridge
  port link-type trunk
- port trunk permit vlan 1 500 600
+ undo port trunk permit vlan 1
+ port trunk permit vlan 500 600
  service-instance 1000
   encapsulation s-vid 500
   xconnect vsi vpna
@@ -608,7 +609,7 @@ conf t
 hostname Cisco-2901-1
 !
 interface GigabitEthernet0/1.600
- encapsulation dot1Q 700
+ encapsulation dot1Q 600
  ipv6 address 16::1/64
 !
 router bgp 100
@@ -623,25 +624,36 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 conf t
-hostname Cisco-2901-5
-!
 interface Loopback0
- ipv6 address 5::5/128
+ ipv6 address 6::6/128
 !
-interface GigabitEthernet0/1
+interface TenGigE0/0/0/0
  no shutdown
 !
-interface GigabitEthernet0/1.600
- encapsulation dot1Q 600
- ipv6 address 12::2/64
+interface TenGigE0/0/0/0.600
+ ipv6 address 16::6/64
+ encapsulation dot1q 600
 !
-router bgp 200
- bgp router-id 2.2.2.2
- no bgp default ipv4-unicast
- neighbor 12::1 remote-as 100
+route-policy set_1_in_to_1
+  set next-hop 16::1
+end-policy
+!         
+route-policy set_6_out_to_6
+  set next-hop 16::6
+end-policy
+!
+router bgp 600
+ bgp router-id 6.6.6.6
+ address-family ipv6 unicast
+  network 6::6/128
  !
- address-family ipv6
-  network 5::5/128
-  neighbor 12::1 activate
- exit-address-family
+ neighbor 16::1
+  remote-as 100
+  address-family ipv6 unicast
+   route-policy et_1_in_to_1 in
+   route-policy set_6_out_to_6 out
+  !
+ !
+!
+end
 ```
