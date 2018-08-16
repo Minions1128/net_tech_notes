@@ -379,9 +379,11 @@ L   FF00::/8 [0/0]
  |                                      |
  +--------------------------------------+
 ```
-- 拓扑说明：Cisco-2901-1分别和Cisco-2901-5和ASR 9K建立eBGP邻居
+- 拓扑说明
+    - 为了测试VxLAN透传多个VLAN的能力，同时满足测试ASR 9K的需求，实验使用Cisco-2901-1分别和Cisco-2901-5和ASR 9K建立eBGP邻居
     - Cisco-2901-1为AS 100，Cisco-2901-5为AS 500，ASR 9K为AS 600
 - 两台H3C-6800建立VxLAN的Tunnel
+- Site Network为内网设备
 
 ### 配置举例
 
@@ -460,8 +462,7 @@ return
 
 #### VxLAN的建立
 
-- 我们要建立两对BGP的邻居，用来测试测试IOS之，IOS和IOS XR之间建立BGP邻居关系的方法。
-- 所以这里VxLAN里要透传两个VLAN，VLAN 500为两台Cisco 2901路由器的对接，VLAN 600为asr 9k与2901的对接。
+- 我们要建立两对BGP的邻居，用来测试IOS路由器之间，IOS和IOS XR路由器之间建立BGP邻居关系的方法。所以这里VxLAN里要透传两个VLAN，VLAN 500为IOS路由器之间的对接，VLAN 600为IOS XR与IOS之间的对接。
 ```
 system-view
 #
