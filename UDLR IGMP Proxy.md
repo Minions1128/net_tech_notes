@@ -1,6 +1,7 @@
 # Integrated UDLR Tunnel IGMP UDLR and IGMP Proxy Example
 
-The following example shows how to configure UDLR tunnels, IGMP UDLR, and IGMP proxy on both the upstream and downstream routers sharing a UDL.
+- The following example shows how to configure UDLR tunnels, IGMP UDLR, and IGMP proxy on both the upstream and downstream routers sharing a UDL. 
+- References: https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipmulti_igmp/configuration/15-sy/imc-igmp-15-sy-book/imc_cfg_ovr_unidirct.html
 
 ## Topology
 
