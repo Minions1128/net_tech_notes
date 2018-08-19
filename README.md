@@ -3,9 +3,8 @@ Network Technology Note Summaries
 * [Packets Format](http://www.023wg.com/message/message/cd_feature_cover.html "Packets Format")
 
 ## Routing
-* [BGP](https://github.com/Minions1128/net_tech_notes/blob/master/BGP.md)
-* [OSPF](https://github.com/Minions1128/net_tech_notes/blob/master/OSPF.md)
-* [IPv6 BGP](https://github.com/Minions1128/net_tech_notes/blob/master/IPv6%20BGP.md)
+* [BGP](https://github.com/Minions1128/net_tech_notes/tree/master/BGP "BGP")
+* [OSPF](https://github.com/Minions1128/net_tech_notes/blob/master/OSPF.md "OSPF")
 
 ## Security
 * [IPSec VPN](https://github.com/Minions1128/net_tech_notes/blob/master/IPSec%20VPN.md)
@@ -19,7 +18,7 @@ Network Technology Note Summaries
 * [vPC](https://github.com/Minions1128/net_tech_notes/tree/master/vPC "vPC")
 * [QoS](https://github.com/Minions1128/net_tech_notes/blob/master/QoS.md "QoS")
 * [VxLAN](https://github.com/Minions1128/net_tech_notes/tree/master/vxlan "VxLAN")
-* [Multicast](https://github.com/Minions1128/net_tech_notes/blob/master/Multicast.md "Multicast")
+* [Multicast](https://github.com/Minions1128/net_tech_notes/tree/master/Multicast "Multicast")
 * [hillstone command](https://github.com/Minions1128/net_tech_notes/blob/master/hillstone%20command.md "hillstone command")
 * [H3C VLAN](https://github.com/Minions1128/net_tech_notes/blob/master/VLAN.md "H3C VLAN")
 * [Troubleshooting High CPU Utilization](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750/software/troubleshooting/cpu_util.html "Troubleshooting High CPU Utilization")
