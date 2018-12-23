@@ -21,3 +21,4 @@
     - 报警：通知管理员。途径有：邮件、短信、脚本
 
 ## zabbix系统架构
+![zabbix_arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/zabbix_arch.png)
