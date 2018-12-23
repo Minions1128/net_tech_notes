@@ -86,4 +86,4 @@
         - 查看`systemctl status zabbix-server.service`
 
 - zabbix web配置
-    1. 
+    1. 33.2 --> 39：34
