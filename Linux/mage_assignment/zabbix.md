@@ -22,3 +22,4 @@
 
 ## zabbix系统架构
 ![zabbix_arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/zabbix_arch.png)
+![zabbix_arch_ver](https://github.com/Minions1128/net_tech_notes/blob/master/img/zabbix_arch_ver.png)
