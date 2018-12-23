@@ -46,3 +46,37 @@
     - escalation: 报警升级
     - templates
     - graphs -> screens -> slide show
+
+## 安装
+- server:
+    1. zbx db : mysql
+        - ```mysql> CREATE DATABASE zabbix CHARSET 'utf8'; ```
+        - ```mysql> GRANT ALL ON zabbix.*TO 'zbxuser'@'10.1.%.%' IDENTIFIED BY 'zbxpass';```
+    2. 安装服务器端：zabbix_server_mysql, zabbix_get
+        - 程序环境：
+            - 配置文件：```/etc/zabbix/zabbix_server.conf```
+            - unit file: ```zabbix-server.service```
+        - 导入数据库脚本，
+            - ```gzip -d /usr/share/doc/zabbix-server-mysql-3.0.2/create.sql.gz```
+            - ```mysql -ubxuser -h127.0.0.1 -pzabpass zabbix < /usr/share/doc/zabbix-server-mysql-3.0.2/create.sql```
+    3. zabbix server配置启动
+        - 配置文件：```/etc/zabbix/zabbix_server.conf```
+            ```
+                ##### GENERAL PARAMETERS
+                     # ListenPort=10051
+                     # SourceIP=
+                     # LogType=file
+                     # LogFile=/var/log/zabbix/zabbix_server.log
+                     # LogFileSize=0
+                     # DebugLevel=3
+                     # DBHost=localhost
+                     # DBName=zabbix
+                     # DBUser=r*t
+                     # DBPassword=O*a
+                     # DBSocket=/tmp/mysql.sock
+                     # DBPort=3306
+                ##### ADVANCED PARAMETERS
+                ##### LOADABLE MODULES
+                ##### TLS-RELATED PARAMETERS
+            ```
+    4. 的
