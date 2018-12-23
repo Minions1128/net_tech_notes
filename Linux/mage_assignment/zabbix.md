@@ -23,8 +23,26 @@
 ## zabbix系统架构
 ![zabbix_arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/zabbix_arch.png)
 ![zabbix_arch_ver](https://github.com/Minions1128/net_tech_notes/blob/master/img/zabbix_arch_ver.png)
-
-zabbix逻辑组件
-
 ![zabbix_arch_logic](https://github.com/Minions1128/net_tech_notes/blob/master/img/zabbix_arch_logic.png)
 
+- zabbix程序组件：
+    - zabbix_server: 服务端守护进程；
+    - zabbix_agentd: agent守护进程；
+    - zabbix_proxy: 代理服务器，可选；
+    - zabbix_database: 存储系统，MySQL/PGSQL
+    - zabbix_web: Web GUI；
+    - zabbix_get: 命令行工具，测试向agent端发起数据采集请求；
+    - zabbix_sender: 命令行，测试向server段发送数据；
+    - zabbix_java_gaetway: Java网关；
+- zabbix逻辑组件：
+    - hosts -> host groups
+    - items -> applications
+    - triggers
+    - events
+    - actions: conditions & operations
+    - media: 发送通知的通道
+    - notifications
+    - remote command: 远程命令
+    - escalation: 报警升级
+    - templates
+    - graphs -> screens -> slide show
