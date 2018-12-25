@@ -86,4 +86,10 @@
         - 查看`systemctl status zabbix-server.service`
 
 - zabbix web配置
-    1. 33.2 --> 39：34
+    1. 解决依赖关系：`yum install httpd php php-mysql php-mbstring php-gd php-bcmath php-ldap php-xml`
+    2. 安装web GUI：zabbix-web, zabbix-web-mysql
+    3. 配置php时区：```vim /etc/conf.d/zabbix.conf
+                          php_value date.timezone Asia/Chongqing```
+    4. 启动web服务：`systemctl start httpd.service`
+    5. 访问web界面，安装后生成的web配置文件：`/etc/zabix/web/zabbix.conf.php`，user/pass：`admin/zabbix`
+    
