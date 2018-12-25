@@ -117,6 +117,9 @@
         ```
     3. 启动服务：`systemctl start zabbix-agent.service`
 
+- proxy 安装
+    - zabbix_proxy
+
 - 配置监控：
     - quick start：
         ```
@@ -124,7 +127,7 @@
             application --> items
             host --> items --> trigger(events) --> action(conditions, operations)
             operations(remote comand, alert)
-            graphs --> screen
-            screens --> slide show
+            graphs --> screens --> slide show
         ```
-    - 33.2 : 70:50
+    - 
+    33.3 00:00
