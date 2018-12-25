@@ -92,4 +92,39 @@
                           php_value date.timezone Asia/Chongqing```
     4. 启动web服务：`systemctl start httpd.service`
     5. 访问web界面，安装后生成的web配置文件：`/etc/zabix/web/zabbix.conf.php`，user/pass：`admin/zabbix`
-    
+
+- zabbix agent安装配置
+    1. 安装：zabbix-agent, zabbix-sender
+        - 程序环境：
+            - 配置文件：`/etc/zabbix/zabbix_agentd.conf`
+            - unit file: `zabbix-agent.service`
+    2. 配置文件：
+        ```
+            ##### GENERAL PARAMETERS
+                ##### Passive checks related    被动监控相关配置
+                    # Server=127.0.0.1
+                    # ListenPort=10050
+                    # ListenIP=0.0.0.0
+                    # StartAgents=3
+                ##### Active checks related     主动监控相关配置
+                    # ServerActive=127.0.0.1
+                    # Hostname=com.host.name
+                    # 
+            ##### ADVANCED PARAMETERS
+            ##### USER-DEFINED MONITORED PARAMETERS     用户自定义监控项
+            ##### LOADABLE MODULES
+            ##### TLS-RELATED PARAMETERS
+        ```
+    3. 启动服务：`systemctl start zabbix-agent.service`
+
+- 配置监控：
+    - quick start：
+        ```
+            host group --> host
+            application --> items
+            host --> items --> trigger(events) --> action(conditions, operations)
+            operations(remote comand, alert)
+            graphs --> screen
+            screens --> slide show
+        ```
+    - 33.2 : 70:50
