@@ -129,5 +129,5 @@
             operations(remote comand, alert)
             graphs --> screens --> slide show
         ```
-    - 
-    33.3 00:00
+
+    33.3 32:00
