@@ -130,4 +130,4 @@
             graphs --> screens --> slide show
         ```
 
-    33.3 32:00
+    33.4 10:00
