@@ -130,4 +130,40 @@
             graphs --> screens --> slide show
         ```
 
-    33.4 10:00
+## 配置
+### Action
+- Action配置包括两部分：conditions和operatios；
+- conditions：触发此动作的条件，一般通过“事件”出发；
+- operations：满足conditions时，所做到动作，一般有两类：send message和remote command
+- send message
+    - Email
+    - script：报警脚本
+        - 位于server端配置文件`/etc/zabbix/zabbix_server.conf`的`AlertScriptsPath`参数
+        - 脚本的默认路径为`/usr/lib/zabbix/alertscripts`
+        - 可以给脚本传递参数
+            - 3.0之前的版本，默认有三个参数`$1, $2, $3`，分别接受人，消息主题，消息内容
+            - 3.0之后的版本，默认不再传递这三个参数，需要自行定义：`{ALERT.SENDTO}, {ALERT.SUBJECT}, {ALERT.MESSAGE}`
+- remote command
+    - 功能：在agent所在的主机上，运行用户指定的命令或脚本来尝试着恢复故障；如：重启、自定义脚本等
+    - 类型：
+        - IPMI
+        - custom script
+            - 实现前提：
+                - 在agent端配置：
+                    1. zabbix拥有执行相应脚本的权限，在文件`/etc/sudoers`添加：
+                        ```
+                            zabbix ALL=(ALL) NOPASSWD: ALL
+                            注释如下行：
+                            Defaults requiretty
+                        ```
+                    2. agent要允许执行远程命令，编辑`/etc/zabbix/zabbix-agentd.conf`：
+                        ```
+                            EnableRemoteCommands=1
+                        ```
+                    3. 重启agent服务生效
+        - ssh/telnet
+        - global script
+
+### 展示
+- graph --> screen --> slide show
+- 33.5 0:0
