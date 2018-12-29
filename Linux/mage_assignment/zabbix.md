@@ -130,7 +130,7 @@
             graphs --> screens --> slide show
         ```
 
-## 配置
+## 部分配置
 ### Action
 - Action配置包括两部分：conditions和operatios；
 - conditions：触发此动作的条件，一般通过“事件”出发；
