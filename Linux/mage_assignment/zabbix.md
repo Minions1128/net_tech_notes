@@ -184,11 +184,37 @@
     - 自定义：`{$MACRO_NAME}`
 
 ### 网络发现：
+- zabbix server扫描指定网络范围的主机
+- 发现方式：
+    - IP地址范围：
+        - 可用的服务探测（ftp，ssh，http，...）
+        - snmp_agent响应
+- 发现步骤：
+    - discovery，会产生相应的事件
+        - Service up/down, Host up/down
+        - Service discoverd/lost, host discovered/lost：标识第一次服务发现、服务丢失
+    - actions：添加主机，链接到模版
+        - conditions：discovered
+        - operations：
+            - send message, remote command, ..
+            - add/remove host
+            - enable/disable host
+            - add host to group
+            - link template to host
+
+### 自定义key
+- 在zabbix agent端的配置文件中，由用户通过UserParameter指令定义用户自定义参数；
+    - UserParameter=<key>,<shell command>
+        - 例如：`UserParameter=system.memory.free,awk '/^MemFree/{print $2}' /proc/meminfo`
+    - UserParameter=<key[*]>,<shell command> $1, ..., $9
+        - 例如：`UserParameter=system.memory.free[*],awk '/^$1/{print $$2}' /proc/meminfo`
+    - 命令自带的参数，如awk，需要改写$$1, ..., $$9
+
 
 # end
 --------------
 
 | Item | Episode | time |
 | :------------ | :------------ | :------------ |
-| now | 33.5 | 25:00 |
+| now | 33.5 | 38:00 |
 | except | 33.6 | 08:00 |
