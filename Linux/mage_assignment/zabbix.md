@@ -210,11 +210,12 @@
         - 例如：`UserParameter=system.memory.free[*],awk '/^$1/{print $$2}' /proc/meminfo`
     - 命令自带的参数，如awk，需要改写$$1, ..., $$9
 
+### SNMP方式
+zabbix 使用进阶01
 
 # end
 --------------
 
-| Item | Episode | time |
-| :------------ | :------------ | :------------ |
-| now | 33.5 | 38:00 |
-| except | 33.6 | 08:00 |
+```
+zabbix 进阶1&2
+```
