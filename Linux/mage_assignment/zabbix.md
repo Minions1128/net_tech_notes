@@ -257,4 +257,5 @@
 
 ```
 zabbix 进阶1&2
+ansible实现zabbix server，zabbix agent即porxy的部署
 ```
