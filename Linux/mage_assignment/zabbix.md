@@ -211,7 +211,46 @@
     - 命令自带的参数，如awk，需要改写$$1, ..., $$9
 
 ### SNMP方式
-zabbix 使用进阶01
+- 简单网络管理协议
+    - 基于UDP协议，默认监听161，agent端；和162，server端
+- 安装：`yum install net-snmp net-snmp-utils`
+- 配置
+    - 配置文件：`/etc/snmp/snmpd.conf`和`/etc/snmp/snmptrapd.conf`
+    - 共享所有数据：`view systemview included .1`
+    - 默认的community为public：`com2sec notConfigUser default public`
+- snmpwalk
+    - `snmpwalk -c public -v 2c 127.0.0.1 .1.3.6.1.2.1.1.1`
+
+### 分布式监控
+- comming soon
+
+### 优化
+- NVPS，New Value Per Second：100w/min, 15000/s
+- zabbix服务器进程数量调整：
+    - alert
+    - discovery
+    - escalator
+    - http poller，
+    - housekeeper
+    - poller
+    - trapper
+    - configruation syncer
+    - ipmi poller
+- 建议的参数：
+    - StartPollers=50
+    - StartPinger=10
+    - StartDBSyncers=2
+- 数据库优化：
+    - 分表：
+        - history_*
+        - trend*
+        - events*
+- 建议：
+    - 历史数据不要保存太长时间；尽量让数据缓存在数据库服务器的内存中；
+    - 触发器的表达式：减少使用min(), max(), avg()，尽量使用last(), nodata();
+    - 数据收集：polling较慢时，减少使用snmp/agentless/agent，尽量使用trapping方式，agent（active）
+    - 数据类型：文本型数据处理速度较慢，尽量少手机类型为text或string或log型数据，多使用numveric型数据
+
 
 # end
 --------------
