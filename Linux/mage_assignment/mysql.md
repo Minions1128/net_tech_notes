@@ -29,6 +29,7 @@
         - 一致性（consistency）
         - 隔离性（isolation，又称独立性）
         - 持久性（durability）
-22.2 0：0
-22.2 60：0
+- clock
+    - 22.2 0:0
+    - 22.2 60：0
 # END
