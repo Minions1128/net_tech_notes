@@ -29,7 +29,122 @@
         - 一致性（consistency）
         - 隔离性（isolation，又称独立性）
         - 持久性（durability）
-- clock
-    - 22.2 0:0
-    - 22.2 60：0
+
+## MySQL
+
+- MySQL
+    - 衍生版
+        - MariaDB
+        - Percona
+        - AliDB
+        - TiDB
+    - 原生版
+        - Community
+        - Enterprise
+
+- 安装和使用MariaDB：
+    - 安装方式：
+        1. rpm包：由OS的发行商、程序官方提供；
+        2. 源码包；
+        3. 通用二进制格式的程序包；
+
+- MariaDB程序的组成：
+    - Clinet：client --> mysql protocol --> server
+        - mysql：CLI交互式客户端程序
+        - mysqldump：备份工具
+        - mysqladmin：管理工具
+        - mysqlbinlog：
+    - Server：
+        - mysqld
+        - mysqld_safe：建议运行服务端程序
+        - mysqld_multi：多实例
+
+- 三类套接字地址：
+    - IPv4 TCP 3306
+    - IPv6 TCP 3306
+    - Unix Socket：`/var/lib/mysql.sock`和`/tmp/mysql.sock`
+
+- 配置文件：ini风格，用一个文件为多个程序提供配置；
+    - [mysql]
+    - [mysqld]
+    - [mysqld_safe]
+    - [server]
+    - [client]
+    - [mysqldump]
+    - ...
+    - mysql的各类程序启动都读取不只一个配置文件，按顺序读取，且最后读取的为最终生效，使用命令`my_print_defaults`查看：
+        ```
+            Default options are read from the following files in the given order:
+            /etc/mysql/my.cnf /etc/my.cnf ~/.my.cnf
+            /etc/my.cnf + /etc/my.cnf.d/*
+        ```
+
+- 常用命令：`mysql [OPINTIONS] [database]`
+    - 常用选项：
+        - `-uUSERNAME, --user=name`：用户名，默认为root；
+        - `-hHost, --host=name`：mysql服务器，默认为localhost；客户端连接服务端，服务器会反解客户的IP为主机名，关闭此功能`skip_name_resolve=ON`
+        - `-pPASSWORD, --password[=PASSWORD]`：用户的密码，默认为空
+        - `-P, --port=#`：mysql服务器监听的端口，默认为3306端口
+        - `-S, --socket=name`：套接字文件路径
+        - `-D, --database=name`：登录时，使用的默认库
+        - `-e, --execute='CMD'`：登录数据库时，执行的命令
+    - 注意：
+        - mysql的用户帐号由两部分组成：`'USERNAME'@'HOST'`；其中HOST用于权限此用户可通过哪些远程主机链接当前的mysql服务；
+        - HOST的表示方式，支持使用通配符；
+            - `%`：匹配任意长度的任意字符，如：`172.16.%.% == 172.16.0.0/16`
+            - `_`：匹配任意单个字符
+    - 命令
+        - 客户端命令
+            - `use, (\u) Use another database. Takes database name as argument.`
+            - `exit, (\q) Exit mysql. Same as quit.`
+            - `delimiter（界定符）, (\d) Set statement delimiter.`
+            - `go, (\g) Send command to mysql server.`
+            - `ego, (\G) Send command to mysql server, display result vertically.`
+            - `status, (\s) Get status information from the server.`
+            - `clear, (\c) Clear the current input statement.`
+            - `system, (\!) Execute a system shell command.`
+            - `source, (\.) Execute an SQL script file. Takes a file name as an argument.`
+        - 服务端命令
+            - 获取帮助：`help contents`
+            - Account Management
+            - Administration
+            - Data Definition
+            - Data Manipulation
+            - Data Types
+
+- 数据类型：
+    - 字符型
+        - 定长字符
+            - CHAR(#)：不区分字符大小写
+            - BINARY(#)：区分字符大小写
+        - 变长字符
+            - VARCHAR(#)
+            - VARBINARY(#)
+        - 对象存储
+            - TEXT
+            - BLOB
+        - 内置类型
+            - SET
+            - ENUM
+    - 数值型
+        - 精确数值
+            - INT(TINIINT, SMALLINT, MEDIUMINT, INT, BIGINT)
+            - DECIMAL
+        - 近似数值
+            - FLOAT
+            - DOUBLE
+    - 时间日期型
+        - DATE
+        - TIME
+        - DATETIME
+        - TIMESTAMP
+        - YEAR(2), YEAR(4)
+    - 注：字符集
+        - `SHOW COLLATION;`：查看各个字符集下的排序规则
+        - `SHOW CHARACTER SET;`：查看所有支持的字符集
+
 # END
+
+- clock
+    - 22.3 0:0
+    - 22.3 60：0
