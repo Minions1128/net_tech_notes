@@ -32,6 +32,9 @@ Network Technology Note Summaries
 * [DHCP](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/DHCP.md "DHCP")
 * [tcpdump](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/tcpdump.md "tcpdump")
 * [cacti](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/cacti.md "cacti")
+* [zabbix](https://github.com/Minions1128/net_tech_notes/blob/master/Linux/zabbix.md "zabbix")
+
+
 
 ## Python Packet
 [IP地址计算的Python包](https://github.com/Minions1128/net_tech_notes/blob/master/Python%20Packet/IPy.py "IP地址计算的Python包")
