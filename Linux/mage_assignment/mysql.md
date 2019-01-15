@@ -117,15 +117,13 @@
         - 定长字符
             - CHAR(#)：不区分字符大小写
             - BINARY(#)：区分字符大小写
-        - 变长字符
+        - 变长字符：多占一个或两个字符空间
             - VARCHAR(#)
             - VARBINARY(#)
         - 对象存储
-            - TEXT
-            - BLOB
-        - 内置类型
-            - SET
-            - ENUM
+            - TEXT：检索时，不区分大小写
+            - BLOB：Binary Large OBject，区分大小写
+        - 内置类型：SET, ENUM
     - 数值型
         - 精确数值
             - INT(TINIINT, SMALLINT, MEDIUMINT, INT, BIGINT)
@@ -143,8 +141,87 @@
         - `SHOW COLLATION;`：查看各个字符集下的排序规则
         - `SHOW CHARACTER SET;`：查看所有支持的字符集
 
+- 字段数据修饰符：
+    - NOT NULL
+    - NULL
+    - AUTO_INCREMENT：自加
+    - DEFAULT value
+    - PRIMARY KEY
+    - UNIQUE KEY，可以为空
+
+- DDL，Data Definition Language：`CREATE, ALTER, DROP, SHOW`
+    - 数据库管理
+        - CREATE：即在`/var/lib/mysql/`下的文件夹
+            ```
+                CREATE {DATABASE | SCHEMA} [IF NOT EXISTS] db_name;
+                    [create_specification] ...
+
+                create_specification:
+                    [DEFAULT] CHARACTER SET [=] charset_name
+                    | [DEFAULT] COLLATE [=] collation_name
+            ```
+        - ALTER：
+            ```
+                ALTER {DATABASE | SCHEMA} [db_name]
+                    alter_specification ...
+                alter_specification:
+                    [DEFAULT] CHARACTER SET [=] charset_name
+                  | [DEFAULT] COLLATE [=] collation_name
+            ```
+        - DROP：`DROP {DATABASE | SCHEMA} [IF EXISTS] db_name`
+        - SHOW：`SHOW {DATABASES | SCHEMAS} [LIKE 'pattern' | WHERE expr]`
+            - 查看数据库支持的所有存储引擎类型：`SHOW ENGINES;`
+            
+    - 表管理
+        - CREATE：
+            ```
+                CREATE [TEMPORARY] TABLE [IF NOT EXISTS] [db_name.]tbl_name
+                    (create_definition,...)
+                    [table_options]
+                create_definition:
+                    字段：col_name data_type
+                    键：
+                        PRIMARY KEY [index_type] (index_col_name,...)
+                        UNIQUE [INDEX|KEY] (index_col_name,...)
+                        FOREIGN KEY (index_col_name,...)
+                    索引：[INDEX|KEY] [index_name] (index_col_name,...)
+                table_option:
+                    ENGINE [=] engine_name
+                    | [DEFAULT] CHARACTER SET [=] charset_name
+                    | [DEFAULT] COLLATE [=] collation_name
+                复制表结构：CREATE TABLE tbl_name LIKE db_name.tbl_name
+                复制表数据：CREATE TABLE tbl_name select_statement
+            ```
+        - ALTER：
+            ```
+                ALTER [ONLINE | OFFLINE] [IGNORE] TABLE tbl_name
+                    [alter_specification [, alter_specification] ...]
+                    [partition_options]
+
+                alter_specification:
+                    字段：
+                        添加：ADD [COLUMN] col_name column_definition [FIRST | AFTER col_name]
+                        删除：DROP [COLUMN] col_name
+                        修改：
+                            CHANGE [COLUMN] old_col_name new_col_name column_definition [FIRST|AFTER col_name]
+                            MODIFY [COLUMN] col_name column_definition [FIRST | AFTER col_name]
+                    键：
+                        添加：ADD [PRIMARY|UNIQUE|FOREIGN] KEY (index_col_name,...)
+                        删除：DROP [PRIMARY KEY|FOREIGN KEY fk_symbol]
+                    索引：
+                        添加：ADD {INDEX|KEY} [index_name] (index_col_name,...)
+                        删除：DROP {INDEX|KEY} index_name
+                    表选项：ENGINE [=] engine_name
+            ```
+        - DROP：`DROP [TEMPORARY] TABLE [IF EXISTS] tbl_name [, tbl_name, [...]]`
+        - SHOW：`SHOW [FULL] TABLES [{FROM | IN} db_name] [LIKE 'pattern' | WHERE expr]`
+            - 查看某表的存储引擎类型：`SHOW TABLES STATUS [LIKE 'table_name']|[WHERE expr]`
+            - 查看表上的索引信息：`SHOW INDEXES FROM table_name`
+
+- DML，Data Manipulation Language：`INSERT DELETE UPDATE SELECT`
+
 # END
 
 - clock
-    - 22.3 0:0
-    - 22.3 60：0
+    - 22.3 62 min
+    - 22.5 8 min
