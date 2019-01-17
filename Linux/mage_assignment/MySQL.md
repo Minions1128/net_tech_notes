@@ -171,7 +171,6 @@
         - DROP：`DROP {DATABASE | SCHEMA} [IF EXISTS] db_name`
         - SHOW：`SHOW {DATABASES | SCHEMAS} [LIKE 'pattern' | WHERE expr]`
             - 查看数据库支持的所有存储引擎类型：`SHOW ENGINES;`
-            
     - 表管理
         - CREATE：
             ```
@@ -189,7 +188,7 @@
                     ENGINE [=] engine_name
                     | [DEFAULT] CHARACTER SET [=] charset_name
                     | [DEFAULT] COLLATE [=] collation_name
-                复制表结构：CREATE TABLE tbl_name LIKE db_name.tbl_name
+                复制表结构：CREATE TABLE tbl_name LIKE db_name.old_tbl_name
                 复制表数据：CREATE TABLE tbl_name select_statement
             ```
         - ALTER：
@@ -217,8 +216,89 @@
         - SHOW：`SHOW [FULL] TABLES [{FROM | IN} db_name] [LIKE 'pattern' | WHERE expr]`
             - 查看某表的存储引擎类型：`SHOW TABLES STATUS [LIKE 'table_name']|[WHERE expr]`
             - 查看表上的索引信息：`SHOW INDEXES FROM table_name`
+    - 索引
+        - 创建索引：
+            ```
+                CREATE [ONLINE|OFFLINE] [UNIQUE|FULLTEXT|SPATIAL] INDEX index_name
+                    [index_type] ON tbl_name (index_col_name,...)
+                    [index_option]
+                    [algorithm_option | lock_option] ...
+            ```
+        - 查看索引：
+            ```
+                SHOW {INDEX | INDEXES | KEYS} {FROM | IN} tbl_name
+                    [{FROM | IN} db_name] [WHERE expr]
+            ```
+        - 删除索引：
+            ```
+                DROP INDEX [ONLINE|OFFLINE] index_name ON tbl_name
+                    [algorithm_option | lock_option] ...
+            ```
 
 - DML，Data Manipulation Language：`INSERT DELETE UPDATE SELECT`
+    - SELECT
+        - ORDER
+        - GROUP
+        - HAVING
+    - INSERT
+    - UPDATE
+    - DELETE
+
+- 帐号权限管理
+    - 用户帐号：`'username'@'host'`
+        - 禁止主机名检查：
+            ```
+                my.cnf
+                [mysqld]
+                skip_name_resolve=ON
+            ```
+    - 创建帐号：`CREATE USER 'username'@'host' [auth_option]`
+    - 删除帐号：`DROP USER 'username'@'host' [, 'username1'@'host1']`
+    - 用户授权：
+        ```
+            GRANT priv_type ON 
+                [object_type] priv_level 
+                TO 'username'@'host' [auth_option]
+
+            priv_type: {
+                ALL
+                | UPDATE
+                ...
+            }
+
+            object_type: {
+                TABLE
+              | FUNCTION
+              | PROCEDURE
+            }
+
+            priv_level: {
+                *
+              | *.*
+              | db_name.*
+              | db_name.tbl_name
+              | tbl_name
+              | db_name.routine_name
+            }
+
+            auth_option: {
+                IDENTIFIED BY 'auth_string'
+              | IDENTIFIED BY PASSWORD 'hash_string'
+              | IDENTIFIED WITH auth_plugin
+              | IDENTIFIED WITH auth_plugin AS 'hash_string'
+            }
+
+            e.g.. GRANT ALL ON db1.* TO 'shenzj'@'localhost' IDENTIFIED BY '123456';
+        ```
+    - 回收授权：`REVOKE priv_type [(column_list)] ON [object_type] priv_level FROM user [, user]`
+    - 查看权限：`SHOW GRANTS FOR user`
+    - 刷新：·`FLUSH PRIVILEGES;­`
+
+
+
+# 其他
+
+[数据库索引到底是什么，是怎样工作的？](https://blog.csdn.net/weiliangliang111/article/details/51333169 "数据库索引到底是什么，是怎样工作的？")
 
 # END
 
