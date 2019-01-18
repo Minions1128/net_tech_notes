@@ -47,6 +47,7 @@
         1. rpm包：由OS的发行商、程序官方提供；
         2. 源码包；
         3. 通用二进制格式的程序包；
+    - 安装完成后，执行`mysql_secure_installation`来做安全配置向导
 
 - MariaDB程序的组成：
     - Clinet：client --> mysql protocol --> server
@@ -299,9 +300,3 @@
 # 其他
 
 [数据库索引到底是什么，是怎样工作的？](https://blog.csdn.net/weiliangliang111/article/details/51333169 "数据库索引到底是什么，是怎样工作的？")
-
-# END
-
-- clock
-    - 22.3 62 min
-    - 22.5 8 min
