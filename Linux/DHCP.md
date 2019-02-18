@@ -52,10 +52,24 @@ host szj-node {
   hardware ethernet 00:f0:m4:6y:89:0g;
   fixed-address 10.10.51.101;
 }
-
-# 重启服务
+```
+5. 重启服务
+```
+Ubuntu: 
 service isc-dhcp-server restart
 ```
+
+Centos 6
+
+|  | 启用 | 停止  |
+| :------------ | :------------ | :------------ |
+| 第一种 | `# /etc/init.d/dhcpd start` | `# /etc/init.d/dhcpd stop` |
+| 第二种 | `# service dhcpd start` | `# service dhcpd stop` |
+
+查看DHCP是否重启成功
+
+`netstat -panu | grep dhc*`
+
 5. 查看信息
 ```
 /var/lib/dhcp/dhcpd.leases
