@@ -1,4 +1,7 @@
 # DHCP
+
+`发行版为Ubuntu`
+
 配置步骤：
 1. 安装
 ```
@@ -6,8 +9,12 @@ apt install isc-dhcp-server
 ```
 2. 修改DHCP接口信息
 ```
+# Ubuntu
 vim /etc/default/isc-dhcp-server
 INTERFACES="ens32"
+
+# Centos 6
+vim /etc/sysconfig/network-scripts/ifcfg-eth0
 ```
 3. 配置接口IP地址为固定IP地址
 ```
