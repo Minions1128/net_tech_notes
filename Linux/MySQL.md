@@ -10,6 +10,18 @@
     - 结构化数据：可以存在excel中的数据
     - 半结构化数据：邮件、报表等
     - 非结构化数据：音频、视频等
+- 数据库类型：
+    - Relational DBMS
+    - NoSQL：
+        - Document
+        - Key-value store
+        - Wide column
+        - Graph
+    - Search engine：倒排索引
+        - Solr
+        - ElasticSerach
+    - Time Series：监控系统中使用
+        - InfluxDB
 - SQL接口：Structured Query Language
     - 类似于OS的shell接口
     - 分为两类：
