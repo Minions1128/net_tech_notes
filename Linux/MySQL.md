@@ -60,6 +60,7 @@
         2. 源码包；
         3. 通用二进制格式的程序包；
     - 安装完成后，执行`mysql_secure_installation`来做安全配置向导
+    - 参考：[CentOS 7下MySQL 5.7安装、配置与应用](https://www.linuxidc.com/Linux/2016-04/130414.htm "CentOS 7下MySQL 5.7安装、配置与应用")
 
 - MariaDB程序的组成：
     - Clinet：client --> mysql protocol --> server
@@ -159,7 +160,7 @@
     - NULL
     - AUTO_INCREMENT：自加
     - DEFAULT value
-    - PRIMARY KEY
+    - PRIMARY KEY：唯一、非空
     - UNIQUE KEY，可以为空
 
 - DDL，Data Definition Language：`CREATE, ALTER, DROP, SHOW`
