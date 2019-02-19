@@ -102,6 +102,14 @@
         - `-S, --socket=name`：套接字文件路径
         - `-D, --database=name`：登录时，使用的默认库
         - `-e, --execute='CMD'`：登录数据库时，执行的命令
+        - `--protocol={tcp|socket|pipe|memory`：
+            - 本地通信：基于本地回环地址进行请求，将基于本地通信协议；
+                - Linux：SOCKET
+                - Windows：PIPE, MEMORY
+        - `-S, --socket=name`：The socket file to use for connection.
+        - `-D, --database=name`：Database to use.
+        - `-e, --execute=name`：Execute command and quit. (Disables --force and history file.)
+        - `-E, --vertical`：Print the output of a query (rows) vertically.
     - 注意：
         - mysql的用户帐号由两部分组成：`'USERNAME'@'HOST'`；其中HOST用于权限此用户可通过哪些远程主机链接当前的mysql服务；
         - HOST的表示方式，支持使用通配符；
@@ -125,6 +133,18 @@
             - Data Definition
             - Data Manipulation
             - Data Types
+
+- mysqld服务器程序：工作特性的定义方式
+    - 查看配置文件参数：`SHOW [GLOBAL|SESSION] VARIABLES [like_or_where];`
+    - 修改配置参数：`SET variable_assignment [, variable_assignment] ...`
+        - variable_assignment:
+            - `user_var_name = expr`
+            - `[GLOBAL | SESSION] system_var_name = expr`
+            - `[@@global. | @@session. | @@]system_var_name = exprSET SESSION []`
+        - 仅能修改部分属性，例如：
+            - `SET SESSION skip_name_resolve=ON;`
+            - `SET @@SESSION.keip_name_resolve=ON;`
+        - 其修改结果保存在内存中
 
 - 数据类型：
     - 字符型
