@@ -135,18 +135,22 @@
             - Data Types
 
 - mysqld服务器程序：工作特性的定义方式
-    - 查看配置文件参数：`SHOW [GLOBAL|SESSION] VARIABLES [like_or_where];`
-    - 修改配置参数：`SET variable_assignment [, variable_assignment] ...`
-        - variable_assignment:
-            - `user_var_name = expr`
-            - `[GLOBAL | SESSION] system_var_name = expr`
-            - `[@@global. | @@session. | @@]system_var_name = exprSET SESSION []`
-        - 仅能修改部分属性，例如：
-            - `SET SESSION skip_name_resolve=ON;`
-            - `SET @@SESSION.keip_name_resolve=ON;`
-        - 其修改结果保存在内存中
+    - 服务器参数、变量：
+        - 查看配置文件参数：`SHOW [GLOBAL|SESSION] VARIABLES [like_or_where];`
+        - 修改配置参数：`SET variable_assignment [, variable_assignment] ...`
+            - variable_assignment:
+                - `user_var_name = expr`
+                - `[GLOBAL | SESSION] system_var_name = expr`
+                - `[@@global. | @@session. | @@]system_var_name = exprSET SESSION []`
+            - 仅能修改部分属性，例如：
+                - `SET SESSION skip_name_resolve=ON;`
+                - `SET @@SESSION.keip_name_resolve=ON;`
+            - 其修改结果保存在内存中
+    - 状态统计参数、变量：
+        - `SHOW [GLOBAL | SESSION] STATUS [like_or_where]`
 
 - 数据类型：
+    - 查看数据类型：`HELP DATA TYPES;`
     - 字符型
         - 定长字符
             - CHAR(#)：不区分字符大小写
@@ -158,6 +162,9 @@
             - TEXT：检索时，不区分大小写
             - BLOB：Binary Large OBject，区分大小写
         - 内置类型：SET, ENUM
+        - 注：字符集
+            - `SHOW COLLATION;`：查看各个字符集下的排序规则
+            - `SHOW CHARACTER SET;`：查看所有支持的字符集
     - 数值型
         - 精确数值
             - INT(TINIINT, SMALLINT, MEDIUMINT, INT, BIGINT)
@@ -171,9 +178,6 @@
         - DATETIME
         - TIMESTAMP
         - YEAR(2), YEAR(4)
-    - 注：字符集
-        - `SHOW COLLATION;`：查看各个字符集下的排序规则
-        - `SHOW CHARACTER SET;`：查看所有支持的字符集
 
 - 字段数据修饰符：
     - NOT NULL
@@ -182,6 +186,12 @@
     - DEFAULT value
     - PRIMARY KEY：唯一、非空
     - UNIQUE KEY，可以为空
+
+- SQL MODE：定义mysqld对约束等返违反时相应行为等设定
+    - 常用的MODE：
+        - TRADITIONAL
+        - STRICT_TRANS_TABLES
+        - STRICT_ALL_TABLES
 
 - DDL，Data Definition Language：`CREATE, ALTER, DROP, SHOW`
     - 数据库管理
@@ -328,8 +338,20 @@
     - 查看权限：`SHOW GRANTS FOR user`
     - 刷新：·`FLUSH PRIVILEGES;­`
 
+- SQL查询过程：请求 --> 查询缓存 --> 解析器 --> 预处理器 --> 优化器 --> 查询执行引擎 --> 存储引擎 --> 响应
+
+- SELECT语句执行流程：FROM, WHERE, GROUP BY, HAVING, ORDER BY, SELECT, LIMIT
+
+- 缓存器：
+    - `query_cache_type`查询后的缓存类型：
+        - `ON`开启：SELECT SQL_NO_CACHE，不缓存，默认缓存
+        - `OFF`：关闭
+        - `DEMAND`：按需缓存，SELECT SQL_CACHE，缓存，默认不缓存
+
+
+# 多表查询
 
 
 # 其他
 
-[数据库索引到底是什么，是怎样工作的？](https://blog.csdn.net/weiliangliang111/article/details/51333169 "数据库索引到底是什么，是怎样工作的？")
+- [数据库索引到底是什么，是怎样工作的？](https://blog.csdn.net/weiliangliang111/article/details/51333169 "数据库索引到底是什么，是怎样工作的？")
