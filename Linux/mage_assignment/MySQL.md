@@ -142,7 +142,9 @@
             - Data Types
     - sql脚本运行：
         - `mysql [options] [DATABASE] < /PATH/FROM/SOME_SQL_SCRIPT`
-        - 参考：- [MySQL命令行下执行.sql脚本](https://blog.csdn.net/xulianboblog/article/details/51086529 "MySQL命令行下执行.sql脚本")和[如何书写优雅、漂亮的SQL脚本？](https://www.cnblogs.com/kerrycode/archive/2010/08/16/1800334.html "如何书写优雅、漂亮的SQL脚本？")
+        - 参考：
+            - [MySQL命令行下执行.sql脚本](https://blog.csdn.net/xulianboblog/article/details/51086529 "MySQL命令行下执行.sql脚本")
+            - [如何书写优雅、漂亮的SQL脚本？](https://www.cnblogs.com/kerrycode/archive/2010/08/16/1800334.html "如何书写优雅、漂亮的SQL脚本？")
 
 - mysqld服务器程序：工作特性的定义方式
     - 服务器参数、变量：
