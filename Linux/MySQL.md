@@ -351,6 +351,19 @@
 
 # 多表查询
 
+- 外连接：http://www.w3school.com.cn/sql/sql_join_left.asp
+- show engine innodb status\G 查看引擎状态
+
+
+# 锁
+
+- 显式锁
+    - LOCK TABLES
+        - LOCK TABLES tbl_name1 [read|write], tbl_name2 [read|write], ...
+        - UNLOCK TABLES
+    - FLUSH TABLES
+
+- 隐式锁
 
 # 其他
 
