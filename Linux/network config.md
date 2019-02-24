@@ -36,16 +36,16 @@
         2. 如果Firmware或BIOS为PCI-E扩展槽所提供的索引信息可用，且可预测，则根据此索引进行命名，如ens1, ens2, ...
         3. 如果硬件接口的物理位置信息可用，则根据此信息命名，如enp2s0, ...
         4. 如果用户显式定义，也可根据MAC地址命名，例如enx122161ab2e10, ...
-        5. 上述均不可用，则仍使用传统方式命名；
+        5. 上述均不可用，则仍使用传统方式命名
     - 命名格式的组成：
         - en：ethernet
         - wl：wlan
         - ww：wwan
     - 名称类型：
-        - o<index>：集成设备的设备索引号；
-        - s<slot>：扩展槽的索引号；
-        - x<MAC>：基于MAC地址的命名；
-        - p<bus>s<slot>：基于总线及槽的拓扑结构进行命名；
+        - o<index>：集成设备的设备索引号
+        - s<slot>：扩展槽的索引号
+        - x<MAC>：基于MAC地址的命名
+        - p<bus>s<slot>：基于总线及槽的拓扑结构进行命名
 
 ## ifcfg
 
@@ -56,7 +56,7 @@
     - `ifconfig interface [aftype] options | address ...`：配置地址的方式
         - `ifconfig IFACE IP/MASK [up|down]`或者`ifconfig IFACE IP netmask NETMASK`
             - options：[-]promisc：（关闭）开启接口的混杂模式：（混杂模式，是指一台机器的网卡能够接收所有经过它的数据流，而不论其目的地址是否是它。）
-    - 注意：立即送往内核中的TCP/IP协议栈，并生效；
+    - 注意：立即送往内核中的TCP/IP协议栈，并生效
     - 管理IPv6地址：
         - `add addr/prefixlen`
         - `del addr/prefixlen`
@@ -64,16 +64,14 @@
 - route命令：路由查看及管理
     - 查看：`route -n`
     - 添加：`route add [-net|-host] target [netmask Nm] [gw GW] [[dev] If]`
-        - 示例：```
-                route add -net 10.0.0.0/8 gw 192.168.10.1 dev eth1
-                route add -net 0.0.0.0/0.0.0.0 gw 192.168.10.1
-                route add default gw 192.168.10.1
-            ```
+        - 示例：
+            - `route add -net 10.0.0.0/8 gw 192.168.10.1 dev eth1`
+            - `route add -net 0.0.0.0/0.0.0.0 gw 192.168.10.1`
+            - `route add default gw 192.168.10.1`
     - 删除：`route del [-net|-host] target [gw Gw] [netmask Nm] [[dev] If]`
-        - 示例：```
-                route del -net 10.0.0.0/8 gw 192.168.10.1
-                route del default
-            ```
+        - 示例：
+            - `route del -net 10.0.0.0/8 gw 192.168.10.1`
+            - `route del default`
 
 - netstat命令：
     - Print network connections, routing tables, interface statistics, masquerade connections, and multicast memberships.
@@ -82,113 +80,86 @@
         - `-n`：数字格式
     - 显示网络连接：
         - `netstat [--tcp|-t] [--udp|-u] [--udplite|-U] [--sctp|-S] [--raw|-w] [--listening|-l] [--all|-a] [--numeric|-n]  [--extend|-e[--extend|-e]] [--program|-p]`
-            - `-t`：TCP协议的相关连接，连接均有其状态；FSM（Finate State Machine）；
+            - `-t`：TCP协议的相关连接，连接均有其状态FSM（Finate State Machine）
             - `-u`：UDP相关的连接
             - `-w`：raw socket相关的连接
             - `-l`：处于监听状态的连接
             - `-a`：所有状态
-            - `-n`：以数字格式显示IP和Port；
+            - `-n`：以数字格式显示IP和Port
             - `-e`：扩展格式
-            - `-p`：显示相关的进程及PID；
+            - `-p`：显示相关的进程及PID
         - 常用组合：
-            `-tan`,  `-uan`,  `-tnl`,  `-unl`,  `-tunlp`
-                                
+            - `-tan`：tcp的所有连接，LISTEN、ESTABLISHED
+            - `-uan`：udp的监听状态
+            - `-tnl`：tcp的所有监听的状态
+            - `-unl`：udp监听的连接
+            - `-tunlp`：所有监听的连接，包括进程
+    - 显示接口的统计数据：
+        - `netstat {--interfaces|-I|-i} [iface] [--all|-a] [--extend|-e] [--verbose|-v] [--program|-p] [--numeric|-n]`
+            - 所有接口：`netstat -i`
+            - 指定接口：`netstat -I<IFace>`
 
-                    
-            显示接口的统计数据：
-                netstat    {--interfaces|-I|-i}    [iface]   [--all|-a]   [--extend|-e]   [--verbose|-v]   [--program|-p]  [--numeric|-n]
-                    
-                所有接口：
-                    netstat  -i
-                指定接口：
-                    netstat  -I<IFace>
-                    
-        ifup/ifdown命令：
-            注意：通过配置文件/etc/sysconfig/network-scripts/ifcfg-IFACE来识别接口并完成配置；
+- ifup/ifdown命令：开启/禁用某个端口
+    - 注意：通过配置文件`/etc/sysconfig/network-scripts/ifcfg-IFACE`来识别接口并完成配置
     
-    配置主机名：
-    
-        hostname命令：
-            查看：hostname
-            配置：hostname  HOSTNAME
-                当前系统有效，重启后无效；
-            
-        hostnamectl命令（CentOS 7）：
-            hostnamectl  status：显示当前主机名信息；
-            hostnamectl  set-hostname：设定主机名，永久有效；
-            
-        配置文件：/etc/sysconfig/network
-            HOSTNAME=<HOSTNAME>
-            
-            注意：此方法的设置不会立即生效； 但以后会一直有效；
-            
-    配置DNS服务器指向：
-        
-        配置文件：/etc/resolv.conf
-            nameserver   DNS_SERVER_IP
-            
-            如何测试(host/nslookup/dig)：
-                # dig  -t  A  FQDN
-                    FQDN --> IP
-                    
-                # dig  -x  IP
-                    IP --> FQDN
+- 配置主机名：
+    - hostname命令：
+        - 查看：`hostname`
+        - 配置：`hostname HOSTNAME`
+        - 当前系统有效，重启后无效
+    - hostnamectl命令（CentOS 7）：
+        - `hostnamectl status`：显示当前主机名信息
+        - `hostnamectl set-hostname HOSTNAME`：设定主机名，永久有效
+    - 配置文件：`/etc/sysconfig/network`中添加：`HOSTNAME=<HOSTNAME>`
+        - 注意：此方法的设置不会立即生效 但以后会一直有效
 
-## iproute2
+- 配置DNS服务器指向：
+    - 配置文件：`/etc/resolv.conf`中：`nameserver DNS_SERVER_IP`，最多可以指定三台DNS服务器
+    - 如何测试(host/nslookup/dig)：
+        - `# dig  -t  A  FQDN`：FQDN --> IP
+        - `# dig  -x  IP`：IP --> FQDN
 
-    iproute家族： 
-        ip命令：
-            show / manipulate routing, devices, policy routing and tunnels
-            
-            ip [ OPTIONS ] OBJECT { COMMAND | help }
-                OBJECT := { link | addr | route | netns  }
-            
-            注意： OBJECT可简写，各OBJECT的子命令也可简写；
-                
-            ip  OBJECT：
-                
-                ip link： network device configuration
-                
-                    ip  link  set - change device attributes
-                        dev NAME (default)：指明要管理的设备，dev关键字可省略；
-                        up和down：
-                        multicast on或multicast off：启用或禁用多播功能；
-                        name NAME：重命名接口
-                        mtu NUMBER：设置MTU的大小，默认为1500；
-                        netns PID：ns为namespace，用于将接口移动到指定的网络名称空间；
-                        
-                    ip  link  show  - display device attributes
-                    
-                    ip  link  help -  显示简要使用帮助；
-                    
-                ip netns：  - manage network namespaces.
-                
-                    ip  netns  list：列出所有的netns
-                    ip  netns  add  NAME：创建指定的netns
-                    ip  netns  del  NAME：删除指定的netns
-                    ip  netns   exec  NAME  COMMAND：在指定的netns中运行命令
-                    
-                ip address - protocol address management.
+## iproute
+
+- ip命令：show / manipulate routing, devices, policy routing and tunnels
+    - `ip [ OPTIONS ] OBJECT { COMMAND | help } ;OBJECT := { link | addr | addrlabel | route | netns }`
+        - 注意： OBJECT可简写，各OBJECT的子命令也可简写
+        - ip link： network device configuration
+            - ip link set { DEVICE | group GROUP } { up | down | arp { on | off } |...} - change device attributes
+                - dev NAME (default)：指明要管理的设备，dev关键字可省略
+                - up和down：启用或禁用端口
+                - multicast on或multicast off：启用或禁用多播功能
+                - name NAME：重命名接口
+                - mtu NUMBER：设置MTU的大小，默认为1500
+                - netns PID：ns为namespace，用于将接口移动到指定的网络名称空间
+            - ip link show  - display device attributes
+            - ip link help -  显示简要使用帮助
+        - ip netns：manage network namespaces.
+            - ip netns list：列出所有的netns
+            - ip netns add NAME：创建指定的netns
+            - ip netns del NAME：删除指定的netns
+            - ip netns exec NAME COMMAND：在指定的netns中运行命令
+        - ip address - protocol address management.
                     
                     ip address add - add new protocol address
                         ip  addr  add  IFADDR  dev  IFACE
-                            [label NAME]：为额外添加的地址指明接口别名；
-                            [broadcast ADDRESS]：广播地址；会根据IP和NETMASK自动计算得到；
+                            [label NAME]：为额外添加的地址指明接口别名
+                            [broadcast ADDRESS]：广播地址会根据IP和NETMASK自动计算得到
                             [scope SCOPE_VALUE]：
-                                global：全局可用；
-                                link：接口可用；
-                                host：仅本机可用；                                             
+                                global：全局可用
+                                link：接口可用
+                                host：仅本机可用                                             
                         
                     ip address delete - delete protocol address
                         ip addr  delete  IFADDR  dev  IFACE 
                             
                     ip address show - look at protocol addresses
-                        ip  addr   list  [IFACE]：显示接口的地址；
+                        ip  addr   list  [IFACE]：显示接口的地址
                         
                     ip address flush - flush protocol addresses
                         ip  addr  flush  dev  IFACE
                         
-                ip route - routing table management
+        - ip route - routing table management
                 
                     ip route add - add new route
                     ip route change - change route
@@ -215,7 +186,7 @@
                         
                         示例：ip route  get  192.168.0.0/24
                     
-        ss命令：
+- ss命令：
             ss  [options]  [ FILTER ]
                 选项：
                     -t：TCP协议的相关连接
@@ -249,30 +220,31 @@
                                 ~]# ss  -tan  state  ESTABLISHED
                                 
 ## 配置文件：
+
         IP/NETMASK/GW/DNS等属性的配置文件：/etc/sysconfig/network-scripts/ifcfg-IFACE
-            IFACE：接口名称；
+            IFACE：接口名称
         路由的相关配置文件：/etc/sysconfig/networkj-scripts/route-IFACE
                     
-        配置文件/etc/sysconfig/network-scripts/ifcfg-IFACE通过大量参数来定义接口的属性；其可通过vim等文本编辑器直接修改，也可以使用专用的命令的进行修改（CentOS 6：system-config-network (setup)，CentOS 7: nmtui）
+        配置文件/etc/sysconfig/network-scripts/ifcfg-IFACE通过大量参数来定义接口的属性其可通过vim等文本编辑器直接修改，也可以使用专用的命令的进行修改（CentOS 6：system-config-network (setup)，CentOS 7: nmtui）
         
             ifcfg-IFACE配置文件参数：
-                DEVICE：此配置文件对应的设备的名称；
-                ONBOOT：在系统引导过程中，是否激活此接口；
-                UUID：此设备的惟一标识；
-                IPV6INIT：是否初始化IPv6；
-                BOOTPROTO：激活此接口时使用什么协议来配置接口属性，常用的有dhcp、bootp、static、none；
-                TYPE：接口类型，常见的有Ethernet, Bridge；
-                DNS1：第一DNS服务器指向；
-                DNS2：备用DNS服务器指向；
-                DOMAIN：DNS搜索域；
-                IPADDR： IP地址；
-                NETMASK：子网掩码；CentOS 7支持使用PREFIX以长度方式指明子网掩码；
-                GATEWAY：默认网关；
-                USERCTL：是否允许普通用户控制此设备；
-                PEERDNS：如果BOOTPROTO的值为“dhcp”，是否允许dhcp server分配的dns服务器指向覆盖本地手动指定的DNS服务器指向；默认为允许；
-                HWADDR：设备的MAC地址；
+                DEVICE：此配置文件对应的设备的名称
+                ONBOOT：在系统引导过程中，是否激活此接口
+                UUID：此设备的惟一标识
+                IPV6INIT：是否初始化IPv6
+                BOOTPROTO：激活此接口时使用什么协议来配置接口属性，常用的有dhcp、bootp、static、none
+                TYPE：接口类型，常见的有Ethernet, Bridge
+                DNS1：第一DNS服务器指向
+                DNS2：备用DNS服务器指向
+                DOMAIN：DNS搜索域
+                IPADDR： IP地址
+                NETMASK：子网掩码CentOS 7支持使用PREFIX以长度方式指明子网掩码
+                GATEWAY：默认网关
+                USERCTL：是否允许普通用户控制此设备
+                PEERDNS：如果BOOTPROTO的值为“dhcp”，是否允许dhcp server分配的dns服务器指向覆盖本地手动指定的DNS服务器指向默认为允许
+                HWADDR：设备的MAC地址
                 
-                NM_CONTROLLED：是否使用NetworkManager服务来控制接口；
+                NM_CONTROLLED：是否使用NetworkManager服务来控制接口
                 
             网络服务：
                 network
@@ -282,12 +254,12 @@
                     CentOS 6:  service  SERVICE  {start|stop|restart|status}
                     CentOS 7：systemctl  {start|stop|restart|status}  SERVICE[.service]
                     
-                配置文件修改之后，如果要生效，需要重启网络服务；
+                配置文件修改之后，如果要生效，需要重启网络服务
                     CentOS 6：# service  network  restart
                     CentOS 7：# systemctl  restart  network.service
                     
         用到非默认网关路由：/etc/sysconfig/network-scripts/route-IFACE
-            支持两种配置方式，但不可混用；
+            支持两种配置方式，但不可混用
                 (1) 每行一个路由条目：
                     TARGET  via  GW
                     
@@ -297,15 +269,15 @@
                     GATEWAY#=NEXTHOP
                     
     给接口配置多个地址：
-        ip addr之外，ifconfig或配置文件都可以；
+        ip addr之外，ifconfig或配置文件都可以
         
         (1) ifconfig  IFACE_LABEL  IPADDR/NETMASK
         
             IFACE_LABEL： eth0:0, eth0:1, ...
             
-        (2) 为别名添加配置文件；
+        (2) 为别名添加配置文件
             DEVICE=IFACE_LABEL
-            BOOTPROTO：网上别名不支持动态获取地址；
+            BOOTPROTO：网上别名不支持动态获取地址
                 static, none
                 
     nmcli命令：
@@ -327,15 +299,15 @@
                         ipv4.method
                             manual
                             
-    博客作业：上述所有内容；
+    博客作业：上述所有内容
         ifcfg, ip/ss，配置文件 
         
-    课外作业：nmap, ncat, tcpdump命令；
+    课外作业：nmap, ncat, tcpdump命令
     
 
         
             
-回顾：ip命令，ss命令；配置文件；CentOS 7
+回顾：ip命令，ss命令配置文件CentOS 7
 
     ifcfg、ip、netstat、ss
     配置文件：
