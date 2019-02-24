@@ -70,7 +70,7 @@ Centos 6
 
 `netstat -panu | grep dhc*`
 
-5. 查看信息
+5. 查看绑定信息
 ```
 /var/lib/dhcp/dhcpd.leases
 ```
