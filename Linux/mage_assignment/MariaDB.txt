@@ -1,15 +1,14 @@
 MariaDB or MySQL：
 
 
-            事务日志：
+        事务日志：
                 innodb_log_files_in_group
                 innodb_log_group_home_dir
                 innodb_log_file_size    
                 innodb_mirrored_log_groups
-        
 
 
-            
+
         自动提交：单语句事务
             mysql> SELECT @@autocommit;
             +------------------------+
@@ -19,7 +18,7 @@ MariaDB or MySQL：
             +------------------------+
             
             mysql> SET @@session.autocommit=0；
-            
+
         手动控制事务：
             启动：START TRANSACTION 
             提交：COMMIT
@@ -29,7 +28,7 @@ MariaDB or MySQL：
                 SAVEPOINT identifier
                 ROLLBACK [WORK] TO [SAVEPOINT] identifier
                 RELEASE SAVEPOINT identifier                
-            
+
         事务隔离级别：
             READ-UNCOMMITTED：读未提交 --> 脏读；
             READ-COMMITTED：读提交--> 不可重复读；
@@ -46,7 +45,7 @@ MariaDB or MySQL：
         查看InnoDB存储引擎的状态信息：
             SHOW ENGINE innodb STATUS; 
 
-            
+
 回顾：
     存储引擎：插件式 
         SHOW ENGINES;
