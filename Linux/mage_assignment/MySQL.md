@@ -383,6 +383,29 @@
         - 隔离性（isolation，又称独立性）一个事务所做出的操作在提交之前，是否能为其它事务可见；出于保证并发操作之目的，隔离有多种级别；
         - 持久性（durability）事务一旦提交，其所做出的修改会永久保存；
     - [mysql - innodb事务日志详解](https://blog.csdn.net/donghaixiaolongwang/article/details/60961603 "mysql - innodb事务日志详解")
+        - innodb_log_files_in_group
+        - innodb_log_group_home_dir
+        - innodb_log_file_size
+        - innodb_mirrored_log_groups
+    - 一些功能：
+        - 单语句事务：
+            - 查看：`SELECT @@autocommit;`
+            - 修改：`SET @@session.autocommit=0;`、`SET autocommit=0`
+            - [autocommit](https://blog.csdn.net/aitangyong/article/details/50481161 "autocommit")
+        - 手动控制事务：
+            - 启动：`START TRANSACTION`
+            - 提交：`COMMIT`
+            - 回滚：`ROLLBACK`
+            - 事务支持savepoints：
+                - `SAVEPOINT identifier`
+                - `ROLLBACK [WORK] TO [SAVEPOINT] identifier`
+                - `RELEASE SAVEPOINT identifier`
+        - 事务隔离级别：
+            - READ-UNCOMMITTED：读未提交 --> 脏读；
+            - READ-COMMITTED：读提交 --> 不可重复读；
+            - REPEATABLE-READ：可重复读 --> 幻读；
+            - SERIALIZABLE：串行化；
+            - [MySQL事务隔离级别](https://www.jianshu.com/p/4e3edbedb9a8 "MySQL事务隔离级别")
 
 
 # 其他

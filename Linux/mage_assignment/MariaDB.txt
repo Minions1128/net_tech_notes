@@ -1,47 +1,4 @@
 MariaDB or MySQL：
-
-
-        事务日志：
-                innodb_log_files_in_group
-                innodb_log_group_home_dir
-                innodb_log_file_size    
-                innodb_mirrored_log_groups
-
-
-
-        自动提交：单语句事务
-            mysql> SELECT @@autocommit;
-            +------------------------+
-            | @@autocommit |
-            +------------------------+
-            |            1               |
-            +------------------------+
-            
-            mysql> SET @@session.autocommit=0；
-
-        手动控制事务：
-            启动：START TRANSACTION 
-            提交：COMMIT
-            回滚：ROLLBACK
-            
-            事务支持savepoints：
-                SAVEPOINT identifier
-                ROLLBACK [WORK] TO [SAVEPOINT] identifier
-                RELEASE SAVEPOINT identifier                
-
-        事务隔离级别：
-            READ-UNCOMMITTED：读未提交 --> 脏读；
-            READ-COMMITTED：读提交--> 不可重复读；
-            REPEATABLE-READ：可重复读 --> 幻读；
-            SERIALIZABLE：串行化；
-            
-            mysql> SELECT @@session.tx_isolation;
-            +----------------------------------+
-            | @@session.tx_isolation |
-            +----------------------------------+
-            | REPEATABLE-READ         |
-            +----------------------------------+
-            
         查看InnoDB存储引擎的状态信息：
             SHOW ENGINE innodb STATUS; 
 
@@ -356,7 +313,7 @@ MySQL(03)
             HASH：精确值匹配；
         EXPLAIN：
 
-                    
+
 MySQL(04)
                     
     查询缓存：
@@ -670,7 +627,7 @@ MySQL(04)
         
         (6) 周期性备份二进制日志； 
 
-        
+
 回顾：
     查询日志、慢查询日志、错误日志、二进制日志、中继日志、事务日志；
     二进制日志：
