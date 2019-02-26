@@ -54,9 +54,9 @@
 
 - 安装和使用MariaDB：
     - 安装方式：
-        1. rpm包：由OS的发行商、程序官方提供；
-        2. 源码包；
-        3. 通用二进制格式的程序包；
+        1. rpm包：由OS的发行商、程序官方提供
+        2. 源码包
+        3. 通用二进制格式的程序包
     - 安装完成后，执行`mysql_secure_installation`来做安全配置向导
     - 参考：[CentOS 7下MySQL 5.7安装、配置与应用](https://www.linuxidc.com/Linux/2016-04/130414.htm "CentOS 7下MySQL 5.7安装、配置与应用")
 
@@ -74,7 +74,7 @@
         - myisamchk
         - myisampack
 
-- 配置文件：ini风格，用一个文件为多个程序提供配置；
+- 配置文件：ini风格，用一个文件为多个程序提供配置
     - [mysql]
     - [mysqld]
     - [mysqld_safe]
@@ -102,15 +102,15 @@
         - `man mysql`
         - `mysql --help --verbose`
     - 常用选项：
-        - `-uUSERNAME, --user=name`：用户名，默认为root；
-        - `-hHost, --host=name`：mysql服务器，默认为localhost；客户端连接服务端，服务器会反解客户的IP为主机名，关闭此功能`skip_name_resolve=ON`
+        - `-uUSERNAME, --user=name`：用户名，默认为root
+        - `-hHost, --host=name`：mysql服务器，默认为localhost客户端连接服务端，服务器会反解客户的IP为主机名，关闭此功能`skip_name_resolve=ON`
         - `-pPASSWORD, --password[=PASSWORD]`：用户的密码，默认为空
         - `-P, --port=#`：mysql服务器监听的端口，默认为3306端口
         - `-S, --socket=name`：套接字文件路径
         - `-D, --database=name`：登录时，使用的默认库
         - `-e, --execute='CMD'`：登录数据库时，执行的命令
         - `--protocol={tcp|socket|pipe|memory`：
-            - 本地通信：基于本地回环地址进行请求，将基于本地通信协议；
+            - 本地通信：基于本地回环地址进行请求，将基于本地通信协议
                 - Linux：SOCKET
                 - Windows：PIPE, MEMORY
         - `-S, --socket=name`：The socket file to use for connection.
@@ -118,8 +118,8 @@
         - `-e, --execute=name`：Execute command and quit. (Disables --force and history file.)
         - `-E, --vertical`：Print the output of a query (rows) vertically.
     - 注意：
-        - mysql的用户帐号由两部分组成：`'USERNAME'@'HOST'`；其中HOST用于权限此用户可通过哪些远程主机链接当前的mysql服务；
-        - HOST的表示方式，支持使用通配符；
+        - mysql的用户帐号由两部分组成：`'USERNAME'@'HOST'`其中HOST用于权限此用户可通过哪些远程主机链接当前的mysql服务
+        - HOST的表示方式，支持使用通配符
             - `%`：匹配任意长度的任意字符，如：`172.16.%.% == 172.16.0.0/16`
             - `_`：匹配任意单个字符
     - 命令
@@ -355,14 +355,14 @@
 
 - 并发控制，锁：Lock
     - 锁类型 ：
-        - 读锁：共享锁，可被多个读操作共享；
-        - 写锁：排它锁，独占锁；
+        - 读锁：共享锁，可被多个读操作共享
+        - 写锁：排它锁，独占锁
     - 锁粒度：
-        - 表锁：在表级别施加锁，并发性较低；
-        - 行锁：在行级别施加锁，并发性较高；维持锁状态的成本较大；
-    - 锁策略：在锁粒度及数据安全性之间寻求一种平衡机制；
-        - 存储引擎：级别以及何时施加或释放锁由存储引擎自行决定；
-        - MySQL Server：表级别，可自行决定，也允许显式请求；
+        - 表锁：在表级别施加锁，并发性较低
+        - 行锁：在行级别施加锁，并发性较高维持锁状态的成本较大
+    - 锁策略：在锁粒度及数据安全性之间寻求一种平衡机制
+        - 存储引擎：级别以及何时施加或释放锁由存储引擎自行决定
+        - MySQL Server：表级别，可自行决定，也允许显式请求
     - 锁类别：
         - 显式锁：用户手动请求的锁；
         - 隐式锁：存储引擎自行根据需要施加的锁
@@ -496,9 +496,3 @@
             - Using where：拿到数据后还要再次进行过滤；
             - Using temporary：使用了临时表以完成查询；
             - Using filesort：对结果使用了一个外部索引排序；
-
-
-
-# 其他
-
-- [数据库索引到底是什么，是怎样工作的？](https://blog.csdn.net/weiliangliang111/article/details/51333169 "数据库索引到底是什么，是怎样工作的？")
