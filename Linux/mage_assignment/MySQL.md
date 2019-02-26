@@ -350,6 +350,7 @@
     - 查看权限：`SHOW GRANTS FOR user`
     - 刷新：·`FLUSH PRIVILEGES;­`
 
+
 ## 事务
 
 - 并发控制，锁：Lock
@@ -383,10 +384,11 @@
         - 隔离性（isolation，又称独立性）一个事务所做出的操作在提交之前，是否能为其它事务可见；出于保证并发操作之目的，隔离有多种级别；
         - 持久性（durability）事务一旦提交，其所做出的修改会永久保存；
     - [mysql - innodb事务日志详解](https://blog.csdn.net/donghaixiaolongwang/article/details/60961603 "mysql - innodb事务日志详解")
-        - innodb_log_files_in_group
-        - innodb_log_group_home_dir
-        - innodb_log_file_size
-        - innodb_mirrored_log_groups
+        - 查看：`SHOW GLOBAL VARIABLES;`
+        - innodb_log_files_in_group：主备组
+        - innodb_log_group_home_dir：事务日志的目录`/var/lib/mysql/`
+        - innodb_log_file_size：
+        - innodb_mirrored_log_groups：镜像日志组
     - 一些功能：
         - 单语句事务：
             - 查看：`SELECT @@autocommit;`
@@ -405,7 +407,96 @@
             - READ-COMMITTED：读提交 --> 不可重复读；
             - REPEATABLE-READ：可重复读 --> 幻读；
             - SERIALIZABLE：串行化；
-            - [MySQL事务隔离级别](https://www.jianshu.com/p/4e3edbedb9a8 "MySQL事务隔离级别")
+            - 参考：[MySQL事务隔离级别](https://www.jianshu.com/p/4e3edbedb9a8 "MySQL事务隔离级别")
+
+
+## 索引
+
+- 索引：提取索引的创建在的表上字段中的数据，构建出一个独特的数据结构
+
+- 作用：加速查询操作；
+    - 副作用：降低写操作性能；
+    - 表中数据子集：把表中某个或某些字段（WHERE子句中用到的字段）的数据提取出来另存为一个特定数据结构组织的数据；
+
+- 索引类型：B+ TREE，HASH
+    - B+ TREE：顺序存储，每一个叶子结点到根结点的距离相同；左前缀索引，适合于范围类型的数据查询； 
+        - 适用于B+ TREE索引的查询类型：全键值、键值范围或键前缀；
+            - 全值匹配：精确匹配某个值：`WHERE COLUMN = 'value';`
+            - 匹配最左前缀：只精确起头的部分：`WEHRE COLUMN LIKE 'PREFIX%';`
+            - 匹配范围值：
+            - 精确匹配某一列，范围匹配另一列：精确匹配在最左列。
+            - 只用访问索引的查询：覆盖索引；
+                - `index(Name) SELECT Name FROM students WHERE Name LIKE 'L%';`
+        - 不适用B+ TREE索引：
+            - 如果查条件不是从最左侧列开始，索引无效；
+                - `index(age,Fname), WHERE Fname='Jerry';`有效
+                - `WHERE age>30 AND Fname='Smith';`无效
+            - 不能跳过索引中的某列；
+                - `index(name,age,gender) WHERE name='black' and age > 30;`或者`WHERE name='black' AND gender='F';`
+        - 如果查询中的某个列是为范围查询，那么其右侧的列都无法再使用索引优化查询；`WHERE age>30 AND Fname='Smith';`
+    - Hash索引：基于哈希表实现，特别适用于值的精确匹配查询；
+        - 适用场景：只支持等值比较查询，例如`=`, `IN()`, `<=>`
+        - 不用场景：所有非精确值查询；MySQL仅对memory存储引擎支持显式的hash索引；
+
+- 索引优点：
+    - 降低需要扫描的数据量，减少IO次数；
+    - 可以帮助避免排序操作，避免使用临时表； 
+    - 帮助将随机IO转为顺序IO；
+
+- 高性能索引策略：
+    - 在WHERE中独立使用列，尽量避免其参与运算；`WHERE age+2 > 32`优于`WHERE age > 30`
+    - 左前缀索引：索引构建于字段的最左侧的多少个字符，要通过索引选择性来评估。索引选择性：不重复的索引值和数据表的记录总数的比值；
+    - 多列索引： AND连接的多个查询条件更适合使用多列索引，而非多个单键索引；`index(gender, age)`优于`index(gender), index(age)`
+    - 选择合适的索引列次序：选择性最高的放左侧；
+
+- EXPLAIN来分析索引有效性：
+    - 使用方式：
+        ```
+            EXPLAIN [explain_type] SELECT select_options
+                explain_type: EXTENDED | PARTITIONS
+        ```
+    - 输出结果：
+        ```
+            id: 1
+            select_type: SIMPLE
+            table: students
+            type: const
+            possible_keys: PRIMARY
+            key: PRIMARY
+            key_len: 4
+            ref: const
+            rows: 1
+            Extra: 
+        ```
+    - 说明：
+        - id：当前查询语句中，第几个SELECT语句的编号；
+        - select_type：查询类型：
+            - 简单查询：SIMPLE
+            - 复杂查询：
+                - 简单子查询：SUBQUERY
+                - 用于FROM中的子查询：DERIVED
+                - 联合查询中的第一个查询：PRIMARY
+                - 联合查询中的第一个查询之后的其它查询：UNION
+                - 联合查询生成的临时表：UNION RESULT
+        - table：查询针对的表；
+        - type：关联类型，或称为访问类型，即MySQL如何去查询表中的行
+            - ALL：全表扫描；
+            - index：根据索引的顺序进行的全表扫描；但同时如果Extra列出现了"Using index”表示使用了覆盖索引；
+            - range：有范围限制地根据索引实现范围扫描；扫描位置始于索引中的某一项，结束于另一项；
+            - ref：根据索引返回的表中匹配到某单个值的所有行（匹配给定值的行不止一个）；
+            - eq_ref：根据索引返回的表中匹配到某单个值的单一行，仅返回一个行，但需要与某个额外的参考值比较，而不是常数；
+            - const，system：与某个常数比较，且只返回一行；
+        - possiable_keys：查询中可能会用到的索引；
+        - key：查询中使用的索引；
+        - key_len：查询中用到的索引长度；
+        - ref：在利用key字段所显示的索引完成查询操作时所引用的列或常量值；
+        - rows：MySQL估计出的为找到所有的目标项而需要读取的行数；
+        - Extra：额外信息
+            - Using index：使用了覆盖索引进行的查询；
+            - Using where：拿到数据后还要再次进行过滤；
+            - Using temporary：使用了临时表以完成查询；
+            - Using filesort：对结果使用了一个外部索引排序；
+
 
 
 # 其他
