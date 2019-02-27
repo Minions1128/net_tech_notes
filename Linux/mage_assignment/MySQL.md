@@ -300,56 +300,6 @@
     - UPDATE
     - DELETE
 
-- 帐号权限管理
-    - 用户帐号：`'username'@'host'`
-        - 禁止主机名检查：
-            ```
-                my.cnf
-                [mysqld]
-                skip_name_resolve=ON
-            ```
-    - 创建帐号：`CREATE USER 'username'@'host' [auth_option]`
-    - 删除帐号：`DROP USER 'username'@'host' [, 'username1'@'host1']`
-    - 用户授权：
-        ```
-            GRANT priv_type ON 
-                [object_type] priv_level 
-                TO 'username'@'host' [auth_option]
-
-            priv_type: {
-                ALL
-                | UPDATE
-                ...
-            }
-
-            object_type: {
-                TABLE
-              | FUNCTION
-              | PROCEDURE
-            }
-
-            priv_level: {
-                *
-              | *.*
-              | db_name.*
-              | db_name.tbl_name
-              | tbl_name
-              | db_name.routine_name
-            }
-
-            auth_option: {
-                IDENTIFIED BY 'auth_string'
-              | IDENTIFIED BY PASSWORD 'hash_string'
-              | IDENTIFIED WITH auth_plugin
-              | IDENTIFIED WITH auth_plugin AS 'hash_string'
-            }
-
-            e.g.. GRANT ALL ON db1.* TO 'shenzj'@'localhost' IDENTIFIED BY '123456';
-        ```
-    - 回收授权：`REVOKE priv_type [(column_list)] ON [object_type] priv_level FROM user [, user]`
-    - 查看权限：`SHOW GRANTS FOR user`
-    - 刷新：·`FLUSH PRIVILEGES;­`
-
 
 ## 事务
 
@@ -496,3 +446,77 @@
             - Using where：拿到数据后还要再次进行过滤；
             - Using temporary：使用了临时表以完成查询；
             - Using filesort：对结果使用了一个外部索引排序；
+
+
+## 帐号权限管理
+
+- 用户帐号格式：`'username'@'host'`
+    - user：账户名称；
+    - host：此账户可通过哪些客户端主机请求创建连接线程；
+        - `%`：任意长度牟任意字符；
+        - `_`：任意单个字符；
+
+- 禁止主机名检查：
+    ```
+        my.cnf
+        [mysqld]
+        skip_name_resolve=ON
+    ```
+
+- 授权类别：
+    - 库级别：CREATE，ALTER，DROP，INDEX，CREATE VIEW，SHOW VIEW，GRANT（能够把自己获得的权限生成一个副本转赠给其它用户），OPTION
+    - 表级别：
+        - CREATE，ALTER，DROP，INDEX，CREATE VIEW，SHOW VIEW，GRANT（能够把自己获得的权限生成一个副本转赠给其它用户），OPTION，
+        - INSERT/DELETE/UPDATE/SELECT
+    - 字段级别：INSERT/UPDATE/SELECT 
+    - 管理类：CREATE USER、RELOAD、LOCK TABLES、REPLICATION CLIENT, REPLICATION SLAVE、SHUTDOWN、FILE、SHOW DATABASES、PROCESS、SUPER(root权限)
+    - 程序类：FUNCTION，PROCEDURE，TRIGGER；操作：CREATE，ALTER，DROP，EXECUTE；可以组合成12个权限
+    - 所有权限：ALL, ALL PRIVILEGES
+
+- 元数据数据库（数据字典）：mysql
+    - 授权：db, host, user
+    - 存储的数据表为：tables_priv, column_priv, procs_priv, proxies_priv
+
+- 具体操作：
+    - 创建帐号：`CREATE USER  'user'@'host' [IDENTIFIED BY [PASSWORD] 'password'] [,'user'@'host' [IDENTIFIED BY [PASSWORD] 'password']...]`
+    - 重命名：`RENAME USER old_user TO new_user[, old_user TO new_user] ...`
+    - 删除帐号：`DROP USER 'username'@'host' [, 'username1'@'host1']`
+    - 用户授权：
+        ```
+            GRANT priv_type ON 
+                [object_type] priv_level 
+                TO 'username'@'host' [auth_option]
+
+            priv_type: {
+                ALL
+                | UPDATE
+                ...
+            }
+
+            object_type: {
+                TABLE
+              | FUNCTION
+              | PROCEDURE
+            }
+
+            priv_level: {
+                *
+              | *.*
+              | db_name.*
+              | db_name.tbl_name
+              | tbl_name
+              | db_name.routine_name
+            }
+
+            auth_option: {
+                IDENTIFIED BY 'auth_string'
+              | IDENTIFIED BY PASSWORD 'hash_string'
+              | IDENTIFIED WITH auth_plugin
+              | IDENTIFIED WITH auth_plugin AS 'hash_string'
+            }
+
+            e.g.. GRANT ALL ON db1.* TO 'shenzj'@'localhost' IDENTIFIED BY '123456';
+        ```
+    - 回收授权：`REVOKE priv_type [(column_list)] ON [object_type] priv_level FROM user [, user]`
+        - 查看权限：`SHOW GRANTS FOR user`
+        - 刷新：·`FLUSH PRIVILEGES;­`

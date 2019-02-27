@@ -1,81 +1,10 @@
 MySQL(03)        
 
-    MySQL用户和权限管理 
-        用户账号：user@host
-            user：账户名称；
-            host：此账户可通过哪些客户端主机请求创建连接线程； 
-                %：任意长度牟任意字符；
-                _：任意单个字符；
-                
-                skip_name_resolve=ON
-        
     MySQL权限类别：
-        库级别：
-        表级别：
-        字段级别：
-        管理类：
-        程序类：
-        
-        管理类：
-            CREATE USER
-            RELOAD
-            LOCK TABLES
-            REPLICATION CLIENT， REPLICATION SLAVE
-            SHUTDOWN
-            FILE
-            SHOW DATABASES
-            PROCESS 
-            SUPER
-            
-        程序类：
-            FUNCTION，PROCEDURE，TRIGGER
-            
-            操作：CREATE，ALTER，DROP，EXECUTE
-            
-        库和表级别：
-            CREATE，ALTER，DROP
-            INDEX
-            CREATE VIEW
-            SHOW VIEW
-            GRANT：能够把自己获得的权限生成一个副本转赠给其它用户；
-            OPTION
-            
-        数据操作：
-            表：
-                INSERT/DELETE/UPDATE/SELECT 
-                
-            字段：
-                SELECT(col1,col2,...)
-                UPDATE(col1,col2,...)
-                INSERT(col1,col2,...)
-                
-        所有权限：ALL， ALL PRIVILEGES
-        
-        元数据数据库（数据字典）：mysql
-            授权：
-                db, host, user
-                tables_priv, column_priv, procs_priv, proxies_priv
-                
-        
-    MySQL用户管理：
-        'user'@'host';
-            host:
-                IP
-                主机名                
-                NETWORK
-                    %, _
-                    
-        skip_name_resolve={ON|OFF}
-        
-        创建用户：
-            CREATE USER  'user'@'host' [IDENTIFIED BY [PASSWORD] 'password'] [,'user'@'host' [IDENTIFIED BY [PASSWORD] 'password']...]
-            
-        重命名：RENAME USER
-            RENAME USER old_user TO new_user[, old_user TO new_user] ...
-            
-        删除用户：
-            DROP USER 'user'@'host' [, 'user'@'host'] ...
-            
+
+
+
+
         让MySQL重新加载授权表：
             FLUSH PRIVILEGES
             
