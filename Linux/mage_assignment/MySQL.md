@@ -290,11 +290,6 @@
         - 子语句：ORDER BY、GROUP、HAVING
         - SQL查询过程：请求 --> 查询缓存 --> 解析器 --> 预处理器 --> 优化器 --> 查询执行引擎 --> 存储引擎 --> 响应
         - SELECT语句执行流程：FROM, WHERE, GROUP BY, HAVING, ORDER BY, SELECT, LIMIT
-        - 缓存器：
-            - `query_cache_type`查询后的缓存类型：
-                - `ON`开启：SELECT SQL_NO_CACHE，不缓存，默认缓存
-                - `OFF`：关闭
-                - `DEMAND`：按需缓存，SELECT SQL_CACHE，缓存，默认不缓存
         - 外连接：http://www.w3school.com.cn/sql/sql_join_left.asp
     - INSERT
     - UPDATE
@@ -553,3 +548,184 @@
         - CentOS 6：/etc/init.d/mysqld
     - (2) 通过UPDATE命令修改管理员密码；
     - (3) 以正常的方式启动mysqld进程；
+
+
+## 查询缓存
+
+- 缓存：k/v
+    - key：查询语句的hash值
+    - value：查询语句的执行结果
+
+- 如何判断缓存是否命中：通过查询语句的哈希值判断
+
+- 哈希值考虑的因素包括
+    - 查询本身、要查询数据库、客户端使用的协议版本
+        ```
+            SELECT Name FROM students WHERE StuID=3;
+            Select Name From students where StuID=3;
+        ```
+
+- 哪些查询可能不会被缓存？
+    - 查询语句中包含UDF（用户定义的函数）
+    - 存储函数
+    - 用户自定义变量
+    - 临时表
+    - mysql系统表或者是包含列级别权限的查询
+    - 有着不确定结果值的函数(now())；
+
+- 缓存失效：当某个表正在写入数据，则这个表的缓存（命中缓存，缓存写入等）将会处于失效状态，在Innodb中，如果某个事务修改了这张表，则这个表的缓存在事务提交前都会处于失效状态，在这个事务提交前，这个表的相关查询都无法被缓存。
+
+- 查询缓存相关的服务器变量：
+    - 查看缓存相关服务器的变量：
+        ```
+            MariaDB [(none)]> show global variables like '%query_cache%';
+            +------------------------------+---------+
+            | Variable_name                | Value   |
+            +------------------------------+---------+
+            | have_query_cache             | YES     |
+            | query_cache_limit            | 1048576 |  # 1M
+            | query_cache_min_res_unit     | 4096    |
+            | query_cache_size             | 0       |
+            | query_cache_strip_comments   | OFF     |
+            | query_cache_type             | ON      |
+            | query_cache_wlock_invalidate | OFF     |
+            +------------------------------+---------+
+        ```
+    - query_cache_limit：能够缓存的最大查询结果；（单语句结果集大小上限）有着较大结果集的语句，显式使用SQL_NO_CACHE，以避免先缓存再移出；
+        - 修改：`SET GLOBAL query_cache_limit=1024*1024*2;`
+    - query_cache_min_res_unit：内存块的最小分配单位；缓存过小的查询结果集会浪费内存空间；
+        - 较小的值会减少空间浪费，但会导致更频繁地内存分配及回收操作；
+        - 较大值的会带来空间浪费；
+    - query_cache_size：查询缓存空间的总共可用的大小；单位是字节，必须是1024的整数倍；0为0字节
+    - query_cache_strip_comments：
+    - query_cache_type：缓存功能启用与否；
+        - `ON`开启：SELECT SQL_NO_CACHE，不缓存，默认缓存
+        - `OFF`：关闭
+        - DEMAND：按需缓存，仅缓存SELECT语句中带SQL_CACHE的查询结果；
+    - query_cache_wlock_invalidate：如果某表被其它连接锁定，是否仍然可以从查询缓存中返回查询结果；默认为OFF，表示可以；ON则表示不可以；
+
+- 状态变量：
+    ```
+        mysql> SHOW GLOBAL STATUS LIKE 'Qcache%';
+            +-------------------------+----------+
+            | Variable_name           | Value    |
+            +-------------------------+----------+
+            | Qcache_free_blocks      | 1        |
+            | Qcache_free_memory      | 16759688 |
+            | Qcache_hits             | 0        |
+            | Qcache_inserts          | 0        |
+            | Qcache_lowmem_prunes    | 0        | # 由于缓存不够用，而启动清理算法的次数
+            | Qcache_not_cached       | 0        |
+            | Qcache_queries_in_cache | 0        | # 当前查询过程中，缓存下来的语句
+            | Qcache_total_blocks     | 1        |
+            +-------------------------+----------+
+    ```
+
+- 命中率：Qcache_hits/Com_select 
+
+
+## 日志
+
+- 日志类型：
+    - 查询日志：general_log
+    - 慢查询日志：log_slow_queries，查询时间超过指定时长的查询日志
+    - 错误日志：log_error, log_warnings
+    - 二进制日志：binlog
+    - 中继日志：relay_log
+    - 事务日志：innodb_log
+
+- 查询日志
+    - 记录查询语句，日志存储位置：
+        - 文件：file
+        - 表：table (mysql.general_log)
+    - general_log={ON|OFF}
+    - general_log_file=HOSTNAME.log
+    - log_output={FILE|TABLE|NONE}
+
+- 慢查询日志
+    - 慢查询：运行时间超出指定时长的查询；
+        - long_query_time
+    - 存储位置
+        - 文件：FILE
+        - 表：TABLE，mysql.slog_log
+                
+    - log_slow_queries={ON|OFF}
+    - slow_query_log={ON|OFF}
+    - slow_query_log_file=
+    - log_output={FILE|TABLE|NONE}
+    - log_slow_filter=admin,filesort,filesort_on_disk,full_join,full_scan,query_cache,query_cache_miss,tmp_table,tmp_table_on_disk
+    - log_slow_rate_limit
+    - log_slow_verbosity
+
+- 错误日志
+    - 记录信息：
+                (1) mysqld启动和关闭过程 输出的信息； 
+                (2) mysqld运行中产生的错误信息； 
+                (3) event scheduler运行时产生的信息；
+                (4) 主从复制架构中，从服务器复制线程启动时产生的日志；
+                
+            log_error=
+                /var/log/mariadb/mariadb.log|OFF
+            log_warnings={ON|OFF}
+
+- 二进制日志
+            用于记录引起数据改变或存在引起数据改变的潜在可能性的语句（STATEMENT）或改变后的结果（ROW），也可能是二者混合；
+            功用：“重放”
+            
+            binlog_format={STATEMENT|ROW|MIXED}
+                STATEMENT：语句；
+                ROW：行；
+                MIXED：混编；
+                
+            查看二进制日志文件列表：
+                 SHOW MASTER|BINARY LOGS;
+                 
+            查看当前正在使用的二进制日志文件：
+                SHOW MASTER STATUS；
+                
+            查看二进制 日志文件中的事件：
+                SHOW BINLOG EVENTS     [IN 'log_name'] [FROM pos] [LIMIT [offset,] row_count]
+                
+            服务器变量：
+                log_bin=/PATH/TO/BIN_LOG_FILE
+                    只读变量；
+                session.sql_log_bin={ON|OFF}
+                    控制某会话中的“写”操作语句是否会被记录于日志文件中；
+                max_binlog_size=1073741824
+                sync_binlog={1|0}
+                
+            mysqlbinlog：
+                    YYYY-MM-DD hh:mm:ss
+                
+                 --start-datetime=
+                 --stop-datetime=
+                 
+                 -j, --start-position=#
+                  --stop-position=#
+                  
+                  --user, --host, --password
+                
+            二进制日志事件格式：
+                # at 553
+                #160831  9:56:08 server id 1  end_log_pos 624   Query   thread_id=2     exec_time=0     error_code=0
+                SET TIMESTAMP=1472608568/*!*/;
+                BEGIN
+                /*!*/;
+                
+                事件的起始位置：# at 553
+                事件发生的日期时间：#160831  9:56:08
+                事件发生的服务器id：server id 1
+                事件的结束位置：end_log_pos 624
+                事件的类型：Query
+                事件发生时所在服务器执行此事件的线程的ID： thread_id=2 
+                语句的时间戳与将其写入二进制日志文件中的时间差：exec_time=0
+                错误代码：error_code=0
+                事件内容：SET TIMESTAMP=1472608568/*!*/;
+
+- 中继日志：从服务器上记录下来从主服务器的二进制日志文件同步过来的事件；
+
+- 事务日志：
+            事务型存储引擎innodb用于保证事务特性的日志文件：
+                
+                redo log 
+                undo log 
