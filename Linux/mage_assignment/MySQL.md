@@ -478,14 +478,23 @@
     - 存储的数据表为：tables_priv, column_priv, procs_priv, proxies_priv
 
 - 具体操作：
-    - 创建帐号：`CREATE USER  'user'@'host' [IDENTIFIED BY [PASSWORD] 'password'] [,'user'@'host' [IDENTIFIED BY [PASSWORD] 'password']...]`
-    - 重命名：`RENAME USER old_user TO new_user[, old_user TO new_user] ...`
-    - 删除帐号：`DROP USER 'username'@'host' [, 'username1'@'host1']`
-    - 用户授权：
+    - 用户帐号相关：
+        - 创建帐号：`CREATE USER 'username'@'host' [auth_option]`
+            - 创建帐号时授权：`CREATE USER  'user'@'host' [IDENTIFIED BY [PASSWORD] 'password'] [,'user'@'host' [IDENTIFIED BY [PASSWORD] 'password']...]`
+        - 重命名：`RENAME USER old_user TO new_user[, old_user TO new_user] ...`
+        - 删除帐号：`DROP USER 'username'@'host' [, 'username1'@'host1']`
+        - 修改用户名密码：
+        - `> SET PASSWORD [FOR 'user'@'host'] = PASSWORD('cleartext password');`
+        - `> UPDATE mysql.user SET Password=PASSWORD('cleartext password')  WHERE User='USERNAME' AND Host='HOST';`
+        - `# mysqladmin -uUSERNAME -hHOST -p  password 'NEW_PASS'`
+    - 授权相关
+        - 用户授权：
         ```
-            GRANT priv_type ON 
-                [object_type] priv_level 
+            GRANT priv_type [(column_list)] [, priv_type [(column_list)]] ...
+                ON [object_type] priv_level 
                 TO 'username'@'host' [auth_option]
+                [REQUIRE {NONE | ssl_option [[AND] ssl_option] ...}]
+                [WITH with_option ...]
 
             priv_type: {
                 ALL
@@ -515,8 +524,32 @@
               | IDENTIFIED WITH auth_plugin AS 'hash_string'
             }
 
+            ssl_option: {
+                SSL
+                | X509
+                | CIPHER 'cipher'
+                | ISSUER 'issuer'
+                | SUBJECT 'subject'
+            }
+
+            with_option: {
+                GRANT OPTION
+                | MAX_QUERIES_PER_HOUR count
+                | MAX_UPDATES_PER_HOUR count
+                | MAX_CONNECTIONS_PER_HOUR count
+                | MAX_USER_CONNECTIONS count
+            }
+
             e.g.. GRANT ALL ON db1.* TO 'shenzj'@'localhost' IDENTIFIED BY '123456';
         ```
-    - 回收授权：`REVOKE priv_type [(column_list)] ON [object_type] priv_level FROM user [, user]`
-        - 查看权限：`SHOW GRANTS FOR user`
-        - 刷新：·`FLUSH PRIVILEGES;­`
+        - 回收授权：`REVOKE priv_type [(column_list)] ON [object_type] priv_level FROM user [, user]`
+            - 回收所有权限：`REVOKE ALL PRIVILEGES, GRANT OPTION FROM user [, user] ...`
+        - 查看权限：`SHOW GRANTS [FOR 'user'@'host']`
+    - 刷新：·`FLUSH PRIVILEGES;­`
+
+- 忘记管理员密码的解决办法：
+    - (1) 启动mysqld进程时，使用--skip-grant-tables和--skip-networking选项；
+        - CentOS 7：mariadb.service
+        - CentOS 6：/etc/init.d/mysqld
+    - (2) 通过UPDATE命令修改管理员密码；
+    - (3) 以正常 方式启动mysqld进程；

@@ -1,92 +1,5 @@
-MySQL(03)        
-
-    MySQL权限类别：
-
-
-
-
-        让MySQL重新加载授权表：
-            FLUSH PRIVILEGES
-            
-        修改用户密码：
-            (1) SET PASSWORD [FOR 'user'@'host'] = PASSWORD('cleartext password');
-            (2) UPDATE mysql.user SET Password=PASSWORD('cleartext password')  WHERE User='USERNAME' AND Host='HOST';
-            (3) mysqladmin -uUSERNAME -hHOST -p  password 'NEW_PASS'
-            
-            生效：FLUSH PRIVILEGES
-            
-        忘记管理员密码的解决办法：
-            (1) 启动mysqld进程时，使用--skip-grant-tables和--skip-networking选项；
-                CentOS 7：mariadb.service
-                CentOS 6：/etc/init.d/mysqld
-            (2) 通过UPDATE命令修改管理员密码； 
-            (3) 以正常 方式启动mysqld进程；
-            
-        授权：GRANT
-            GRANT  priv_type [(column_list)] [, priv_type [(column_list)]] ...
-                ON [object_type] priv_level
-                TO user_specification [, user_specification] ...
-                [REQUIRE {NONE | ssl_option [[AND] ssl_option] ...}]
-                [WITH with_option ...]
-            
-                object_type:
-                    TABLE
-                    | FUNCTION
-                    | PROCEDURE
-                    
-                priv_level:
-                    *
-                    | *.*
-                    | db_name.*
-                    | db_name.tbl_name
-                    | tbl_name
-                    | db_name.routine_name
-                    
-                    
-                ssl_option:
-                    SSL
-                    | X509
-                    | CIPHER 'cipher'
-                    | ISSUER 'issuer'
-                    | SUBJECT 'subject'                
-                
-                with_option:
-                    GRANT OPTION
-                    | MAX_QUERIES_PER_HOUR count
-                    | MAX_UPDATES_PER_HOUR count
-                    | MAX_CONNECTIONS_PER_HOUR count
-                    | MAX_USER_CONNECTIONS count    
-                    
-        查看授权：SHOW GRANTS
-            SHOW GRANTS [FOR 'user'@'host']
-                    
-        取消授权：REVOKE
-            REVOKE  priv_type [(column_list)][, priv_type [(column_list)]] ...
-                ON [object_type] priv_level
-                FROM  'user'@'host' [,  'user'@'host'] ...
-                
-            REVOKE ALL PRIVILEGES, GRANT OPTION
-                FROM user [, user] ...
-    
-    练习：创建一个用户，授权其仅能够查询mydb.tbl1表的name和age字段；
-    
-    练习：授权一个仅能够通过ssl连接的用户账号，而后完成连接测试；
-
-
-回顾：用户和权限、索引和EXPLAIN
-    用户和权限：
-        用户账号：user@host
-        权限：管理类、程序类、库/表/字段；
-        命令：CREATE USER/DROP USER/RENAME USER、GRANT/REVOKE
-    索引和EXPLAIN：
-        索引：B+ TREE，HASH
-            B+ TREE：范围查询、精确值查询、最左前缀查询；
-            HASH：精确值匹配；
-        EXPLAIN：
-
-
 MySQL(04)
-                    
+
     查询缓存：
         
         缓存：k/v 
@@ -138,8 +51,6 @@ MySQL(04)
             
             命中率：
                 Qcache_hits/Com_select 
-
-
 
     日志：
         查询日志：general_log
@@ -248,7 +159,6 @@ MySQL(04)
                 redo log 
                 undo log 
 
-                
     备份和恢复（数据）：
         
         备份：存储的数据副本；
@@ -332,7 +242,6 @@ MySQL(04)
                 恢复：CREATE TABLE 
                 导入：LOAD DATA 
 
-
     备份策略：
         xtrabackup：
             完全+差异+binlog
@@ -373,7 +282,6 @@ MySQL(04)
                 --flush-logs：锁定表完成后，即进行日志刷新操作；
                 
         作业：备份脚本
-            
 
     基于lvm2的备份：
         
@@ -405,7 +313,6 @@ MySQL(04)
         event：能引起或存在潜在引起数据改变可能性的STATEMENT、ROW或MIXED；
         mysql> SHOW BINLOG EVENTS
         $ mysqlbinlog
-    
     备份：
         完全备份、部分备份；
         全量备份、增量备份、差异备份；
@@ -414,11 +321,11 @@ MySQL(04)
 
 
 MySQL(05)
-        
+
     Percona：
         InnoDB --> XtraDB (mariadb)
         Innobackup --> Xtrabackup
-        
+
     Xtrabackup：
         MyISAM：温备，不支持增量备份；
         InnoDB：热备，增量；
@@ -457,17 +364,17 @@ MySQL(05)
             --databases 
                 
         注意：未尽的内容，请参考官方文档；
-        
+
     总结：
         mysqldump+binlog
         lvm2+cp/tar+binlog
         xtrabackup(innodb)+binlog 
-        
+
     博客作业：mysqldump和xtrabackup的使用；
 
 
 MySQL Replication：
-    
+
     Master/Slave
         Master: write/read
         Slaves: read
@@ -492,8 +399,7 @@ MySQL Replication：
         
         一从多主：
             每个主服务器提供不同的数据库；
-                
-                
+
     配置：
         时间同步；
         复制的开始位置：
@@ -524,7 +430,6 @@ MySQL Replication：
             mysql> SHOW SLAVE STATUS;
             
         课外作业：基于SSL的复制的实现； 
-        
 
     主主复制：
         互为主从：两个节点各自都要开启binlog和relay log；
@@ -545,7 +450,7 @@ MySQL Replication：
             服务启动后执行如下两步：
             4、都授权有复制权限的用户账号；
             5、各把对方指定为主节点；
-            
+
     复制时应该注意的问题：
         1、从服务设定为“只读”；
             在从服务器启动read_only，但仅对非SUPER权限的用户有效；
@@ -568,7 +473,7 @@ MySQL Replication：
             sync_master_info=ON
             
             sync_relay_log_info=ON
-            
+
     半同步复制
         支持多种插件：/usr/lib64/mysql/plugins/
         
@@ -612,7 +517,7 @@ MySQL Replication：
         判断方法：
             主节点：
                 MariaDB [mydb]> SELECT @@global.rpl_semi_sync_master_clients；
-                
+
     复制过滤器：
         
         仅复制有限一个或几个数据库相关的数据，而非所有；由复制过滤器进行；
@@ -636,11 +541,10 @@ MySQL Replication：
                 Replicate_Ignore_Table=
                 Replicate_Wild_Do_Table=
                 Replicate_Wild_Ignore_Table=    
-                
+
     作业：基于SSL复制的实现
         前提：启用SSL功能；
 
-    
     复制的监控和维护：
         (1) 清理日志：PURGE 
             PURGE { BINARY | MASTER } LOGS { TO 'log_name' | BEFORE datetime_expr };
@@ -663,7 +567,7 @@ MySQL Replication：
             
         (4) 主从数据不一致时的修复方法？
             重新复制；
-            
+
     主从复制的读写分离：
         mysql-proxy --> atlas
         amoeba for MySQL：读写分离、分片；
@@ -682,7 +586,7 @@ MySQL Replication：
         双主或多主模型是无须实现读写分离，仅需要负载均衡：haproxy, nginx, lvs, ...
             pxc：Percona XtraDB Cluster
             MariaDB Cluster
-            
+
     ProxySQL：
         配置示例：
             datadir="/var/lib/proxysql"
@@ -834,21 +738,13 @@ MySQL Replication：
             service=MaxAdmin Service
             protocol=maxscaled
             port=6602            
-        
+
     mysqlrouter：
         语句透明路由服务；
         MySQL Router 是轻量级 MySQL 中间件，提供应用与任意 MySQL 服务器后端的透明路由。MySQL Router 可以广泛应用在各种用案例中，比如通过高效路由数据库流量提供高可用性和可伸缩的 MySQL 服务器后端。Oracle 官方出品。
 
     作业：简单复制、双主复制及半同步复制；
-    
 
-    
-    
-    
-    
-    
-    
-    
     master/slave：
         切分：
             垂直切分：切库，把一个库中的多个表分组后放置于不同的物理服务器上；
@@ -872,7 +768,6 @@ MySQL Replication：
             master: 10.1.0.67
             slave1: 10.1.0.68
             slave2: 10.1.0.69
-        
-    
+
     博客作业：
         MHA，以及zabbix完成manager启动；
