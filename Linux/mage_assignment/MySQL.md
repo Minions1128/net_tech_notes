@@ -484,9 +484,9 @@
         - 重命名：`RENAME USER old_user TO new_user[, old_user TO new_user] ...`
         - 删除帐号：`DROP USER 'username'@'host' [, 'username1'@'host1']`
         - 修改用户名密码：
-        - `> SET PASSWORD [FOR 'user'@'host'] = PASSWORD('cleartext password');`
-        - `> UPDATE mysql.user SET Password=PASSWORD('cleartext password')  WHERE User='USERNAME' AND Host='HOST';`
-        - `# mysqladmin -uUSERNAME -hHOST -p  password 'NEW_PASS'`
+            - `> SET PASSWORD [FOR 'user'@'host'] = PASSWORD('cleartext password');`
+            - `> UPDATE mysql.user SET Password=PASSWORD('cleartext password')  WHERE User='USERNAME' AND Host='HOST';`
+            - `# mysqladmin -uUSERNAME -hHOST -p  password 'NEW_PASS'`
     - 授权相关
         - 用户授权：
         ```
