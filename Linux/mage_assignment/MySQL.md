@@ -549,7 +549,7 @@
 
 - 忘记管理员密码的解决办法：
     - (1) 启动mysqld进程时，使用--skip-grant-tables和--skip-networking选项；
-        - CentOS 7：mariadb.service
+        - CentOS 7：/usr/lib/systemd/system/mariadb.service
         - CentOS 6：/etc/init.d/mysqld
     - (2) 通过UPDATE命令修改管理员密码；
-    - (3) 以正常 方式启动mysqld进程；
+    - (3) 以正常的方式启动mysqld进程；
