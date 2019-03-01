@@ -680,33 +680,88 @@
         - session.sql_log_bin={ON|OFF}，控制某会话中的“写”操作语句是否会被记录于日志文件中；
         - max_binlog_size=1073741824
         - sync_binlog={1|0}，是否同步二进制日志从缓冲区到磁盘文件中
-    - mysqlbinlog：查看二进制日志的内容
-        ```
-            YYYY-MM-DD hh:mm:ss, --start-datetime=,
-            --stop-datetime= -j, --start-position=#,
-            --stop-position=#, --user, --host, --password
-        ```
-      - 二进制日志事件格式：
+    - mysqlbinlog：查看二进制日志的内容，相关参数：
+        - `--start-datetime= & --stop-datetime=` YYYY-MM-DD hh:mm:ss
+        - `-j, --start-position=# & --stop-position=#`：开始和结束位置
+        - `-u, --user=name & -p, --password[=name] & -h, --host=name`：远程连接到其他服务器
+    - 二进制日志事件格式：
         ```
             # at 553
-            #160831  9:56:08 server id 1  end_log_pos 624   Query   thread_id=2     exec_time=0     error_code=0
+            #160831 9:56:08 server id 1 end_log_pos 624 Query thread_id=2 exec_time=0 error_code=0
             SET TIMESTAMP=1472608568/*!*/;
             BEGIN
             /*!*/;
         ```
-            - 事件的起始位置：# at 553
-            - 事件发生的日期时间：#160831  9:56:08
-            - 事件发生的服务器id：server id 1
-            - 事件的结束位置：end_log_pos 624
-            - 事件的类型：Query
-            - 事件发生时所在服务器执行此事件的线程的ID： thread_id=2 
-            - 语句的时间戳与将其写入二进制日志文件中的时间差：exec_time=0
-            - 错误代码：error_code=0
-            - 事件内容：SET TIMESTAMP=1472608568/*!*/;
+        - 事件的起始位置：# at 553
+        - 事件发生的日期时间：#160831  9:56:08
+        - 事件发生的服务器id：server id 1
+        - 事件的结束位置：end_log_pos 624
+        - 事件的类型：Query
+        - 事件发生时所在服务器执行此事件的线程的ID： thread_id=2 
+        - 语句的时间戳与将其写入二进制日志文件中的时间差：exec_time=0
+        - 错误代码：error_code=0，0表示无错误
+        - 事件内容：SET TIMESTAMP=1472608568/*!*/;
 
 - 中继日志：从服务器上记录下来从主服务器的二进制日志文件同步过来的事件；
 
 - 事务日志：
     - 事务型存储引擎innodb用于保证事务特性的日志文件：
         - redo log
-        - undo log 
+        - undo log
+
+## 数据的备份
+
+- 时间点恢复：binary logs; 
+        
+- 备份类型：
+    - 备份的数据集的范围：完全备份和部分备份
+        - 完全备份：整个数据集；
+        - 部分备份：数据集的一部分，比如部分表；
+    - 全量备份、增量备份、差异备份：
+        - 完全备份
+        - 增量备份：仅备份自上一次完全备份或增量备份以来变量的那部数据；
+        - 差异备份：仅备份自上一次完全备份以来变量的那部数据；
+    - 物理备份、逻辑备份：
+        - 物理备份：复制数据文件进行的备份；
+        - 逻辑备份：从数据库导出数据另存在一个或多个文件中；
+    - 根据数据服务是否在线：
+        - 热备：读写操作均可进行的状态下所做的备份；
+        - 温备：可读但不可写状态下进行的备份；
+        - 冷备：读写操作均不可进行的状态下所做的备份；
+
+- 备份需要考虑因素：
+    - 锁定资源多长时间？
+    - 备份过程的时长？
+    - 备份时的服务器负载？
+    - 恢复过程的时长？
+- 备份策略：
+            全量+差异 + binlogs
+            全量+增量 + binlogs
+            备份手段：物理、逻辑
+            
+        备份什么？
+            数据
+            二进制日志、InnoDB的事务日志；
+            代码（存储过程、存储函数、触发器、事件调度器）
+            服务器的配置文件
+
+
+        备份工具：
+            mysqldump：mysql服务自带的备份工具；逻辑备份工具；
+                完全、部分备份；
+                InnoDB：热备；
+                MyISAM：温备；
+            cp/tar
+                lvm2：快照（请求一个全局锁），之后立即释放锁，达到几乎热备的效果；物理备份；
+                注意：不能仅备份数据文件；要同时备份事务日志；
+                    前提：要求数据文件和事务日志位于同一个逻辑卷；
+            xtrabackup：
+                由Percona提供，开源工具，支持对InnoDB做热备，物理备份工具；
+                    完全备份、部分备份；
+                    完全备份、增量备份；
+                    完全备份、差异备份；
+            mysqlhotcopy
+            select：
+                备份：SELECT cluase INTO OUTFILE 'FILENAME';
+                恢复：CREATE TABLE
+                导入：LOAD DATA
