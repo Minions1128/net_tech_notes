@@ -47,6 +47,7 @@
         - x<MAC>：基于MAC地址的命名
         - p<bus>s<slot>：基于总线及槽的拓扑结构进行命名
 
+
 ## ifcfg
 
 - ifconfig命令：接口及地址查看和管理
@@ -119,6 +120,7 @@
         - `# dig  -t  A  FQDN`：FQDN --> IP
         - `# dig  -x  IP`：IP --> FQDN
 
+
 ## iproute
 
 - ip命令：show / manipulate routing, devices, policy routing and tunnels
@@ -140,180 +142,132 @@
             - ip netns del NAME：删除指定的netns
             - ip netns exec NAME COMMAND：在指定的netns中运行命令
         - ip address - protocol address management.
-                    
-                    ip address add - add new protocol address
-                        ip  addr  add  IFADDR  dev  IFACE
-                            [label NAME]：为额外添加的地址指明接口别名
-                            [broadcast ADDRESS]：广播地址会根据IP和NETMASK自动计算得到
-                            [scope SCOPE_VALUE]：
-                                global：全局可用
-                                link：接口可用
-                                host：仅本机可用                                             
-                        
-                    ip address delete - delete protocol address
-                        ip addr  delete  IFADDR  dev  IFACE 
-                            
-                    ip address show - look at protocol addresses
-                        ip  addr   list  [IFACE]：显示接口的地址
-                        
-                    ip address flush - flush protocol addresses
-                        ip  addr  flush  dev  IFACE
-                        
+            - ip address add - add new protocol address
+                - `ip addr add IFADDR dev IFACE`
+                    - [label NAME]：为额外添加的地址指明接口别名
+                    - [broadcast ADDRESS]：广播地址会根据IP和NETMASK自动计算得到
+                    - [scope SCOPE_VALUE]：
+                        - global：全局可用
+                        - link：接口可用
+                        - host：仅本机可用
+                        - site：IPv6专用，site local地址
+            - ip address delete - delete protocol address
+                - `ip addr delete IFADDR dev IFACE`
+            - ip address show - look at protocol addresses
+                - `ip addr list [IFACE]`：显示接口的地址
+            - ip address flush - flush protocol addresses，清空接口所有的地址
+                - `ip addr flush dev IFACE`
         - ip route - routing table management
-                
-                    ip route add - add new route
-                    ip route change - change route
-                    ip route replace - change or add new one
-                        ip  route   add  TYPE PREFIX  via GW  [dev  IFACE]  [src SOURCE_IP]
-                        
-                        示例：
-                            # ip route add 192.168.0.0/24  via 10.0.0.1  dev eth1 src  10.0.20.100
-                            # ip  route  add default  via  GW                       
-                        
-                    ip route delete - delete route
-                        ip  route  del  TYPE PRIFIX 
-                        
-                        示例：
-                            # ip  route delete  192.168.1.0/24
-                            
-                    ip route show - list routes
-                        TYPE PRIFIX  
-                    ip route flush - flush routing tables
-                        TYPE  PRIFIX
-                    
-                    ip route get - get a single route
-                        ip  route  get  TYPE PRIFIX
-                        
-                        示例：ip route  get  192.168.0.0/24
-                    
-- ss命令：
-            ss  [options]  [ FILTER ]
-                选项：
-                    -t：TCP协议的相关连接
-                    -u：UDP相关的连接
-                    -w：raw socket相关的连接
-                    -l：监听状态的连接
-                    -a：所有状态的连接
-                    -n：数字格式
-                    -p：相关的程序及其PID
-                    -e：扩展格式信息
-                    -m：内存用量
-                    -o：计时器信息
-                    
-                FILTER := [ state TCP-STATE ]  [ EXPRESSION ]
-                
-                    TCP的常见状态：
-                        TCP FSM：
-                            LISTEN：监听
-                            ESTABLISEHD：建立的连接
-                            FIN_WAIT_1：
-                            FIN_WAIT_2：
-                            SYN_SENT：
-                            SYN_RECV：
-                            CLOSED：
-                        
-                    EXPRESSION：
-                        dport = 
-                        sport = 
-                            示例：'( dport = :22 or sport = :22)'
-                                ~]# ss   -tan    '(  dport = :22 or sport = :22  )'
-                                ~]# ss  -tan  state  ESTABLISHED
-                                
+            - ip route add - add new route
+            - ip route change - change route
+            - ip route replace - change or add new one
+                - `ip route add TYPE PREFIX via GW [dev IFACE] [src SOURCE_IP]`
+                - 示例：
+                    ```
+                        # ip route add 192.168.0.0/24 via 10.0.0.1 dev eth1 src 10.0.20.100
+                        # ip route add default via GW
+                    ```
+            - ip route delete - delete route
+                - `ip route del TYPE PRIFIX`
+                - 示例：`# ip  route delete  192.168.1.0/24`
+            - ip route show - list routes
+            - ip route flush - flush routing tables
+            - ip route get - get a single route
+                - `ip route get TYPE PRIFIX`
+                - 示例：`ip route get 192.168.0.0/24`
+
+- ss命令：`ss [options] [FILTER]`
+    - options
+        - -t：TCP协议的相关连接
+        - -u：UDP相关的连接
+        - -w：raw socket相关的连接
+        - -l：监听状态的连接
+        - -a：所有状态的连接
+        - -n：数字格式
+        - -p：相关的程序及其PID
+        - -e：扩展格式信息
+        - -m：内存用量
+        - -o：计时器信息
+    - FILTER := [ state TCP-STATE ]  [ EXPRESSION ]
+        - TCP的常见状态：TCP FSM：
+            - LISTEN：监听
+            - ESTABLISEHD：建立的连接
+            - FIN_WAIT_1：断开连接等待回复
+            - FIN_WAIT_2：断开连接确认
+            - SYN_SENT：
+            - SYN_RECV：
+            - CLOSED：
+    - EXPRESSION：
+        - dport = 
+        - sport = 
+        - 示例：
+            ```
+                ~]# ss -tan '(  dport = :22 or sport = :22  )'
+                ~]# ss -tan state ESTABLISHED
+            ```
+
+
 ## 配置文件：
 
-        IP/NETMASK/GW/DNS等属性的配置文件：/etc/sysconfig/network-scripts/ifcfg-IFACE
-            IFACE：接口名称
-        路由的相关配置文件：/etc/sysconfig/networkj-scripts/route-IFACE
-                    
-        配置文件/etc/sysconfig/network-scripts/ifcfg-IFACE通过大量参数来定义接口的属性其可通过vim等文本编辑器直接修改，也可以使用专用的命令的进行修改（CentOS 6：system-config-network (setup)，CentOS 7: nmtui）
-        
-            ifcfg-IFACE配置文件参数：
-                DEVICE：此配置文件对应的设备的名称
-                ONBOOT：在系统引导过程中，是否激活此接口
-                UUID：此设备的惟一标识
-                IPV6INIT：是否初始化IPv6
-                BOOTPROTO：激活此接口时使用什么协议来配置接口属性，常用的有dhcp、bootp、static、none
-                TYPE：接口类型，常见的有Ethernet, Bridge
-                DNS1：第一DNS服务器指向
-                DNS2：备用DNS服务器指向
-                DOMAIN：DNS搜索域
-                IPADDR： IP地址
-                NETMASK：子网掩码CentOS 7支持使用PREFIX以长度方式指明子网掩码
-                GATEWAY：默认网关
-                USERCTL：是否允许普通用户控制此设备
-                PEERDNS：如果BOOTPROTO的值为“dhcp”，是否允许dhcp server分配的dns服务器指向覆盖本地手动指定的DNS服务器指向默认为允许
-                HWADDR：设备的MAC地址
-                
-                NM_CONTROLLED：是否使用NetworkManager服务来控制接口
-                
-            网络服务：
-                network
-                NetworkManager 
-                
-                管理网络服务：
-                    CentOS 6:  service  SERVICE  {start|stop|restart|status}
-                    CentOS 7：systemctl  {start|stop|restart|status}  SERVICE[.service]
-                    
-                配置文件修改之后，如果要生效，需要重启网络服务
-                    CentOS 6：# service  network  restart
-                    CentOS 7：# systemctl  restart  network.service
-                    
-        用到非默认网关路由：/etc/sysconfig/network-scripts/route-IFACE
-            支持两种配置方式，但不可混用
-                (1) 每行一个路由条目：
-                    TARGET  via  GW
-                    
-                (2) 每三行一个路由条目：
-                    ADDRESS#=TARGET
-                    NETMASK#=MASK
-                    GATEWAY#=NEXTHOP
-                    
-    给接口配置多个地址：
-        ip addr之外，ifconfig或配置文件都可以
-        
-        (1) ifconfig  IFACE_LABEL  IPADDR/NETMASK
-        
-            IFACE_LABEL： eth0:0, eth0:1, ...
-            
-        (2) 为别名添加配置文件
-            DEVICE=IFACE_LABEL
-            BOOTPROTO：网上别名不支持动态获取地址
-                static, none
-                
-    nmcli命令：
-        nmcli  [ OPTIONS ] OBJECT { COMMAND | help }
-            
-            device - show and manage network interfaces
-                COMMAND := { status | show | connect | disconnect | delete | wifi | wimax }
-            
-            connection - start, stop, and manage network connections
-                COMMAND := { show | up | down | add | edit | modify | delete | reload | load }
-                
-                modify [ id | uuid | path ] <ID> [+|-]<setting>.<property> <value>
-                
-                如何修改IP地址等属性：
-                    # nmcli  conn  modify  IFACE  [+|-]setting.property  value
-                        ipv4.address
-                        ipv4.gateway
-                        ipv4.dns1
-                        ipv4.method
-                            manual
-                            
-    博客作业：上述所有内容
-        ifcfg, ip/ss，配置文件 
-        
-    课外作业：nmap, ncat, tcpdump命令
-    
+- IP/NETMASK/GW/DNS等属性的配置文件：`/etc/sysconfig/network-scripts/ifcfg-IFACE`，IFACE：接口名称
 
-        
-            
-回顾：ip命令，ss命令配置文件CentOS 7
+- 路由的相关配置文件：`/etc/sysconfig/network-scripts/route-IFACE`
 
-    ifcfg、ip、netstat、ss
-    配置文件：
-        /etc/sysconfig/network-scripts/
-            ifcfg-IFNAME
-            route-IFNAME
-    CentOS 7: nmcli, nmtui
+- 配置文件`/etc/sysconfig/network-scripts/ifcfg-IFACE`通过大量参数来定义接口的属性其可通过vim等文本编辑器直接修改，也可以使用专用的命令的进行修改
+    - CentOS 6：system-config-network, setup
+    - CentOS 7: nmtui
 
+- ifcfg-IFACE配置文件参数：
+    - DEVICE：此配置文件对应的设备的名称
+    - ONBOOT：在系统引导过程中，是否激活此接口
+    - UUID：此设备的惟一标识
+    - IPV6INIT：是否初始化IPv6
+    - BOOTPROTO：激活此接口时使用什么协议来配置接口属性，常用的有dhcp、bootp、static、none
+    - TYPE：接口类型，常见的有Ethernet, Bridge
+    - DNS1：第一DNS服务器指向
+    - DNS2：备用DNS服务器指向
+    - DOMAIN：DNS搜索域
+    - IPADDR： IP地址
+    - NETMASK：子网掩码CentOS 7支持使用PREFIX以长度方式指明子网掩码
+    - GATEWAY：默认网关
+    - USERCTL：是否允许普通用户控制此设备
+    - PEERDNS：如果BOOTPROTO的值为“dhcp”，是否允许dhcp server分配的dns服务器指向覆盖本地手动指定的DNS服务器指向默认为允许
+    - HWADDR：设备的MAC地址
+    - NM_CONTROLLED：是否使用NetworkManager服务来控制接口
 
+- 网络服务：network和NetworkManager
+    - 管理网络服务：
+        - CentOS 6: `service network {start|stop|restart|status}`
+        - CentOS 7：`systemctl {start|stop|restart|status} network[.service]`
+
+- 用到非默认网关路由：`/etc/sysconfig/network-scripts/route-IFACE`，支持两种配置方式，但不可混用
+    - 1. 每行一个路由条目：`TARGET via GW`
+    - 2. 每三行一个路由条目：
+        ```
+            ADDRESS#=TARGET
+            NETMASK#=MASK
+            GATEWAY#=NEXTHOP
+        ```
+
+- 给接口配置多个地址：ip addr之外，ifconfig或配置文件都可以
+    - 1. `ifconfig IFACE_LABEL IPADDR/NETMASK`，`IFACE_LABEL： eth0:0, eth0:1, ...`
+    - 2. 为接口名称的别名添加配置文件
+        - DEVICE=IFACE_LABEL
+        - BOOTPROTO：网上别名不支持动态获取地址，只能选择static, none
+
+- nmcli命令：`nmcli  [ OPTIONS ] OBJECT { COMMAND | help }`
+    - OBJECT := { general | networking | radio | connection | device | agent  }
+        - device - show and manage network interfaces
+            - COMMAND := { status | show | connect | disconnect | delete | wifi | wimax }
+        - connection - start, stop, and manage network connections
+            - COMMAND := { show | up | down | add | edit | modify | delete | reload | load }
+                - modify [ id | uuid | path ] <ID> [+|-]<setting>.<property> <value>
+                    - 如何修改IP地址等属性：
+                        ```
+                            # nmcli  conn  modify  IFACE  [+|-]setting.property  value
+                                ipv4.address
+                                ipv4.gateway
+                                ipv4.dns1
+                                ipv4.method
+                                manual
+                        ```
