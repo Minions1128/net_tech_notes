@@ -206,6 +206,23 @@
                 ~]# ss -tan state ESTABLISHED
             ```
 
+- nmcli命令：`nmcli  [ OPTIONS ] OBJECT { COMMAND | help }`
+    - OBJECT := { general | networking | radio | connection | device | agent  }
+        - device - show and manage network interfaces
+            - COMMAND := { status | show | connect | disconnect | delete | wifi | wimax }
+        - connection - start, stop, and manage network connections
+            - COMMAND := { show | up | down | add | edit | modify | delete | reload | load }
+                - modify [ id | uuid | path ] <ID> [+|-]<setting>.<property> <value>
+                    - 如何修改IP地址等属性：
+                        ```
+                            # nmcli  conn  modify  IFACE  [+|-]setting.property  value
+                                ipv4.address
+                                ipv4.gateway
+                                ipv4.dns1
+                                ipv4.method
+                                manual
+                        ```
+
 
 ## 配置文件：
 
@@ -255,19 +272,9 @@
         - DEVICE=IFACE_LABEL
         - BOOTPROTO：网上别名不支持动态获取地址，只能选择static, none
 
-- nmcli命令：`nmcli  [ OPTIONS ] OBJECT { COMMAND | help }`
-    - OBJECT := { general | networking | radio | connection | device | agent  }
-        - device - show and manage network interfaces
-            - COMMAND := { status | show | connect | disconnect | delete | wifi | wimax }
-        - connection - start, stop, and manage network connections
-            - COMMAND := { show | up | down | add | edit | modify | delete | reload | load }
-                - modify [ id | uuid | path ] <ID> [+|-]<setting>.<property> <value>
-                    - 如何修改IP地址等属性：
-                        ```
-                            # nmcli  conn  modify  IFACE  [+|-]setting.property  value
-                                ipv4.address
-                                ipv4.gateway
-                                ipv4.dns1
-                                ipv4.method
-                                manual
-                        ```
+
+# comming soon
+
+- nmap
+- ncat
+- tcpdump
