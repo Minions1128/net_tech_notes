@@ -84,14 +84,59 @@
 
 - 基于lvm2的备份：
     - 0.要求数据文件和事务日志位于同一个逻辑卷；
-    - 1.请求锁定所有表；`mysql> FLUSH TABLES WITH READ LOCK;`
-    - 2.记录二进制文件事件位置；
+    - 1.请求锁定所有表：`mysql> FLUSH TABLES WITH READ LOCK;`
+    - 2.记录二进制文件事件位置：
         ```
             mysql> FLUSH LOGS;
             mysql> SHOW MASTER STATUS;
             mysql  -e  'SHOW MASTER STATUS;' >> /PATH/TO/SOME_POS_FILE
         ```
-    - 3.创建快照卷`lvcreate  -L # -s -p r - SNAM-NAME /dev/VG-NAME/LV-NAME `
-    - 4.释放锁`mysql> UNLOCK TABLES`
+    - 3.创建快照卷：`lvcreate  -L # -s -p r - SNAM-NAME /dev/VG-NAME/LV-NAME `
+    - 4.释放锁：`mysql> UNLOCK TABLES`
     - 5.挂载快照卷，并执行备份，备份完成后删除快照卷；
     - 6.周期性备份二进制日志； 
+
+- Xtrabackup：
+    - [xtrabackup命令用法实战](https://blog.csdn.net/wfs1994/article/details/80399408 "xtrabackup命令用法实战")
+    - MyISAM：温备，不支持增量备份；
+    - InnoDB：热备，增量；
+    - 物理备份，速率快、可靠；备份完成后自动校验备份结果集是否可用；还原速度快； 
+        
+        Usage: [innobackupex [--defaults-file=#] --backup | innobackupex [--defaults-file=#] --prepare] [OPTIONS]
+        
+            The  innobackupex tool is a Perl script that acts as a wrapper for the xtrabackup C program.
+     - 备份 --> 应用日志 --> 还原
+            应用日志：--apply-log 
+            还原：--copy-back
+            
+    - 完全备份：
+            
+        
+    - 完全+binlog(总结)：
+            备份：innobackupex  --user  --password=  --host=  /PATH/TO/BACKUP_DIR 
+            准备：innobackupex --apply-log  /PATH/TO/BACKUP_DIR 
+            恢复：innobackupex --copy-back 
+                注意：--copy-back需要在mysqld主机本地进行，mysqld服务不能启动；
+                    innodb_log_file_size可能要重新设定；
+                    
+    - 总结：完全+增量+binlog 
+            备份：完全+增量+增量+...
+                       完全+差异
+            准备：
+                innobackupex --apply-log --redo-only BASEDIR 
+                innobackupex --apply-log --redo-only BASEDIR  --incremental-dir=INCREMENTAL-DIR
+                
+            恢复：
+                innobackupex --copy-back BASEDIR
+                
+     - 备份单库：
+            --databases 
+                
+
+
+    总结：
+        mysqldump+binlog
+        lvm2+cp/tar+binlog
+        xtrabackup(innodb)+binlog 
+
+    博客作业：mysqldump和xtrabackup的使用；
