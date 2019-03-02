@@ -84,29 +84,14 @@
 
 - 基于lvm2的备份：
     - 0.要求数据文件和事务日志位于同一个逻辑卷；
-    - 1.请求锁定所有表；
-            mysql> FLUSH TABLES WITH READ LOCK;
+    - 1.请求锁定所有表；`mysql> FLUSH TABLES WITH READ LOCK;`
     - 2.记录二进制文件事件位置；
+        ```
             mysql> FLUSH LOGS;
             mysql> SHOW MASTER STATUS;
             mysql  -e  'SHOW MASTER STATUS;' >> /PATH/TO/SOME_POS_FILE
-    - 3.创建快照卷
-            lvcreate  -L # -s -p r - SNAM-NAME /dev/VG-NAME/LV-NAME 
-    - 4.释放锁
-            mysql> UNLOCK TABLES
-    - 5.挂载快照卷，并执行备份，备份完成后删除快照卷；
-    - 6.周期性备份二进制日志； 
-- 基于lvm2的备份：
-    - 0.要求数据文件和事务日志位于同一个逻辑卷；
-    - 1.请求锁定所有表；
-            mysql> FLUSH TABLES WITH READ LOCK;
-    - 2.记录二进制文件事件位置；
-            mysql> FLUSH LOGS;
-            mysql> SHOW MASTER STATUS;
-            mysql  -e  'SHOW MASTER STATUS;' >> /PATH/TO/SOME_POS_FILE
-    - 3.创建快照卷
-            lvcreate  -L # -s -p r - SNAM-NAME /dev/VG-NAME/LV-NAME 
-    - 4.释放锁
-            mysql> UNLOCK TABLES
+        ```
+    - 3.创建快照卷`lvcreate  -L # -s -p r - SNAM-NAME /dev/VG-NAME/LV-NAME `
+    - 4.释放锁`mysql> UNLOCK TABLES`
     - 5.挂载快照卷，并执行备份，备份完成后删除快照卷；
     - 6.周期性备份二进制日志； 
