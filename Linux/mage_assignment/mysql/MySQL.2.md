@@ -101,34 +101,29 @@
     - [innobackupex命令用法实战](https://blog.csdn.net/wfs1994/article/details/80398234 "innobackupex命令用法实战")
 
 
-## MySQL Replication：
+## 主从复制
 
-    Master/Slave
-        Master: write/read
-        Slaves: read
-        
-    为什么？
-        冗余：promte（提升为主），异地灾备
-            人工
-            工具程序：MHA
-        负载均衡：转移一部分“读”请求；
-        支援安全的备份操作；
-        测试；
-        ...
-        
-    主/从架构：
-        异步复制：
-        半同步复制：
-        一主多从；
-        一从一主；
-        级联复制；
-        循环复制；
-        双主复制；
-        
-        一从多主：
-            每个主服务器提供不同的数据库；
+- Master/Slave
+    - Master: write/read
+    - Slaves: read
 
-    配置：
+- 主从复制的目的：
+    - 冗余：promte（提升为主），异地灾备，人工；工具程序：MHA
+    - 负载均衡：转移一部分“读”请求；
+    - 支援安全的备份操作；
+    - 测试；
+
+- 主/从架构：
+    - 异步复制：
+    - 半同步复制：
+    - 一主多从；
+    - 一从一主；
+    - 级联复制：一个主，带多个从；找一个代理节点，从主节点那道数据，复制给多个从
+    - 循环复制；
+    - 双主复制；
+    - 一从多主：每个主服务器提供不同的数据库；
+
+- 配置：
         时间同步；
         复制的开始位置：
             从0开始；
@@ -169,7 +164,7 @@
                 另一个节点使用偶数id
                     auto_increment_offset=2
                     auto_increment_increment=2
-                    
+
         配置：
             1、server_id必须要使用不同值； 
             2、均启用binlog和relay log；
