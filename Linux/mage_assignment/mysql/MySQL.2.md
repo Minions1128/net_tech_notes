@@ -101,7 +101,11 @@
     - [innobackupex命令用法实战](https://blog.csdn.net/wfs1994/article/details/80398234 "innobackupex命令用法实战")
 
 
-## 主从复制
+## MySQL Replication
+
+### 主从复制
+
+- 参考：[MySql 主从复制及配置实现](https://segmentfault.com/a/1190000008942618 "MySql 主从复制及配置实现")
 
 - Master/Slave
     - Master: write/read
@@ -124,122 +128,122 @@
     - 一从多主：每个主服务器提供不同的数据库；
 
 - 配置：
-        时间同步；
-        复制的开始位置：
-            从0开始；
-            从备份中恢复到从节点后启动的复制，复制的起始点备份操作时主节点所处的日志文件及其事件位置；
-        主从服务器mysqld程序版本不一致？
-            从的版本号高于主的版本号；
-            
-        主服务器：
-            配置文件my.cnf
-            server_id=#
-            log_bin=log-bin
-            
-            启动服务：
-            mysql> GRANT REPLICATION SLAVE,REPLICATION CLIENT ON *.* TO 'USERNAME'@'HOST' IDENTIFIED BY 'YOUR_PASSWORD';
-            mysql> FLUSH PRIVILEGES;
-            
-        从服务器：
-            配置文件my.cnf
-            server_id=#
-            relay_log=relay-log 
-            read_only=ON
-            
-            启动服务：
-            mysql> CHANGE MASTER TO MASTER_HOST='HOST',MASTER_USER='USERNAME',MASTER_PASSWORD='YOUR_PASSWORD',MASTER_LOG_FILE='BINLOG',MASTER_LOG_POS=#;
-            mysql> START SLAVE [IO_THREAD|SQL_THREAD];
-            
-            mysql> SHOW SLAVE STATUS;
-            
-        课外作业：基于SSL的复制的实现； 
+    - 时间同步；
+    - 复制的开始位置：
+        - 从0开始；
+        - 从主服务器备份中恢复到从服务器节点后启动的复制，复制的起始点备份操作时主节点所处的日志文件及其事件位置；
+    - 主从服务器mysqld程序版本不一致？从服务器的版本号可以高于主的版本号。
+    - 主服务器：
+        - 配置文件my.cnf
+            - server_id=#
+            - log_bin=log-bin
+        - 启动服务：
+        - 授权从节点连接主节点的账户：
+            - `mysql> GRANT REPLICATION SLAVE,REPLICATION CLIENT ON *.* TO 'USERNAME'@'HOST' IDENTIFIED BY 'YOUR_PASSWORD';`
+            - `mysql> FLUSH PRIVILEGES;`
+        - 查看主节点的二进制文件位置，便于从服务器找到日志位置
+            - `mysql> SHOW MASTER STATUS;`
+    - 从服务器：
+        - 配置文件my.cnf
+            - server_id=#
+            - relay_log=relay-log
+            - read_only=ON
+        - 连接主节点：
+            - `mysql> CHANGE MASTER TO MASTER_HOST='HOST',MASTER_USER='USERNAME',MASTER_PASSWORD='YOUR_PASSWORD',MASTER_LOG_FILE='BINLOG',MASTER_LOG_POS=#;`
+        - 启动服务：
+            - `mysql> START SLAVE [IO_THREAD|SQL_THREAD];`
+            - `mysql> SHOW SLAVE STATUS;`
+        - 课外作业：基于SSL的复制的实现；
 
-    主主复制：
-        互为主从：两个节点各自都要开启binlog和relay log；
-            1、数据不一致；
-            2、自动增长id；
-                定义一个节点使用奇数id
-                    auto_increment_offset=1
-                    auto_increment_increment=2
-                另一个节点使用偶数id
-                    auto_increment_offset=2
-                    auto_increment_increment=2
+### 主主复制
 
-        配置：
-            1、server_id必须要使用不同值； 
-            2、均启用binlog和relay log；
-            3、存在自动增长id的表，为了使得id不相冲突，需要定义其自动增长方式；
-            
-            服务启动后执行如下两步：
-            4、都授权有复制权限的用户账号；
-            5、各把对方指定为主节点；
+- 互为主从：两个节点各自都要开启binlog和relay log；
+    - 可能遇到的问题：
+        - 1.数据不一致；
+        - 2.自动增长id；
+            - 定义一个节点使用奇数id
+                - auto_increment_offset=1
+                - auto_increment_increment=2
+            - 另一个节点使用偶数id
+                - auto_increment_offset=2
+                - auto_increment_increment=2
 
-    复制时应该注意的问题：
-        1、从服务设定为“只读”；
-            在从服务器启动read_only，但仅对非SUPER权限的用户有效；
-            
-            阻止所有用户：
-                mysql> FLUSH TABLES WITH READ LOCK;
-                
-        2、尽量确保复制时的事务安全
-            在master节点启用参数：
-                sync_binlog = ON 
-                
-                如果用到的是InnoDB存储引擎：
-                    innodb_flush_logs_at_trx_commit=ON
-                    innodb_support_xa=ON
-                    
-        3、从服务器意外中止时尽量避免自动启动复制线程
-                
+- 配置：
+    - 1、server_id必须要使用不同值；
+    - 2、均启用binlog和relay log；
+    - 3、存在自动增长id的表，为了使得id不相冲突，需要定义其自动增长方式；
+    - 服务启动后执行如下两步：
+    - 4、都授权有复制权限的用户账号；
+    - 5、各把对方指定为主节点；
+
+- 复制时应该注意的问题：
+    - 1、从服务设定为“只读”；
+        - 在从服务器启动read_only，但仅对非SUPER权限的用户有效；
+        - 阻止所有用户：
+            - `mysql> FLUSH TABLES WITH READ LOCK;`
+    - 2、尽量确保复制时的事务安全
+        - 在master节点启用参数：`sync_binlog = ON`
+        - 如果用到的是InnoDB存储引擎：
+            - `innodb_flush_logs_at_trx_commit=ON`
+            - `innodb_support_xa=ON`
+    - 3、从服务器意外中止时尽量避免自动启动复制线程
+    - 4、从节点：设置参数
+        - `sync_master_info=ON`
+        - `sync_relay_log_info=ON`
+
+### 半同步复制
+
+- 异步复制, 全同步复制和半同步复制
+    - 异步复制（Asynchronous replication）：MySQL默认的复制即是异步的，主库在执行完客户端提交的事务后会立即将结果返给给客户端，并不关心从库是否已经接收并处理，这样就会有一个问题，主如果crash掉了，此时主上已经提交的事务可能并没有传到从上，如果此时，强行将从提升为主，可能导致新主上的数据不完整。
+    - 全同步复制（Fully synchronous replication）：指当主库执行完一个事务，所有的从库都执行了该事务才返回给客户端。因为需要等待所有从库执行完该事务才能返回，所以全同步复制的性能必然会收到严重的影响。
+    - 半同步复制（Semisynchronous replication）介于异步复制和全同步复制之间，主库在执行完客户端提交的事务后不是立刻返回给客户端，而是等待至少一个从库接收到并写到relay log中才返回给客户端。相对于异步复制，半同步复制提高了数据的安全性，同时它也造成了一定程度的延迟，这个延迟最少是一个TCP/IP往返的时间。所以，半同步复制最好在低延时的网络中使用。
+
+- 支持多种插件：/usr/lib64/mysql/plugins/
+
+- 需要安装方可使用：
+    - `mysql> INSTALL PLUGIN plugin_name SONAME 'shared_library_name';`
+
+- 半同步复制需要的插件`semisync_master.so`和`semisync_slave.so`
+
+- 主节点：
+    ```
+        INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';
         
-        4、从节点：设置参数
-            sync_master_info=ON
-            
-            sync_relay_log_info=ON
-
-    半同步复制
-        支持多种插件：/usr/lib64/mysql/plugins/
-        
-        需要安装方可使用：
-            mysql> INSTALL PLUGIN plugin_name SONAME 'shared_library_name'; 
-            
-        半同步复制：
-            semisync_master.so
-            semisync_slave.so
-            
-        主节点：
-            INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';
-            
-                MariaDB [mydb]> SHOW GLOBAL VARIABLES LIKE 'rpl_semi%';
-                +------------------------------------+-------+
-                | Variable_name                      | Value |
-                +------------------------------------+-------+
-                | rpl_semi_sync_master_enabled       | OFF   |
-                | rpl_semi_sync_master_timeout       | 10000 |
-                | rpl_semi_sync_master_trace_level   | 32    |
-                | rpl_semi_sync_master_wait_no_slave | ON    |
-                +------------------------------------+-------+            
-
-            MariaDB [mydb]> SET GLOBAL rpl_semi_sync_master_enabled=ON;    
-                
-        从节点：
-            INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';
-            
-                MariaDB [mydb]> SHOW GLOBAL VARIABLES LIKE 'rpl_semi%';                        
-                +---------------------------------+-------+
-                | Variable_name                   | Value |
-                +---------------------------------+-------+
-                | rpl_semi_sync_slave_enabled     | OFF   |
-                | rpl_semi_sync_slave_trace_level | 32    |
-                +---------------------------------+-------+            
-            
-            MariaDB [mydb]> STOP SLAVE IO_THREAD;
             MariaDB [mydb]> SHOW GLOBAL VARIABLES LIKE 'rpl_semi%';
-            MariaDB [mydb]> START SLAVE IO_THREAD;
-            
-        判断方法：
-            主节点：
-                MariaDB [mydb]> SELECT @@global.rpl_semi_sync_master_clients；
+            +------------------------------------+-------+
+            | Variable_name                      | Value |
+            +------------------------------------+-------+
+            | rpl_semi_sync_master_enabled       | OFF   |
+            | rpl_semi_sync_master_timeout       | 10000 |
+            | rpl_semi_sync_master_trace_level   | 32    |
+            | rpl_semi_sync_master_wait_no_slave | ON    |
+            +------------------------------------+-------+            
+          
+        MariaDB [mydb]> SET GLOBAL rpl_semi_sync_master_enabled=ON;    
+    ```
+
+- 从节点：
+    ```
+        INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';
+        
+            MariaDB [mydb]> SHOW GLOBAL VARIABLES LIKE 'rpl_semi%';                        
+            +---------------------------------+-------+
+            | Variable_name                   | Value |
+            +---------------------------------+-------+
+            | rpl_semi_sync_slave_enabled     | OFF   |
+            | rpl_semi_sync_slave_trace_level | 32    |
+            +---------------------------------+-------+            
+        
+        MariaDB [mydb]> STOP SLAVE IO_THREAD;
+        MariaDB [mydb]> SHOW GLOBAL VARIABLES LIKE 'rpl_semi%';
+        MariaDB [mydb]> START SLAVE IO_THREAD;
+    ```
+
+- 主节点判断方法：`MariaDB [mydb]> SELECT @@global.rpl_semi_sync_master_clients；`
+
+
+
+
 
     复制过滤器：
         
@@ -265,8 +269,16 @@
                 Replicate_Wild_Do_Table=
                 Replicate_Wild_Ignore_Table=    
 
+
+
+
+
     作业：基于SSL复制的实现
         前提：启用SSL功能；
+
+
+
+
 
     复制的监控和维护：
         (1) 清理日志：PURGE 
@@ -291,6 +303,10 @@
         (4) 主从数据不一致时的修复方法？
             重新复制；
 
+
+
+
+
     主从复制的读写分离：
         mysql-proxy --> atlas
         amoeba for MySQL：读写分离、分片；
@@ -309,6 +325,11 @@
         双主或多主模型是无须实现读写分离，仅需要负载均衡：haproxy, nginx, lvs, ...
             pxc：Percona XtraDB Cluster
             MariaDB Cluster
+
+
+
+
+
 
     ProxySQL：
         配置示例：
@@ -462,11 +483,23 @@
             protocol=maxscaled
             port=6602            
 
+
+
+
+
     mysqlrouter：
         语句透明路由服务；
         MySQL Router 是轻量级 MySQL 中间件，提供应用与任意 MySQL 服务器后端的透明路由。MySQL Router 可以广泛应用在各种用案例中，比如通过高效路由数据库流量提供高可用性和可伸缩的 MySQL 服务器后端。Oracle 官方出品。
 
+
+
+
+
     作业：简单复制、双主复制及半同步复制；
+
+
+
+
 
     master/slave：
         切分：
@@ -491,6 +524,10 @@
             master: 10.1.0.67
             slave1: 10.1.0.68
             slave2: 10.1.0.69
+
+
+
+
 
     博客作业：
         MHA，以及zabbix完成manager启动；
