@@ -241,293 +241,232 @@
 
 - 主节点判断方法：`MariaDB [mydb]> SELECT @@global.rpl_semi_sync_master_clients；`
 
+### 复制过滤器
+
+- 仅复制有限一个或几个数据库相关的数据，而非所有；由复制过滤器进行；
+
+- 有两种实现思路：
+    - (1) 主服务器
+        - 主服务器仅向二进制日志中记录有关特定数据库相关的写操作；过滤仅可以到达库级别
+        - 问题：其它库的time-point recovery将无从实现；
+        - 修改参数：
+            - binlog_do_db=
+            - binlog_ignore_db=
+    - (2) 从服务器
+        - 从服务器的SQL THREAD仅重放关注的数据库或表相关的事件，并将其应用于本地；过滤可以到达表级别
+        - 问题：浪费网络IO和磁盘IO；
+        - 修改参数：
+            - Replicate_Do_DB=
+            - Replicate_Ignore_DB=
+            - Replicate_Do_Table=
+            - Replicate_Ignore_Table=
+            - Replicate_Wild_Do_Table=
+            - Replicate_Wild_Ignore_Table=
+
+- What's more：基于SSL复制的实现
 
 
+### 复制的监控和维护
+
+- (1) 清理日志：PURGE
+    `PURGE { BINARY | MASTER } LOGS { TO 'log_name' | BEFORE datetime_expr };`
+- (2) 复制监控
+    - MASTER
+        ```
+            SHOW MASTER STATUS;
+            SHOW BINLOG EVENTS;
+            SHOW BINARY LOGS;
+        ```
+    - SLAVE：`SHOW SLAVE STATUS;`
+    - 判断从服务器是否落后于主服务器：`Seconds_Behind_Master: 0`
+- (3) 如何确定主从节点数据是否一致？
+    - 通过表的CHECKSUM检查；
+    - 使用percona-tools中pt-table-checksum；
+- (4) 主从数据不一致时的修复方法？重新复制；
 
 
-    复制过滤器：
-        
-        仅复制有限一个或几个数据库相关的数据，而非所有；由复制过滤器进行；
-        
-        有两种实现思路：
-        
-        (1) 主服务器
-            主服务器仅向二进制日志中记录有关特定数据库相关的写操作；
-            问题：其它库的time-point recovery将无从实现； 
-            
-                binlog_do_db=
-                binlog_ignore_db=
-        
-        (2) 从服务器
-            从服务器的SQL THREAD仅重放关注的数据库或表相关的事件，并将其应用于本地；
-            问题：网络IO和磁盘IO；
-            
-                Replicate_Do_DB=
-                Replicate_Ignore_DB=
-                Replicate_Do_Table=
-                Replicate_Ignore_Table=
-                Replicate_Wild_Do_Table=
-                Replicate_Wild_Ignore_Table=    
+### 主从复制的读写分离
 
+- [MySQL主从复制与读写分离](https://www.jianshu.com/p/127d6aeab276 "MySQL主从复制与读写分离")
 
+- ProxySQL：http://www.proxysql.com/, ProxySQL is a high performance, high availability, protocol aware proxy for MySQL and forks (like Percona Server and MariaDB).
 
-
-
-    作业：基于SSL复制的实现
-        前提：启用SSL功能；
-
-
-
-
-
-    复制的监控和维护：
-        (1) 清理日志：PURGE 
-            PURGE { BINARY | MASTER } LOGS { TO 'log_name' | BEFORE datetime_expr };
-            
-        (2) 复制监控
-            MASTER:
-                SHOW MASTER STATUS;
-                SHOW BINLOG EVENTS;
-                SHOW BINARY LOGS;
-                
-            SLAVE:
-                SHOW SLAVE STATUS;
-                
-                判断从服务器是否落后于主服务器：
-                    Seconds_Behind_Master: 0
-                    
-        (3) 如何确定主从节点数据是否一致？
-            通过表的CHECKSUM检查；
-            使用percona-tools中pt-table-checksum；
-            
-        (4) 主从数据不一致时的修复方法？
-            重新复制；
-
-
-
-
-
-    主从复制的读写分离：
-        mysql-proxy --> atlas
-        amoeba for MySQL：读写分离、分片；
-        OneProxy
-        
-        ProxySQL
-            http://www.proxysql.com/, ProxySQL is a high performance, high availability, protocol aware proxy for MySQL and forks (like Percona Server and MariaDB).
-            
-            https://github.com/sysown/proxysql/releases
-        MaxScale        
-        
-        cobar, gizzard
-        
-        AliSQL：
-        
-        双主或多主模型是无须实现读写分离，仅需要负载均衡：haproxy, nginx, lvs, ...
-            pxc：Percona XtraDB Cluster
-            MariaDB Cluster
-
-
-
-
-
-
-    ProxySQL：
-        配置示例：
-            datadir="/var/lib/proxysql"
-            admin_variables=
+- 配置示例：
+    ```
+        datadir="/var/lib/proxysql"
+        admin_variables=
+        {
+            admin_credentials="admin:admin"
+            mysql_ifaces="127.0.0.1:6032;/tmp/proxysql_admin.sock"
+        }
+        mysql_variables=
+        {
+            threads=4
+            max_connections=2048
+            default_query_delay=0
+            default_query_timeout=36000000
+            have_compress=true
+            poll_timeout=2000
+            interfaces="0.0.0.0:3306;/tmp/mysql.sock"
+            default_schema="information_schema"
+            stacksize=1048576
+            server_version="5.5.30"
+            connect_timeout_server=3000
+            monitor_history=600000
+            monitor_connect_interval=60000
+            monitor_ping_interval=10000
+            monitor_read_only_interval=1500
+            monitor_read_only_timeout=500
+            ping_interval_server=120000
+            ping_timeout_server=500
+            commands_stats=true
+            sessions_sort=true
+            connect_retries_on_failure=10
+        }
+        mysql_servers =
+        (
             {
-                admin_credentials="admin:admin"
-                mysql_ifaces="127.0.0.1:6032;/tmp/proxysql_admin.sock"
-            }
-            mysql_variables=
+                address = "172.18.0.67" # no default, required . If port is 0 , address is interpred as a Unix Socket Domain
+                port = 3306           # no default, required . If port is 0 , address is interpred as a Unix Socket Domain
+                hostgroup = 0           # no default, required
+                status = "ONLINE"     # default: ONLINE
+                weight = 1            # default: 1
+                compression = 0       # default: 0
+            },
             {
-                threads=4
-                max_connections=2048
-                default_query_delay=0
-                default_query_timeout=36000000
-                have_compress=true
-                poll_timeout=2000
-                interfaces="0.0.0.0:3306;/tmp/mysql.sock"
-                default_schema="information_schema"
-                stacksize=1048576
-                server_version="5.5.30"
-                connect_timeout_server=3000
-                monitor_history=600000
-                monitor_connect_interval=60000
-                monitor_ping_interval=10000
-                monitor_read_only_interval=1500
-                monitor_read_only_timeout=500
-                ping_interval_server=120000
-                ping_timeout_server=500
-                commands_stats=true
-                sessions_sort=true
-                connect_retries_on_failure=10
+                address = "172.18.0.68"
+                port = 3306
+                hostgroup = 1
+                status = "ONLINE"     # default: ONLINE
+                weight = 1            # default: 1
+                compression = 0       # default: 0
+            },
+            {
+                address = "172.18.0.69"
+                port = 3306
+                hostgroup = 1
+                status = "ONLINE"     # default: ONLINE
+                weight = 1            # default: 1
+                compression = 0       # default: 0
             }
-            mysql_servers =
-            (
-                {
-                    address = "172.18.0.67" # no default, required . If port is 0 , address is interpred as a Unix Socket Domain
-                    port = 3306           # no default, required . If port is 0 , address is interpred as a Unix Socket Domain
-                    hostgroup = 0           # no default, required
-                    status = "ONLINE"     # default: ONLINE
-                    weight = 1            # default: 1
-                    compression = 0       # default: 0
-                },
-                {
-                    address = "172.18.0.68"
-                    port = 3306
-                    hostgroup = 1
-                    status = "ONLINE"     # default: ONLINE
-                    weight = 1            # default: 1
-                    compression = 0       # default: 0
-                },
-                {
-                    address = "172.18.0.69"
-                    port = 3306
-                    hostgroup = 1
-                    status = "ONLINE"     # default: ONLINE
-                    weight = 1            # default: 1
-                    compression = 0       # default: 0
-                }
-            )
-            mysql_users:
-            (
-                {
-                    username = "root"
-                    password = "mageedu"
-                    default_hostgroup = 0
-                    max_connections=1000
-                    default_schema="mydb"
-                    active = 1
-                }
-            )
-                mysql_query_rules:
-            (
-            )
-                scheduler=
-            (
-            )
-            mysql_replication_hostgroups=
-            (
-                {
-                    writer_hostgroup=0
-                    reader_hostgroup=1
-                }
-            )
-            
-        maxscale配置示例：
-            [maxscale]
-            threads=auto
-            
-            [server1]
-            type=server
-            address=172.18.0.67
-            port=3306
-            protocol=MySQLBackend
-            
-            [server2]
-            type=server
-            address=172.18.0.68
-            port=3306
-            protocol=MySQLBackend
-            
-            [server3]
-            type=server
-            address=172.18.0.69
-            port=3306
-            protocol=MySQLBackend
-            
-            [MySQL Monitor]
-            type=monitor
-            module=mysqlmon
-            servers=server1,server2,server3
-            user=maxscale
-            passwd=201221DC8FC5A49EA50F417A939A1302
-            monitor_interval=1000
-            
-            [Read-Only Service]
-            type=service
-            router=readconnroute
-            servers=server2,server3
-            user=maxscale
-            passwd=201221DC8FC5A49EA50F417A939A1302
-            router_options=slave
-            
-            [Read-Write Service]
-            type=service
-            router=readwritesplit
-            servers=server1
-            user=maxscale
-            passwd=201221DC8FC5A49EA50F417A939A1302
-            max_slave_connections=100%
-            
-            [MaxAdmin Service]
-            type=service
-            router=cli
-            
-            [Read-Only Listener]
-            type=listener
-            service=Read-Only Service
-            protocol=MySQLClient
-            port=4008
-            
-            [Read-Write Listener]
-            type=listener
-            service=Read-Write Service
-            protocol=MySQLClient
-            port=4006
-            
-            [MaxAdmin Listener]
-            type=listener
-            service=MaxAdmin Service
-            protocol=maxscaled
-            port=6602            
+        )
+        mysql_users:
+        (
+            {
+                username = "root"
+                password = "mageedu"
+                default_hostgroup = 0
+                max_connections=1000
+                default_schema="mydb"
+                active = 1
+            }
+        )
+            mysql_query_rules:
+        (
+        )
+            scheduler=
+        (
+        )
+        mysql_replication_hostgroups=
+        (
+            {
+                writer_hostgroup=0
+                reader_hostgroup=1
+            }
+        )
+    ```
 
-
-
-
-
-    mysqlrouter：
-        语句透明路由服务；
-        MySQL Router 是轻量级 MySQL 中间件，提供应用与任意 MySQL 服务器后端的透明路由。MySQL Router 可以广泛应用在各种用案例中，比如通过高效路由数据库流量提供高可用性和可伸缩的 MySQL 服务器后端。Oracle 官方出品。
-
-
-
-
-
-    作业：简单复制、双主复制及半同步复制；
-
-
-
-
-
-    master/slave：
-        切分：
-            垂直切分：切库，把一个库中的多个表分组后放置于不同的物理服务器上；
-            水平切分：切表，分散其行至多个不同的table partitions中；
-                range, list, hash
-                
-        sharding(切片)：
-            数据库切分的框架：
-                cobar
-                gizzard
-                Hibernat Shards
-                HiveDB
-                ...
-                
-        qps: queries per second 
-        tps: transactions per second
+- maxscale配置示例：
+    ```
+        [maxscale]
+        threads=auto
         
-        MHA:
-            manager: 10.1.0.6
-            
-            master: 10.1.0.67
-            slave1: 10.1.0.68
-            slave2: 10.1.0.69
+        [server1]
+        type=server
+        address=172.18.0.67
+        port=3306
+        protocol=MySQLBackend
+        
+        [server2]
+        type=server
+        address=172.18.0.68
+        port=3306
+        protocol=MySQLBackend
+        
+        [server3]
+        type=server
+        address=172.18.0.69
+        port=3306
+        protocol=MySQLBackend
+        
+        [MySQL Monitor]
+        type=monitor
+        module=mysqlmon
+        servers=server1,server2,server3
+        user=maxscale
+        passwd=201221DC8FC5A49EA50F417A939A1302
+        monitor_interval=1000
+        
+        [Read-Only Service]
+        type=service
+        router=readconnroute
+        servers=server2,server3
+        user=maxscale
+        passwd=201221DC8FC5A49EA50F417A939A1302
+        router_options=slave
+        
+        [Read-Write Service]
+        type=service
+        router=readwritesplit
+        servers=server1
+        user=maxscale
+        passwd=201221DC8FC5A49EA50F417A939A1302
+        max_slave_connections=100%
+        
+        [MaxAdmin Service]
+        type=service
+        router=cli
+        
+        [Read-Only Listener]
+        type=listener
+        service=Read-Only Service
+        protocol=MySQLClient
+        port=4008
+        
+        [Read-Write Listener]
+        type=listener
+        service=Read-Write Service
+        protocol=MySQLClient
+        port=4006
+        
+        [MaxAdmin Listener]
+        type=listener
+        service=MaxAdmin Service
+        protocol=maxscaled
+        port=6602            
+    ```
 
+- mysqlrouter：语句透明路由服务；MySQL Router 是轻量级 MySQL 中间件，提供应用与任意 MySQL 服务器后端的透明路由。MySQL Router 可以广泛应用在各种用案例中，比如通过高效路由数据库流量提供高可用性和可伸缩的 MySQL 服务器后端。Oracle 官方出品。
 
+- 作业：简单复制、双主复制及半同步复制；
 
+- master/slave：
+    - 切分：
+        - 垂直切分：切库，把一个库中的多个表分组后放置于不同的物理服务器上；
+        - 水平切分：切表，分散其行至多个不同的table partitions中；range, list, hash
+                
+    - sharding(切片)：
+        - 数据库切分的框架：
+            - cobar
+            - gizzard
+            - Hibernat Shards
+            - HiveDB
+    - qps: queries per second 
+    - tps: transactions per second
+    - MHA:
+        - manager: 10.1.0.6
+        - master: 10.1.0.67
+        - slave1: 10.1.0.68
+        - slave2: 10.1.0.69
 
-
-    博客作业：
-        MHA，以及zabbix完成manager启动；
+- 博客作业：MHA，以及zabbix完成manager启动；
