@@ -21,11 +21,11 @@
     - OUTPUT
     - POSTROUTING
 
-- 功能，优先级由高到低：
-    - raw：该表有较高优先级，为了不再让IPtables做数据包的链接跟踪处理，可以关闭nat表上启用的连接追踪机制，提高性能，包含PREROUTING链和OUTPUT链上
-    - mangle：该表可以拆解报文，对报文做出修改（如，ToS、CoS、QoS、TTL等），并重新封装起来，包含：PREROUTING、INPUT、FORWARD、OUTPUT、POSTROUTING五个表链。
-    - nat：用于修改源IP或目标IP，也可以改端口，包括PREROUTING（刚到达本机，在路由转发前的数据包，处理DNAT）、POSTROUTING（即将离开本机的数据包，处理SNAT）、OUTPUT（处理本机产生的数据包）。
-    - filter：该表有包过滤、防火墙的作用，由INPUT（inbound流量），OUTPUT（outbound流量），FORWARD（转发流量）表链组成。
+- 功能（优先级由高到低）：
+    - **raw**：该表有较高优先级，为了不再让IPtables做数据包的链接跟踪处理，可以关闭nat表上启用的连接追踪机制，提高性能，包含PREROUTING链和OUTPUT链上
+    - **mangle**：该表可以拆解报文，对报文做出修改（如，ToS、CoS、QoS、TTL等），并重新封装起来，包含：PREROUTING、INPUT、FORWARD、OUTPUT、POSTROUTING五个表链。
+    - **nat**：用于修改源IP或目标IP，也可以改端口，包括PREROUTING（刚到达本机，在路由转发前的数据包，处理DNAT）、POSTROUTING（即将离开本机的数据包，处理SNAT）、OUTPUT（处理本机产生的数据包）。
+    - **filter**：该表有包过滤、防火墙的作用，由INPUT（inbound流量），OUTPUT（outbound流量），FORWARD（转发流量）表链组成。
 
 - 表执行过程
 [![](https://github.com/Minions1128/net_tech_notes/blob/master/img/IPtables.proc.png)](https://github.com/Minions1128/net_tech_notes/blob/master/img/IPtables.proc.png)
