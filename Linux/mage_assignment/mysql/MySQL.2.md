@@ -289,92 +289,95 @@
 
 - [MySQL主从复制与读写分离](https://www.jianshu.com/p/127d6aeab276 "MySQL主从复制与读写分离")
 
+
+#### ProxySQL
+
 - ProxySQL：http://www.proxysql.com/, ProxySQL is a high performance, high availability, protocol aware proxy for MySQL and forks (like Percona Server and MariaDB).
 
 - 配置示例：
     ```
         datadir="/var/lib/proxysql"
         admin_variables=
-        {
-            admin_credentials="admin:admin"
-            mysql_ifaces="127.0.0.1:6032;/tmp/proxysql_admin.sock"
-        }
+            {
+                admin_credentials="admin:admin"
+                mysql_ifaces="127.0.0.1:6032;/tmp/proxysql_admin.sock"
+            }
         mysql_variables=
-        {
-            threads=4
-            max_connections=2048
-            default_query_delay=0
-            default_query_timeout=36000000
-            have_compress=true
-            poll_timeout=2000
-            interfaces="0.0.0.0:3306;/tmp/mysql.sock"
-            default_schema="information_schema"
-            stacksize=1048576
-            server_version="5.5.30"
-            connect_timeout_server=3000
-            monitor_history=600000
-            monitor_connect_interval=60000
-            monitor_ping_interval=10000
-            monitor_read_only_interval=1500
-            monitor_read_only_timeout=500
-            ping_interval_server=120000
-            ping_timeout_server=500
-            commands_stats=true
-            sessions_sort=true
-            connect_retries_on_failure=10
-        }
-        mysql_servers =
-        (
             {
-                address = "172.18.0.67" # no default, required . If port is 0 , address is interpred as a Unix Socket Domain
-                port = 3306           # no default, required . If port is 0 , address is interpred as a Unix Socket Domain
-                hostgroup = 0           # no default, required
-                status = "ONLINE"     # default: ONLINE
-                weight = 1            # default: 1
-                compression = 0       # default: 0
-            },
-            {
-                address = "172.18.0.68"
-                port = 3306
-                hostgroup = 1
-                status = "ONLINE"     # default: ONLINE
-                weight = 1            # default: 1
-                compression = 0       # default: 0
-            },
-            {
-                address = "172.18.0.69"
-                port = 3306
-                hostgroup = 1
-                status = "ONLINE"     # default: ONLINE
-                weight = 1            # default: 1
-                compression = 0       # default: 0
-            }
-        )
-        mysql_users:
-        (
-            {
-                username = "root"
-                password = "mageedu"
-                default_hostgroup = 0
-                max_connections=1000
+                threads=4
+                max_connections=2048
+                default_query_delay=0
+                default_query_timeout=36000000
+                have_compress=true
+                poll_timeout=2000
+                interfaces="0.0.0.0:3306;/tmp/mysql.sock"
                 default_schema="mydb"
-                active = 1
+                stacksize=1048576
+                server_version="5.5.30"
+                connect_timeout_server=3000
+                monitor_history=600000
+                monitor_connect_interval=60000
+                monitor_ping_interval=10000
+                monitor_read_only_interval=1500
+                monitor_read_only_timeout=500
+                ping_interval_server=120000
+                ping_timeout_server=500
+                commands_stats=true
+                sessions_sort=true
+                connect_retries_on_failure=10
             }
-        )
-            mysql_query_rules:
-        (
-        )
-            scheduler=
-        (
-        )
+        mysql_servers =
+            (
+                {
+                    address = "172.18.0.67" # no default, required . If port is 0 , address is interpred as a Unix Socket Domain
+                    port = 3306           # no default, required . If port is 0 , address is interpred as a Unix Socket Domain
+                    hostgroup = 0           # no default, required
+                    status = "ONLINE"     # default: ONLINE
+                    weight = 1            # default: 1
+                    compression = 0       # default: 0
+                },
+                {
+                    address = "172.18.0.68"
+                    port = 3306
+                    hostgroup = 1
+                    status = "ONLINE"     # default: ONLINE
+                    weight = 1            # default: 1
+                    compression = 0       # default: 0
+                },
+                {
+                    address = "172.18.0.69"
+                    port = 3306
+                    hostgroup = 1
+                    status = "ONLINE"     # default: ONLINE
+                    weight = 1            # default: 1
+                    compression = 0       # default: 0
+                }
+            )
+        mysql_users:
+            (
+                {
+                    username = "root"
+                    password = "mageedu"
+                    default_hostgroup = 0
+                    max_connections=1000
+                    default_schema="mydb"
+                    active = 1
+                }
+            )
+        mysql_query_rules:()
+        scheduler=()
         mysql_replication_hostgroups=
-        (
-            {
-                writer_hostgroup=0
-                reader_hostgroup=1
-            }
-        )
+            (
+                {
+                    writer_hostgroup=0
+                    reader_hostgroup=1
+                    comment='描述信息'
+                }
+            )
     ```
+- 可以查看`monitor`库查看相关配置信息以及使用状态信息；
+
+#### maxscale
 
 - maxscale配置示例：
     ```
@@ -446,27 +449,11 @@
         port=6602            
     ```
 
+
+### HMA
+
+[MHA构建MySQL高可用平台最佳实践](https://www.jianshu.com/p/6173dae5ed7a "MHA构建MySQL高可用平台最佳实践")
+
+- 当master出现故障时，通过对比slave之间I/O线程读取masterbinlog的位置，选取最接近的slave做为latestslave。 其它slave通过与latest slave对比生成差异中继日志。在latest slave上应用从master保存的binlog，同时将latest slave提升为master。最后在其它slave上应用相应的差异中继日志并开始从新的master开始复制。
+
 - mysqlrouter：语句透明路由服务；MySQL Router 是轻量级 MySQL 中间件，提供应用与任意 MySQL 服务器后端的透明路由。MySQL Router 可以广泛应用在各种用案例中，比如通过高效路由数据库流量提供高可用性和可伸缩的 MySQL 服务器后端。Oracle 官方出品。
-
-- 作业：简单复制、双主复制及半同步复制；
-
-- master/slave：
-    - 切分：
-        - 垂直切分：切库，把一个库中的多个表分组后放置于不同的物理服务器上；
-        - 水平切分：切表，分散其行至多个不同的table partitions中；range, list, hash
-                
-    - sharding(切片)：
-        - 数据库切分的框架：
-            - cobar
-            - gizzard
-            - Hibernat Shards
-            - HiveDB
-    - qps: queries per second 
-    - tps: transactions per second
-    - MHA:
-        - manager: 10.1.0.6
-        - master: 10.1.0.67
-        - slave1: 10.1.0.68
-        - slave2: 10.1.0.69
-
-- 博客作业：MHA，以及zabbix完成manager启动；
