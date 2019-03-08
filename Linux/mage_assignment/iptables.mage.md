@@ -1,13 +1,15 @@
-# iptables
+# IPtables
+
+## 概述
 
 - Firewall：防火墙，隔离工具；工作于主机或网络边缘，对于进出本主机或本网络的报文根据事先定义的检查规则作匹配检测，对于能够被规则匹配到的报文作出相应处理的组件。
 
 - Linux防火墙发展：
     - ipfw (firewall framework)
     - ipchains (firewall framework)
-    - iptables(netfilter)
+    - IPtables(netfilter)
         - netfilter：kernel
-        - iptables：rules until
+        - IPtables：rules until
     - nftables
 
 - FirewallD：[CentOS 上的 FirewallD 简明指南](https://linux.cn/article-8098-1.html "CentOS 上的 FirewallD 简明指南")
@@ -20,13 +22,13 @@
     - POSTROUTING
 
 - 功能，优先级由高到低：
-    - raw：该表有较高优先级，为了不再让iptables做数据包的链接跟踪处理，可以关闭nat表上启用的连接追踪机制，提高性能，包含PREROUTING链和OUTPUT链上
+    - raw：该表有较高优先级，为了不再让IPtables做数据包的链接跟踪处理，可以关闭nat表上启用的连接追踪机制，提高性能，包含PREROUTING链和OUTPUT链上
     - mangle：该表可以拆解报文，对报文做出修改（如，ToS、CoS、QoS、TTL等），并重新封装起来，包含：PREROUTING、INPUT、FORWARD、OUTPUT、POSTROUTING五个表链。
     - nat：用于修改源IP或目标IP，也可以改端口，包括PREROUTING（刚到达本机，在路由转发前的数据包，处理DNAT）、POSTROUTING（即将离开本机的数据包，处理SNAT）、OUTPUT（处理本机产生的数据包）。
     - filter：该表有包过滤、防火墙的作用，由INPUT（inbound流量），OUTPUT（outbound流量），FORWARD（转发流量）表链组成。
 
 - 表执行过程
-[![](https://github.com/Minions1128/net_tech_notes/blob/master/img/iptables.proc.png)](https://github.com/Minions1128/net_tech_notes/blob/master/img/iptables.proc.png)
+[![](https://github.com/Minions1128/net_tech_notes/blob/master/img/IPtables.proc.png)](https://github.com/Minions1128/net_tech_notes/blob/master/img/IPtables.proc.png)
 
 - 报文流向：
     - 流入本机：PREROUTING --> INPUT
@@ -34,21 +36,18 @@
     - 转发：PREROUTING --> FORWARD --> POSTROUTING
 
 
+## IPtables规则
 
-            
-    iptables/netfilter
-        
-        规则：
-            组成部分：根据规则匹配条件来尝试匹配报文，一旦匹配成功，就由规则定义的处理动作作出处理；
-                匹配条件：
-                    基本匹配条件：内建
-                    扩展匹配条件：由扩展模块定义；
-                处理动作：
-                    基本处理动作：内建
-                    扩展处理动作：由扩展模块定义；
-                    自定义处理机制：自定义链
+- 组成部分：根据规则匹配条件来尝试匹配报文，一旦匹配成功，就由规则定义的处理动作作出处理
+    - 匹配条件：
+        - 基本匹配条件：内建
+        - 扩展匹配条件：由扩展模块定义；
+    - 处理动作：
+        - 基本处理动作：内建
+        - 扩展处理动作：由扩展模块定义；
+        - 自定义处理机制：自定义链
                     
-            iptables的链：内置链和自定义链
+- IPtables的链：内置链和自定义链
                 内置链：对应于hook function
                 自定义链接：用于内置链的扩展和补充，可实现更灵活的规则管理机制；
                 
@@ -62,31 +61,31 @@
                 (3) 将那些可由一条规则描述的多个规则合并起来；
                 (4) 设置默认策略；
                 
-        iptables命令：
+        IPtables命令：
             高度模块化，由诸多扩展模块实现其检查条件或处理动作的定义；
                 /usr/lib64/xtables/
                     IPv6：libip6t_
                     IPv4：libipt_, libxt_
             
-            iptables [-t table] {-A|-C|-D} chain rule-specification
+            IPtables [-t table] {-A|-C|-D} chain rule-specification
 
-            iptables [-t table] -I chain [rulenum] rule-specification
+            IPtables [-t table] -I chain [rulenum] rule-specification
 
-            iptables [-t table] -R chain rulenum rule-specification
+            IPtables [-t table] -R chain rulenum rule-specification
 
-            iptables [-t table] -D chain rulenum
+            IPtables [-t table] -D chain rulenum
 
-            iptables [-t table] -S [chain [rulenum]]
+            IPtables [-t table] -S [chain [rulenum]]
 
-            iptables [-t table] {-F|-L|-Z} [chain [rulenum]] [options...]
+            IPtables [-t table] {-F|-L|-Z} [chain [rulenum]] [options...]
 
-            iptables [-t table] -N chain
+            IPtables [-t table] -N chain
 
-            iptables [-t table] -X  [chain]
+            IPtables [-t table] -X  [chain]
 
-            iptables [-t table] -P chain target
+            IPtables [-t table] -P chain target
 
-            iptables [-t table] -E old-chain-name new-chain-name
+            IPtables [-t table] -E old-chain-name new-chain-name
             
             rule-specification = [matches...]  [target]
 
@@ -94,7 +93,7 @@
 
             target = -j targetname [per-target-options]
             
-            规则格式：iptables   [-t table]   COMMAND   chain   [-m matchname [per-match-options]]   -j targetname [per-target-options]
+            规则格式：IPtables   [-t table]   COMMAND   chain   [-m matchname [per-match-options]]   -j targetname [per-target-options]
             
                 -t table：
                     raw, mangle, nat, [filter]
@@ -119,7 +118,7 @@
                         
                         -F：flush，清空指定的规则链；
                         -Z：zero，置零；
-                            iptables的每条规则都有两个计数器：
+                            IPtables的每条规则都有两个计数器：
                                 (1) 匹配到的报文的个数；
                                 (2) 匹配到的所有报文的大小之和；                        
                     查看：
@@ -134,7 +133,7 @@
                     PREROUTING，INPUT，FORWARD，OUTPUT，POSTROUTING
                     
                 匹配条件：
-                    基本匹配条件：无需加载任何模块，由iptables/netfilter自行提供；
+                    基本匹配条件：无需加载任何模块，由IPtables/netfilter自行提供；
                         [!] -s, --source  address[/mask][,...]：检查报文中的源IP地址是否符合此处指定的地址或范围；
                         [!] -d, --destination address[/mask][,...]：检查报文中的目标IP地址是否符合此处指定的地址或范围；
                             所有地址：0.0.0.0/0
@@ -153,18 +152,18 @@
                         
         练习：本机地址172.16.0.67
             1、开放本机的所有tcp服务给所有主机；
-                # iptables -I INPUT  -d 172.16.0.67 -p tcp -j ACCEPT
-                # iptables -I OUTPUT  -s 172.16.0.67 -p tcp -j ACCEPT 
+                # IPtables -I INPUT  -d 172.16.0.67 -p tcp -j ACCEPT
+                # IPtables -I OUTPUT  -s 172.16.0.67 -p tcp -j ACCEPT 
             2、开放本机的所有udp服务给172.16.0.0/16网络中的主机，但不包含172.16.0.200；
-                # iptables -I INPUT 2 -d 172.16.0.67 -s 172.16.0.200 -p udp -j REJECT
-                # iptables -I INPUT 3 -d 172.16.0.67 -s 172.16.0.0/16 -p udp -j ACCEPT
-                # iptables -I OUTPUT 2 -s 172.16.0.67 -d 172.16.0.0/16 -p udp -j ACCEPT
+                # IPtables -I INPUT 2 -d 172.16.0.67 -s 172.16.0.200 -p udp -j REJECT
+                # IPtables -I INPUT 3 -d 172.16.0.67 -s 172.16.0.0/16 -p udp -j ACCEPT
+                # IPtables -I OUTPUT 2 -s 172.16.0.67 -d 172.16.0.0/16 -p udp -j ACCEPT
             3、默认策略为REJECT；
             扩展：
             1、仅开放本机的ssh服务给172.16.0.0/16中的主机，而且不包含172.16.0.200; 
                    
         
-回顾：iptables/netfilter
+回顾：IPtables/netfilter
     framework: netfilter
         五链：
             PREROUTING，INPUT，FORWARD，OUTPUT，POSTROUTING
@@ -180,8 +179,8 @@
         mangle：PREROUTING，INPUT，FORWARD，OUTPUT，POSTROUTING
         raw：OUTPUT，PREROUTING
         
-    iptables命令：
-        iptables [-t table] COMMAND chain [rulenum] [-m machename [per-match-options]] [-j targetname [per-target-options]] [options]
+    IPtables命令：
+        IPtables [-t table] COMMAND chain [rulenum] [-m machename [per-match-options]] [-j targetname [per-target-options]] [options]
             匹配条件：
                 基本匹配条件：
                     -s, -d, -p, -i, -o
@@ -197,8 +196,8 @@
             规则管理：-A，-I，-R，-D
             查看：-L，-n, -v, -x, --line-numbers
                         
-iptables（2）
-    iptables [-t table] COMMAND [chain] [PARAMETERS] [-m matchname [per-match-options]] [-j targetname [per-target-options]]
+IPtables（2）
+    IPtables [-t table] COMMAND [chain] [PARAMETERS] [-m matchname [per-match-options]] [-j targetname [per-target-options]]
             
         匹配条件：
             基本匹配条件：PARAMETERS
@@ -237,14 +236,14 @@ iptables（2）
                     [!] --source-ports,--sports port[,port|,port:port]...：指定多个源端口；
                     [!] --destination-ports,--dports port[,port|,port:port]...：指定多个目标端口；
                     
-                    # iptables -I INPUT  -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -j ACCEPT
+                    # IPtables -I INPUT  -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -j ACCEPT
                     
                 2、iprange
                     以连续地址块的方式来指明多IP地址匹配条件；
                     [!] --src-range from[-to]
                     [!] --dst-range from[-to]
                     
-                    # iptables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT
+                    # IPtables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT
                     
                 3、time
                     This  matches  if the packet arrival time/date is within a given range.
@@ -271,7 +270,7 @@ iptables（2）
                     --from offset
                     --to offset
                     
-                    ~]# iptables -I OUTPUT -m string --algo bm --string "gay" -j REJECT
+                    ~]# IPtables -I OUTPUT -m string --algo bm --string "gay" -j REJECT
                     
                 5、connlimit 
                     Allows  you  to  restrict  the  number  of parallel connections to a server per client IP address (or client address block).
@@ -279,7 +278,7 @@ iptables（2）
                     --connlimit-upto n
                     --connlimit-above n
                     
-                    ~]# iptables -I INPUT -d 172.16.0.7 -p tcp --syn --dport 22 -m connlimit --connlimit-above 2 -j REJECT
+                    ~]# IPtables -I INPUT -d 172.16.0.7 -p tcp --syn --dport 22 -m connlimit --connlimit-above 2 -j REJECT
                     
                 6、limit 
                     This  module  matches  at  a limited rate using a token bucket filter. 
@@ -287,7 +286,7 @@ iptables（2）
                     --limit rate[/second|/minute|/hour|/day]
                     --limit-burst number
                     
-                    ~]# iptables -I OUTPUT -s 172.16.0.7 -p icmp --icmp-type 0 -j ACCEPT
+                    ~]# IPtables -I OUTPUT -s 172.16.0.7 -p icmp --icmp-type 0 -j ACCEPT
                     
                     限制本机某tcp服务接收新请求的速率：--syn, -m limit
                     
@@ -347,23 +346,23 @@ iptables（2）
                 
                     
     保存和载入规则：
-        保存：iptables-save > /PATH/TO/SOME_RULE_FILE
+        保存：IPtables-save > /PATH/TO/SOME_RULE_FILE
         重载：iptabls-restore < /PATH/FROM/SOME_RULE_FILE
             -n, --noflush：不清除原有规则
             -t, --test：仅分析生成规则集，但不提交
             
         CentOS 6：
             保存规则：
-                service iptables save
-                保存规则于/etc/sysconfig/iptables文件，覆盖保存；
+                service IPtables save
+                保存规则于/etc/sysconfig/IPtables文件，覆盖保存；
             重载规则：
-                service iptables restart
-                默认重载/etc/sysconfig/iptables文件中的规则 
+                service IPtables restart
+                默认重载/etc/sysconfig/IPtables文件中的规则 
                 
-            配置文件：/etc/sysconfig/iptables-config
+            配置文件：/etc/sysconfig/IPtables-config
             
         CentOS 7：
-            (1) 自定义Unit File，进行iptables-restore；
+            (1) 自定义Unit File，进行IPtables-restore；
             (2) firewalld服务；
             (3) 自定义脚本；
             
@@ -374,11 +373,11 @@ iptables（2）
         (2) 服务于不同类别的功能的规则，匹配到报文可能性更大的放前面；
         (3) 服务于同一类别的功能的规则，匹配条件较严格的放在前面；
         (4) 设置默认策略：白名单机制
-            (a) iptables -P，不建议；
+            (a) IPtables -P，不建议；
             (b) 建议在规则的最后定义规则做为默认策略；
 
 回顾：
-    iptables/netfilter：
+    IPtables/netfilter：
         netfilter：raw，mangle, nat, filter
             PREROUTING --> INPUT
             PREROUTING --> FORWARD --> POSTROUTING
@@ -386,7 +385,7 @@ iptables（2）
         filter：INPUT，FORWARD，OUTPUT
         nat：PREROUTING，INPUT，OUTPUT，POSTROUTING
         
-    iptables：
+    IPtables：
         [-t table] COMMAND [chain] rule-specification
             -m matchname [per-match-options]
             -t targetname [per-target-options]
@@ -417,11 +416,11 @@ iptables（2）
                 自定义链
                     RETURN
                 
-    iptables-save/iptables-restore
+    IPtables-save/IPtables-restore
     
             
-iptables（3）                    
-    iptables/netfilter网络防火墙：
+IPtables（3）                    
+    IPtables/netfilter网络防火墙：
         (1) 网关；
         (2) filter表的FORWARD链；
         
@@ -437,7 +436,7 @@ iptables（3）
                 改源地址：SNAT，MASQUERADE
                 改目标地址：DNAT
                 
-        iptables/netfilter：
+        IPtables/netfilter：
             NAT定义在nat表；
                 PREROUTING，INPUT，OUTPUT，POSTROUTING
                 
@@ -470,7 +469,7 @@ iptables（3）
             
             
         
-    博客作业：iptables/netfilter入门到进阶
+    博客作业：IPtables/netfilter入门到进阶
 
 
 tcp_wrapper：

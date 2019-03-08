@@ -1,6 +1,6 @@
 # IPtables
 
-## 2. IPtables规则
+
 IPtables规则包含：一个条件和一个策略操作，从上到下一一查找规则，如果都为匹配到，则执行默认规则。
 * 配置规则的一些参数
 ```
@@ -41,28 +41,28 @@ ACCEPT，DROP（请求端没有任何回应），REJECT，REDIRECT，DNAT，SNAT
 * -N, --new-chain chain，新建表链
 * -X, --delete-chain [chain]，删除表链
 * -P, --policy [chain] {ACCEPT | DROP}，默认策略
-* service iptables {restart | start | stop | status | save}
-* iptables-save > ip_tab.rules，保存策略
-* iptables-restore < ip_tab. rules，恢复策略
-* service iptables status查看其状态
+* service IPtables {restart | start | stop | status | save}
+* IPtables-save > ip_tab.rules，保存策略
+* IPtables-restore < ip_tab. rules，恢复策略
+* service IPtables status查看其状态
 ## 5. 一些例子
 ```
 # 拒绝192.168.1.22访问本地ssh服务：
-iptables -A INPUT -i eth0 -p tcp -s 192.168.1.22 --dport 22 -j REJECT
-iptables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
+IPtables -A INPUT -i eth0 -p tcp -s 192.168.1.22 --dport 22 -j REJECT
+IPtables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
 
 # 只允许本机ping其他主机，不允许其他主机ping本机
-iptables -A INPUT -p icmp --icmp-type 8 -j DROP
-iptables -A INPUT -p icmp --icmp-type 0 -j ACCEPT
-iptables -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
-iptables -A OUTPUT -p icmp --icmp-type 0 -j DROP
+IPtables -A INPUT -p icmp --icmp-type 8 -j DROP
+IPtables -A INPUT -p icmp --icmp-type 0 -j ACCEPT
+IPtables -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
+IPtables -A OUTPUT -p icmp --icmp-type 0 -j DROP
 
 # 多端口应用
-iptables -A INPUT -p tcp -m multiport --sport 22,53,80,110
+IPtables -A INPUT -p tcp -m multiport --sport 22,53,80,110
 
 # 速率的限制
-iptables -A INPUT -m limit --limit 300/s    # 限制速率为300个包每秒
-iptables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d 192.168.3.3 \
+IPtables -A INPUT -m limit --limit 300/s    # 限制速率为300个包每秒
+IPtables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d 192.168.3.3 \
     --dport 80 -m limit --limit=500/s --limit-burst=1000  -j ACCEPT \
     # 允许转发从eth0进来的源IP为192.168.2.3， \
     # 去访问从eth1出去的目的IP为192.168.3.3的80端口（即http服务）的数据包, \
@@ -70,26 +70,26 @@ iptables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d 192.168.3.3 \
     # --limit-burst 表示允许触发 limit 限制的最大次数 (预设5)，超出后将对其进行限制
 
 # NAT表
-iptables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT \
+IPtables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT \
     --to-source 123.123.123.123 \
     # 内网源192.168.122.0/24地址映射到公网123.123.123.123出口
-iptables -t nat -A PREROUTING -d 123.123.123.123 -p tcp \
+IPtables -t nat -A PREROUTING -d 123.123.123.123 -p tcp \
     --dport 442 -j DNAT --to-destination 192.168.10.18:22 \
     # 外部要访问内网服务器
 
 # 负载均衡
-iptables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
+IPtables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
     --dport 8080 -m statistic --mode nth --every 2 --packet 0 \
     -j DNAT --to-destination 10.1.160.14:8080
-iptables -t nat -A POSTROUTING -d 10.1.160.14/32 -p tcp -m tcp \
+IPtables -t nat -A POSTROUTING -d 10.1.160.14/32 -p tcp -m tcp \
     --dport 8080 -j SNAT --to-source 10.192.0.65
-iptables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
+IPtables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
     --dport 8080 -m statistic --mode nth --every 1 --packet 0 \
     -j DNAT --to-destination 10.1.160.15:8080
-iptables -t nat -A POSTROUTING -d 10.1.160.15/32 -p tcp -m tcp \
+IPtables -t nat -A POSTROUTING -d 10.1.160.15/32 -p tcp -m tcp \
     --dport 8080 -j SNAT --to-source 10.192.0.65
 ```
 
 ## 6. 补充
 * [鸟哥私房菜-防火墙与NAT服务器](http://cn.linux.vbird.org/linux_server/0250simple_firewall.php "鸟哥私房菜-防火墙与NAT服务器")
-* [iptables的限速测试总结](http://ptallrights.blog.51cto.com/11151122/1841911 "iptables的限速测试总结")
+* [IPtables的限速测试总结](http://ptallrights.blog.51cto.com/11151122/1841911 "IPtables的限速测试总结")
