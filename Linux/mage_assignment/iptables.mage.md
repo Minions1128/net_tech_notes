@@ -158,27 +158,17 @@
                     - 只允许本机ping其他主机，不允许其他ping本机：
                         - `iptables -I OUTPUT 1 -s 172.16.0.67 -p icmp --icmp-type 8 -j ACCEPT`
                         - `iptables -I INPUT 1 -d 172.16.0.67 -p icmp --icmp-type 0 -j ACCETP`
-
-
             - 显式扩展：必须使用[-m matchname [per-match-options]]选项指明要调用的扩展模块的扩展机制；
-                1、multiport
-                    This  module  matches  a  set  of  source  or  destination  ports. Up  to 15 ports can be specified.  A port range (port:port) counts as two ports.  It can only be used in conjunction with one of the following protocols: tcp,  udp, udplite, dccp and sctp.
+                - 1、multiport: This module matches a set of source or destination ports. Up to 15 ports can be specified. A port range (port:port) counts as two ports. It can only be used in conjunction with one of the following protocols: tcp, udp, udplite(轻量级用户数据包协议), dccp(数据拥塞控制协议) and sctp(流控制传输协议). 以离散或连续的 方式定义多端口匹配条件，最多15个；
+                    - [!] --source-ports,--sports port[,port|,port:port]...：指定多个源端口；
+                    - [!] --destination-ports,--dports port[,port|,port:port]...：指定多个目标端口；
+                    - `# iptables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -j ACCEPT`
+                - 2、iprange: 以连续地址块的方式来指明多IP地址匹配条件；
+                    - [!] --src-range from[-to]
+                    - [!] --dst-range from[-to]
+                    - `# IPtables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT`
                     
-                    以离散或连续的 方式定义多端口匹配条件，最多15个；
-                    
-                    [!] --source-ports,--sports port[,port|,port:port]...：指定多个源端口；
-                    [!] --destination-ports,--dports port[,port|,port:port]...：指定多个目标端口；
-                    
-                    # IPtables -I INPUT  -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -j ACCEPT
-
-                2、iprange
-                    以连续地址块的方式来指明多IP地址匹配条件；
-                    [!] --src-range from[-to]
-                    [!] --dst-range from[-to]
-                    
-                    # IPtables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT
-                    
-                3、time
+                - 3、time
                     This  matches  if the packet arrival time/date is within a given range.
                     
                      --timestart hh:mm[:ss]
@@ -193,7 +183,7 @@
                     
                      --kerneltz：使用内核配置的时区而非默认的UTC；
                      
-                4、string
+                - 4、string
                     This modules matches a given string by using some pattern matching strategy. 
                     
                     --algo {bm|kmp}
@@ -205,7 +195,7 @@
                     
                     ~]# IPtables -I OUTPUT -m string --algo bm --string "gay" -j REJECT
                     
-                5、connlimit 
+                - 5、connlimit 
                     Allows  you  to  restrict  the  number  of parallel connections to a server per client IP address (or client address block).
                     
                     --connlimit-upto n
@@ -213,7 +203,7 @@
                     
                     ~]# IPtables -I INPUT -d 172.16.0.7 -p tcp --syn --dport 22 -m connlimit --connlimit-above 2 -j REJECT
                     
-                6、limit 
+                - 6、limit 
                     This  module  matches  at  a limited rate using a token bucket filter. 
                     
                     --limit rate[/second|/minute|/hour|/day]
@@ -223,7 +213,7 @@
                     
                     限制本机某tcp服务接收新请求的速率：--syn, -m limit
                     
-                7、state
+                - 7、state
                     The "state" extension is a subset of the "conntrack" module.  "state" allows access to the connection tracking state for this packet.
                     
                     [!] --state state
