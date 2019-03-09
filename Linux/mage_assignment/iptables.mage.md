@@ -166,23 +166,17 @@
                 - 2、iprange: 以连续地址块的方式来指明多IP地址匹配条件；
                     - [!] --src-range from[-to]
                     - [!] --dst-range from[-to]
-                    - `# IPtables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT`
-                    
-                - 3、time
-                    This  matches  if the packet arrival time/date is within a given range.
-                    
-                     --timestart hh:mm[:ss]
-                     --timestop hh:mm[:ss]
-                     
-                     [!] --weekdays day[,day...]
-                     
-                     [!] --monthdays day[,day...]
-                     
-                    --datestart YYYY[-MM[-DD[Thh[:mm[:ss]]]]]
-                    --datestop YYYY[-MM[-DD[Thh[:mm[:ss]]]]]
-                    
-                     --kerneltz：使用内核配置的时区而非默认的UTC；
-                     
+                    - ```
+                    # iptables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT
+                    ```
+                - 3、time: This matches if the packet arrival time/date is within a given range.
+                    - --timestart hh:mm[:ss]
+                    - --timestop hh:mm[:ss]
+                    - [!] --weekdays day[,day...]
+                    - [!] --monthdays day[,day...]
+                    - --datestart YYYY[-MM[-DD[Thh[:mm[:ss]]]]]
+                    - --datestop YYYY[-MM[-DD[Thh[:mm[:ss]]]]]
+                    - --kerneltz：使用内核配置的时区而非默认的UTC；
                 - 4、string
                     This modules matches a given string by using some pattern matching strategy. 
                     
