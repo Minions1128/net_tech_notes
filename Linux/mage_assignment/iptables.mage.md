@@ -168,104 +168,72 @@
                     - [!] --dst-range from[-to]
                     - `# iptables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT`
                 - 3、time: This matches if the packet arrival time/date is within a given range.
-                    - --timestart hh:mm[:ss]
-                    - --timestop hh:mm[:ss]
-                    - [!] --weekdays day[,day...]
-                    - [!] --monthdays day[,day...]
-                    - --datestart YYYY[-MM[-DD[Thh[:mm[:ss]]]]]
-                    - --datestop YYYY[-MM[-DD[Thh[:mm[:ss]]]]]
-                    - --kerneltz：使用内核配置的时区而非默认的UTC；
-                - 4、string
-                    This modules matches a given string by using some pattern matching strategy. 
-                    
-                    --algo {bm|kmp}
-                    [!] --string pattern
-                    [!] --hex-string pattern
-                    
-                    --from offset
-                    --to offset
-                    
-                    ~]# IPtables -I OUTPUT -m string --algo bm --string "gay" -j REJECT
-                    
-                - 5、connlimit 
-                    Allows  you  to  restrict  the  number  of parallel connections to a server per client IP address (or client address block).
-                    
-                    --connlimit-upto n
-                    --connlimit-above n
-                    
-                    ~]# IPtables -I INPUT -d 172.16.0.7 -p tcp --syn --dport 22 -m connlimit --connlimit-above 2 -j REJECT
-                    
-                - 6、limit 
-                    This  module  matches  at  a limited rate using a token bucket filter. 
-                    
-                    --limit rate[/second|/minute|/hour|/day]
-                    --limit-burst number
-                    
-                    ~]# IPtables -I OUTPUT -s 172.16.0.7 -p icmp --icmp-type 0 -j ACCEPT
-                    
-                    限制本机某tcp服务接收新请求的速率：--syn, -m limit
-                    
-                - 7、state
-                    The "state" extension is a subset of the "conntrack" module.  "state" allows access to the connection tracking state for this packet.
-                    
-                    [!] --state state
-                        INVALID, ESTABLISHED, NEW, RELATED or UNTRACKED.
-                        
-                        NEW: 新连接请求；
-                        ESTABLISHED：已建立的连接；
-                        INVALID：无法识别的连接；
-                        RELATED：相关联的连接，当前连接是一个新请求，但附属于某个已存在的连接；
-                        UNTRACKED：未追踪的连接；
-                                            
-                        state扩展：
-                            内核模块装载：
-                                nf_conntrack
-                                nf_conntrack_ipv4
-                                
-                                手动装载：
-                                    nf_conntrack_ftp 
-                                    
-                    追踪到的连接：
-                        /proc/net/nf_conntrack
-                        
-                    调整可记录的连接数量最大值：
-                        /proc/sys/net/nf_conntrack_max
-                        
-                    超时时长：
-                        /proc/sys/net/netfilter/*timeout*
-
-
-    - 处理动作：
-        - -j targetname [per-target-options]
-            - ACCEPT
-            - DROP
-            - REJECT
-
-    处理动作（跳转目标）：
-        -j targetname [per-target-options]
-            简单target：
-                ACCEPT， DROP
-                
-            扩展target：
-                REJECT
-                    This is used to send back an error packet in response to the matched packet: otherwise it is equivalent to  DROP  so it  is  a  terminating  TARGET,  ending  rule traversal.
-                    
-                    --reject-with type
-                        The type given can be icmp-net-unreachable, icmp-host-unreachable, icmp-port-unreachable, icmp-proto-unreach‐ able, icmp-net-prohibited, icmp-host-prohibited, or icmp-admin-prohibited (*), which return  the  appropriate ICMP  error  message (icmp-port-unreachable is the default).
-                LOG
-                    Turn  on  kernel  logging of matching packets.
-                        
-                    --log-level
-                    --log-prefix
-                    
-                    默认日志保存于/var/log/messages
-                    
-                RETURN：
+                    - --timestart hh:mm[:ss] 和 --timestop hh:mm[:ss]
+                    - [!] --weekdays day[,day...] 和 [!] --monthdays day[,day...]
+                    - --datestart YYYY[-MM[-DD[Thh[:mm[:ss]]]]] 和 --datestop YYYY[-MM[-DD[Thh[:mm[:ss]]]]]
+                    - --kerneltz：使用内核配置的时区而非默认的UTC
+                    - `iptables -I INPUT -d 172.16.0.67 -p tcp --dport 23 -m time --timestart 10:00:00 --timestop 17:00:00 --weekdays 1,2,3,4,5 --kerneltz -j ACCETP`
+                - 4、string: This modules matches a given string by using some pattern matching strategy.
+                    - --algo {bm|kmp}
+                    - [!] --string pattern
+                    - [!] --hex-string pattern
+                    - --from offset
+                    - --to offset
+                    - `# iptables -I OUTPUT -m string --algo bm --string "porn" -j REJECT`
+                - 5、connlimit: Allows  you  to  restrict  the  number  of parallel connections to a server per client IP address (or client address block).
+                    - --connlimit-upto n：
+                    - --connlimit-above n：
+                    - `# IPtables -I INPUT -d 172.16.0.7 -p tcp --syn --dport 22 -m connlimit --connlimit-above 2 -j REJECT`
+                - 6、limit: This module matches at a limited rate using a token bucket filter. 限制发包速率
+                    - --limit rate[/second|/minute|/hour|/day]
+                    - --limit-burst number: Maximum initial number of packets to match: this number gets recharged by one every time the limit specified above is not reached, up to his number; the default is 5. 即令牌桶最大放置令牌的个数
+                    - `iptables -I INPUT -s 172.16.0.7 -p icmp --icmp-type 8 -m limit --limit-burst 5 --limit 20/minute -j ACCEPT`
+                    - 限制本机某tcp服务接收新请求的速率：`--syn -m limit`
+                - 7、state: The "state" extension is a subset of the "conntrack(连接追踪)" module. "state" allows access to the connection tracking state for this packet.
+                    - [!] --state state: NEW, ESTABLISHED, INVALID, RELATED or UNTRACKED.
+                        - NEW: 新连接请求，如TCP中的SYN包。
+                        - ESTABLISHED：已建立的连接，已经匹配到两个方向上的数据传输，而且会继续匹配这个连接的包。
+                        - INVALID：无法识别的连接；
+                        - RELATED：相关联的连接，当前连接是一个新请求，但附属于某个已存在的连接，如，FTP，FTP-data 连接就是和FTP-control有关联的。
+                        - UNTRACKED：未追踪的连接，如，raw可以关闭追踪。
+                        - `iptables -I INPUT -d 172.16.0.67 -m state --state ESTABLISHED -j ACCEPT`
+                    - state扩展：
+                        - 内核模块装载：
+                            - nf_conntrack
+                            - nf_conntrack_ipv4
+                        - 手动装载：nf_conntrack_ftp 
+                    - 追踪到的连接：`/proc/net/nf_conntrack`
+                    - 调整可记录的连接数量最大值：`/proc/sys/net/nf_conntrack_max`
+                    - 超时时长：`/proc/sys/net/netfilter/*timeout*`
+    - 处理动作（跳转目标）：`-j targetname [per-target-options]`
+        - 简单target：ACCEPT，DROP
+        - 扩展target：
+            - REJECT: This is used to send back an error packet in response to the matched packet: otherwise it is equivalent to DROP so it is a terminating TARGET, ending rule traversal.
+                - --reject-with type: The type given can be icmp-net-unreachable, icmp-host-unreachable, icmp-port-unreachable, icmp-proto-unreach‐ able, icmp-net-prohibited, icmp-host-prohibited, or icmp-admin-prohibited ( * ), which return the appropriate ICMP error message (icmp-port-unreachable is the default).
+            - LOG: Turn on kernel logging of matching packets.
+                - --log-level
+                - --log-prefix
+                - `iptables -I INPUT -d 172.16.0.67 -p tcp --dport 23 -m state --state NEW -j LOG --log-prefix "access telnet"`
+                - 默认日志保存于`/var/log/messages`
+            - RETURN：
                     返回调用者；
-                    
-            自定义链做为target：
-                
-                    
+            - 自定义链做为target：
+                ```
+                    ~]# iptables -N in_ping_rules
+                    ~]# iptables -A in_ping_rules -d 172.16.0.67 -p icmp --icmp-type 8 -j ACCEPT
+                    ~]# iptables -I in_ping_rules -d 172.16.0.67 -s 172.16.0.68 -p icmp -j ACCEPT
+                    ~]# iptables  -I INPUT -d 172.16.0.67 -p icmp -j in_ping_rules
+                    ~]# iptables -vnL --line-numbers
+                    Chain INPUT (policy ACCEPT 274 packets, 29788 bytes)
+                    num   pkts bytes target     prot opt in     out   source        destination         
+                    1        0     0 in_ping_rules  icmp --  *    *   0.0.0.0/0     172.16.0.67              
+                                                                                                   
+                    Chain in_ping_rules (1 references)                                  
+                    num   pkts bytes target     prot opt in     out   source        destination         
+                    1        0     0 ACCEPT     icmp --  *      *     172.16.0.68   172.16.0.67         
+                    2        0     0 ACCEPT     icmp --  *      *     0.0.0.0/0     172.16.0.67   icmptype 8
+                ```
+
     保存和载入规则：
         保存：IPtables-save > /PATH/TO/SOME_RULE_FILE
         重载：iptabls-restore < /PATH/FROM/SOME_RULE_FILE
@@ -278,9 +246,9 @@
                 保存规则于/etc/sysconfig/IPtables文件，覆盖保存；
             重载规则：
                 service IPtables restart
-                默认重载/etc/sysconfig/IPtables文件中的规则 
+                默认重载/etc/sysconfig/iptables文件中的规则 
                 
-            配置文件：/etc/sysconfig/IPtables-config
+            配置文件：/etc/sysconfig/iptables-config
             
         CentOS 7：
             (1) 自定义Unit File，进行IPtables-restore；
@@ -339,7 +307,7 @@
                 
     IPtables-save/IPtables-restore
     
-            
+                         
 IPtables（3）                    
     IPtables/netfilter网络防火墙：
         (1) 网关；
@@ -469,7 +437,7 @@ IPtables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d 192.168.3.3 \
     # 允许转发从eth0进来的源IP为192.168.2.3， \
     # 去访问从eth1出去的目的IP为192.168.3.3的80端口（即http服务）的数据包, \
     # 其中会对包的速率做匹配，是每秒转发500个包，burst值是1000， \
-    # --limit-burst 表示允许触发 limit 限制的最大次数 (预设5)，超出后将对其进行限制
+    # --limit-burst 表示令牌桶的值 (预设5)
 
 # NAT表
 IPtables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT \
