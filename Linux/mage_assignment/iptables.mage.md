@@ -28,6 +28,7 @@
     - **filter**：该表有包过滤、防火墙的作用，由INPUT（inbound流量），OUTPUT（outbound流量），FORWARD（转发流量）表链组成。
 
 - 表执行过程
+
 [![](https://github.com/Minions1128/net_tech_notes/blob/master/img/IPtables.proc.png)](https://github.com/Minions1128/net_tech_notes/blob/master/img/IPtables.proc.png)
 
 - 报文流向：
