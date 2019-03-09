@@ -166,9 +166,7 @@
                 - 2、iprange: 以连续地址块的方式来指明多IP地址匹配条件；
                     - [!] --src-range from[-to]
                     - [!] --dst-range from[-to]
-                    - ```
-                    # iptables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT
-                    ```
+                    - `# iptables -I INPUT -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -m iprange --src-range 172.16.0.61-172.16.0.70 -j REJECT`
                 - 3、time: This matches if the packet arrival time/date is within a given range.
                     - --timestart hh:mm[:ss]
                     - --timestop hh:mm[:ss]
