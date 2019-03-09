@@ -29,7 +29,7 @@
 
 - 表执行过程
 
-[![](https://github.com/Minions1128/net_tech_notes/blob/master/img/IPtables.proc.png)](https://github.com/Minions1128/net_tech_notes/blob/master/img/IPtables.proc.png)
+[![iptables.proc](https://github.com/Minions1128/net_tech_notes/blob/master/img/iptables.proc.png "iptables.proc")](https://github.com/Minions1128/net_tech_notes/blob/master/img/iptables.proc.png "iptables.proc")
 
 - 报文流向：
     - 流入本机：PREROUTING --> INPUT
