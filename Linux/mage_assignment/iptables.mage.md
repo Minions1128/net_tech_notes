@@ -48,53 +48,46 @@
         - 基本处理动作：内建
         - 扩展处理动作：由扩展模块定义；
         - 自定义处理机制：自定义链
-                    
-- IPtables的链：内置链和自定义链
-                内置链：对应于hook function
-                自定义链接：用于内置链的扩展和补充，可实现更灵活的规则管理机制；
+
+- IPtables的链：
+    - 内置链：对应于hook function
+    自定义链接：用于内置链的扩展和补充，可实现更灵活的规则管理机制；
                 
-        添加规则时的考量点：
-            (1) 要实现哪种功能：判断添加到哪个表上；
-            (2) 报文流经的路径：判断添加到哪个链上；
+- 添加规则时的考量点：
+    - (1) 要实现哪种功能：判断添加到哪个表上；
+    - (2) 报文流经的路径：判断添加到哪个链上；
             
-            链：链上的规则次序，即为检查的次序；因此，隐含一定的应用法则：
-                (1) 同类规则（访问同一应用），匹配范围小的放上面；
-                (2) 不同类的规则（访问不同应用），匹配到报文频率较大的放在上面；
-                (3) 将那些可由一条规则描述的多个规则合并起来；
-                (4) 设置默认策略；
-                
-        IPtables命令：
-            高度模块化，由诸多扩展模块实现其检查条件或处理动作的定义；
-                /usr/lib64/xtables/
-                    IPv6：libip6t_
-                    IPv4：libipt_, libxt_
-            
-            IPtables [-t table] {-A|-C|-D} chain rule-specification
+- 链：链上的规则次序，即为检查的次序；因此，隐含一定的应用法则：
+    - (1) 同类规则（访问同一应用），匹配范围小的放上面；
+    - (2) 不同类的规则（访问不同应用），匹配到报文频率较大的放在上面；
+    - (3) 将那些可由一条规则描述的多个规则合并起来；
+    - (4) 设置默认策略；
 
-            IPtables [-t table] -I chain [rulenum] rule-specification
 
-            IPtables [-t table] -R chain rulenum rule-specification
+## IPtables命令：
 
-            IPtables [-t table] -D chain rulenum
+- 高度模块化，由诸多扩展模块实现其检查条件或处理动作的定义；
+    - `/usr/lib64/xtables/`
+        - IPv6：`libip6t_`
+        - IPv4：`libipt_`, `libxt_`
 
-            IPtables [-t table] -S [chain [rulenum]]
-
-            IPtables [-t table] {-F|-L|-Z} [chain [rulenum]] [options...]
-
-            IPtables [-t table] -N chain
-
-            IPtables [-t table] -X  [chain]
-
-            IPtables [-t table] -P chain target
-
-            IPtables [-t table] -E old-chain-name new-chain-name
-            
-            rule-specification = [matches...]  [target]
-
-            match = -m matchname [per-match-options]
-
-            target = -j targetname [per-target-options]
-            
+- SYNOPSIS
+    ```
+        iptables [-t table] {-A|-C|-D} chain rule-specification
+        ip6tables [-t table] {-A|-C|-D} chain rule-specification
+        iptables [-t table] -I chain [rulenum] rule-specification
+        iptables [-t table] -R chain rulenum rule-specification
+        iptables [-t table] -D chain rulenum
+        iptables [-t table] -S [chain [rulenum]]
+        iptables [-t table] {-F|-L|-Z} [chain [rulenum]] [options...]
+        iptables [-t table] -N chain
+        iptables [-t table] -X [chain]
+        iptables [-t table] -P chain target
+        iptables [-t table] -E old-chain-name new-chain-name
+        rule-specification = [matches...] [target]
+        match = -m matchname [per-match-options]
+        target = -j targetname [per-target-options]
+    ```
             规则格式：IPtables   [-t table]   COMMAND   chain   [-m matchname [per-match-options]]   -j targetname [per-target-options]
             
                 -t table：
@@ -182,7 +175,7 @@
         raw：OUTPUT，PREROUTING
         
     IPtables命令：
-        IPtables [-t table] COMMAND chain [rulenum] [-m machename [per-match-options]] [-j targetname [per-target-options]] [options]
+        iptables [-t table] COMMAND chain [rulenum] [-m machename [per-match-options]] [-j targetname [per-target-options]] [options]
             匹配条件：
                 基本匹配条件：
                     -s, -d, -p, -i, -o
@@ -199,7 +192,7 @@
             查看：-L，-n, -v, -x, --line-numbers
                         
 IPtables（2）
-    IPtables [-t table] COMMAND [chain] [PARAMETERS] [-m matchname [per-match-options]] [-j targetname [per-target-options]]
+    iptables [-t table] COMMAND [chain] [PARAMETERS] [-m matchname [per-match-options]] [-j targetname [per-target-options]]
             
         匹配条件：
             基本匹配条件：PARAMETERS
