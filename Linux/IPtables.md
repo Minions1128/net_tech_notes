@@ -64,7 +64,7 @@
     - (4) 设置默认策略；
 
 
-## IPtables命令：
+## IPtables
 
 - 高度模块化，由诸多扩展模块实现其检查条件或处理动作的定义；
     - `/usr/lib64/xtables/`
@@ -215,8 +215,7 @@
                 - --log-prefix
                 - `iptables -I INPUT -d 172.16.0.67 -p tcp --dport 23 -m state --state NEW -j LOG --log-prefix "access telnet"`
                 - 默认日志保存于`/var/log/messages`
-            - RETURN：
-                    返回调用者；
+            - RETURN：返回调用者；
             - 自定义链做为target：
                 ```
                     ~]# iptables -N in_ping_rules
@@ -234,186 +233,97 @@
                     2        0     0 ACCEPT     icmp --  *      *     0.0.0.0/0     172.16.0.67   icmptype 8
                 ```
 
-    保存和载入规则：
-        保存：IPtables-save > /PATH/TO/SOME_RULE_FILE
-        重载：iptabls-restore < /PATH/FROM/SOME_RULE_FILE
-            -n, --noflush：不清除原有规则
-            -t, --test：仅分析生成规则集，但不提交
+- 保存和载入规则：
+    - 保存：`iptables-save > /PATH/TO/SOME_RULE_FILE`
+        - CentOS 6：`service iptables save`，覆盖保存规则于/etc/sysconfig/iptables文件。
+    - 重载：`iptables-restore < /PATH/FROM/SOME_RULE_FILE`
+        - -n, --noflush：不清除原有规则
+        - -t, --test：仅分析生成规则集，但不提交
+        - CentOS 6：`service iptables restart`，默认重载/etc/sysconfig/iptables文件中的规则
+    - 配置文件：/etc/sysconfig/iptables-config
             
-        CentOS 6：
-            保存规则：
-                service IPtables save
-                保存规则于/etc/sysconfig/IPtables文件，覆盖保存；
-            重载规则：
-                service IPtables restart
-                默认重载/etc/sysconfig/iptables文件中的规则 
-                
-            配置文件：/etc/sysconfig/iptables-config
-            
-        CentOS 7：
-            (1) 自定义Unit File，进行IPtables-restore；
-            (2) firewalld服务；
-            (3) 自定义脚本；
-            
-    规则优化的思路：
-        使用自定义链管理特定应用的相关规则，模块化管理规则；
-        
-        (1) 优先放行双方向状态为ESTABLISHED的报文；
-        (2) 服务于不同类别的功能的规则，匹配到报文可能性更大的放前面；
-        (3) 服务于同一类别的功能的规则，匹配条件较严格的放在前面；
-        (4) 设置默认策略：白名单机制
-            (a) IPtables -P，不建议；
-            (b) 建议在规则的最后定义规则做为默认策略；
+- 规则优化的思路：使用自定义链管理特定应用的相关规则，模块化管理规则；
+    - (1) 优先放行双方向状态为ESTABLISHED的报文；
+    - (2) 服务于不同类别的功能的规则，匹配到报文可能性更大的放前面；
+    - (3) 服务于同一类别的功能的规则，匹配条件较严格的放在前面；
+    - (4) 设置默认策略：白名单机制
+        - (a) IPtables -P，不建议；
+        - (b) 建议在规则的最后定义规则做为默认策略；
 
-回顾：
+
+- IPtables/netfilter网络防火墙：
+    (1) 网关；
+    (2) filter表的FORWARD链；
+    要注意的问题：
+        (1) 请求-响应报文均会经由FORWARD链，要注意规则的方向性；
+        (2) 如果要启用conntrack机制，建议将双方向的状态为ESTABLISHED的报文直接放行；
+    NAT: Network Address Translation
+        请求报文：由管理员定义；
+        响应报文：由NAT的conntrack机制自动实现； 
+        请求报文：
+            改源地址：SNAT，MASQUERADE
+            改目标地址：DNAT
     IPtables/netfilter：
-        netfilter：raw，mangle, nat, filter
-            PREROUTING --> INPUT
-            PREROUTING --> FORWARD --> POSTROUTING
-            OUTPUT --> POSTROUTING 
-        filter：INPUT，FORWARD，OUTPUT
-        nat：PREROUTING，INPUT，OUTPUT，POSTROUTING
-        
-    IPtables：
-        [-t table] COMMAND [chain] rule-specification
-            -m matchname [per-match-options]
-            -t targetname [per-target-options]
-            [options]
-            
-        匹配 条件：
-            基本匹配条件：-s, -d, -p, -m, -i, -o
-            扩展匹配条件：
-                隐式扩展：
-                    -p tcp: --dport, --sport, --tcp-flags, --syn 
-                    -p udp：--dport, --sport
-                    -p imcp: --icmp-type
-                显式扩展：
-                    multiport：--sports, --dports
-                    iprange：--src-range, --dst-range
-                    time：--timestart, --timestop, --weekdays, --monthdays, --datestart, --datestop
-                    string：--algo {bm|kmp}, --string
-                    connlimit：--connlimit-upto, --connlimit-above
-                    limit：--limit, --limit-burst
-                    state：--state
-                        NEW, ESTABLISHED, RELATED, INVALID, UNTRACKED
-                        
-        target：
-            -j：
-                ACCEPT/DROP
-                REJECT：--reject-with
-                LOG：--log-level, --log-prefix
-                自定义链
-                    RETURN
-                
-    IPtables-save/IPtables-restore
-    
-                         
-IPtables（3）                    
-    IPtables/netfilter网络防火墙：
-        (1) 网关；
-        (2) filter表的FORWARD链；
-        
-        要注意的问题：
-            (1) 请求-响应报文均会经由FORWARD链，要注意规则的方向性；
-            (2) 如果要启用conntrack机制，建议将双方向的状态为ESTABLISHED的报文直接放行；
-            
-        NAT: Network Address Translation
-            请求报文：由管理员定义；
-            响应报文：由NAT的conntrack机制自动实现； 
-            
-            请求报文：
-                改源地址：SNAT，MASQUERADE
-                改目标地址：DNAT
-                
-        IPtables/netfilter：
-            NAT定义在nat表；
-                PREROUTING，INPUT，OUTPUT，POSTROUTING
-                
-                SNAT：POSTROUTING
-                DNAT：PREROUTING
-                PAT：
-                
-        target：
-            SNAT：
-                This  target  is only valid in the nat table, in the POSTROUTING and INPUT chains, and user-defined chains which are only called from those chains.
-                
-                --to-source [ipaddr[-ipaddr]]
-                
-            DNAT：
-                This target is only valid in the nat table, in the PREROUTING and OUTPUT chains, and user-defined chains  which  are only  called from those chains.
-                
-                --to-destination [ipaddr[-ipaddr]][:port[-port]]
-                
-             MASQUERADE
-                This target is only valid in the nat table, in the POSTROUTING chain.  It  should  only  be  used  with  dynamically assigned  IP (dialup) connections: if you have a static IP address, you should use the SNAT target.
-                
-                SNAT场景中应用于POSTROUTING链上的规则实现源地址转换，但外网地址不固定时，使用此target；
-                
-            REDIRECT
-                This  target  is only valid in the nat table, in the PREROUTING and OUTPUT chains, and user-defined chains which are only called from those chains.
-                
-                --to-ports port[-port]
-                
-        layer7
-            
-            
-        
-    博客作业：IPtables/netfilter入门到进阶
+        NAT定义在nat表；
+            PREROUTING，INPUT，OUTPUT，POSTROUTING
+            SNAT：POSTROUTING
+            DNAT：PREROUTING
+            PAT：
+    target：
+        SNAT：
+            This  target  is only valid in the nat table, in the POSTROUTING and INPUT chains, and user-defined chains which are only called from those chains.
+            --to-source [ipaddr[-ipaddr]]
+        DNAT：
+            This target is only valid in the nat table, in the PREROUTING and OUTPUT chains, and user-defined chains  which  are only  called from those chains.
+            --to-destination [ipaddr[-ipaddr]][:port[-port]]
+         MASQUERADE
+            This target is only valid in the nat table, in the POSTROUTING chain.  It  should  only  be  used  with  dynamically assigned  IP (dialup) connections: if you have a static IP address, you should use the SNAT target.
+            SNAT场景中应用于POSTROUTING链上的规则实现源地址转换，但外网地址不固定时，使用此target；
+        REDIRECT
+            This  target  is only valid in the nat table, in the PREROUTING and OUTPUT chains, and user-defined chains which are only called from those chains.
+            --to-ports port[-port]
+    layer7
+博客作业：IPtables/netfilter入门到进阶
 
 
 tcp_wrapper：
 
-    库文件：libwrap.so，tcp包装器；
+库文件：libwrap.so，tcp包装器；
+判断一个服务程序是否能够由tcp_wrapper进行访问控制的方法：
+    (1) 动态链接至libwrap.so库；
+        ldd  /PATH/TO/PROGRAM
+            libwrap.so
+    (2) 静态编译libwrap.so库文件至程序中：
+        strings /PATH/TO/PGRGRAM 
+            hosts_access
+配置文件：/etc/hosts.allow, /etc/hosts.deny
     
-    判断一个服务程序是否能够由tcp_wrapper进行访问控制的方法：
-        (1) 动态链接至libwrap.so库；
-            ldd  /PATH/TO/PROGRAM
-                libwrap.so
-        (2) 静态编译libwrap.so库文件至程序中：
-            strings /PATH/TO/PGRGRAM 
-                hosts_access
-    
-    配置文件：/etc/hosts.allow, /etc/hosts.deny
-        
-         See 'man 5 hosts_options' and 'man 5 hosts_access' for information on rule syntax.    
-    
-        配置文件语法：
-            daemon_list : client_list[ : option : option ...]
-            
-            daemon_list：程序文件名称列表
-                (1) 单个应用程序文件名；
-                (2) 程序文件名列表，以逗号分隔；
-                (3) ALL：所有受tcp_wrapper控制的应用程序文件；
-                
-            client_list：
-                (1) 单个IP地址或主机名；
-                (2) 网络地址：n.n.n.n/m.m.m.m，n.n.n.；
-                (3) 内建的ACL:
-                    ALL：所有客户端主机；
-                    LOCAL：Matches any host whose name does not contain a dot character.
-                    UNKNOWN
-                    KNOWN
-                    PARANOID
-                    
-                OPERATORS：
-                    EXCEPT
-                        list1 EXCEPT list2 EXCEPT list3
-                        
-                        sshd: 172.16. EXCEPT 172.16.100. EXCEPT 172.16.100.68
-        
-            [ : option : option ...]
-            
-                deny：拒绝，主要用于hosts.allow文件中定义“拒绝”规则；
-                allow：允许，主要用于hosts.deny文件中定义”允许“规则；
-                
-                spawn：生成，发起，触发执行用户指定的任意命令，此处通常用于记录日志；
-                
-                    vsftpd: 172.16. : spawn /bin/echo $(date) login attempt from %c to %s >> /var/log/tcp_wrapper.log 
-                
-    练习：仅开放本机的sshd服务给172.16.0.0/16网络中除了172.16.0.0/24网络中的主机之外的所有主机，但允许172.16.0.200访问； 每次的用户访问都要记录于日志文件中；
-    
-
-
+     See 'man 5 hosts_options' and 'man 5 hosts_access' for information on rule syntax.    
+    配置文件语法：
+        daemon_list : client_list[ : option : option ...]
+        daemon_list：程序文件名称列表
+            (1) 单个应用程序文件名；
+            (2) 程序文件名列表，以逗号分隔；
+            (3) ALL：所有受tcp_wrapper控制的应用程序文件；
+        client_list：
+            (1) 单个IP地址或主机名；
+            (2) 网络地址：n.n.n.n/m.m.m.m，n.n.n.；
+            (3) 内建的ACL:
+                ALL：所有客户端主机；
+                LOCAL：Matches any host whose name does not contain a dot character.
+                UNKNOWN
+                KNOWN
+                PARANOID
+            OPERATORS：
+                EXCEPT
+                    list1 EXCEPT list2 EXCEPT list3
+                    sshd: 172.16. EXCEPT 172.16.100. EXCEPT 172.16.100.68
+        [ : option : option ...]
+            deny：拒绝，主要用于hosts.allow文件中定义“拒绝”规则；
+            allow：允许，主要用于hosts.deny文件中定义”允许“规则；
+            spawn：生成，发起，触发执行用户指定的任意命令，此处通常用于记录日志；
+                vsftpd: 172.16. : spawn /bin/echo $(date) login attempt from %c to %s >> /var/log/tcp_wrapper.log 
+练习：仅开放本机的sshd服务给172.16.0.0/16网络中除了172.16.0.0/24网络中的主机之外的所有主机，但允许172.16.0.200访问； 每次的用户访问都要记录于日志文件中；
 
 ## 一些例子
 ```
