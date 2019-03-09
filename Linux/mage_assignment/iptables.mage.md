@@ -140,19 +140,26 @@
             - 隐式扩展：在使用-p选项指明了特定的协议时，无需再同时使用-m选项指明扩展模块的扩展机制；不需要手动加载扩展模块；因为它们是对协议的扩展，所以，但凡使用-p指明了协议，就表示已经指明了要扩展的模块；
                 - tcp：
                     - [!] --source-port, --sport port[:port]：匹配报文的源端口；可以是端口范围；
+                        - `iptables -I INPUT 1 -s 172.16.0.0/16 -d 172.16.0.67 -p tcp --dport 22 -j ACCEPT`
                     - [!] --destination-port,--dport port[:port]：匹配报文的目标端口；可以是端口范围；
-                    - [!] --tcp-flags  mask  comp
-                                    mask is the flags which we should examine,  written as a comma-separated list，例如 SYN,ACK,FIN,RST
-                                    comp is a comma-separated list  of  flags  which must be set，例如SYN
-                                    例如：“--tcp-flags  SYN,ACK,FIN,RST  SYN”表示，要检查的标志位为SYN,ACK,FIN,RST四个，其中SYN必须为1，余下的必须为0；
-                    - [!] --syn：用于匹配第一次握手，相当于”--tcp-flags  SYN,ACK,FIN,RST  SYN“；                                
+                        - `iptables -I OUTPUT 1 -s 172.16.0.67 -d 172.16.0.0/16 -p tcp --sport 22 -j ACCEPT`
+                    - [!] --tcp-flags mask comp
+                        - mask is the flags which we should examine, written as a comma-separated list, 例如`SYN,ACK,FIN,RST`
+                        - comp is a comma-separated list of flags which must be set，例如`SYN`
+                        - 例如：`--tcp-flags SYN,ACK,FIN,RST SYN`表示，要检查的标志位为SYN, ACK, FIN, RST四个，其中SYN必须为1，余下的必须为0；
+                    - [!] --syn：用于匹配第一次握手，相当于`--tcp-flags SYN,ACK,FIN,RST SYN`；
                 - udp
                     - [!] --source-port, --sport port[:port]：匹配报文的源端口；可以是端口范围；
                     - [!] --destination-port,--dport port[:port]：匹配报文的目标端口；可以是端口范围；
                 - icmp
                     - [!] --icmp-type {type[/code]|typename}
-                                    echo-request：8
-                                    echo-reply：0
+                        - echo-request：8
+                        - echo-reply：0
+                    - 只允许本机ping其他主机，不允许其他ping本机：
+                        - `iptables -I OUTPUT 1 -s 172.16.0.67 -p icmp --icmp-type 8 -j ACCEPT`
+                        - `iptables -I INPUT 1 -d 172.16.0.67 -p icmp --icmp-type 0 -j ACCETP`
+
+
             - 显式扩展：必须使用[-m matchname [per-match-options]]选项指明要调用的扩展模块的扩展机制；
                 1、multiport
                     This  module  matches  a  set  of  source  or  destination  ports. Up  to 15 ports can be specified.  A port range (port:port) counts as two ports.  It can only be used in conjunction with one of the following protocols: tcp,  udp, udplite, dccp and sctp.
@@ -163,7 +170,7 @@
                     [!] --destination-ports,--dports port[,port|,port:port]...：指定多个目标端口；
                     
                     # IPtables -I INPUT  -d 172.16.0.7 -p tcp -m multiport --dports 22,80,139,445,3306 -j ACCEPT
-                    
+
                 2、iprange
                     以连续地址块的方式来指明多IP地址匹配条件；
                     [!] --src-range from[-to]
@@ -263,7 +270,6 @@
                     
                     --reject-with type
                         The type given can be icmp-net-unreachable, icmp-host-unreachable, icmp-port-unreachable, icmp-proto-unreach‐ able, icmp-net-prohibited, icmp-host-prohibited, or icmp-admin-prohibited (*), which return  the  appropriate ICMP  error  message (icmp-port-unreachable is the default).
-                                                            
                 LOG
                     Turn  on  kernel  logging of matching packets.
                         
