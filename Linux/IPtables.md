@@ -240,7 +240,7 @@
         - -t, --test：仅分析生成规则集，但不提交
         - CentOS 6：`service iptables restart`，默认重载/etc/sysconfig/iptables文件中的规则
     - 配置文件：/etc/sysconfig/iptables-config
-            
+
 - 规则优化的思路：使用自定义链管理特定应用的相关规则，模块化管理规则；
     - (1) 优先放行双方向状态为ESTABLISHED的报文；
     - (2) 服务于不同类别的功能的规则，匹配到报文可能性更大的放前面；
@@ -250,15 +250,17 @@
         - (b) 建议在规则的最后定义规则做为默认策略；
 
 
-## NAT
+## FORWARD
 
-- IPtables/netfilter网络防火墙：
-    - (1) 网关；
-    - (2) filter表的FORWARD链；
+- [IPtables之FORWARD转发链](https://blog.51cto.com/linuxcgi/1965296 "IPtables之FORWARD转发链")
 
 - 要注意的问题：
+    - (0) 开启转发功能：`echo "0" > /proc/sys/net/ipv4/ip_forward`
     - (1) 请求-响应报文均会经由FORWARD链，要注意规则的方向性；
     - (2) 如果要启用conntrack机制，建议将双方向的状态为ESTABLISHED的报文直接放行；
+
+
+## NAT
 
 -NAT: Network Address Translation
     - 请求报文：由管理员定义；
@@ -278,113 +280,71 @@
     - SNAT：
         - This target is only valid in the nat table, in the POSTROUTING and INPUT chains, and user-defined chains which are only called from those chains.
         - --to-source [ipaddr[-ipaddr]]
+        - `iptables iptables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT --to-source 123.123.123.123`
     - DNAT：
         - This target is only valid in the nat table, in the PREROUTING and OUTPUT chains, and user-defined chains which are only called from those chains.
         - --to-destination [ipaddr[-ipaddr]][:port[-port]]
+        - `iptables -t nat -A PREROUTING -d 123.123.123.123 -p tcp --dport 442 -j DNAT --to-destination 192.168.10.18:22`
     - MASQUERADE
-        - This target is only valid in the nat table, in the POSTROUTING chain. It should only be used with dynamically assigned IP (dialup) connections: if you have a static IP address, you should use the SNAT target.
-        - SNAT场景中应用于POSTROUTING链上的规则实现源地址转换，但外网地址不固定时，使用此target；
+        - This target is only valid in the nat table, in the POSTROUTING chain. It should only be used with dynamically assigned IP (dialup) connections: if you have a static IP address, you should use the SNAT target.SNAT场景中应用于POSTROUTING链上的规则实现源地址转换，但外网地址不固定时，使用此target
     - REDIRECT
         - This target is only valid in the nat table, in the PREROUTING and OUTPUT chains, and user-defined chains which are only called from those chains.
         - --to-ports port[-port]
-
-- layer7
-
-- 博客作业：IPtables/netfilter入门到进阶
-
-
-## tcp_wrapper
-
-- 库文件：libwrap.so，tcp包装器；
-
-- 判断一个服务程序是否能够由tcp_wrapper进行访问控制的方法：
-    - (1) 动态链接至libwrap.so库；
-        - ldd /PATH/TO/PROGRAM
-            - libwrap.so
-    - (2) 静态编译libwrap.so库文件至程序中：
-        - strings /PATH/TO/PGRGRAM 
-            - hosts_access
-
-- 配置文件：/etc/hosts.allow, /etc/hosts.deny
-    - See 'man 5 hosts_options' and 'man 5 hosts_access' for information on rule syntax.    
-    - 配置文件语法：
-        - daemon_list: client_list[ : option : option ...]
-        - daemon_list: 程序文件名称列表
-            - (1) 单个应用程序文件名；
-            - (2) 程序文件名列表，以逗号分隔；
-            - (3) ALL：所有受tcp_wrapper控制的应用程序文件；
-        - client_list：
-            - (1) 单个IP地址或主机名；
-            - (2) 网络地址：n.n.n.n/m.m.m.m，n.n.n.；
-            - (3) 内建的ACL:
-                - ALL：所有客户端主机；
-                - LOCAL：Matches any host whose name does not contain a dot character.
-                - UNKNOWN
-                - KNOWN
-                - PARANOID
-            - OPERATORS：
-                - EXCEPT
-                    - list1 EXCEPT list2 EXCEPT list3
-                    - sshd: 172.16. EXCEPT 172.16.100. EXCEPT 172.16.100.68
-        - [ : option : option ...]
-            - deny：拒绝，主要用于hosts.allow文件中定义“拒绝”规则；
-            - allow：允许，主要用于hosts.deny文件中定义”允许“规则；
-            - spawn：生成，发起，触发执行用户指定的任意命令，此处通常用于记录日志；
-                - vsftpd: 172.16. : spawn /bin/echo $(date) login attempt from %c to %s >> /var/log/tcp_wrapper.log 
-
-- 练习：仅开放本机的sshd服务给172.16.0.0/16网络中除了172.16.0.0/24网络中的主机之外的所有主机，但允许172.16.0.200访问； 每次的用户访问都要记录于日志文件中；
+        - `iptables -A PREROUTING -t nat -d 192.168.10.2 -p tcp --dport 80 -j REDIREDT --to-ports 8080`
 
 
 ## 一些例子
+- 拒绝192.168.1.22访问本地ssh服务
 ```
-# 拒绝192.168.1.22访问本地ssh服务：
-IPtables -A INPUT -i eth0 -p tcp -s 192.168.1.22 --dport 22 -j REJECT
-IPtables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
+iptables -A INPUT -i eth0 -p tcp -s 192.168.1.22 --dport 22 -j REJECT
+iptables -A OUTPUT -o eth0 -p tcp -d 192.168.1.22 --sport 22 -j REJECT
 ```
+- 只允许本机ping其他主机，不允许其他主机ping本机
 ```
-# 只允许本机ping其他主机，不允许其他主机ping本机
-IPtables -A INPUT -p icmp --icmp-type 8 -j DROP
-IPtables -A INPUT -p icmp --icmp-type 0 -j ACCEPT
-IPtables -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
-IPtables -A OUTPUT -p icmp --icmp-type 0 -j DROP
+iptables -A INPUT -p icmp --icmp-type 8 -j DROP
+iptables -A INPUT -p icmp --icmp-type 0 -j ACCEPT
+iptables -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
+iptables -A OUTPUT -p icmp --icmp-type 0 -j DROP
 ```
+- 多端口应用
 ```
-# 多端口应用
-IPtables -A INPUT -p tcp -m multiport --sport 22,53,80,110
+iptables -A INPUT -p tcp -m multiport --sport 22,53,80,110
 ```
+- 速率的限制
 ```
-# 速率的限制
-IPtables -A INPUT -m limit --limit 300/s    # 限制速率为300个包每秒
-IPtables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d 192.168.3.3 \
+iptables -A INPUT -m limit --limit 300/s    # 限制速率为300个包每秒
+iptables -I FORWARD 1 -p tcp -i eth0 -o eth1 -s 192.168.2.3 -d 192.168.3.3 \
     --dport 80 -m limit --limit=500/s --limit-burst=1000  -j ACCEPT \
     # 允许转发从eth0进来的源IP为192.168.2.3， \
     # 去访问从eth1出去的目的IP为192.168.3.3的80端口（即http服务）的数据包, \
     # 其中会对包的速率做匹配，是每秒转发500个包，burst值是1000， \
     # --limit-burst 表示令牌桶的值 (预设5)
 ```
+- NAT
 ```
-# NAT表
-IPtables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT \
+iptables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT \
     --to-source 123.123.123.123 \
-    # 内网源192.168.122.0/24地址映射到公网123.123.123.123出口
-IPtables -t nat -A PREROUTING -d 123.123.123.123 -p tcp \
+    # SNAT: 内网源192.168.122.0/24地址映射到公网123.123.123.123出口
+iptables -t nat -A PREROUTING -d 123.123.123.123 -p tcp \
     --dport 442 -j DNAT --to-destination 192.168.10.18:22 \
     # 外部要访问内网服务器
 ```
+- 负载均衡
 ```
-# 负载均衡
-IPtables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
+iptables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
     --dport 8080 -m statistic --mode nth --every 2 --packet 0 \
     -j DNAT --to-destination 10.1.160.14:8080
-IPtables -t nat -A POSTROUTING -d 10.1.160.14/32 -p tcp -m tcp \
+iptables -t nat -A POSTROUTING -d 10.1.160.14/32 -p tcp -m tcp \
     --dport 8080 -j SNAT --to-source 10.192.0.65
-IPtables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
+iptables -t nat -A PREROUTING -d 10.192.0.65/32 -p tcp -m tcp \
     --dport 8080 -m statistic --mode nth --every 1 --packet 0 \
     -j DNAT --to-destination 10.1.160.15:8080
-IPtables -t nat -A POSTROUTING -d 10.1.160.15/32 -p tcp -m tcp \
+iptables -t nat -A POSTROUTING -d 10.1.160.15/32 -p tcp -m tcp \
     --dport 8080 -j SNAT --to-source 10.192.0.65
 ```
 
+
 ## 补充
-* [鸟哥私房菜-防火墙与NAT服务器](http://cn.linux.vbird.org/linux_server/0250simple_firewall.php "鸟哥私房菜-防火墙与NAT服务器")
-* [IPtables的限速测试总结](http://ptallrights.blog.51cto.com/11151122/1841911 "IPtables的限速测试总结")
+- [鸟哥私房菜-防火墙与NAT服务器](http://cn.linux.vbird.org/linux_server/0250simple_firewall.php "鸟哥私房菜-防火墙与NAT服务器")
+- [IPtables的限速测试总结](http://ptallrights.blog.51cto.com/11151122/1841911 "IPtables的限速测试总结")
+- [基于IPTABLES MARK机制实现策略路由](http://www.just4coding.com/blog/2016/12/23/iptables-mark-and-polices-based-route/ "基于IPTABLES MARK机制实现策略路由")
