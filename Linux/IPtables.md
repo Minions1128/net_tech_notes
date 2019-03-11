@@ -72,20 +72,20 @@
 
 - SYNOPSIS
     ```
-        iptables [-t table] {-A|-C|-D} chain rule-specification
-        ip6tables [-t table] {-A|-C|-D} chain rule-specification
-        iptables [-t table] -I chain [rulenum] rule-specification
-        iptables [-t table] -R chain rulenum rule-specification
-        iptables [-t table] -D chain rulenum
-        iptables [-t table] -S [chain [rulenum]]
-        iptables [-t table] {-F|-L|-Z} [chain [rulenum]] [options...]
-        iptables [-t table] -N chain
-        iptables [-t table] -X [chain]
-        iptables [-t table] -P chain target
-        iptables [-t table] -E old-chain-name new-chain-name
-        rule-specification = [matches...] [target]
-        match = -m matchname [per-match-options]
-        target = -j targetname [per-target-options]
+    iptables [-t table] {-A|-C|-D} chain rule-specification
+    ip6tables [-t table] {-A|-C|-D} chain rule-specification
+    iptables [-t table] -I chain [rulenum] rule-specification
+    iptables [-t table] -R chain rulenum rule-specification
+    iptables [-t table] -D chain rulenum
+    iptables [-t table] -S [chain [rulenum]]
+    iptables [-t table] {-F|-L|-Z} [chain [rulenum]] [options...]
+    iptables [-t table] -N chain
+    iptables [-t table] -X [chain]
+    iptables [-t table] -P chain target
+    iptables [-t table] -E old-chain-name new-chain-name
+    rule-specification = [matches...] [target]
+    match = -m matchname [per-match-options]
+    target = -j targetname [per-target-options]
     ```
 
 - 规则格式：`iptables [-t table] COMMAND chain [-m matchname [per-match-options]] -j targetname [per-target-options]`
@@ -105,7 +105,6 @@
                 - 注意：仅能删除用户自定义的，引用计数为0的空的链；
         - 规则管理：
             - -A：append，追加；
-                
             - -I：insert, 插入，要指明位置，省略时表示第一条；
             - -D：delete，删除；
                 - (1) 指明规则序号；
@@ -217,19 +216,19 @@
             - RETURN：返回调用者；
             - 自定义链做为target：
                 ```
-                    ~]# iptables -N in_ping_rules
-                    ~]# iptables -A in_ping_rules -d 172.16.0.67 -p icmp --icmp-type 8 -j ACCEPT
-                    ~]# iptables -I in_ping_rules -d 172.16.0.67 -s 172.16.0.68 -p icmp -j ACCEPT
-                    ~]# iptables  -I INPUT -d 172.16.0.67 -p icmp -j in_ping_rules
-                    ~]# iptables -vnL --line-numbers
-                    Chain INPUT (policy ACCEPT 274 packets, 29788 bytes)
-                    num   pkts bytes target     prot opt in     out   source        destination         
-                    1        0     0 in_ping_rules  icmp --  *    *   0.0.0.0/0     172.16.0.67              
-                                                                                                   
-                    Chain in_ping_rules (1 references)                                  
-                    num   pkts bytes target     prot opt in     out   source        destination         
-                    1        0     0 ACCEPT     icmp --  *      *     172.16.0.68   172.16.0.67         
-                    2        0     0 ACCEPT     icmp --  *      *     0.0.0.0/0     172.16.0.67   icmptype 8
+                ~]# iptables -N in_ping_rules
+                ~]# iptables -A in_ping_rules -d 172.16.0.67 -p icmp --icmp-type 8 -j ACCEPT
+                ~]# iptables -I in_ping_rules -d 172.16.0.67 -s 172.16.0.68 -p icmp -j ACCEPT
+                ~]# iptables  -I INPUT -d 172.16.0.67 -p icmp -j in_ping_rules
+                ~]# iptables -vnL --line-numbers
+                Chain INPUT (policy ACCEPT 274 packets, 29788 bytes)
+                num   pkts bytes target     prot opt in     out   source        destination         
+                1        0     0 in_ping_rules  icmp --  *    *   0.0.0.0/0     172.16.0.67              
+                                                                                               
+                Chain in_ping_rules (1 references)                                  
+                num   pkts bytes target     prot opt in     out   source        destination         
+                1        0     0 ACCEPT     icmp --  *      *     172.16.0.68   172.16.0.67         
+                2        0     0 ACCEPT     icmp --  *      *     0.0.0.0/0     172.16.0.67   icmptype 8
                 ```
 
 - 保存和载入规则：
