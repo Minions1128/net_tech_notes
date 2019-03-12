@@ -1,4 +1,6 @@
 # Docker
+
+- 虚拟化和容器的区别
 [![virtualization_vs_container](https://github.com/Minions1128/net_tech_notes/blob/master/img/virtualization_vs_container.jpg "virtualization_vs_container")](https://github.com/Minions1128/net_tech_notes/blob/master/img/virtualization_vs_container.jpg "virtualization_vs_container")
 
 
@@ -173,7 +175,6 @@ Docker private Registry的Nginx反代配置方式：
             proxy_set_header        Host            $host;
             proxy_set_header        X-Real-IP       $remote_addr;
             proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-
             auth_basic "Docker Registry Service";
             auth_basic_user_file "/etc/nginx/.ngxpasswd";
         }
