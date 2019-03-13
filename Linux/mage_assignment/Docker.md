@@ -53,37 +53,57 @@
 
 ## Docker
 
+### 体系结构
+
 - docker中的容器: lxc -> libcontainer -> runC
     - runC is a CLI tool for spawning and running containers according to the OCI(Open Container Initiative) specification
     - Containers are started as a child process of runC and can be embedded into various other systems without having to run a daemon
     - runC is built on libcontainer, the same container technology powering millions of Docker Engine installations.
 
 - Docker体系结构
+    - Client <--> Daemon <--> Registry Server
+    - The Docker Client
+        - The Docker client (docker) is the primary way that many Docker users interact with Docker.
+        - The docker command uses the Docker API.
+    - The Docker Daemon
+        - The Docker daemon (dockerd) listens for Docker API requests and manages Docker objects such as images, containers, networks, and volumes(外部的持久存储).
+    - Docker Registries
+        - A Docker registry stores Docker images.
+        - **Docker Hub** and **Docker Cloud** are public registries that anyone can use, and Docker is configured to look for images on Docker Hub by default.
+        - You can even run your own private registry.
 
 [![docker.architecture](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.architecture.jpg "docker.architecture")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.architecture.jpg "docker.architecture")
 
-- The Docker daemon: The Docker daemon (dockerd) listens for Docker API requests and manages Docker objects such as images, containers, networks, and volumes.
-- The Docker client
-    - The Docker client (docker) is the primary way that many Docker users interact with Docker.
-    - The docker command uses the Docker API.
-- Docker registries
-    - A Docker registry stores Docker images.
-    - Docker Hub and Docker Cloud are public registries that anyone can use, and Docker is configured to look for images on Docker Hub by default.
-    - You can even run your own private registry.
+- Docker逻辑组件
+    - Containers：容器
+    - Images：镜像
+    - Registry：Image Repositories
 
-- Docker组件：
-    - 物理：
-        - Client <--> Daemon <--> Registry Server
-    - 逻辑：
-        - Containers：容器
-        - Images：镜像、映像
-        - Registry：Image Repositories
-    - 容器的状态：
-        - created：
-        - runing：
-        - paused：
-        - stopped：
-        - deleted：
+- When you use Docker, you are creating and using images, containers, networks, volumes, plugins, and other objects.
+    - IMAGES
+        - An image is a read-only template with instructions for creating a Docker container.
+        - Often, an image is based on another image, with some additional customization.
+        - You might create your own images or you might only use those created by others and published in a registry.
+    - CONTAINERS
+        - A container is a runnable instance of an image.
+        - You can create, run, stop, move, or delete a container using the Docker API or CLI.
+        - You can connect a container to one or more networks, attach storage to it, or even create a new image based on its current state.
+
+
+### 安装docker
+
+- 依赖的基础环境
+    - 64 bits CPU
+    - Linux Kernel 3.10+
+    - Linux Kernel cgroups and namespaces
+v CentOS 7
+ɝ “Extras” repository
+v Docker Daemon
+ɝ systemctl start docker.service
+v Docker Client
+ɝ docker [OPTIONS] COMMAND [arg...]
+
+
 
     docker 
         images
@@ -99,7 +119,14 @@
         images
         rmi
         pull
-        
+
+- 容器的状态：
+    - created
+    - runing
+    - paused
+    - stopped
+    - deleted
+
     容器：
         run：创建并运行一个容器；
         create：创建一个容器；
@@ -126,7 +153,9 @@
         删除容器：
             rm
             run --rm
-            
+
+
+
     创建容器：
         基于“镜像文件”，
             镜像文件有默认要运行的程序；
@@ -222,7 +251,12 @@ Docker private Registry的Nginx反代配置方式：
             auth_basic_user_file "/etc/nginx/.ngxpasswd";
         }
         
- Kubernetes Cluster：
+```/etc/sysconfig/docker
+ADD_REGISTRY='--add-registry registry.ifeng.com'
+INSECURE_REGISTRY='--insrcure-registry'
+BLOCK_REGISTRY='--block-registry docker.io'
+``
+Kubernetes Cluster：
     环境：
         master, etcd：172.18.0.67
         node1：172.18.0.68
