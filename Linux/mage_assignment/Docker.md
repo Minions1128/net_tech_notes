@@ -43,30 +43,48 @@
     - git clone https://github.com/lxc-webpanel/LXC-Web-Panel.git
     - python LXC-Web-Panel/lwp.py
 
+```
 - Linux Containers have emerged as a key open source application packaging and delivery technology, combining lightweight application isolation with the flexibility of image-based deployment methods.
 
 - CentOS 7 implements Linux Containers using core technologies such as Control Groups (Cgroups) for Resource Management, Namespaces for Process Isolation, SELinux for Security, enabling secure multitenancy and reducing the potential for security exploits
 
 - lxc, containerd, openvz, systemd-nspawn, runC
-
+```
 
 ## Docker
 
-Docker组件：
-    物理：
-        Client <--> Daemon <--> Registry Server
-    逻辑：
-        Containers：容器
-        Images：镜像、映像
-        Registry：Image Repositories
-        
-    容器的状态：
-        created：
-        runing：
-        paused：
-        stopped：
-        deleted：
-        
+- docker中的容器: lxc -> libcontainer -> runC
+    - runC is a CLI tool for spawning and running containers according to the OCI(Open Container Initiative) specification
+    - Containers are started as a child process of runC and can be embedded into various other systems without having to run a daemon
+    - runC is built on libcontainer, the same container technology powering millions of Docker Engine installations.
+
+- Docker体系结构
+
+[![docker.architecture](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.architecture.jpg "docker.architecture")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.architecture.jpg "docker.architecture")
+
+- The Docker daemon: The Docker daemon (dockerd) listens for Docker API requests and manages Docker objects such as images, containers, networks, and volumes.
+- The Docker client
+    - The Docker client (docker) is the primary way that many Docker users interact with Docker.
+    - The docker command uses the Docker API.
+- Docker registries
+    - A Docker registry stores Docker images.
+    - Docker Hub and Docker Cloud are public registries that anyone can use, and Docker is configured to look for images on Docker Hub by default.
+    - You can even run your own private registry.
+
+- Docker组件：
+    - 物理：
+        - Client <--> Daemon <--> Registry Server
+    - 逻辑：
+        - Containers：容器
+        - Images：镜像、映像
+        - Registry：Image Repositories
+    - 容器的状态：
+        - created：
+        - runing：
+        - paused：
+        - stopped：
+        - deleted：
+
     docker 
         images
         pull
