@@ -96,7 +96,7 @@
     - Linux Kernel cgroups and namespaces
 - Docker Client：`docker [OPTIONS] COMMAND [arg...]`
 - 启动Docker Daemon：`systemctl start docker.service`
-- 查看docker信息：
+- 查看docker相关的信息：
     - docker version
     - docker info
 - Registry选项：
@@ -108,86 +108,54 @@
 
 [![docker.event.state](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.event.state.jpg "docker.event.state")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.event.state.jpg "docker.event.state")
 
+### 相关命令
 
+- 镜像
+    - images
+    - rmi
+    - pull
 
+- 容器：
+    - run：创建并运行一个容器；
+    - create：创建一个容器；
+    - start：启动一个处于停止状态容器；
 
+- ps：List containers
 
-
-    docker 
-        images
-        pull
-        run
-        ps
-        
-    查看docker相关的信息：
-        version
-        info
-        
-    镜像：
-        images
-        rmi
-        pull
-
-- 容器的状态：
-    - created
+- 容器的状态切换命令
+    - created：
+        - create
+        - run
     - runing
-    - paused
+        - start
+    - paused and continue
+        - pause
+        - unpause
     - stopped
+        - kill
+        - stop
     - deleted
+        - rm
+        - run --rm
+    - restart：
+        - restart
 
-    容器：
-        run：创建并运行一个容器；
-        create：创建一个容器；
-        start：启动一个处于停止状态容器；
-        
-        创建：
-            create
-            run 
-            
-        启动：
-            start
-            
-        停止：
-            kill
-            stop
-            
-        重启：
-            restart
-            
-        暂停和继续：
-            pause
-            unpause 
-            
-        删除容器：
-            rm
-            run --rm
-
-
-
-    创建容器：
-        基于“镜像文件”，
-            镜像文件有默认要运行的程序；
-                
-        注意：
-            运行的容器内部必须有一个工作前台的运行的进程；
-            docker的容器的通常也是仅为运行一个程序；
-                要想在容器内运行多个程序，一般需要提供一个管控程序，例如supervised。
-                
-        run, create
-            --name CT_NAME
-            --rm：容器运行终止即自行删除
-            --network BRIDGE：让容器加入的网络；
-                默认为docker0；
-            
-            交互式启动一个容器：
-                -i：--interactive，交互式；
-                -t：Allocate a pseudo-TTY
-                
-                从终端拆除：ctrl+p, ctrl+q
-                
-        attach：附加至某运行状态的容器的终端设备；
-            
-        exec：让运行中的容器运行一个额外的程序；
+- 创建容器：
+    - 基于“镜像文件”，镜像文件有默认要运行的程序；
+    - 注意：
+        - 运行的容器内部必须有一个**工作前台**的运行的进程；
+        - docker的容器的通常也是仅为运行一个程序；
+            - 要想在容器内运行多个程序，一般需要提供一个管控程序，例如supervised。
+    - run, create的选项
+        - --name CT_NAME
+        - --rm：容器运行终止即自行删除
+        - --network BRIDGE：让容器加入的网络；默认为docker0；
+        - 交互式启动一个容器：
+            - -i：--interactive，交互式；
+            - -t：Allocate a pseudo-TTY
+            - 从终端拆除：ctrl+p, ctrl+q
+            - attach：附加至某运行状态的容器的终端设备；
+            - exec：让运行中的容器运行一个额外的程序；
         
         查看：
             logs：Fetch the logs of a container，容器内部程序运行时输出到终端的信息；
@@ -240,11 +208,9 @@
                 
                     --input, -i     Read from tar archive file, instead of STDIN
                     --quiet, -q false   Suppress the load output                
-        
-        
-    
-Docker private Registry的Nginx反代配置方式：
 
+Docker private Registry的Nginx反代配置方式：
+```
         client_max_body_size 0;
 
         location / {
@@ -259,9 +225,7 @@ Docker private Registry的Nginx反代配置方式：
             auth_basic_user_file "/etc/nginx/.ngxpasswd";
         }
         
-```/etc/sysconfig/docker
-
-``
+```
 Kubernetes Cluster：
     环境：
         master, etcd：172.18.0.67
