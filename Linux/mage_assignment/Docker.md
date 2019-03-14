@@ -94,12 +94,22 @@
     - 64 bits CPU
     - Linux Kernel 3.10+
     - Linux Kernel cgroups and namespaces
-v CentOS 7
-ɝ “Extras” repository
-v Docker Daemon
-ɝ systemctl start docker.service
-v Docker Client
-ɝ docker [OPTIONS] COMMAND [arg...]
+- Docker Client：`docker [OPTIONS] COMMAND [arg...]`
+- 启动Docker Daemon：`systemctl start docker.service`
+- 查看docker信息：
+    - docker version
+    - docker info
+- Registry选项：
+    - 配置文件在：`/etc/sysconfig/docker`
+    - `ADD_REGISTRY='--add-registry registry.ifeng.com --add-registry registry.ifengidc.com'`：添加其他仓库
+    - `BLOCK_REGISTRY='--block-registry docker.io'`：防止用户在docker的registry拉镜像
+    - `INSECURE_REGISTRY='--insrcure-registry'`：允许使用非安全协议
+- Docker event state
+
+[![docker.event.state](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.event.state.jpg "docker.event.state")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.event.state.jpg "docker.event.state")
+
+
+
 
 
 
@@ -250,9 +260,7 @@ Docker private Registry的Nginx反代配置方式：
         }
         
 ```/etc/sysconfig/docker
-ADD_REGISTRY='--add-registry registry.ifeng.com'
-INSECURE_REGISTRY='--insrcure-registry'
-BLOCK_REGISTRY='--block-registry docker.io'
+
 ``
 Kubernetes Cluster：
     环境：
