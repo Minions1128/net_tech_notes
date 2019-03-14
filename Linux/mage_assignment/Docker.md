@@ -43,13 +43,11 @@
     - git clone https://github.com/lxc-webpanel/LXC-Web-Panel.git
     - python LXC-Web-Panel/lwp.py
 
-```
+
 - Linux Containers have emerged as a key open source application packaging and delivery technology, combining lightweight application isolation with the flexibility of image-based deployment methods.
 
-- CentOS 7 implements Linux Containers using core technologies such as Control Groups (Cgroups) for Resource Management, Namespaces for Process Isolation, SELinux for Security, enabling secure multitenancy and reducing the potential for security exploits
+- CentOS 7 implements Linux Containers using core technologies such as Control Groups (Cgroups) for Resource Management, Namespaces for Process Isolation, SELinux for Security, enabling secure multitenancy and reducing the potential for security exploits.
 
-- lxc, containerd, openvz, systemd-nspawn, runC
-```
 
 ## Docker
 
