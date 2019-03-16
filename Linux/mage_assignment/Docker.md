@@ -157,21 +157,56 @@
             - attach：附加至某运行状态的容器的终端设备；
             - exec：让运行中的容器运行一个额外的程序；
         
-        查看：
-            logs：Fetch the logs of a container，容器内部程序运行时输出到终端的信息；
-            
-            ps：List containers
-                -a, --all：列出所有容器；
-                --filter, -f：过滤器条件显示
-                    name=
-                    status={stopped|running|paused}
-                    
-            stats：动态方式显示容器的资源占用状态：
-                
-            top：Display the running processes of a container
-        
-        
-    Docker Hub：
+- 查看：
+    - logs：Fetch the logs of a container，容器内部程序运行时输出到终端的信息；
+        - 例如：`docker logs CONTAINER-NAME`
+    - ps：List containers
+        - -a, --all：列出所有容器；
+        - -f, --filter：过滤器条件显示
+            - name=CONTAINER-NAME
+            - status={stopped|running|paused}
+    - stats：动态方式显示容器的资源占用状态；
+    - top：Display the running processes of a container
+        - `docker top CONTAINER-NAME`
+
+### Docker Images
+
+[![docker.image.layer](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.image.layer.jpg "docker.image.layer")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.image.layer.jpg "docker.image.layer")
+
+- Docker镜像含有启动容器所需要的文件系统及其内容，因此，其用于创建并启动docker容器采用分层构建机制，称之为联合挂载，最底层为bootfs，其之为rootfs
+    - bootfs：用于系统引导的文件系统，包括bootloader和kernel，容器启动完成后会被卸载以节约内存资源；
+    - rootfs：位于bootfs之上，表现为docker容器的根文件系统;
+        - 传统模式中，系统启动之时，内核挂载rootfs时会首先将其挂载为“只读”模式，完整性自检完成后将其重新挂载为读写模式；
+        - docker中，rootfs由内核挂载为“只读”模式，而后通过“联合挂载 ”技术额外挂载一个“可写”层；
+        - 位于下层的镜像称为父镜像(parent image)，最底层的称为基础镜像(base image)
+        - 最上层为“可读写”层，其下的均为“只读”层
+
+- Docker目前支持的联合文件系统种类包括AUFS、Btrfs、VFS和DeviceMapper等。
+    - AUFS, Aadvanced multi-layered Unification FileSystem, 高级多层统一文件系统，在Ubuntu上默认使用aufs
+    - Devicemapper：在CentOS7上使用的是devicemapper，
+
+- Docker Registry：a stateless, highly scalable server side application that stores and lets you distribute Docker images.
+    - 启动容器时，docker daemon会试图从本地获取相关的镜像；本地镜像不存在时，其将从Registry中下载该镜像并保存到本地
+    - 分类：
+        - Docker Hub
+        - Sponsor Registry：第三方的registry，供客户和Docker社区使用
+        - Mirror Registry：第三方的registry，只让客户使用
+        - Vendor Registry：由发布Docker镜像的供应商提供的registry
+        - Private Registry：通过设有防火墙和额外的安全层的私有实体提供的registry
+    - Repository：由某特定的docker镜像的所有迭代版本组成的镜像仓库
+        - 一个 Registry中可以存在多个Repository
+            - Repository可分为“顶层仓库”和“用户仓库”
+            - 用户仓库名称格式为“用户名/仓库名”
+        - 每个仓库可以包含多个Tag(标签) ，每个标签对应一个镜像
+    - Index
+        - 维护用户帐户、镜像的校验以及公共命名空间的信息
+        - 相当于为Registry提供了一个完成用户认证等功能的检索接口
+
+| 请求镜像 | 部署流程 |
+| :------------: | :------------: |
+| [![docker.registry.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.registry.1.jpg "docker.registry.1")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.registry.1.jpg "docker.registry.1") | [![docker.registry.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.registry.2.jpg "docker.registry.2")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.registry.2.jpg "docker.registry.2") |
+
+- Docker Hub：
         docker login
         docker logout
         
