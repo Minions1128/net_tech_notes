@@ -32,8 +32,6 @@ yum install dhcp            # centos
 # 文件：
 /etc/default/isc-dhcp-server
 INTERFACES="ens32"
-
-
 ```
 3. 配置接口IP地址为固定IP地址
 ```
