@@ -233,6 +233,11 @@
 - 配置文件`/etc/sysconfig/network-scripts/ifcfg-IFACE`通过大量参数来定义接口的属性其可通过vim等文本编辑器直接修改，也可以使用专用的命令的进行修改
     - CentOS 6：system-config-network, setup
     - CentOS 7: nmtui
+    - 例如：
+        ```
+        network-scripts]# cat /etc/sysconfig/network-scripts/route-eth0
+        172.17.0.0/16 via 192.168.56.11 dev eth0
+        ```
 
 - ifcfg-IFACE配置文件参数：
     - DEVICE：此配置文件对应的设备的名称
@@ -251,6 +256,16 @@
     - PEERDNS：如果BOOTPROTO的值为“dhcp”，是否允许dhcp server分配的dns服务器指向覆盖本地手动指定的DNS服务器指向默认为允许
     - HWADDR：设备的MAC地址
     - NM_CONTROLLED：是否使用NetworkManager服务来控制接口
+    - 例如：
+    ```
+    DEVICE=eth0
+    BOOTPROTO=static
+    IPADDR=172.17.0.0
+    NETMASK=255.255.255.0
+    ONBOOT=yes
+    TYPE=Ethernet
+    NM_CONTROLLED=no
+    ```
 
 - 网络服务：network和NetworkManager
     - 管理网络服务：
