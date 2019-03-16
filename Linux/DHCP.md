@@ -1,34 +1,60 @@
 # DHCP
 
-`发行版为Ubuntu`
+## 概述
 
-配置步骤：
+- 服务端监听UDP67，客户端监听UDP68
+
+- 将一个主机接入TCP/IP网络，要配置以下参数：
+    - IP/mask
+    - Gateway
+    - DNS server
+    - Wins Server, NTP server
+
+- [DHCP 工作过程](https://www.zyops.com/dhcp-working-procedure/ "DHCP 工作过程")
+
+- centos实现DHCP服务
+    - dhcp
+        - dhcpd：`dhcpd.service`
+        - dhcrelay：`dhcrelay.service`
+    - dnsmasq
+
+
+## 配置步骤
+
 1. 安装
 ```
-apt install isc-dhcp-server
+apt install isc-dhcp-server # Ubuntu
+yum install dhcp            # centos
 ```
 2. 修改DHCP接口信息
 ```
 # Ubuntu
-vim /etc/default/isc-dhcp-server
+# 文件：
+/etc/default/isc-dhcp-server
 INTERFACES="ens32"
 
-# Centos 6
-vim /etc/sysconfig/network-scripts/ifcfg-eth0
+
 ```
 3. 配置接口IP地址为固定IP地址
 ```
-vim /etc/network/interfaces
+# Ubuntu
+# 文件：
+/etc/network/interfaces
 auto ens32
 iface ens32 inet static
 pre-up ifconfig ens32 hw ether aa:aa:dd:dd:22:22
 address 10.10.51.121
 netmask 255.255.255.0
 gateway 10.10.51.1
+
+# Centos 6
+# 文件：
+/etc/sysconfig/network-scripts/ifcfg-eth0
 ```
 4. 配置DHCP信息
 ```
-vim /etc/dhcp/dhcpd.conf
+#文件
+/etc/dhcp/dhcpd.conf
 # 全局信息
 option domain-name "example.com";
 option domain-name-servers ns1.example.com, ns2.example.com;
@@ -53,24 +79,24 @@ host szj-node {
   fixed-address 10.10.51.101;
 }
 ```
-5. 重启服务
+
+## DHCP的维护
+
+- 重启服务
 ```
-Ubuntu: 
-service isc-dhcp-server restart
+service isc-dhcp-server restart # Ubuntu
+service dhcpd restart # centos 6
+systemctl restart dhcpd.service
+/etc/init.d/dhcpd start
+/etc/init.d/dhcpd stop
 ```
 
-Centos 6
-
-|  | 启用 | 停止  |
-| :------------ | :------------ | :------------ |
-| 第一种 | `# /etc/init.d/dhcpd start` | `# /etc/init.d/dhcpd stop` |
-| 第二种 | `# service dhcpd start` | `# service dhcpd stop` |
-
-查看DHCP是否重启成功
-
-`netstat -panu | grep dhc*`
-
-5. 查看绑定信息
+- 查看DHCP是否重启成功
 ```
-/var/lib/dhcp/dhcpd.leases
+netstat -panu | grep dhc*
+ss -unl | grep 67
 ```
+
+- DHCP绑定信息：`/var/lib/dhcp/dhcpd.leases`
+
+- DHCP日志：`cat messages | grep dhcpd | grep "Mar 15" | grep "10.90.64"`
