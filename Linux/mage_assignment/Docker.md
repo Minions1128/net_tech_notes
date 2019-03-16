@@ -206,29 +206,29 @@
 | :------------: | :------------: |
 | [![docker.registry.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.registry.1.jpg "docker.registry.1")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.registry.1.jpg "docker.registry.1") | [![docker.registry.2](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.registry.2.jpg "docker.registry.2")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.registry.2.jpg "docker.registry.2") |
 
-- Docker Hub：
-        docker login
-        docker logout
-        
-        docker push   
-        docker pull 
-        
-    镜像制作：
-        基于容器制作
-            在容器中完成操作后制作；
-        基于镜像制作
-            编辑一个Dockerfile，而后根据此文件制作；
-            
-        基于容器制作：
-            docker commit 
-                docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
-                    --author, -a
-                    --pause, -p
-                    --message, -m
-                    
-                    --change, -c
-                    
-        将镜像文件导出为tar文件:
+- docker hub:
+    - docker login [OPTIONS] [SERVER]
+        - --password, -p: Password
+        - --password-stdin: Take the password from stdin
+        - --username, -u: Username
+    - docker logout [SERVER]
+    - docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
+        - docker tag 0e5574283393 myregistryhost:5000/fedora/httpd:version1.0
+    - docker push [OPTIONS] NAME[:TAG]
+    - docker pull [OPTIONS] NAME[:TAG|@DIGEST]
+
+- 镜像制作：
+    - 基于容器制作：在容器中完成操作后制作；
+        - docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+            - --author, -a: Author (e.g., “John Hannibal Smith hannibal@a-team.com”)
+            - --message, -m: Commit message
+            - --pause, -p: Pause container during commit, default is true.
+            - --change, -c: Apply Dockerfile instruction to the created image
+    - 基于镜像制作：编辑一个Dockerfile，而后根据此文件制作；
+
+[![docker.make.image](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.make.image.jpg "docker.make.image")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.make.image.jpg "docker.make.image")
+          
+- 将镜像文件导出为tar文件:
             docker save
                 Save one or more images to a tar archive (streamed to STDOUT by default)
                 
