@@ -1,0 +1,142 @@
+# 用户、用户组和管理权限
+
+## 基本介绍
+
+- 用户
+  - 用户类别
+    - 管理员
+    - 普通用户
+      - 系统用户
+      - 登录用户
+  - 用户标识：UserID，UID
+    - 16bits二进制数
+      - 管理员的UID为0
+      - 普通用户为1-65535
+        - 系统用户：1-499（centos 6），1-999（centos 7）
+        - 登录用户：500-60000，10000-60000
+  - 名称解析：username <--> UID
+    - 根据名称解析库：/etc/passwd
+- 用户组
+  - 组类别1:
+    - 管理员组
+    - 普通用户组
+      - 系统用户组：为了能让那后台进程或者服务类进程以非管理员身份运行，通常需要为此创建多个普通年用户，这类用户从不用登录系统；
+      - 登录用户组
+  - 组标识：GroupID，GID
+    - 管理员组：0
+      - 普通用户组：1-65535
+        - 系统用户组：1-499（centos 6），1-999（centos 7）
+        - 登录用户组：500-60000，10000-60000
+  - 名称解析：groupname <--> gid
+    - 解析库：/etc/group
+  - 组类别2：
+    - 用户的基本组
+    - 用户的附加组
+  - 组类别3：
+    - 用户私有组：组名同用户名，且包含一个用户
+    - 公共租：组内包含了多个用户
+- 认证信息
+  - password：/etc/shadow
+  - group password：/etc/gshadow
+  - 加密算法
+    - 对称加密
+    - 非对成加密
+    - 单向加密：只能加密，不能解密，提取数据特征码
+      - 定长输出
+      - 雪崩效用
+      - 算法
+        - md5：message digest，128 bits
+        - sha：secure hash algorithm，160 bits
+        - sha256，sha384，sha512
+      - 在计算密码时，要加一些salt，添加随机数
+    - 一些文件中的内容
+      - /etc/passwd：用户信息：
+        - name:password:UID:GID:GECOS:directory:shell
+        - password：早起为密码
+        - GECOS：用户注释信息
+        - directory：用户的家目录：
+        - shell：用户的默认shell
+      - /etc/shadow：用户密码
+        - login name : encrypted password : date of last password change : minimum password age : maximum password age : password warning period : password inactivity period : account expiration date : reserved field
+
+      - /etc/group：组的信息
+       - group_name:password:GID:user_list
+
+## 用户相关命令
+- groupadd：添加组
+  - groupadd [op] group_name
+  - 选项：
+    - -g：手动GID，默认是上一个组的GID+1
+    - -r：创建系统用户组
+  - groupmod：
+    - -g GID：修改GID
+    - -n new_name：修改组名
+  - groupdel
+- useradd：添加
+  - useradd [OP] user_name
+  - 选项：
+    - -u, --uid UID：指定UID
+    - -g, --gid GID：指定GID，此组得事先存在
+    - -G, --groups GROUP1[,GROUP2,...[,GROUPN]]]：指明用户所属的附加组，多个组之间用都好分割
+    - -c, --comment COMMENT：指明注释信息
+    - -d, --home-dir HOME_DIR：指明用户的家目录。通过复制/etc/skel此目录并重命名实现。如果指定的家目录实现存在，则不会为用户复制环境配置文件。
+    - -s, --shell SHELL：指明用户的shell。可用的所有shell列表存储为/etc/shells文件中
+    - -r, --system：创建系统用户
+    - -M, --no-create-home：不创建家目录
+    - -D, --defaults：显示创建用户时，其默认配置，可以自行添加选项更改
+      - 创建用户的许多默认设定配置文件为`/etc/login.defs`
+      - 而使用命令`useradd -D`修改的配置的结果保存与`/etc/default/useradd`文件中，或者可以编辑此文件来实现
+- usermod：修改用户信息
+  - usermod [options] LOGIN
+  - 选项：
+    - -u, --uid UID：修改UID
+    - -g, --gid GID：修改GID，此组得事先存在
+    - -G, --groups GROUP1[,GROUP2,...[,GROUPN]]]：修改用户所属附加组
+    - -a, --append：与-G一起使用，用于为用户追加新的附加组
+    - -c, --comment COMMENT：修改注释信息
+    - -d, --home-dir HOME_DIR：修改用户的家目录。用户原有的文件不会转移到新位置
+    - -m, --move-home：只能与-d一起使用，用于将原来的家目录，移动为新的家目录
+    - -l, --login [USERNAME]：修改用户名
+    - -s, --shell SHELL：指明用户的shell。可用的所有shell列表存储为/etc/shells文件中
+    - -L, --lock：锁定用户密码。即在用户原来的密码串之前加一个`!`
+    - -U, --unlock：解锁用户的密码
+- userdel：删除用户
+  - userdel [options] LOGIN
+  - 选项：
+    - -r, --remove删除用户时，一并删除其家目录。默认不删除
+- passwd：命令管理命令
+  - passwd [-k] [-l] [-u [-f]] [-d] [-e] [-n mindays] [-x maxdays] [-w warndays] [-i inactivedays] [-S] [--stdin] [username]
+  - `passwd`：修改用户自己的密码
+  - `passwd USERNAME`：修改指定用户的密码，默认仅root用户有此权限
+  - 选项：
+    - -l, --lock， -u, --unlock，锁定、解锁用户
+    - -d, --delete，清除用户密码
+    - -e, --expire DATE，过期期限
+    - -i, --inactive DAYS，非活动期限
+    - -n, --minimum DAYS，密码最短使用期限
+    - -x, --maximum DAYS，密码最长使用期限
+    - -w, --warning DAYS，警告期限
+    - --stdin，This option is used to indicate that passwd should read the new password from standard input, which can be a pipe. e.g.. `echo "PASSWORD1" | passwd --stdin USERNAME1`
+- gpasswd：给组定义密码
+    - 组密码文件：/etc/gshadow
+    - gpasswd [option] group
+    - 选项：
+      - -a, --add user，-d, --delete user，向组中添加、删除用户
+- newgrp [-] [group]：临时切换用户的基本组，[-]，会模拟用户重新登录
+- chage：修改密码的过期信息
+  - chage [OP] 登录名
+  - 选项：-d, -E, -W, -m, -M
+- id：查看用户、组实际、有效的ID
+  - id [OPTION]... [USER]
+  - 选项：
+      - -u：仅显示有效的ID
+      - -g：仅显示基本组ID
+      - -G：显示所有组的ID
+      - -n：显示名字而非ID
+- su：switch user
+    - 登录式切换非登录式切换：
+        - 登录式切换：会通过重新读取用户的配置文件来重新初始化：`su - USERNAME`or` su -l USERNAME`
+        - 非……：不会……：`su USERNAME`
+        - 管理员切换到任何用户都无需密码
+    - -c 'COMMAND'：不切换用户，仅以用户的身份执行命令：`su - USERNAME -c 'whoami'`
+- 其他命令：chsh, chfn, finger, whoami, pwck, grpck
