@@ -9,7 +9,7 @@ Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesyst
 * /ect，主机特有的配置文件，只为静态
 * /home，普通用户的家目录集中位置；
 * /root，管理员的家目录，可选；
-* /lib，/lib<qual>，为系统启动或根文件系统上的应用程序（/bin和/sbin）提供共享库，以及为内核提供内核模块
+* /lib，为系统启动或根文件系统上的应用程序（/bin和/sbin）提供共享库，以及为内核提供内核模块
     * libc.so.*：动态链接的C库；
     * ld*：运行时链接器/加载器
     * modules：用于存储内核模块的目录；
@@ -38,6 +38,7 @@ Linux发行版基础目录名称命名法和用途规定的标准,FHS：Filesyst
     * 例如：net.ipv4.ip_forward，虚拟为net/ipv4/ip_forward。存储于/proc/sys/，其完整路径为/proc/sys/ipv4/ip_forward；
 * /sys，sysfs虚拟文件系统，提供了一种比proc更为理想的访问内核数据的途径；
     * 主要作用：为管理Linux设备提供一种统一模型的接口；
+    * [使用 /sys 文件系统访问 Linux 内核](https://www.ibm.com/developerworks/cn/linux/l-cn-sysfs/ "使用 /sys 文件系统访问 Linux 内核")
 
 ## Linux系统上的文件类型
 * **-**：常规文件，即，f
