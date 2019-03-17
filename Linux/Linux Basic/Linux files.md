@@ -201,7 +201,13 @@ suid sgid sticky
 1    1    0          6
 1    1    1          7
 ```
-  - 举例：`chmod 1777 FILE`，加在最左侧
+  - 举例：
+  ```
+  ]# chmod 7777 1.txt 
+  ]# ll
+  total 4
+  -rwsrwsrwt 1 root root 112 Mar 17 23:22 1.txt
+  ```
 - facl：file access control lists
   - 文件的额外的赋权机制：在原有的ugo之外的另一层让普通用户能控制赋权给另外的用户或组的赋权机制；
   - 相关命令：
