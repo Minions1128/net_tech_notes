@@ -208,3 +208,101 @@ suid sgid sticky
     - `getfacl FILE`：查看该文件的其他权限
     - `setfacl -m {u:USER|g:GROUP}:MODE FILE`：让某一用户、组拥有MODE（读、写、执行，或者为空）的权限
     - `setfac; -x {user:USER|group:GROUP} FILE`：撤销赋权
+
+## 文件查找
+
+实现工具：locate，find
+
+### locate
+
+- locate：依赖于事先构建好的索引库，其系统自动实现（周期性任务），或者手动更新数据库（updatedb）；
+  - 工作特点：
+    - 模糊查找文件
+    - 查找速度快
+    - 非实时查找
+    - 建立索引需要遍历整个根文件系统，及其消耗系统资源
+  - locate [OPTION]... PATTERN...
+    - -b, --basename：指定只查找基名
+    - -c, --count，统计找出来的个数
+    - -r, --regexp REGEXP，匹配正则表达式
+
+### find
+
+- find：实时查找工具，通过遍历指定起始路径下文件系统层级结构完成文件查找
+  - 工作特点：
+    - 查找速度略慢
+    - 精确查找
+    - 实时查找
+  - `find [选项] [查找起始路径] [查找条件] [处理动作]`
+    - 查找起始路径：默认为当前目录
+    - 查找条件：文件名、大小、类型、从属关系、权限等；默认为所有文件
+      - 根据文件名查找：支持glob风格的通配符查找：`*`，?，[]，[^]
+        - -name：根据文件名查找
+        - -iname：忽略文件名大小写。
+      - 根据文件从属关系：
+        - -user：根据属主查找
+        - -group：根据属组查找
+        - -uid：根据uid查找文件
+        - -gid：根据gid查找文件
+        - -nouser：查找没有属主的文件
+        - -nogroup：查找没有属组的文件
+      - 根据文件类型查找：-type TYPE
+      - 根据文件大小查找：-size [+ | -]#UNIT
+        - `find /tmp -size 172k`
+        - 常用单位：k，M，G
+        - #UNIT：(#-1, #]
+        - -#UNIT：[0, #-1]
+        - +#UNIT：(#, +oo]
+      - 根据时间戳查找：-OP [+-]#
+        - 计算方法：#：(now-#-1, now-#]，第#天；+#：(-oo, now-#-1]，#天外；-#：(now-#, now)，#天内
+        - 以天为单位：-atime，-mtime，-ctime
+        - 以分钟为单位：-amin，-mmin，-cmin
+      - 根据权限查找：
+        - `-perm [/|-] mode`：
+          - mode：精确选线查找：`find ./ -perm 644`，精确查找权限为644的文件
+          - /mode：任何一类用户(u,g,o)的任何一位(r,w,x)符合条件，即满足
+          - -mode：任何一类用户(u,g,o)的任何一位(r,w,x)同时符合条件，即满足
+      - 组合测试：
+        - 与：-a，`find /tmp -user root -type f -ls`
+        - 或：-o，`find /tmp -nouser -o -type f -ls`
+        - 非：-not，!，`find /tmp {-not | !} -type f -ls`
+        - 组合举例：`find /tmp -not  \( -user root -o -iname "*fstab*" \) -ls`
+    - 处理动作：先查找文件，将查找到的文件路径一次性传递给命令
+      - -print：显示到屏幕
+      - -ls：将结果ls到屏幕
+      - -delete：删除查找到的文件
+      - -fls /PATH/FILE：将文件ls到屏幕，且保存到/PATH/FILE中
+      - `-ok COMMAND {} \;`：对查找到的文件进行执行，COMMAND表示执行命令，每次需要确认
+      - `-exec COMMAND {} \;`：对查找到的文件进行执行，COMMAND表示执行命令，不需要每次确认
+      - find .... | xargs：将find到的内容传递给xargs
+
+### Examples
+1. 查找/var目录下属主为root，且属组为mail的所有文件或目录；
+`~]# find /var -user root -a -group mail -ls`
+
+2. 查找/usr目录下不属于root, bin或hadoop的所有文件或目录；用两种方法；
+```
+~]# find /usr -not -user root -a -not -user bin -a -not -user hadoop
+~]# find /usr -not \( -user root -o -user bin -o -user hadoop \) -ls
+```
+
+3. 查找/etc目录下最近一周内其内容修改过，且属主不是root用户也不是hadoop用户的文件或目录；
+```
+~]# find /etc -mtime -7 -a -not \( -user root -o -user hadoop \) -ls
+~]# find /etc -mtime -7 -a -not -user root -a -not -user hadoop -ls
+```
+
+4. 查找当前系统上没有属或属组，且最近一周内曾被访问过的文件或目录；
+`~]# find  /  \( -nouser -o -nogroup \)  -atime  -7  -ls`
+
+5. 查找/etc目录下大于1M且类型为普通文件的所有文件；
+`~]# find /etc -size +1M -type f -exec ls -lh {} \;`
+
+6. 查找/etc目录下所有用户都没有写权限的文件；
+`~]# find /etc -not -perm /222 -type f -ls`
+
+7. 查找/etc目录至少有一类用户没有执行权限的文件；
+`~]# find /etc -not -perm -111 -type f -ls`
+
+8. 查找/etc/init.d/目录下，所有用户都有执行权限，且其它用户有写权限的所有文件；
+`~]# find /etc -perm -113 -type f -ls`
