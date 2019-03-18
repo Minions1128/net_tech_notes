@@ -19,7 +19,6 @@
       - `hash`：列出
       - `hash -d COMMAND`：删除相关命令
       - `hash -r`，清空
-    - 变量：
   - 多命令执行：`COMMAND1; COMMAND2; COMMAND3;......`  
 
 
