@@ -110,6 +110,8 @@
 
 ### 相关命令
 
+- [Docker reference documentation](https://docs.docker.com/reference/ "Docker reference documentation")
+
 - 镜像
     - images
     - rmi
@@ -168,6 +170,7 @@
     - stats：动态方式显示容器的资源占用状态；
     - top：Display the running processes of a container
         - `docker top CONTAINER-NAME`
+    - docker inspect：显示docker详细信息
 
 ### Docker Images
 
@@ -227,22 +230,46 @@
     - 基于镜像制作：编辑一个Dockerfile，而后根据此文件制作；
 
 [![docker.make.image](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.make.image.jpg "docker.make.image")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.make.image.jpg "docker.make.image")
-          
-- 将镜像文件导出为tar文件:
-            docker save
-                Save one or more images to a tar archive (streamed to STDOUT by default)
-                
-                docker save [OPTIONS] IMAGE [IMAGE...]
-                
-                
-        从tar文件导入镜像 ：
-            docker load 
-                Load an image from a tar archive or STDIN
-                
-                docker load [OPTIONS]
-                
-                    --input, -i     Read from tar archive file, instead of STDIN
-                    --quiet, -q false   Suppress the load output                
+
+- 镜像的导入导出：
+    - 将镜像文件导出为tar文件:
+        - docker save: Save one or more images to a tar archive (streamed to STDOUT by default)
+        - `docker save [OPTIONS] IMAGE [IMAGE...]`
+    - 从tar文件导入镜像：
+        - docker load: Load an image from a tar archive or STDIN
+        - `docker load [OPTIONS]`
+            - --input, -i: Read from tar archive file, instead of STDIN
+            - --quiet, -q: Suppress the load output
+
+### Docker Data Volumes
+
+- 写时复制(COW)：
+    - Docker镜像由多个只读层叠加而成，启动容器时，Docker会加载只读镜像层并在镜像栈顶部添加一个读写层
+    - 如果运行中的容器修改了现有的一个已经存在的文件，那该文件将会从读写层下面的只读层复制到读写层，该文件的只读版本仍然存在，只是已经被读写层中该文件的副本所隐藏
+    - 关闭并重启容器，其数据不受影响；但删除Docker容器，则其更改将会全部丢失
+    - 存在的问题：
+        - 存储于联合文件系统中，不易于宿主机访问；
+        - 容器间数据共享不便
+        - 删除容器其数据会丢失
+    - 解决方案：“卷(volume)”: 
+
+[![docker.cow](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.cow.jpg "docker.cow")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.cow.jpg "docker.cow")
+
+- “卷”是容器上的一个或多个“目录”，此类目录可绕过联合文件系统，与宿主机上的某目录“绑定(关联)”
+    - 删除容器之时既不会删除卷，也不会对哪怕未被引用的卷做垃圾回收操作；
+    - 可以把“镜像”想像成静态文件，例如“程序”，把卷类比为动态内容，例如“数据”；于是，镜像可以重用，而卷可以共享；卷实现了“程序(镜像)”和“数据(卷)”分离，以及“程序(镜像)”和“制作镜像的主机”分离，用户制作镜像时无须再考虑镜像运行的容器所在的主机的环境；
+
+[![docker.volumes.proc](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.volumes.proc.jpg "docker.volumes.proc")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.volumes.proc.jpg "docker.volumes.proc")
+
+- 两种类型的卷：
+    - Bind mount volume： a volume that points to a user-specified location on the host file system.
+    - Docker-managed volume： the Docker daemon creates managed volumes in a portion of the host’s file system that’s owned by Docker, e.g.. `var/lib/docker/volumes`
+    - 在docker run是，使用`--volume, -v {HOSTDIR:VOLUMERDIR | HOSTDIR}`选项指定
+    - docker volume list: 列出现在已有的卷
+
+
+
+
 
 Docker private Registry的Nginx反代配置方式：
 ```
@@ -261,6 +288,7 @@ Docker private Registry的Nginx反代配置方式：
         }
         
 ```
+
 Kubernetes Cluster：
     环境：
         master, etcd：172.18.0.67
@@ -273,7 +301,7 @@ Kubernetes Cluster：
         
         OS：CentOS 7.3.1611, Extras仓库中；
         
-    安装配置步骤：
+安装配置步骤：
         1、etcd，仅master节点；
         2、flannel，集群的所有节点；
         3、配置k8s的master：仅master节点；
