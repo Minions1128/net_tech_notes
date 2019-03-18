@@ -267,9 +267,23 @@
     - 在docker run是，使用`--volume, -v {HOSTDIR:VOLUMERDIR | HOSTDIR}`选项指定
     - docker volume list: 列出现在已有的卷
 
+- Sharing volumes: There are two ways to share volumes between containers.
+    - 多个容器的卷使用同一个主机目录，例如
+        ```
+        ~]# docker run –it --name c1 -v /docker/volumes/v1:/data busybox
+        ~]# docker run –it --name c2 -v /docker/volumes/v1:/data busybox
+        ```
+    - 复制使用其它容器的卷，为docker run命令使用--volumes-from选项
+        ```
+        ]# docker run -it --name bbox1 -v /docker/volumes/v1:/data busybox
+        ]# docker run -it --name bbox2 --volumes-from bbox1 busybox
+        ```
+- 删除卷
+    - 删除容器之时删除相关的卷：为docker rm命令使用-v选项
+    - 删除指定的卷：`docker volume rm`
 
 
-
+---
 
 Docker private Registry的Nginx反代配置方式：
 ```
