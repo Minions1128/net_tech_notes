@@ -282,6 +282,69 @@
     - 删除容器之时删除相关的卷：为docker rm命令使用-v选项
     - 删除指定的卷：`docker volume rm`
 
+### Docker网络
+
+- Docker is concerned with two types of networking:
+    - single-host virtual networks: provide container isolation
+    - multi-host networks: provide an overlay where any container on a participating host can have its own routable IP address from any other container in the network.
+
+[![docker.network.4.archetypes](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.network.4.archetypes.jpg "docker.network.4.archetypes")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.network.4.archetypes.jpg "docker.network.4.archetypes")
+
+- Docker安装完成后，会自动创建三个网络，可使用“docker network ls”命令查看。创建容器时，可为docker run命令使用--network选项指定要加入的网络
+    - host: 相当于是Open container，直接使用宿主机网络资源
+    - none：不参与网络通信，运行于此类容器中的进程仅能访问本地环回接口，仅适用于进程无须网络通信的场景中，例如备份、进程诊断及各种离线任务等
+        - `]# docker run --rm --net none busybox:latest ifconfig -a`
+    - bridge: represents the docker0 network present in all Docker installations
+        - `]# docker run --rm --net bridge busybox:latest ifconfig -a`
+        - --dns DNS_SERVER_IP”选项能够为容器指定所使用的dns服务器地址，例如
+            - `]# docker run --rm --dns 172.16.0.1 busybox:latest nslookup docker.com`
+        - --add-host HOSTNAME:IP”选项能够为容器指定本地主机名解析项，例如
+            - `]# docker run --rm --dns 172.16.0.1 --add-host "docker.com:172.16.0.100" busybox:latest nslookup docker.com`
+
+- Joined containers: 指使用某个已存在容器的网络接口的容器，接口被联盟内的各容器共享使用；因此，联盟式容器彼此间完全无隔离，
+    - 例如: 
+        - 创建一个监听于2222端口的http服务容器
+            - `]# docker run -d -it --rm -p 2222 busybox:latest /bin/httpd -p 2222 -f`
+        - 创建一个联盟式容器，并查看其监听的端口
+            - `]# docker run -it --rm --net container:web --name joined busybox:latest netstat -tan`
+    - 联盟式容器彼此间虽然共享同一个网络名称空间，但其它名称空间如User、Mount等还是隔离的
+    - 联盟式容器彼此间存在端口冲突的可能性，因此，通常只会在多个容器上的程序需要程序loopback接口互相通信、或对某已存的容器的网络属性进行监控时才使用此种模式的网络模型
+
+- 开放容器或其上的服务为外部网络访问，需要在宿主机上为其定义DNAT规则，例如
+    - 对宿主机某IP地址的访问全部映射给某容器地址
+        - 主机IP 容器IP
+            - -A PREROUTING -d 主机IP -j DNAT --to-destination 容器IP
+    - 对宿主机某IP地址的某端口的访问映射给某容器地址的某端口
+        - 主机IP:PORT 容器IP:PORT
+            - -A PREROUTING -d 主机IP -p {tcp|udp} --dport 主机端口 -j DNAT --to-destination容器IP:容器端口
+
+- 为docker run命令使用-p选项即可实现端口映射，无须手动添加规则
+    - -p选项的使用格式
+        - -p <containerPort>: 将指定的容器端口映射至主机所有地址的一个动态端口
+        - -p <hostPort>:<containerPort>: 将容器端口<containerPort>映射至指定的主机端口<hostPort>
+        - -p <ip>::<containerPort>: 将指定的容器端口<containerPort>映射至主机指定<ip>的动态端口
+        - -p <ip>:<hostPort>:<containerPort>: 将指定的容器端口<containerPort>映射至主机指定<ip>的端口<hostPort>
+    - v “-P”选项或“--publish-all”将容器的所有计划要暴露端口全部映射至主机端口
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---
 
