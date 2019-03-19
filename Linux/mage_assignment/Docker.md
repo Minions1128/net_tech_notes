@@ -344,7 +344,7 @@
 
 - Dockerfile Format
     - 组成
-        - # Comment
+        - `# Comment`
         - INSTRUCTION arguments
     - The instruction is not case-sensitive. However, convention is for them to be UPPERCASE to distinguish them from arguments more easily
     - Docker runs instructions in a Dockerfile in order
