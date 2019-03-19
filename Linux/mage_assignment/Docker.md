@@ -324,7 +324,89 @@
         - -p <hostPort>:<containerPort>: 将容器端口<containerPort>映射至指定的主机端口<hostPort>
         - -p <ip>::<containerPort>: 将指定的容器端口<containerPort>映射至主机指定<ip>的动态端口
         - -p <ip>:<hostPort>:<containerPort>: 将指定的容器端口<containerPort>映射至主机指定<ip>的端口<hostPort>
-    - v “-P”选项或“--publish-all”将容器的所有计划要暴露端口全部映射至主机端口
+    - v `-P`选项或`--publish-all`将容器的所有计划要暴露端口全部映射至主机端口
+
+- 如果不想使用默认的docker0桥接口，或者需要修改此桥接口的网络属性，可通过为docker daemon命令使用-b、--bip、--fixed-cidr、--default-gateway、--dns以及--mtu等选项进行设定
+
+- 创建docker网络：https://docs.docker.com/engine/reference/commandline/network_create/
+    - create
+        - bridge
+        - overlay
+    - connect
+    - disconnect
+
+### Dockerfile
+
+- Dockerfile is nothing but the source code for building Docker images
+    - Docker can **build images** automatically by reading the instructions from a Dockerfile
+    - A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image
+    - Using docker build users can create an automated build that executes several command-line instructions in succession
+
+- Dockerfile Format
+    - 组成
+        - # Comment
+        - INSTRUCTION arguments
+    - The instruction is not case-sensitive. However, convention is for them to be UPPERCASE to distinguish them from arguments more easily
+    - Docker runs instructions in a Dockerfile in order
+    - The first instruction must be `FROM` in order to specify the Base Image from which you are building
+
+- Environment replacement
+    - Environment variables (declared with the ENV statement) can also be used in certain instructions as variables to be interpreted by the Dockerfile
+    - Environment variables are notated in the Dockerfile either with `$variable_name` or `${variable_name}`
+    - The `${variable_name}` syntax also supports a few of the standard bash modifiers（bash修饰符）
+        - `${variable:-word}` indicates that if variable is set then the result will be that value. If variable is not set then word will be the result.
+        - `${variable:+word}` indicates that if variable is set then word will be the result, otherwise the result is the empty string.
+
+- .dockerignore file
+    - Before the docker CLI sends the context to the docker daemon, it looks for a file named .dockerignore in the root directory of the context
+    - If this file exists, the CLI modifies the context to exclude files and directories that match patterns in it
+    - The CLI interprets the .dockerignore file as a newline-separated list of patterns similar to the file globs of Unix shells
+
+- Dockerfile Instructions
+    - FROM:
+        - FROM指令是最重的一个且必须为Dockerfile文件开篇的第一个非注释行，用于为映像文件构建过程指定基准镜像，后续的指令运行于此基准镜像所提供的运行环境
+        - 实践中，基准镜像可以是任何可用镜像文件，默认情况下，docker build会在docker主机上查找指定的镜像文件，在其不存在时，则会从Docker Hub Registry上拉取所需的镜像文件
+            - 如果找不到指定的镜像文件，docker build会返回一个错误信息
+        - Syntax
+            - `FROM <image>[:<tag>]` 或
+            - `FROM <image>@<digest>`
+                - `<image>`：指定作为base image的名称；
+                - `<tag>`：base image的标签，为可选项，省略时默认为latest；
+    - MAINTANIER
+        - 用于让镜像制作者提供本人的详细信息
+        - Dockerfile并不限制MAINTAINER指令可在出现的位置，但推荐将其放置于FROM指令之后
+        - Syntax
+            - `MAINTAINER <authtor's detail>`，`<author's detail>`可是任何文本信息，但约定俗成地使用作者名称及邮件地址
+    - COPY
+        - 用于从Docker主机复制文件至创建的新映像文件
+        - Syntax
+            - `COPY <src> ... <dest>` 或
+            - `COPY ["<src>",... "<dest>"]`
+                - `<src>`：要复制的源文件或目录，支持使用通配符
+                - `<dest>`：目标路径，即正在创建的image的文件系统路径；建议为`<dest>`使用绝对路径，否则，COPY指定则以WORKDIR为其起始路径；
+            - 注意：在路径中有空白字符时，通常使用第二种格式
+        - 文件复制准则
+            - `<src>`必须是build上下文中的路径，不能是其父目录中的文件
+            - 如果`<src>`是目录，则其内部文件或子目录会被递归复制，但`<src>`目录自身不会被复制
+            - 如果指定了多个`<src>`，或在`<src>`中使用了通配符，则`<dest>`必须是一个目录，且必须以/结尾
+            - 如果`<dest>`事先不存在，它将会被自动创建，这包括其父目录路径
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
