@@ -362,7 +362,8 @@
     - If this file exists, the CLI modifies the context to exclude files and directories that match patterns in it
     - The CLI interprets the .dockerignore file as a newline-separated list of patterns similar to the file globs of Unix shells
 
-- Dockerfile Instructions
+- Dockerfile Instructions: `Dockerfile`
+    - 最后使用`docker build`命令进行构建
     - FROM:
         - FROM指令是最重的一个且必须为Dockerfile文件开篇的第一个非注释行，用于为映像文件构建过程指定基准镜像，后续的指令运行于此基准镜像所提供的运行环境
         - 实践中，基准镜像可以是任何可用镜像文件，默认情况下，docker build会在docker主机上查找指定的镜像文件，在其不存在时，则会从Docker Hub Registry上拉取所需的镜像文件
@@ -390,6 +391,47 @@
             - 如果`<src>`是目录，则其内部文件或子目录会被递归复制，但`<src>`目录自身不会被复制
             - 如果指定了多个`<src>`，或在`<src>`中使用了通配符，则`<dest>`必须是一个目录，且必须以/结尾
             - 如果`<dest>`事先不存在，它将会被自动创建，这包括其父目录路径
+    - ADD
+        - ADD指令类似于COPY指令，ADD支持使用TAR文件和URL路径
+        - Syntax
+            - `ADD <src> ... <dest>` 或
+            - `ADD ["<src>",... "<dest>"]`
+        - 操作准则
+            - 同COPY指令
+            - 如果`<src>`为URL且`<dest>`不以`/`结尾，则`<src>`指定的文件将被下载并直接被创建为`<dest>`；如果`<dest>`以/结尾，则文件名URL指定的文件将被直接下载并保存为`<dest>/<filename>`
+            - 如果`<src>`是一个本地系统上的压缩格式的tar文件，它将被展开为一个目录，其行为类似于`tar -x`命令；然而，通过URL获取到的tar文件将不会自动展开；
+            - 如果`<src>`有多个，或其间接或直接使用了通配符，则`<dest>`必须是一个以/结尾的目录路径；如果`<dest>`不以/结尾，则其被视作一个普通文件，`<src>`的内容将被直接写入到`<dest>`；
+    - WORKDIR
+        - 用于为Dockerfile中所有的RUN、CMD、ENTRYPOINT、COPY和ADD指定设定工作目录
+        - Syntax
+            - `WORKDIR <dirpath>`
+                - 在Dockerfile文件中，WORKDIR指令可出现多次，其路径也可以为相对路径，不过，其是相对此前一个WORKDIR指令指定的路径
+                - 另外，WORKDIR也可调用由ENV指定定义的变量
+            - 例如
+                - `WORKDIR /var/log`
+                - `WORKDIR $STATEPATH`
+    - VOLUME
+        - 用于在image中创建一个挂载点目录，以挂载Docker host上的卷或其它容器上的卷
+        - Syntax
+            - `VOLUME <mountpoint>` 或
+            - `VOLUME ["<mountpoint>"]`
+        - 如果挂载点目录路径下此前在文件存在，docker run命令会在卷挂载完成后将此前的所有文件复制到新挂载的卷中
+    - EXPOSE
+        - 用于为容器打开指定要监听的端口以实现与外部通信
+        - Syntax
+            - `EXPOSE <port>[/<protocol>] [<port>[/<protocol>] ...]`
+                - `<protocol>`用于指定传输层协议，可为tcp或udp二者之一，默认为TCP协议
+            - EXPOSE指令可一次指定多个端口，例如
+                - `EXPOSE 11211/udp 11211/tcp`
+    - ENV
+        - 用于为镜像定义所需的环境变量，并可被Dockerfile文件中位于其后的其它指令（如ENV、ADD、COPY等）所调用
+        - 调用格式为$variable_name或${variable_name}
+        - Syntax
+            - `ENV <key> <value>` 或
+            - `ENV <key>=<value> ...`
+        - 第一种格式中，`<key>`之后的所有内容均会被视作其`<value>`的组成部分，因此，一次只能设置一个变量；
+        - 第二种格式可用一次设置多个变量，每个变量为一个`<key>=<value>`的键值对，如果`<value>`中包含空格，可以以反斜线(\)进行转义，也可通过对`<value>`加引号进行标识；另外，反斜线也可用于续行；
+        - 定义多个变量时，建议使用第二种方式，以便在同一层中完成所有功能
 
 
 
