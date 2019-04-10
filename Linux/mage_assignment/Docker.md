@@ -468,58 +468,47 @@
         - Syntax
             - `USER <UID>|<UserName>`
             - 需要注意的是，<UID>可以为任意数字，但实践中其必须为/etc/passwd中某用户的有效UID，否则，docker run命令将运行失败
+    - ONBUILD
+        - 用于在Dockerfile中定义一个触发器
+            - Dockerfile用于build映像文件，此映像文件亦可作为base image被另一个Dockerfile用作FROM指令的参数，并以之构建新的映像文件
+            - 在后面的这个Dockerfile中的FROM指令在build过程中被执行时，将会“触发”创建其base image的Dockerfile文件中的ONBUILD指令定义的触发器
+        - Syntax
+            - `ONBUILD <INSTRUCTION>`
+        - 尽管任何指令都可注册成为触发器指令，但ONBUILD不能自我嵌套，且不会触发FROM和MAINTAINER指令
+        - 使用包含ONBUILD指令的Dockerfile构建的镜像应该使用特殊的标签，例如`ruby:2.0-onbuild`
+        - 在ONBUILD指令中使用ADD或COPY指令应该格外小心，因为新构建过程的上下文在缺少指定的源文件时会失败
 
+### Private Registry
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- 创建：`yum install -y docker-distribution`
+- 配置文件：`/etc/docker-distribution/registry/config.yml`
+- 启动：`systemctl start docker-distribution`
+- push：
+    - 将docker.io镜像标记为私有仓库：`docker tag <SOURCE REPOSITORY> <REGISTRY-IP/TAG>`
+    - push新镜像：`docker push <REGISTRY-IP/TAG>`
+        - 推送时，可能会有http协议不兼容问题：
+            - 可以将docker允许使用http的镜像仓库，并且添加新的仓库：
+                ```
+                /etc/sysconfig/docker
+                INSECURE_REGISTRY='--insecure-registry 172.16.1.1:5000'
+                ADD_REGISTRY='--add-registry 172.16.1.1:5000'
+                ```
+            - 也可以配置Docker private Registry的Nginx反代配置方式：
+                ```
+                client_max_body_size 0;
+                location / {
+                    proxy_pass  http://registrysrvs;
+                    proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+                    proxy_redirect off;
+                    proxy_buffering off;
+                    proxy_set_header        Host            $host;
+                    proxy_set_header        X-Real-IP       $remote_addr;
+                    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+                    auth_basic "Docker Registry Service";
+                    auth_basic_user_file "/etc/nginx/.ngxpasswd";
+                }
+                ```
 ---
-
-Docker private Registry的Nginx反代配置方式：
-```
-        client_max_body_size 0;
-
-        location / {
-            proxy_pass  http://registrysrvs;
-            proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-            proxy_redirect off;
-            proxy_buffering off;
-            proxy_set_header        Host            $host;
-            proxy_set_header        X-Real-IP       $remote_addr;
-            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-            auth_basic "Docker Registry Service";
-            auth_basic_user_file "/etc/nginx/.ngxpasswd";
-        }
-        
-```
 
 Kubernetes Cluster：
     环境：
