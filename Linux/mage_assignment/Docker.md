@@ -444,7 +444,8 @@
     - CMD
         - 类似于RUN指令，CMD指令也可用于运行任何命令或应用程序，不过，二者的运行时间点不同
             - RUN指令运行于映像文件构建过程中，而CMD指令运行于基于Dockerfile构建出的新映像文件启动一个容器时
-            - CMD指令的首要目的在于为启动的容器指定默认要运行的程序，且其运行结束后，容器也将终止；不过，CMD指定的命令其可以被docker run的命令行选项所覆盖
+            - CMD指令的首要目的在于为启动的容器指定默认要运行的程序，且其运行结束后，容器也将终止
+            - CMD指定的命令其可以被docker run的命令行选项所覆盖
         - 在Dockerfile中可以存在多个CMD指令，但仅最后一个会生效
         - Syntax
             - `CMD <command>` 或
@@ -452,9 +453,21 @@
             - `CMD ["<param1>","<param2>"]`
         - 前两种语法格式的意义同RUN
         - 第三种则用于为ENTRYPOINT指令提供默认参数
-
-
-
+    - ENTRYPOINT
+        - 类似CMD指令的功能，用于为容器指定默认运行程序，从而使得容器像是一个单独的可执行程序
+            - 与CMD不同的是，由ENTRYPOINT启动的程序不会被docker run命令行指定的参数所覆盖，而且，这些命令行参数会被当作参数传递给ENTRYPOINT指定指定的程序
+            - 不过，docker run命令的--entrypoint选项的参数可覆盖ENTRYPOINT指令指定的程序
+        - Syntax
+            - `ENTRYPOINT <command>`
+            - `ENTRYPOINT ["<executable>", "<param1>", "<param2>"]`
+        - docker run命令传入的命令参数会覆盖CMD指令的内容并且附加到ENTRYPOINT命令最后做为其参数使用
+        - Dockerfile文件中也可以存在多个ENTRYPOINT指令，但仅有最后一个会生效
+    - USER
+        - 用于指定运行image时的或运行Dockerfile中任何RUN、CMD或ENTRYPOINT指令指定的程序时的用户名或UID
+        - 默认情况下，container的运行身份为root用户
+        - Syntax
+            - `USER <UID>|<UserName>`
+            - 需要注意的是，<UID>可以为任意数字，但实践中其必须为/etc/passwd中某用户的有效UID，否则，docker run命令将运行失败
 
 
 
