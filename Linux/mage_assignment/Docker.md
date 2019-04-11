@@ -478,6 +478,30 @@
         - 使用包含ONBUILD指令的Dockerfile构建的镜像应该使用特殊的标签，例如`ruby:2.0-onbuild`
         - 在ONBUILD指令中使用ADD或COPY指令应该格外小心，因为新构建过程的上下文在缺少指定的源文件时会失败
 
+### 资源限制
+
+- 8-side containers:
+
+[![8.side.containers](https://github.com/Minions1128/net_tech_notes/blob/master/img/8.side.containers.jpg "8.side.containers")](https://github.com/Minions1128/net_tech_notes/blob/master/img/8.side.containers.jpg "8.side.containers")
+
+- v Docker provides three flags on the docker run and docker create commands for managing three different types of resource allowances that you can set on a container
+    - memory
+        - -m or --memory
+    - CPU
+        - --cpu-shares
+        - --cpuset-cpus
+    - devices
+        - --device
+- Docker creates a unique IPC namespace for each container by default
+    - IPC
+        - --ipc
+
+- Running a container with full privileges
+    - In those cases when you need to run a system administration task inside a container, you can grant that container privileged access to your computer
+    - Privileged containers maintain their file system and network isolation but have full access to shared memory and devices and possess full system capabilities
+        - --privileged
+
+
 ### Private Registry
 
 - 创建：`yum install -y docker-distribution`
@@ -508,6 +532,13 @@
                     auth_basic_user_file "/etc/nginx/.ngxpasswd";
                 }
                 ```
+
+
+
+
+
+
+
 ---
 
 Kubernetes Cluster：
