@@ -180,7 +180,7 @@ mkdir -vp ./mylixux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-script
     - 判断进程的属主，是否为被访问的文件属组：如果是，应用属组的权限；否则进入下一步
     - 应用other的权限
 - SUID：
-  - 功能：默认情况下，用户发起进程，进程的属主是其发起者。用户运行某程序（文件）时，如果此程序文件拥有SUID权限，当程序运行为进程时，其属主不是发起者，而是程序文件自己的属主。
+  - 功能：用户运行拥有SUID权限程序（文件）时，该进程的属主不是发起者，而是程序文件自己的属主。（  默认情况下，用户发起进程，进程的属主是其发起者。）
   - 添加方法：`chmod u{+|-}s FILE`
   - 展示位置：属主执行权限位。如果文件属主本来有执行权限，显示为`s`，否则显示为`S`
 - SGID：一般用在修改目录的权限上
@@ -213,7 +213,7 @@ suid sgid sticky
   - 相关命令：
     - `getfacl FILE`：查看该文件的其他权限
     - `setfacl -m {u:USER|g:GROUP}:MODE FILE`：让某一用户、组拥有MODE（读、写、执行，或者为空）的权限
-    - `setfac; -x {user:USER|group:GROUP} FILE`：撤销赋权
+    - `setfacl -x {user:USER|group:GROUP} FILE`：撤销赋权
 
 ## 文件查找
 
