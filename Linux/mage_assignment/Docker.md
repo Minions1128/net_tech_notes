@@ -484,22 +484,22 @@
 
 [![8.side.containers](https://github.com/Minions1128/net_tech_notes/blob/master/img/8.side.containers.jpg "8.side.containers")](https://github.com/Minions1128/net_tech_notes/blob/master/img/8.side.containers.jpg "8.side.containers")
 
-- v Docker provides three flags on the docker run and docker create commands for managing three different types of resource allowances that you can set on a container
+- Docker provides three flags on the docker run and docker create commands for managing three different types of resource allowances that you can set on a container
     - memory
-        - -m or --memory
+        - -m or --memory: bytes, Memory limit
     - CPU
-        - --cpu-shares
-        - --cpuset-cpus
+        - -c, --cpu-shares: int, CPU shares (relative weight)
+        - --cpuset-cpus: string, CPUs in which to allow execution (0-3, 0,1)
     - devices
-        - --device
+        - --device: list, Add a host device to the container
 - Docker creates a unique IPC namespace for each container by default
     - IPC
-        - --ipc
+        - --ipc: string, IPC mode to use
 
 - Running a container with full privileges
     - In those cases when you need to run a system administration task inside a container, you can grant that container privileged access to your computer
     - Privileged containers maintain their file system and network isolation but have full access to shared memory and devices and possess full system capabilities
-        - --privileged
+        - --privileged: Give extended privileges to this container
 
 
 ### Private Registry
