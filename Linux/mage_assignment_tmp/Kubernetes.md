@@ -12,7 +12,42 @@
 ## 简介
 
 - Kubernetes is an open source system for managing containerized applications across multiple hosts, providing basic mechanisms for deployment, maintenance, and scaling of applications.
-- Kubernetes builds upon a decade and a half of experience at Google running production workloads at scale using a system called Borg, combined with best-of-breed ideas and practices from the community.
+
+- Kubernetes Cluster: A running Kubernetes cluster contains node agents (kubelet) and a cluster control plane (AKA master), with cluster state backed by a distributed storage system (etcd)
+
+[![k8s.cluster](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.cluster.jpg "k8s.cluster")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.cluster.jpg "k8s.cluster")
+
+[![k8s.arch.view](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.arch.view.jpg "k8s.arch.view")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.arch.view.jpg "k8s.arch.view")
+
+[![k8s.master](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.master.jpg "k8s.master")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.master.jpg "k8s.master")
+
+
+- 架构：master/agent
+    - master主机：
+        - kube-API Server: Kubernetes API server
+        - kubu-scheduler: Schedules pods in worker nodes
+        - kube-controller-manager: 监控部署的容器是否够用
+        - etcd(golang): A metadata service, distributed key-value store (zookeeper)
+    - agent主机（node）：
+        - kubelet: Container Agent
+        - container runtime(docker/rkt/...)
+        - kube-proxy: A load balancer for Pods
+        - supervisord
+
+
+Key Concepts of Kubernetes
+v Pod - A group of Containers
+v Labels - Labels for identifying pods
+
+
+v etcd - A metadata service
+v cAdvisor - Container Advisor providers resource usage/performance statistics
+v Replication Controller - Manages replication of pods
+
+
+
+
+---
 
 Kubernetes Cluster：
     环境：
