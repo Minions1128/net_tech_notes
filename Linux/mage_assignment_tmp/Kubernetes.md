@@ -17,38 +17,44 @@
 
 [![k8s.cluster](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.cluster.jpg "k8s.cluster")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.cluster.jpg "k8s.cluster")
 
+- 架构：master/agent
+
 [![k8s.arch.view](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.arch.view.jpg "k8s.arch.view")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.arch.view.jpg "k8s.arch.view")
+
+- master主机：
+    - kube-API Server: Kubernetes API server
+    - kubu-scheduler: Schedules pods in worker nodes
+    - kube-controller-manager: 监控部署的容器是否够用
+    - etcd(golang): A metadata service, distributed key-value store (zookeeper)
 
 [![k8s.master](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.master.jpg "k8s.master")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.master.jpg "k8s.master")
 
+- agent主机（node）：
+    - kubelet: Container Agent
+    - container runtime(docker/rkt/...)
+    - kube-proxy: A load balancer for Pods
+    - supervisord: 
+    - Pod: A group of Containers, pods之间为joined container.
+    - Addons: 附件
+    - fluentd: 日志收集工具
 
-- 架构：master/agent
-    - master主机：
-        - kube-API Server: Kubernetes API server
-        - kubu-scheduler: Schedules pods in worker nodes
-        - kube-controller-manager: 监控部署的容器是否够用
-        - etcd(golang): A metadata service, distributed key-value store (zookeeper)
-    - agent主机（node）：
-        - kubelet: Container Agent
-        - container runtime(docker/rkt/...)
-        - kube-proxy: A load balancer for Pods
-        - supervisord
+[![k8s.node](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.node.jpg "k8s.node")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.node.jpg "k8s.node")
+
+[![k8s.arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.arch.jpg "k8s.arch")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.arch.jpg "k8s.arch")
 
 
 Key Concepts of Kubernetes
-v Pod - A group of Containers
 v Labels - Labels for identifying pods
 
 
-v etcd - A metadata service
+
 v cAdvisor - Container Advisor providers resource usage/performance statistics
 v Replication Controller - Manages replication of pods
 
 
 
 
----
-
+```
 Kubernetes Cluster：
     环境：
         master, etcd：172.18.0.67
@@ -77,3 +83,4 @@ Kubernetes Cluster：
                 
         http://www.cnblogs.com/zhenyuyaodidiao/p/6500830.html
         https://xuxinkun.github.io/2016/07/18/flannel-docker/
+```
