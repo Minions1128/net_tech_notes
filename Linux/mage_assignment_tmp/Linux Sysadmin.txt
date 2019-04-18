@@ -1,120 +1,5 @@
-	创建文件系统：
-
-		VFS: Virtual File System
-			Linux的文件系统: ext2(无日志功能), ext3, ext4, xfs, reiserfs, btrfs
-			光盘：iso9660
-			网络文件系统：nfs, cifs
-			集群文件系统：gfs2, ocfs2
-			内核级分布式文件系统：ceph
-			windows的文件系统：vfat, ntfs
-			伪文件系统：proc, sysfs, tmpfs, hugepagefs
-			Unix的文件系统：UFS， FFS， JFS
-			交换文件系统：swap
-			用户空间的分布式文件系统：mogilefs, moosefs, glusterfs
-
-		文件系统管理工具：
-			创建文件系统的工具
-				mkfs
-					mkfs.ext2, mkfs.ext3, mkfs.ext4, mkfs.xfs, mkfs.vfat, ...
-			检测及修复文件系统的工具
-				fsck
-					fsck.ext2, fsck.ext3, ...
-			查看其属性的工具
-				dumpe2fs, tune2fs
-			调整文件系统特性：
-				tune2fs
-				
-	链接文件：访问同一个文件不同路径；
-		硬链接：指向同一个inode的多个文件路径；
-			特性：
-				(1) 目录不支持硬链接；
-				(2) 硬链接不能跨文件系统； 
-				(3) 创建硬链接会增加inode引用计数；
-			
-			创建：
-				ln  src  link_file
-		
-		符号链接：指向一个文件路径的另一个文件路径；
-			特性：
-				(1) 符号链接与文件是两人个各自独立的文件，各有自己的inode；对原文件创建符号链接不会增加引用计数；
-				(2) 支持对目录创建符号链接，可以跨文件系统；
-				(3) 删除符号链接文件不影响原文件；但删除原文件，符号指定的路径即不存在，此时会变成无效链接；
-				
-				注意：符号链接文件的大小是其指定的文件的路径字符串的字节数；
-
-			创建：
-				ln -s  src link_file
-
-				-v：verbose
-
-回顾：磁盘、磁盘分区、文件系统
-
-	CentOS 6,7：/dev/sd[a-z]#
-	管理分区：fdisk, parted, sfdisk
-	创建文件系统：
-	Linux文件系统类型：ext2, ext3, ext4, xfs, reiserfs, iso9660, swap
-	文件系统的组织结构中的术语：
-		block groups, block, inode table, inode, inode bitmap, block bitmap, superblock
-		
 磁盘和文件系统管理
 
-			
-	文件系统管理工具：
-		创建文件系统的工具
-			mkfs
-				mkfs.ext2, mkfs.ext3, mkfs.ext4, mkfs.xfs, mkfs.vfat, ...
-		检测及修复文件系统的工具
-			fsck
-				fsck.ext2, fsck.ext3, ...
-		查看其属性的工具
-			dumpe2fs, tune2fs
-		调整文件系统特性：
-			tune2fs	
-			
-	内核级文件系统的组成部分：
-		文件系统驱动：由内核提供
-		文件系统箮理工具：由用户空间的应用程序提供
-		
-	ext系列文件系统的管理工具：
-		mkfs.ext2, mkfs.ext3, mkfs.ext4
-		
-		mkfs -t ext2 = mkfs.ext2
-		
-		ext系列文件系统专用管理工具：mke2fs
-			mke2fs [OPTIONS]  device
-				-t {ext2|ext3|ext4}：指明要创建的文件系统类型
-					mkfs.ext4 = mkfs -t ext4 = mke2fs -t ext4
-				-b {1024|2048|4096}：指明文件系统的块大小；
-				-L LABEL：指明卷标；
-				-j：创建有日志功能的文件系统ext3；
-					mke2fs -j = mke2fs -t ext3 = mkfs -t ext3 = mkfs.ext3
-				-i #：bytes-per-inode，指明inode与字节的比率；即每多少字节创建一个Indode; 
-				-N #：直接指明要给此文件系统创建的inode的数量；
-				-m #：指定预留的空间，百分比；
-				
-				-O [^]FEATURE：以指定的特性创建目标文件系统； 
-				
-			e2label命令：卷标的查看与设定
-				查看：e2label device
-				设定：e2label device LABEL
-				
-			tune2fs命令：查看或修改ext系列文件系统的某些属性 
-				adjust tunable filesystem parameters on ext2/ext3/ext4 filesystems；
-				注意：块大小创建后不可修改；
-				
-				tune2fs [OPTIONS] device
-					-l：查看超级块的内容；
-					
-					修改指定文件系统的属性：
-						-j：ext2 --> ext3；
-						-L LABEL：修改卷标；
-						-m #：调整预留空间百分比；
-						-O [^]FEATHER：开启或关闭某种特性；
-						
-						-o [^]mount_options：开启或关闭某种默认挂载选项
-							acl
-							^acl
-							
 			dumpe2fs命令：显示ext系列文件系统的属性信息
 				dumpe2fs  [-h] device
 				
@@ -133,7 +18,7 @@
 							fsck -t ext4 = fsck.ext4
 						-a：无须交互而自动修复所有错误；
 						-r：交互式修复；		
-		
+
 	CentOS 6如何使用xfs文件系统：
 		# yum  -y  install  xfsprogs
 			
@@ -1742,8 +1627,7 @@ Linux程序包管理(2)
 
 	博客作业：程序包管理：rpm/yum/编译				
 				
-桌面环境：
-	Windows 7， OpenSUSE 13.2,  Kubuntu(KDE)
+桌面环境：Windows 7， OpenSUSE 13.2,  Kubuntu(KDE)
 	
 回顾：yum 程序包管理器和编译安装
 
