@@ -281,6 +281,12 @@
             GATEWAY#=NEXTHOP
         ```
 
+- 默认路由修改：
+    - `/etc/sysconfig/network`
+    ```
+    GATEWAY=10.0.0.1
+    ```
+
 - 给接口配置多个地址：ip addr之外，ifconfig或配置文件都可以
     - 1. `ifconfig IFACE_LABEL IPADDR/NETMASK`，`IFACE_LABEL： eth0:0, eth0:1, ...`
     - 2. 为接口名称的别名添加配置文件
