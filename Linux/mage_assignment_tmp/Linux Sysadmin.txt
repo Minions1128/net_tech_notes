@@ -333,7 +333,7 @@ bash脚本编程
 				else 
 					fdisk -l $(fdisk -l /dev/[sh]d[a-z] | grep -o "^Disk /dev/[sh]d[a-]" | tail -1 | cut -d' ' -f2)
 				fi
-
+·
 bash脚本编程之用户交互：
 	read [option]... [name ...]
 		-p 'PROMPT'
