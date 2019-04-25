@@ -53,13 +53,29 @@
         - 撤销环境变量：`unset name`，不能使用$
     - **只读变量**：
       - 声明：
-          - `declear -r name`
-          - `readonly name`
+            - `declear -r name`
+            - `readonly name`
       - 无法重新赋值，并且不支持撤销；存活时间为当前shell进程的生命周期，随shell终止而终止
     - **局部变量**：作用域为某代码片段（函数上下文）
     - **位置参数**：执行脚本的shell进程传递的参数
+        - `myscript.sh  argu1 argu2`
+        - 引用方式：$1, $2, ...,$9 , ${10}, ${11}, ...
+        - 轮替：`shift  [n]`, 位置参数轮替；
+        - 例如：通过命令传递两个文本文件路径给脚本，计算其空白行数之和；
+            ```
+            #!/bin/bash
+            #
+            file1_lines=$(grep "^$" $1 | wc -l)
+            file2_lines=$(grep "^$" $2 | wc -l)
+            echo "Total blank lines: $[$file1_lines+$file2_lines]"  
+            ```
     - **特殊变量**：shell内置的有特殊功用的变量
-      - $?：上以命令的执行结果：0：成功；1-255：失败
+        - $?：上以命令的执行结果：0：成功；1-255：失败
+        - $0：脚本文件路径本身；
+        - $#：脚本参数的个数；
+        - `$*`：所有参数，所有的位置参数,被作为一个单词.
+        - $@：与`$*`同义，但是每个参数都是一个独立的""引用字串，这就意味着参数被完整地传递，并没有被解释和扩展。这也意味着,每个参数列表中的每个参数都被当成一个独立的单词。
+        - 注意:"$@"必须被引用.注意:`"$*"`必须被""引用.
 
 # 逻辑运算
 
@@ -73,15 +89,277 @@
 - 短路法则：
     - 与运算：`COMMAND1 && COMMAND2`，COMMAND1如果没有执行成功，则COMMAND2不会执行；
     - 或运算：`COMMAND1 || COMMAND2`，COMMAND1如果执行没有成功，则执行COMMAND2，如：`id user1 || useradd user1`
-
-
     - **#** 为注释
 
 # bash脚本编程的算数运算
 
 - 算数运算有：`+`、`-`、`*`、/、`**`（次方）、`%`（取模）
+    - 乘法符号`*`，有些时候需要转义
 - let VAR=算数运算表达式：`let sum=$num1+$num2`
 - VAR=$[算数运算表达式]：`$[$num3+$num4]`
 - VAR=$((算数运算表达式))：`$(($num3+$num4))`
 - `sum=$(expr $num2 + $num4)`
-- 乘法符号`*`，有些时候需要转义
+
+- 计算/etc/passwd文件中的第10个用户和第20个用户的id号之和
+
+```sh
+id1=$(head -10 /etc/passwd | tail -1 | cut -d: -f3)
+id2=$(head -20 /etc/passwd | tail -1 | cut -d: -f3)
+```
+
+- 计算/etc/rc.d/init.d/functions和/etc/inittab文件的空白行数之和
+
+```sh
+grep "^[[:space:]]*$" /etc/rc.d/init.d/functions | wc -l
+```
+
+## 条件测试
+
+- 如何编写测试表达式以实现所需的测试：
+    - (1) 执行命令，并利用命令状态返回值来判断；
+        - 0：成功
+        - 1-255：失败
+    - (2) 测试表达式
+        - test  EXPRESSION
+        - [ EXPRESSION ]
+        - [[ EXPRESSION ]]
+        - 注意：EXPRESSION两端必须有空白字符，否则为语法错误；
+
+- bash的测试类型：
+    - 数值测试：数值比较
+        - -eq：是否等于； [ $num1 -eq $num2 ]
+        - -ne：是否不等于；
+        - -gt：是否大于；
+        - -ge：是否大于等于；
+        - -lt：是否小于；
+        - -le：是否小于等于；
+    - 字符串测试
+        - ==：是否等于；
+        - >：是否大于；
+        - <：是否小于；
+        - !=：是否不等于；
+        - =~：左侧字符串是否能够被右侧的PATTERN所匹配；
+        - -z "STRING"：判断指定的字串是否为空；空则为真，不空则假；
+        - -n "STRING"：判断指定的字符串是否不空；不空则真，空则为假；
+        - 注意：
+            - (1) 字符串要加引用；
+            - (2) 要使用[[ ]]；
+    - 文件测试：
+        - 存在性测试: 存在则为真，否则则为假；
+            - -a  FILE
+            - -e  FILE
+        - 存在性及类型测试：
+            - -b  FILE：是否存在并且为 块设备 文件；
+            - -c  FILE：是否存在并且为 字符设备 文件；
+            - -d  FILE：是否存在并且为 目录文件；
+            - -f  FILE：是否存在并且为 普通文件；
+            - -h or -L FILE：是否存在并且为 符号链接文件；
+            - -p  FILE：是否存在且为 命名管道文件；
+            - -S  FILE：是否存在且为 套接字文件；
+        - 文件权限测试：
+            - -r  FILE：是否存在并且 对当前用户可读；
+            - -w  FILE：是否存在并且 对当前用户可写；
+            - -x  FILE：是否存在并且 对当前用户可执行；
+        - 特殊权限测试：
+            - -u  FILE：是否存在并且 拥有suid权限；
+            - -g  FILE：是否存在并且 拥有sgid权限；
+            - -k  FILE：是否存在并且 拥有sticky权限；
+        - 文件是否有内容：
+            - -s  FILE：是否有内容；
+        - 时间戳：
+            - -N FILE：文件自从上一次读操作后是否被修改过；
+        - 从属关系测试：
+            - -O  FILE：当前用户是否为文件的属主；
+            - -G  FILE：当前用户是否属于文件的属组；
+        - 双目测试：
+            - FILE1  -ef  FILE2：FILE1与FILE2是否指向同一个文件系统的相同inode的硬链接；
+            - FILE1  -nt  FILE2：FILE1是否新于FILE2；
+            - FILE1  -ot  FILE2：FILE1是否旧于FILE2；
+- 组合测试条件：逻辑运算：
+    - 第一种方式：
+    ```
+    COMMAND1 && COMMAND2
+    COMMAND1 || COMMAND2
+    ! COMMAND 
+
+    [ -O FILE ] && [ -r FILE ]
+    ```        
+    - 第二种方式：
+    ```
+    EXPRESSION1  -a  EXPRESSION2
+    EXPRESSION1  -o  EXPRESSION2
+    ! EXPRESSION
+    
+    [ -O FILE -a -x FILE ]
+    ```
+
+- 将当前主机名称保存至hostName变量中；主机名如果为空，或者为localhost.localdomain，则将其设置为www.magedu.com；
+```sh
+hostName=$(hostname)
+
+[ -z "$hostName" -o "$hostName" == "localhost.localdomain" -o "$hostName" == "localhost" ] && hostname www.magedu.com
+```
+
+- 脚本的状态返回值：
+    - 默认是脚本中执行的最后一条件命令的状态返回值；
+    - 自定义状态退出状态码：exit [n]：n为自己指定的状态码；
+        - 注意：shell进程遇到exit时，即会终止，因此，整个脚本执行即为结束；
+
+##  过程式编程语言的代码执行顺序
+
+- 顺序执行：逐条运行；
+- 选择执行：
+    - 代码有一个分支：条件满足时才会执行；
+    - 两个或以上的分支：只会执行其中一个满足条件的分支；
+- 循环执行：
+    - 代码片断（循环体）要执行0、1或多个来回；
+
+### 选择执行
+
+- 单分支的if语句
+```sh
+if  测试条件
+then
+    代码分支
+fi
+```
+
+-  双分支的if语句
+```sh
+if  测试条件; then
+    条件为真时执行的分支
+else
+    条件为假时执行的分支
+fi
+```
+
+- 示例：通过参数传递一个用户名给脚本，此用户不存时，则添加之；
+```sh
+#!/bin/bash
+#
+if ! grep "^$1\>" /etc/passwd &> /dev/null; then
+    useradd $1
+    echo $1 | passwd --stdin $1 &> /dev/null
+    echo "Add user $1 finished."
+fi
+```
+
+```sh
+#!/bin/bash
+#
+if [ $# -lt 1 ]; then
+    echo "At least one username."
+    exit 2
+fi
+
+if ! grep "^$1\>" /etc/passwd &> /dev/null; then
+    useradd $1
+    echo $1 | passwd --stdin $1 &> /dev/null
+    echo "Add user $1 finished."
+fi
+```
+
+```sh
+#!/bin/bash
+#
+if [ $# -lt 1 ]; then
+    echo "At least one username."
+    exit 2
+fi
+
+if grep "^$1\>" /etc/passwd &> /dev/null; then
+    echo "User $1 exists."
+else
+    useradd $1
+    echo $1 | passwd --stdin $1 &> /dev/null
+    echo "Add user $1 finished."
+fi
+```
+
+- 练习1：通过命令行参数给定两个数字，输出其中较大的数值；
+
+```sh
+#!/bin/bash
+#
+if [ $# -lt 2 ]; then
+    echo "Two integers."
+    exit 2
+fi
+
+if [ $1 -ge $2 ]; then
+    echo "Max number: $1."
+else
+    echo "Max number: $2."
+fi
+```
+
+```sh
+#!/bin/bash
+#
+
+if [ $# -lt 2 ]; then
+    echo "Two integers."
+    exit 2
+fi
+
+declare -i max=$1
+
+if [ $1 -lt $2 ]; then
+    max=$2
+fi
+
+echo "Max number: $max."
+```
+
+- 练习2：通过命令行参数给定一个用户名，判断其ID号是偶数还是奇数；
+
+- 练习3：通过命令行参数给定两个文本文件名，如果某文件不存在，则结束脚本执行；都存在时返回每个文件的行数，并说明其中行数较多的文件；
+
+- 练习4：
+    - 1、创建一个20G的文件系统，块大小为2048，文件系统ext4，卷标为TEST，要求此分区开机后自动挂载至/testing目录，且默认有acl挂载选项；
+        - (1) 创建20G分区；
+        - (2) 格式化：`mke2fs -t ext4 -b 2048 -L 'TEST' /dev/DEVICE`
+        - (3) 编辑/etc/fstab文件：`LABEL='TEST'    /testing    ext4    defaults,acl    0 0`
+    - 2、创建一个5G的文件系统，卷标HUGE，要求此分区开机自动挂载至/mogdata目录，文件系统类型为ext3；
+    - 3、写一个脚本，完成如下功能：
+        - (1) 列出当前系统识别到的所有磁盘设备；
+        - (2) 如磁盘数量为1，则显示其空间使用信息；否则，则显示最后一个磁盘上的空间使用信息；
+            ```sh
+            if [ $disks -eq 1 ]; then 
+                fdisk -l /dev/[hs]da
+            else 
+                fdisk -l $(fdisk -l /dev/[sh]d[a-z] | grep -o "^Disk /dev/[sh]d[a-]" | tail -1 | cut -d' ' -f2)
+            fi
+```
+
+
+## 用户交互
+```sh
+    read [option]... [name ...]
+        -p 'PROMPT'
+        -t TIMEOUT
+```
+
+- `bash -n /path/to/some_script`: 检测脚本中的语法错误
+
+- `bash -x /path/to/some_script`: 调试执行
+
+- 示例：
+```sh
+#!/bin/bash
+# Version: 0.0.1
+# Author: MageEdu
+# Description: read testing
+
+read -p "Enter a disk special file: " diskfile
+[ -z "$diskfile" ] && echo "Fool" && exit 1
+
+if fdisk -l | grep "^Disk $diskfile" &> /dev/null; then
+    fdisk -l $diskfile
+else
+    echo "Wrong disk special file."
+    exit 2
+fi
+```
+
+# examples

@@ -1,5 +1,33 @@
 # Linux磁盘及文件系统管理
 
+## Summary
+
+文件系统管理
+    - 管理工具：
+    ```
+    mkfs, mke2fs, e2label, tune2fs, dumpe2fs, e2fsck, blkid
+    mkfs.xfs, mkfs.vfat, fsck
+    mkswap, swapon, swapoff
+    mount, umount, fuser, lsof
+    df, du
+    ```
+    - fstab文件：
+        - `设备  挂载点     文件系统类型  挂载选项    转储频率    自检次序`
+    - 文件系统：
+        - 目录：文件
+            - 元数据：inode, inode table
+            - 数据：data blocks
+                - 其下级文件或目录的文件名与其inode对应关系
+                - dentry
+        - 文件名：存在上级目录；
+        - 删除文件：将此文件指向的所有data block标记为未使用状态；将此文件的inode标记为未使用；
+        - 复制：新建文件；
+        - 移动文件：
+            - 在同一文件系统：改变的仅是其路径；
+            - 在不同文件系统：复制数据至目标文件，并删除原文件；
+        - 符号链接：权限：lrwxrwxrwx
+        - 硬链接：指向同一个inode；
+
 ## 概述
 
 - I/O: Disks(持久存储数据), Ehtercard
@@ -86,6 +114,12 @@
 - 内核级文件系统的组成部分：
     - 文件系统驱动：由内核提供；
     - 文件系统管理工具：由用户空间的应用程序提供
+
+- 删除文件：将此文件指向的所有data block标记为未使用状态；将此文件的inode标记为未使用；
+- 复制：新建文件；
+- 移动文件：
+    - 在同一文件系统：改变的仅是其路径；
+    - 在不同文件系统：复制数据至目标文件，并删除原文件；
 
 ## fdisk命令
 
