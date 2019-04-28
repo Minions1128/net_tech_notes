@@ -87,8 +87,8 @@ ifconfig vxbr 10.0.1.1/16
 ```
 Create interface vx1, add the interface to vxbr
 ```
-ovs-vsctl add-port vxbr vx1 -- set interface vxlan \
-    type=vx1 options:remote_ip=172.31.0.2
+ovs-vsctl add-port vxbr vx1 -- set interface vx1 \
+    type=vxlan options:remote_ip=172.31.0.2
 ```
 Run a Container
 ```
