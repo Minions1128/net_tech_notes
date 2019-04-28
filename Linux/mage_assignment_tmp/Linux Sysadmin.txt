@@ -1,76 +1,3 @@
-LVM2:
-
-	LVM: Logical Volume Manager， Version: 2
-
-	dm: device mapper，将一个或多个底层块设备组织成一个逻辑设备的模块；
-		/dev/dm-#
-
-	/dev/mapper/VG_NAME-LV_NAME
-		/dev/mapper/vol0-root
-	/dev/VG_NAME/LV_NAME
-		/dev/vol0/root
-
-	pv管理工具：
-		pvs：简要pv信息显示
-		pvdisplay：显示pv的详细信息
-
-		pvcreate /dev/DEVICE: 创建pv
-
-	vg管理工具：
-		vgs
-		vgdisplay
-
-		vgcreate  [-s #[kKmMgGtTpPeE]] VolumeGroupName  PhysicalDevicePath [PhysicalDevicePath...]
-		vgextend  VolumeGroupName  PhysicalDevicePath [PhysicalDevicePath...]
-		vgreduce  VolumeGroupName  PhysicalDevicePath [PhysicalDevicePath...]
-			先做pvmove
-
-		vgremove
-
-	lv管理工具：
-		lvs
-		lvdisplay
-
-		lvcreate -L #[mMgGtT] -n NAME VolumeGroup
-
-		lvremove /dev/VG_NAME/LV_NAME
-
-	扩展逻辑卷：
-		# lvextend -L [+]#[mMgGtT] /dev/VG_NAME/LV_NAME
-		# resize2fs /dev/VG_NAME/LV_NAME
-
-	缩减逻辑卷：
-		# umount /dev/VG_NAME/LV_NAME
-		# e2fsck -f /dev/VG_NAME/LV_NAME
-		# resize2fs /dev/VG_NAME/LV_NAME #[mMgGtT]
-		# lvreduce -L [-]#[mMgGtT] /dev/VG_NAME/LV_NAME
-		# mount
-
-	快照：snapshot
-		lvcreate -L #[mMgGtT] -p r -s -n snapshot_lv_name original_lv_name
-
-	练习1：创建一个至少有两个PV组成的大小为20G的名为testvg的VG；要求PE大小为16MB, 而后在卷组中创建大小为5G的逻辑卷testlv；挂载至/users目录；
-
-	练习2： 新建用户archlinux，要求其家目录为/users/archlinux，而后su切换至archlinux用户，复制/etc/pam.d目录至自己的家目录；
-
-	练习3：扩展testlv至7G，要求archlinux用户的文件不能丢失；
-
-	练习4：收缩testlv至3G，要求archlinux用户的文件不能丢失；
-
-	练习5：对testlv创建快照，并尝试基于快照备份数据，验正快照的功能；
-
-
-
-
-
-
-
-
-
-
-
-
-
 文件系统挂载使用：
 	挂载光盘设备：
 		光盘设备文件：
@@ -106,6 +33,20 @@ LVM2:
 			/dev/zero：吐零机；
 
 	博客作业：lvm基本应用，扩展及缩减实现；			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 回顾：lvm2, dd
 	lvm: 边界动态扩展或收缩；快照；
