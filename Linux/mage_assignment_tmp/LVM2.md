@@ -51,4 +51,5 @@
 练习3：扩展testlv至7G，要求archlinux用户的文件不能丢失；
 练习4：收缩testlv至3G，要求archlinux用户的文件不能丢失；
 练习5：对testlv创建快照，并尝试基于快照备份数据，验正快照的功能；
+key: https://blog.51cto.com/arm2012/1955817
 ```
