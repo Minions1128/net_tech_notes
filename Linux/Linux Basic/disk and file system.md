@@ -307,7 +307,20 @@
             - ...
     - mount -a：可自动挂载定义在此文件中的所支持自动挂载的设备；
 
-## df和du
+- 挂载光盘设备
+    - 光盘设备文件：
+        - IDE: /dev/hdc
+        - SATA: /dev/sr0
+    - 符号链接文件：
+        - /dev/cdrom
+        - /dev/cdrw
+        - /dev/dvd
+        - /dev/dvdrw
+    - 挂载命令：
+        - `mount -r /dev/cdrom /media/cdrom`
+        - `umount /dev/cdrom`
+
+## df、du和dd
 
 - df命令(disk free)：
     - `df [OPTION]... [FILE]...`
@@ -320,9 +333,24 @@
     - -s: sumary
     - -h: human-readable
 
+- dd命令：convert and copy a file
+    - 用法：
+    ```
+        dd if=/PATH/FROM/SRC of=/PATH/TO/DEST
+            bs=#：block size, 复制单元大小；
+            count=#：复制多少个bs；
+    ```
+    - 磁盘拷贝：`dd if=/dev/sda of=/dev/sdb`
+    - 备份MBR：`dd if=/dev/sda of=/tmp/mbr.bak bs=512 count=1`
+    - 破坏MBR中的bootloader：`dd if=/dev/zero of=/dev/sda bs=256 count=1`
+
 ## others
 
 - Windows无法识别Linux的文件系统；因此，存储设备需要两种系统之间交叉使用时，应该使用windows和Linux同时支持的文件系统：fat32(vfat)，命令：`# mkfs.vfat device`
+
+- 两个特殊设备：
+    - /dev/null: 数据黑洞；
+    - /dev/zero：吐零机；
 
 ```
 练习：
