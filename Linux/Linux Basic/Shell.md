@@ -334,15 +334,38 @@ echo "Max number: $max."
 
 
 ## 用户交互
+
+- 用户交互：通过键盘输入数据，从而完成变量赋值操作；
+
+- 用法
 ```sh
     read [option]... [name ...]
         -p 'PROMPT'
         -t TIMEOUT
 ```
 
-- `bash -n /path/to/some_script`: 检测脚本中的语法错误
+- 例子：
+```sh
+    #!/bin/bash
+    #
+    read -p "Enter a username: " name
+    [ -z "$name" ] && echo "a username is needed." && exit 2
 
-- `bash -x /path/to/some_script`: 调试执行
+    read -p "Enter password for $name, [password]: " password
+    [ -z "$password" ] && password="password"
+
+    if id $name &> /dev/null; then
+        echo "$name exists."
+    else
+        useradd $name
+        echo "$password" | passwd --stdin $name &> /dev/null
+        echo "Add user $name finished."
+    fi          
+```
+
+- 检测脚本中的语法错误`bash -n /path/to/some_script`
+
+- 调试执行`bash -x /path/to/some_script`
 
 - 示例：
 ```sh
@@ -361,5 +384,3 @@ else
     exit 2
 fi
 ```
-
-# examples
