@@ -46,22 +46,21 @@
         - `-tf /PATH/TO/SOMEFILE.tar`
     - 归档完成后通常需要压缩，结果此前的压缩工具，就能实现压缩多个文件了；
     - (4) 归档压缩
-            -z：gzip2
-                -zcf   /PATH/TO/SOMEFILE.tar.gz  FILE...
-                解压缩并展开归档：-zxf  /PATH/TO/SOMEFILE.tar.gz
-                
-            -j：bzip2
-                -jcf
-                -jxf
-                
-            -J: xz
-                -Jcf
-                -Jxf
+        - -z：gzip2
+            - `-zcf /PATH/TO/SOMEFILE.tar.gz FILE...`
+            - 解压缩并展开归档：`-[z]xf /PATH/TO/SOMEFILE.tar.gz`
+        - -j：bzip2
+            - -jcf
+            - -jxf
+        - -J: xz
+            - -Jcf
+            - -Jxf
 
-zip：
-    zip/unzip
-        后缀名：.zip
-        
+- zip/unzip
+    - 后缀名：.zip
+
+```
 练习：下载redis-3.0.2.tar.gz，展开至/tmp目录；而后得新创建压缩为xz格式；
     lftp  172.16.0.1/pub/Sources/sources/redis
     lftp> mget redis-3.0.2.tar.gz
+```
