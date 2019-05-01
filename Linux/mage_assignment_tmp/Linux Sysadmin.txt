@@ -509,9 +509,9 @@ Linux程序包管理(2)
 		2、编译安装apache 2.2; 启动此服务；
 
 	博客作业：程序包管理：rpm/yum/编译				
-				
+
 桌面环境：Windows 7， OpenSUSE 13.2,  Kubuntu(KDE)
-	
+
 回顾：yum 程序包管理器和编译安装
 
 	C/S：
@@ -549,7 +549,7 @@ Linux程序包管理(2)
 				make install
 			
 		perl, Python, Java
-		
+
 bash脚本编程
 	
 	过程式编程语言的执行流程：
@@ -756,7 +756,7 @@ bash脚本编程
 					1、分别求100以内所有偶数之和，以及所有奇数之和；
 					2、计算当前系统上的所有用的id之和；
 					3、通过脚本参数传递一个目录给脚本，而后计算此目录下所有文本文件的行数之和；并说明此类文件的总数；
-					
+
 Linux网络属性配置				
 		
 	计算机网络：	
@@ -2690,7 +2690,7 @@ bash脚本编程：
 	while read VARAIBLE; do
 		循环体
 	done < /PATH/FROM/SOMEFILE
-	
+
 bash脚本编程：
 
 	case语句：
@@ -3020,7 +3020,7 @@ bash脚本编程：
 					fab $i
 				done
 				echo				
-						
+
 Sysmted：
 	
 	POST --> Boot Sequeue(BIOS) --> Bootloader(MBR) --> Kernel(ramdisk) --> rootfs --> /sbin/init
@@ -3159,7 +3159,7 @@ Sysmted：
 			# systemctl  daemon-reload
 			
 		练习：为当前系统的httpd服务提供一个unit文件；
-		
+
 bash脚本编程：
 	
 	函数、case语言
@@ -3484,7 +3484,7 @@ bash脚本编程：
 			默认，其输出信息被定向到了错误输出流；
 		
 	《高级bash编程指南》，《Linux命令行和shell脚本编程宝典》
-				
+
 回顾：bash脚本编程数组
 
 	数组，字符串处理
