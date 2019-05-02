@@ -98,7 +98,7 @@
     - 查询：-q, --query
     - 校验：-V, --verify
     - 数据库维护：--builddb, --initdb
-            
+
 - 安装：
     - rpm {-i|--install} [install-options] PACKAGE_FILE ...
     - rpm  -ivh  PACKAGE_FILE ...
@@ -119,55 +119,52 @@
             - --nodigest：不检查包完整性信息；
 
 - 升级：
-            rpm {-U|--upgrade} [install-options] PACKAGE_FILE ...
-            rpm {-F|--freshen} [install-options] PACKAGE_FILE ...
-            
-                -U：升级或安装；
-                -F：升级
-                
-                rpm  -Uvh PACKAGE_FILE ...
-                rpm  -Fvh PACKAGE_FILE ...
-                
-                    --oldpackage：降级；
-                    --force：强制升级；
-                    
-                注意：(1) 不要对内核做升级操作；Linux支持多内核版本并存，因此，直接安装新版本内核；
-                        (2) 如果某原程序包的配置文件安装后曾被修改过，升级时，新版本的程序提供的同一个配置文件不会覆盖原有版本的配置文件，而是把新版本的配置文件重命名(FILENAME.rpmnew)后提供；
-                        
+    - rpm {-U|--upgrade} [install-options] PACKAGE_FILE ...
+    - rpm {-F|--freshen} [install-options] PACKAGE_FILE ...
+    - rpm  -Uvh PACKAGE_FILE ...
+    - rpm  -Fvh PACKAGE_FILE ...
+    - options:
+        - -U：升级或安装；
+        - -F：升级
+        - --oldpackage：降级；
+        - --force：强制升级；
+    - 注意：
+        - (1) 不要对内核做升级操作；Linux支持多内核版本并存，因此，直接安装新版本内核；
+        - (2) 如果某原程序包的配置文件安装后曾被修改过，升级时，新版本的程序提供的同一个配置文件不会覆盖原有版本的配置文件，而是把新版本的配置文件重命名(FILENAME.rpmnew)后提供；
+
 - 卸载：
-            rpm {-e|--erase} [--allmatches] [--nodeps] [--noscripts] [--test] PACKAGE_NAME ...
-                
-                --allmatches：卸载所有匹配指定名称的程序包的各版本；
-                --nodeps：忽略依赖关系
-                --test：测试卸载，dry run模式
-                
+    - rpm {-e|--erase} [--allmatches] [--nodeps] [--noscripts] [--test] PACKAGE_NAME ...
+    - 选项：
+        - --allmatches：卸载所有匹配指定名称的程序包的各版本；
+        - --nodeps：忽略依赖关系
+        - --test：测试卸载，dry run模式
+
 - 查询：
-            rpm {-q|--query} [select-options] [query-options]
-            
-             [select-options]
-                PACKAGE_NAME：查询指定的程序包是否已经安装，及其版本；
-                -a, --all：查询所有已经安装过的包；
-                -f  FILE：查询指定的文件由哪个程序包安装生成；
-                
-                -p, --package PACKAGE_FILE：用于实现对未安装的程序包执行查询操作；
-                
-                --whatprovides CAPABILITY：查询指定的CAPABILITY由哪个程序包提供；
-                --whatrequires CAPABILITY：查询指定的CAPABILITY被哪个包所依赖；
-                
-            [query-options]
-                --changelog：查询rpm包的changlog；
-                -l, --list：程序安装生成的所有文件列表；
-                -i, --info：程序包相关的信息，版本号、大小、所属的包组，等；
-                -c, --configfiles：查询指定的程序包提供的配置文件；
-                -d, --docfiles：查询指定的程序包提供的文档；
-                --provides：列出指定的程序包提供的所有的CAPABILITY；
-                -R, --requires：查询指定的程序包的依赖关系；
-                --scripts：查看程序包自带的脚本片断；
-                
-            用法：
-                -qi  PACKAGE, -qf FILE, -qc PACKAGE, -ql PACKAGE, -qd PACKAGE
-                -qpi  PACKAGE_FILE, -qpl PACKAGE_FILE, -qpc PACKAGE_FILE, ...
-                
+    - rpm {-q|--query} [select-options] [query-options]
+    - [select-options]
+        - PACKAGE_NAME：查询指定的程序包是否已经安装，及其版本；
+        - -a, --all：查询所有已经安装过的包；
+        - -f  FILE：查询指定的文件由哪个程序包安装生成；
+            ```sh
+            ~]# rpm -qf /etc/dhcp/dhclient.d/ntp.sh 
+            ntp-4.2.6p5-28.el7.centos.x86_64
+            ```
+        - -p, --package PACKAGE_FILE：用于实现对未安装的程序包执行查询操作；
+        - --whatprovides CAPABILITY：查询指定的CAPABILITY由哪个程序包提供；
+        - --whatrequires CAPABILITY：查询指定的CAPABILITY被哪个包所依赖；
+    - [query-options]
+        - --changelog：查询rpm包的changlog；
+        - -l, --list：程序安装生成的所有文件列表；
+        - -i, --info：程序包相关的信息，版本号、大小、所属的包组，等；
+        - -c, --configfiles：查询指定的程序包提供的配置文件；
+        - -d, --docfiles：查询指定的程序包提供的文档；
+        - --provides：列出指定的程序包提供的所有的CAPABILITY；
+        - -R, --requires：查询指定的程序包的依赖关系；
+        - --scripts：查看程序包自带的脚本片断；
+    - 用法：
+        - -qi  PACKAGE, -qf FILE, -qc PACKAGE, -ql PACKAGE, -qd PACKAGE
+        - -qpi  PACKAGE_FILE, -qpl PACKAGE_FILE, -qpc PACKAGE_FILE, ...
+
 - 校验：
             rpm {-V|--verify} [select-options] [verify-options] 
                 
