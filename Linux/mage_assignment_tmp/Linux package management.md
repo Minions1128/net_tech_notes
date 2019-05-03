@@ -166,202 +166,121 @@
         - -qpi  PACKAGE_FILE, -qpl PACKAGE_FILE, -qpc PACKAGE_FILE, ...
 
 - 校验：
-            rpm {-V|--verify} [select-options] [verify-options] 
-                
-                
-            S file Size differs
-            M Mode differs (includes permissions and file type)
-            5 digest (formerly MD5 sum) differs
-            D Device major/minor number mismatch
-            L readLink(2) path mismatch
-            U User ownership differs
-            G Group ownership differs
-            T mTime differs
-            P caPabilities differ
-            
-    包来源合法性验正和完整性验正：
-        来源合法性验正：
-        完整性验正：
-        
-        获取并导入信任的包制作者的密钥：
-            对于CentOS发行版来说：rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-            
-        验正：
-            (1) 安装此组织签名的程序时，会自动执行验正；
-            (2) 手动验正：rpm -K PACKAGE_FILE
-            
-    数据库重建：
-        rpm管理器数据库路径：/var/lib/rpm/
-            查询操作：通过此处的数据库进行；
-            
-        获取帮助：
-            CentOS 6：man rpm
-            CentOS 7：man rpmdb
-            
-            rpm {--initdb|--rebuilddb} [--dbpath DIRECTORY] [--root DIRECTORY]
-                --initdb：初始化数据库，当前无任何数据库可实始化创建一个新的；当前有时不执行任何操作；
-                --rebuilddb：重新构建，通过读取当前系统上所有已经安装过的程序包进行重新创建；
-            
-        博客作业：rpm包管理功能全解；
+    - rpm {-V|--verify} [select-options] [verify-options]
+    - verify-options
+        - S file Size differs
+        - M Mode differs (includes permissions and file type)
+        - 5 digest (formerly MD5 sum) differs
+        - D Device major/minor number mismatch
+        - L readLink(2) path mismatch
+        - U User ownership differs
+        - G Group ownership differs
+        - T mTime differs
+        - P caPabilities differ
 
-回顾：Linux程序包管理的实现、rpm包管理器
+- 包来源合法性验正和完整性验正：
+    - 对于CentOS发行版来说：rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+    - 验正：
+        - (1) 安装此组织签名的程序时，会自动执行验正；
+        - (2) 手动验正：rpm -K PACKAGE_FILE
 
-    rpm命令实现程序管理：
-        安装：-ivh, --nodeps, --replacepkgs
-        卸载：-e, --nodeps
-        升级：-Uvh, -Fvh, --nodeps, --oldpackage
-        查询：-q, -qa, -qf, -qi, -qd, -qc, -q --scripts, -q --changlog, -q --provides, -q --requires
-        校验：-V
+- 数据库重建：
+    - rpm管理器数据库路径：/var/lib/rpm/
+    - 查询操作：通过此处的数据库进行；
+    - 获取帮助：
+        - CentOS 6：man rpm
+        - CentOS 7：man rpmdb
+    - rpm {--initdb|--rebuilddb} [--dbpath DIRECTORY] [--root DIRECTORY]
+        - --initdb：初始化数据库，当前无任何数据库可实始化创建一个新的；当前有时不执行任何操作；
+        - --rebuilddb：重新构建，通过读取当前系统上所有已经安装过的程序包进行重新创建；
 
-        导入GPG密钥：--import, -K, --nodigest, --nosignature
-        数据库重建：--initdb, --rebuilddb
+## Yum
 
-Linux程序包管理(2)
+- CentOS包管理工具: yum, dnf
 
-    CentOS: yum, dnf
+- YUM: yellow dog, Yellowdog Update Modifier
 
-    URL: ftp://172.16.0.1/pub/  
+- yum repository: yum repo, 存储了众多rpm包，以及包的相关的元数据文件（放置于特定目录下：repodata）；
 
-    YUM: yellow dog, Yellowdog Update Modifier
+- yum客户端：
+    - 配置文件：
+        - /etc/yum.conf：为所有仓库提供公共配置
+        - `/etc/yum.repos.d/*.repo`：为仓库的指向提供配置
+    - 仓库指向的定义：
+        - [repositoryID]
+        - name=Some name for this repository
+        - baseurl=url://path/to/repository/
+        - enabled={1|0}
+        - gpgcheck={1|0}
+        - gpgkey=URL
+        - enablegroups={1|0}
+        - failovermethod={roundrobin|priority}, 默认为：roundrobin，意为随机挑选；
+        - cost=, 默认为1000
 
-    yum repository: yum repo
-        存储了众多rpm包，以及包的相关的元数据文件（放置于特定目录下：repodata）；
+- yum命令的用法：
+    - yum [options] [command] [package ...]
+    - command is one of:
+        - repolist [all|enabled|disabled]
+        - list [...]
+        - install package1 [package2] [...]
+        - reinstall package1 [package2] [...]
+        - update [package1] [package2] [...]
+        - update-to [package1] [package2] [...]
+        - upgrade [package1] [package2] [...]
+        - upgrade-to [package1] [package2] [...]
+        - downgrade package1 [package2] [...]
+        - check-update
+        - remove | erase package1 [package2] [...]
+        - info [...]
+        - provides | whatprovides feature1 [feature2] [...]
+        - clean [ packages | metadata | expire-cache | rpmdb | plugins | all ]
+        - makecache
+        - groupinstall group1 [group2] [...]
+        - groupupdate group1 [group2] [...]
+        - grouplist [hidden] [groupwildcard] [...]
+        - groupremove group1 [group2] [...]
+        - groupinfo group1 [...]
+        - search string1 [string2] [...]
+        - shell [filename]
+        - resolvedep dep1 [dep2] [...]
+        - localinstall rpmfile1 [rpmfile2] [...] (maintained for legacy reasons only - use install)
+        - localupdate rpmfile1 [rpmfile2] [...] (maintained for legacy reasons only - use update)
+        - deplist package1 [package2] [...]
+        - version [ all | installed | available | group-- | nogroups- | grouplist | groupinfo ]
+        - history [info|list|packages-list|packages-info|summary|addon-info|redo|undo|rollback|new|sync|stats]
+        - check
+        - distribution-synchronization [package1] [package2] [...]
+        - help [command]
+    - 显示仓库列表：repolist [all|enabled|disabled]
+    - 显示程序包：list
+        - # yum list [all | glob_exp1] [glob_exp2] [...]
+        - # yum list {available|installed|updates} [glob_exp1] [...]
+    - 安装程序包：
+        - install package1 [package2-1.2.3] [...]
+        - reinstall package1 [package2] [...]  (重新安装)
+    - 升级程序包：
+        - update [package1] [package2] [...]
+        - downgrade package1 [package2] [...] (降级)
+    - 检查可用升级： check-update
+    - 卸载程序包：remove | erase package1 [package2] [...]
+    - 查看程序包information：info [...]
+    - 查看指定的特性(可以是某文件)是由哪个程序包所提供：provides | whatprovides feature1 [feature2] [...]
+    - 清理本地缓存：clean [ packages | metadata | expire-cache | rpmdb | plugins | all ]
+    - 构建缓存：makecache
+    - 以指定的关键字搜索程序包名及summary信息：search string1 [string2] [...]
+    - 查看指定包所依赖的capabilities：deplist package1 [package2] [...]
+    - 查看yum事务历史：history [info|list|packages-list|packages-info|summary|addon-info|redo|undo|rollback|new|sync|stats]
+    - 安装及升级本地程序包：
+        - localinstall rpmfile1 [rpmfile2] [...] (maintained for legacy reasons only - use install)
+        - localupdate rpmfile1 [rpmfile2] [...] (maintained for legacy reasons only - use update)
+    - 包组管理的相关命令：
+        - groupinstall group1 [group2] [...]
+        - groupupdate group1 [group2] [...]
+        - grouplist [hidden] [groupwildcard] [...]
+        - groupremove group1 [group2] [...]
+        - groupinfo group1 [...]
 
-        文件服务器：
-            ftp://
-            http://
-            nfs://
-            file:///
 
-    yum客户端：
-        配置文件：
-            /etc/yum.conf：为所有仓库提供公共配置
-            /etc/yum.repos.d/*.repo：为仓库的指向提供配置
-
-        仓库指向的定义：
-        [repositoryID]
-        name=Some name for this repository
-        baseurl=url://path/to/repository/
-        enabled={1|0}
-        gpgcheck={1|0}
-        gpgkey=URL
-        enablegroups={1|0}
-        failovermethod={roundrobin|priority}
-            默认为：roundrobin，意为随机挑选；
-        cost=
-            默认为1000
-
-
-        教室里的yum源：http://172.16.0.1/cobbler/ks_mirror/CentOS-6.6-x86_64/
-        CentOS 6.6 X84_64 epel: http://172.16.0.1/fedora-epel/6/x86_64/
-
-    yum命令的用法：
-        yum [options] [command] [package ...]
-
-       command is one of:
-        * install package1 [package2] [...]
-        * update [package1] [package2] [...]
-        * update-to [package1] [package2] [...]
-        * check-update
-        * upgrade [package1] [package2] [...]
-        * upgrade-to [package1] [package2] [...]
-        * distribution-synchronization [package1] [package2] [...]
-        * remove | erase package1 [package2] [...]
-        * list [...]
-        * info [...]
-        * provides | whatprovides feature1 [feature2] [...]
-        * clean [ packages | metadata | expire-cache | rpmdb | plugins | all ]
-        * makecache
-        * groupinstall group1 [group2] [...]
-        * groupupdate group1 [group2] [...]
-        * grouplist [hidden] [groupwildcard] [...]
-        * groupremove group1 [group2] [...]
-        * groupinfo group1 [...]
-        * search string1 [string2] [...]
-        * shell [filename]
-        * resolvedep dep1 [dep2] [...]
-        * localinstall rpmfile1 [rpmfile2] [...]
-           (maintained for legacy reasons only - use install)
-        * localupdate rpmfile1 [rpmfile2] [...]
-           (maintained for legacy reasons only - use update)
-        * reinstall package1 [package2] [...]
-        * downgrade package1 [package2] [...]
-        * deplist package1 [package2] [...]
-        * repolist [all|enabled|disabled]
-        * version [ all | installed | available | group-* | nogroups* | grouplist | groupinfo ]
-        * history [info|list|packages-list|packages-info|summary|addon-info|redo|undo|rollback|new|sync|stats]
-        * check
-        * help [command]
-
-    显示仓库列表：
-        repolist [all|enabled|disabled]
-
-    显示程序包：
-        list
-            # yum list [all | glob_exp1] [glob_exp2] [...]
-            # yum list {available|installed|updates} [glob_exp1] [...]
-
-    安装程序包：
-        install package1 [package2] [...]
-
-        reinstall package1 [package2] [...]  (重新安装)
-
-    升级程序包：
-        update [package1] [package2] [...]
-
-        downgrade package1 [package2] [...] (降级)
-
-    检查可用升级：
-        check-update
-
-    卸载程序包：
-        remove | erase package1 [package2] [...]
-
-    查看程序包information：
-        info [...]
-
-    查看指定的特性(可以是某文件)是由哪个程序包所提供：
-        provides | whatprovides feature1 [feature2] [...]
-
-    清理本地缓存：
-        clean [ packages | metadata | expire-cache | rpmdb | plugins | all ]
-
-    构建缓存：
-        makecache
-
-    搜索：
-        search string1 [string2] [...]
-
-        以指定的关键字搜索程序包名及summary信息；
-
-    查看指定包所依赖的capabilities：
-        deplist package1 [package2] [...]
-
-    查看yum事务历史：
-        history [info|list|packages-list|packages-info|summary|addon-info|redo|undo|rollback|new|sync|stats]
-
-    安装及升级本地程序包：
-        * localinstall rpmfile1 [rpmfile2] [...]
-           (maintained for legacy reasons only - use install)
-        * localupdate rpmfile1 [rpmfile2] [...]
-           (maintained for legacy reasons only - use update)
-
-    包组管理的相关命令：
-        * groupinstall group1 [group2] [...]
-        * groupupdate group1 [group2] [...]
-        * grouplist [hidden] [groupwildcard] [...]
-        * groupremove group1 [group2] [...]
-        * groupinfo group1 [...]
-
-    如何使用光盘当作本地yum仓库：
-        (1) 挂载光盘至某目录，例如/media/cdrom
-            # mount -r -t iso9660 /dev/cdrom /media/cdrom
-        (2) 创建配置文件
-        [CentOS7]
-        name=
-        baseurl=
-        gpgcheck=
-        enabled=
 
     yum的命令行选项：
         --nogpgcheck：禁止进行gpg check；
@@ -370,6 +289,16 @@ Linux程序包管理(2)
         --disablerepo=repoidglob：临时禁用此处指定的repo；
         --enablerepo=repoidglob：临时启用此处指定的repo；
         --noplugins：禁用所有插件；
+
+- 如何使用光盘当作本地yum仓库：
+        (1) 挂载光盘至某目录，例如/media/cdrom
+            # mount -r -t iso9660 /dev/cdrom /media/cdrom
+        (2) 创建配置文件
+        [CentOS7]
+        name=
+        baseurl=
+        gpgcheck=
+        enabled=
 
     yum的repo配置文件中可用的变量：
         $releasever: 当前OS的发行版的主版本号；
@@ -382,7 +311,7 @@ Linux程序包管理(2)
     创建yum仓库：
         createrepo [options] <directory>
 
-    程序包编译安装：
+## 程序包编译安装：
         testapp-VERSION-release.src.rpm --> 安装后，使用rpmbuild命令制作成二进制格式的rpm包，而后再安装；
 
         源代码 --> 预处理 --> 编译(gcc) --> 汇编 --> 链接 --> 执行
