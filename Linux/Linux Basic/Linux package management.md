@@ -357,5 +357,3 @@
             - 基于链接的方式实现：`ln -sv` 
         - (4) 导出帮助手册
             - 编辑/etc/man.config文件: 添加一个MANPATH
-            
-桌面环境：Windows 7， OpenSUSE 13.2,  Kubuntu(KDE)

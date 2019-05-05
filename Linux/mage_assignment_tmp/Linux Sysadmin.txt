@@ -1,729 +1,3 @@
-回顾：yum 程序包管理器和编译安装
-
-	C/S：
-		yum client (yum)
-		yum repository (ftp/http/https)
-		
-	base：
-	extras
-	updates
-	
-		
-	repo：
-		[id]
-		name=
-		baseurl=http://
-			http://
-			
-	教室环境中的可用仓库：
-		CentOS 6.7：
-			http://172.16.0.1/cobbler/ks_mirror/CentOS-6.7-x86_64/
-		CentOS 7.1：
-			http://172.16.0.1/cobbler/ks_mirror/CentOS-7-x86_64-1503/
-			
-	子命令：
-		list, clean, makecache, grouplist, info, whatprovides
-		install, update, remove, groupinstall, groupupdate, groupremove, groupinfo
-		
-		rpm -ivh  /usr/local/src/testapp-3.2.1-1.el7.x86_64.rpm 
-			file:///
-			
-	编译安装：
-		C/C++:
-			./configure --> Makefile.in ==> makefile
-				make + makefile ==> binary, library, configfile, manual
-				make install
-			
-		perl, Python, Java
-
-bash脚本编程
-	
-	过程式编程语言的执行流程：
-		顺序执行
-		选择执行
-		循环执行
-		
-	选择执行：
-		(1) &&, ||
-		(2) if语句
-		(3) case语句
-		
-		if语句：三种格式
-			单分支的if语句
-				if  CONDITION; then
-					if-true-分支;
-				fi
-				
-			双分支的if语句
-				if  CONDITION; then
-					if-true-分支
-				else
-					if-false-分支
-				fi
-				
-			多分支的if语句
-				if  CONDITION1; then
-					条件1为真分支
-				elif  CONDITION2; then
-					条件2为真分支
-				elif  CONDITION3; then
-					条件3为真分支
-				...
-				elif  CONDITIONn; then
-					条件n为真分支
-				else
-					所有条件均不满足时的分支
-				fi
-				
-				注意：即便多个条件可能同时都能满足，分支只会执行中其中一个，首先测试为“真”；
-				
-				示例：脚本参数传递一个文件路径给脚本，判断此文件的类型；
-					
-					#!/bin/bash
-					#
-					if [ $# -lt 1 ]; then
-						echo "At least on path."
-						exit 1
-					fi
-
-					if ! [ -e $1 ]; then
-						echo "No such file."
-						exit 2
-					fi
-
-					if [ -f $1 ]; then
-						echo "Common file."
-					elif [ -d $1 ]; then
-						echo "Directory."
-					elif [ -L $1 ]; then
-						echo "Symbolic link."
-					elif [ -b $1 ]; then
-						echo "block special file."
-					elif [ -c $1 ]; then
-						echo "character special file."
-					elif [ -S $1 ]; then
-						echo "Socket file."
-					else
-						echo "Unkown."
-					fi	
-					
-					注意：if语句可嵌套；
-					
-			练习：写一个脚本
-				(1) 传递一个参数给脚本，此参数为用户名；
-				(2) 根据其ID号来判断用户类型：
-					0： 管理员
-					1-999：系统用户
-					1000+：登录用户
-					
-					#!/bin/bash
-					#
-					[ $# -lt 1 ] && echo "At least on user name." && exit 1
-
-					! id $1 &> /dev/null && echo "No such user." && exit 2
-
-					userid=$(id -u $1)
-
-					if [ $userid -eq 0 ]; then
-						echo "root"
-					elif [ $userid -ge 1000 ]; then
-						echo "login user."
-					else
-						echo "System user."
-					fi										
-					
-			练习：写一个脚本
-				(1) 列出如下菜单给用户：
-					disk) show disks info;
-					mem) show memory info;
-					cpu) show cpu info;
-					*) quit;
-				(2) 提示用户给出自己的选择，而后显示对应其选择的相应系统信息；
-				
-					#!/bin/bash
-					#
-					cat << EOF
-					disk) show disks info
-					mem) show memory info
-					cpu) show cpu info
-					*) QUIT
-					EOF
-
-					read -p "Your choice: " option
-
-					if [[ "$option" == "disk" ]]; then
-						fdisk -l /dev/[sh]d[a-z]
-					elif [[ "$option" == "mem" ]]; then
-						free -m
-					elif [[ "$option" == "cpu" ]];then
-						lscpu
-					else
-						echo "Unkown option."
-						exit 3
-					fi
-					
-	循环执行： 将一段代码重复执行0、1或多次；
-		进入条件：条件满足时才进入循环；
-		退出条件：每个循环都应该有退出条件，以有机会退出循环；
-		
-		bash脚本：
-			for循环
-			while循环
-			until循环
-			
-		for循环：
-			两种格式：
-				(1) 遍历列表
-				(2) 控制变量
-				
-			遍历列表：
-				for  VARAIBLE  in  LIST; do
-					循环体
-				done
-				
-				进入条件：只要列表有元素，即可进入循环；
-				退出条件：列表中的元素遍历完成；
-				
-				LISTT的生成方式：
-					(1) 直接给出；
-					(2) 整数列表
-						(a) {start..end}
-						(b) seq [start  [incremtal]] last
-					(3) 返回列表的命令
-					(4) glob 
-					(5) 变量引用
-						$@, $*
-					...
-				
-				#!/bin/bash
-				#
-				for username in user21 user22 user23; do
-					if id $username &> /dev/null; then
-						echo "$username exists."
-					else
-						useradd $username && echo "Add user $username finished."
-					fi
-				done
-				
-				示例：求100以内所有正整数之和；
-					#!/bin/bash
-					#
-					declare -i sum=0
-
-					for i in {1..100}; do
-						echo "\$sum is $sum, \$i is $i"
-						sum=$[$sum+$i]
-					done
-
-					echo $sum
-		
-				示例：判断/var/log目录下的每一个文件的内容类型
-					#!/bin/bash
-					#
-					for filename in /var/log/*; do
-						if [ -f $filename ]; then
-							echo "Common file."
-						elif [ -d $filename ]; then
-							echo "Directory."
-						elif [ -L $filename ]; then
-							echo "Symbolic link."
-						elif [ -b $filename ]; then
-							echo "block special file."
-						elif [ -c $filename ]; then
-							echo "character special file."
-						elif [ -S $filename ]; then
-							echo "Socket file."
-						else
-							echo "Unkown."
-						fi					
-					done
-					
-				练习：
-					1、分别求100以内所有偶数之和，以及所有奇数之和；
-					2、计算当前系统上的所有用的id之和；
-					3、通过脚本参数传递一个目录给脚本，而后计算此目录下所有文本文件的行数之和；并说明此类文件的总数；
-
-Linux网络属性配置				
-		
-	计算机网络：	
-		TCP/IP：协议栈（使用）
-			ISO，OSI：协议栈（学习）
-			
-		MAC：Media Access Control
-			48bits：
-				ICANN：24bits, 2^24
-					地址块：2^24
-					
-				网桥（bridge）：MAC地址表
-					静态指定：
-					动态学习：根据原地址学习；
-					
-				交换机（switch）：多端口网桥；	
-					
-		IP(Internet protocol)地址：网络号+主机号
-				A<-->B
-					网络？
-					主机？
-				
-				IPv4：32bits
-					8bits.8bits.8bits.8bits
-						0-255
-						0.0.0.0-255.255.255.255
-						
-					IP地址分类：
-						A类：
-							第一段为网络号，后三段为主机号
-							网络号：
-								0 000 0000 - 0 111 1111：1-127
-							网络数量：126，127
-							每个网络中的主机数量：2^24-2
-							默认子网掩码：255.0.0.0，/8
-								用于与IP地址按位进行“与”运算，从而取出其网络地址；
-									1.3.2.1/255.0.0.0 = 1.0.0.0
-									1.3.2.1/255.255.0.0= 1.3.0.0	
-							私网地址：10.0.0.0/255.0.0.0
-						B类：
-							前两段为网络号，后两段为主机号
-							网络号：
-								10 00 0000 - 10 11 1111：128-191
-								网络数：2^14
-								每个网络中的主机数量：2^16-2
-								默认子网掩码：255.255.0.0，/16
-								私网地址：172.16.0.0-172.31.0.0								
-						C类：
-							前三段为网络号，最后一段为主机号
-							网络号：
-								110 0 0000 - 110 1 1111：192-223
-							网络数：2^21
-							每个网络中的主机数量：2^8-2
-							默认子网掩码：255.255.255.0,  /24
-						D类：组播
-							1110 0000 - 1110 1111：224-239
-						E类：科研
-							240-255
-				IPv6：128bits
-				
-					路由器：router
-						路由表：
-							静态指定
-							动态学习：rip2, ospf
-							
-						路由条目：
-							目标地址  下一跳(nexthop)
-								目标地址的类别：
-									主机：主机路由
-									网络：网络路由
-									0.0.0.0/0.0.0.0：默认路由							
-	OS：多用户，多任务
-		多任务：多进程
-			chrome：
-			QQ：
-			QQ Music：
-			
-		通信时，进程的数字标识：
-			16bits：
-				0-65535：1-65535
-					1-1023：固定分配，而且只有管理员有权限启用；
-					1024-4W：半固定，
-					4W+：临时；
-		进程地址：
-			IP:PORT,  socket
-			
-	总结：
-		MAC：本地通信；范围：本地局域网；
-		IP：界定通信主机，源和目标；范围：互联网；
-		Port：界定进程；范围：主机 ；
-		
-	将Linux主机接入到网络中：
-		IP/NETMASK：本地通信
-		路由（网关）：跨网络通信
-		DNS服务器地址：基于主机名的通信
-			主DNS服务器地址
-			备用DNS服务器地址
-			第三备份DNS服务器地址
-			
-		配置方式：
-			静态指定：
-				命令：
-					ifcfg家族：
-						ifconfig：配置IP，NETMASK
-						route：路由
-						netstat：状态及统计数据查看
-					iproute2家族：
-						ip OBJECT：
-							addr：地址和掩码；
-							link：接口
-							route：路由
-						ss：状态及统计数据查看
-					CentOS 7：nm(Network Manager)家族
-						nmcli：命令行工具
-						nmtui：text window 工具
-						
-					注意：
-						(1) DNS服务器指定	
-							配置文件：/etc/resolv.conf
-						(2) 本地主机名配置
-							hostname
-							配置文件：/etc/sysconfig/network
-							CentOS 7：hostnamectl					
-				配置文件：
-					RedHat及相关发行版
-						/etc/sysconfig/network-scripts/ifcfg-NETCARD_NAME
-					
-			动态分配：依赖于本地网络中有DHCP服务
-				DHCP：Dynamic Host Configure Procotol
-				
-	网络接口命名方式：
-		传统命名：
-			以太网：ethX, [0,oo)，例如eth0, eth1, ...
-			PPP网络：pppX, [0,...], 例如，ppp0, ppp1, ...
-		
-		可预测命名方案（CentOS）：
-			支持多种不同的命名机制：
-				Fireware, 拓扑结构
-				
-			(1) 如果Firmware或BIOS为主板上集成的设备提供的索引信息可用，则根据此索引进行命名，如eno1, eno2, ...
-			(2) 如果Firmware或BIOS为PCI-E扩展槽所提供的索引信息可用，且可预测，则根据此索引进行命名，如ens1, ens2, ...
-			(3) 如果硬件接口的物理位置信息可用，则根据此信息命名，如enp2s0, ...
-			(4) 如果用户显式定义，也可根据MAC地址命名，例如enx122161ab2e10, ...
-			上述均不可用，则仍使用传统方式命名；
-			
-			命名格式的组成：
-				en：ethernet
-				wl：wlan
-				ww：wwan
-				
-				名称类型：
-					o<index>：集成设备的设备索引号；
-					s<slot>：扩展槽的索引号；
-					x<MAC>：基于MAC地址的命名；
-					p<bus>s<slot>：基于总线及槽的拓扑结构进行命名；
-					
-回顾：计算机网络基础、Linux网络属性配置
-	TCP/IP协议栈：物理层、互联网层、传输层、应用层
-		互联网层：IP
-		传输层：TCP， UDP
-		应用层：http, https, ftp, ldap, ...
-		
-	链接路层：以太网帧
-	互联网层：IP报文
-	
-	以太网帧：MTU（1500）
-		
-	Linux网络属性配置：命令，配置文件；
-		
-Linux网络属性配置（2）
-
-	ifcfg命令家族： ifconfig, route, netstat
-		
-		ifconfig命令：接口及地址查看和管理
-			ifconfig  [INTERFACE]
-				# ifconfig -a：显示所有接口，包括inactive状态的接口；
-			
-			ifconfig interface [aftype] options | address ...
-				# ifconfig  IFACE  IP/MASK  [up|down]
-				# ifconfig  IFACE  IP  netmask  NETMASK  
-				
-				options：
-					[-]promisc
-				
-				注意：立即送往内核中的TCP/IP协议栈，并生效；
-				
-			管理IPv6地址：
-				add addr/prefixlen
-				del  addr/prefixlen
-				
-		route命令：路由查看及管理
-		
-			路由条目类型：
-				主机路由：目标地址为单个IP；
-				网络路由：目标地址为IP网络；
-				默认路由：目标为任意网络，0.0.0.0/0.0.0.0
-				
-			查看：
-				# route  -n
-			添加：
-				route  add  [-net|-host]  target  [netmask  Nm]  [gw GW]  [[dev] If]
-				
-					示例：route add -net  10.0.0.0/8  gw  192.168.10.1  dev  eth1
-					            route add  -net  0.0.0.0/0.0.0.0  gw 192.168.10.1  
-					            route add  default  gw 192.168.10.1  
-					            
-			删除：
-				route  del  [-net|-host] target  [gw Gw]  [netmask Nm]  [[dev] If]
-					
-					示例： route  del  -net  10.0.0.0/8  gw 192.168.10.1
-						     route  del  default
-						     
-		netstat命令：
-			Print network connections, routing tables, interface statistics, masquerade connections, and multicast  memberships
-			
-			显示路由表：netstat  -rn
-				-r：显示内核路由表
-				-n：数字格式
-				
-			显示网络连接：
-				netstat  [--tcp|-t]  [--udp|-u]  [--udplite|-U]  [--sctp|-S]  [--raw|-w]  [--listening|-l]  [--all|-a]  [--numeric|-n]   [--extend|-e[--extend|-e]]  [--program|-p]
-					-t：TCP协议的相关连接，连接均有其状态；FSM（Finate State Machine）；
-					-u：UDP相关的连接
-					-w：raw socket相关的连接
-					-l：处于监听状态的连接
-					-a：所有状态
-					-n：以数字格式显示IP和Port；
-					-e：扩展格式
-					-p：显示相关的进程及PID；
-					
-				常用组合：
-					-tan,  -uan,  -tnl,  -unl,  -tunlp
-								
-				传输层协议：
-					tcp：面向连接的协议；通信开始之前，要建立一个虚链路；通信完成后还要拆除连接；
-					udp：无连接的协议；直接发送数据报文；
-					
-			显示接口的统计数据：
-				netstat    {--interfaces|-I|-i}    [iface]   [--all|-a]   [--extend|-e]   [--verbose|-v]   [--program|-p]  [--numeric|-n]
-					
-				所有接口：
-					netstat  -i
-				指定接口：
-					netstat  -I<IFace>
-					
-		ifup/ifdown命令：
-			注意：通过配置文件/etc/sysconfig/network-scripts/ifcfg-IFACE来识别接口并完成配置；
-	
-	配置主机名：
-	
-		hostname命令：
-			查看：hostname
-			配置：hostname  HOSTNAME
-				当前系统有效，重启后无效；
-			
-		hostnamectl命令（CentOS 7）：
-			hostnamectl  status：显示当前主机名信息；
-			hostnamectl  set-hostname：设定主机名，永久有效；
-			
-		配置文件：/etc/sysconfig/network
-			HOSTNAME=<HOSTNAME>
-			
-			注意：此方法的设置不会立即生效； 但以后会一直有效；
-			
-	配置DNS服务器指向：
-		
-		配置文件：/etc/resolv.conf
-			nameserver   DNS_SERVER_IP
-			
-			如何测试(host/nslookup/dig)：
-				# dig  -t  A  FQDN
-					FQDN --> IP
-					
-				# dig  -x  IP
-					IP --> FQDN
-					
-	iproute家族： 
-		ip命令：
-			show / manipulate routing, devices, policy routing and tunnels
-			
-			ip [ OPTIONS ] OBJECT { COMMAND | help }
-				OBJECT := { link | addr | route | netns  }
-			
-			注意： OBJECT可简写，各OBJECT的子命令也可简写；
-				
-			ip  OBJECT：
-				
-				ip link： network device configuration
-				
-					ip  link  set - change device attributes
-						dev NAME (default)：指明要管理的设备，dev关键字可省略；
-						up和down：
-						multicast on或multicast off：启用或禁用多播功能；
-						name NAME：重命名接口
-						mtu NUMBER：设置MTU的大小，默认为1500；
-						netns PID：ns为namespace，用于将接口移动到指定的网络名称空间；
-						
-					ip  link  show  - display device attributes
-					
-					ip  link  help -  显示简要使用帮助；
-					
-				ip netns：  - manage network namespaces.
-				
-					ip  netns  list：列出所有的netns
-					ip  netns  add  NAME：创建指定的netns
-					ip  netns  del  NAME：删除指定的netns
-					ip  netns   exec  NAME  COMMAND：在指定的netns中运行命令
-					
-				ip address - protocol address management.
-					
-					ip address add - add new protocol address
-						ip  addr  add  IFADDR  dev  IFACE
-							[label NAME]：为额外添加的地址指明接口别名；
-							[broadcast ADDRESS]：广播地址；会根据IP和NETMASK自动计算得到；
-							[scope SCOPE_VALUE]：
-								global：全局可用；
-								link：接口可用；
-								host：仅本机可用；												
-						
-					ip address delete - delete protocol address
-						ip addr  delete  IFADDR  dev  IFACE 
-							
-					ip address show - look at protocol addresses
-						ip  addr   list  [IFACE]：显示接口的地址；
-						
-					ip address flush - flush protocol addresses
-						ip  addr  flush  dev  IFACE
-						
-				ip route - routing table management
-				
-					ip route add - add new route
-					ip route change - change route
-					ip route replace - change or add new one
-						ip  route   add  TYPE PREFIX  via GW  [dev  IFACE]  [src SOURCE_IP]
-						
-						示例：
-							# ip route add 192.168.0.0/24  via 10.0.0.1  dev eth1 src  10.0.20.100
-							# ip  route  add default  via  GW						
-						
-					ip route delete - delete route
-						ip  route  del  TYPE PRIFIX 
-						
-						示例：
-							# ip  route delete  192.168.1.0/24
-							
-					ip route show - list routes
-						TYPE PRIFIX  
-					ip route flush - flush routing tables
-						TYPE  PRIFIX
-					
-					ip route get - get a single route
-						ip  route  get  TYPE PRIFIX
-						
-						示例：ip route  get  192.168.0.0/24
-					
-		ss命令：
-			ss  [options]  [ FILTER ]
-				选项：
-					-t：TCP协议的相关连接
-					-u：UDP相关的连接
-					-w：raw socket相关的连接
-					-l：监听状态的连接
-					-a：所有状态的连接
-					-n：数字格式
-					-p：相关的程序及其PID
-					-e：扩展格式信息
-					-m：内存用量
-					-o：计时器信息
-					
-				FILTER := [ state TCP-STATE ]  [ EXPRESSION ]
-				
-					TCP的常见状态：
-						TCP FSM：
-							LISTEN：监听
-							ESTABLISEHD：建立的连接
-							FIN_WAIT_1：
-							FIN_WAIT_2：
-							SYN_SENT：
-							SYN_RECV：
-							CLOSED：
-						
-					EXPRESSION：
-						dport = 
-						sport = 
-							示例：'( dport = :22 or sport = :22)'
-								~]# ss   -tan    '(  dport = :22 or sport = :22  )'
-								~]# ss  -tan  state  ESTABLISHED
-								
-	配置文件：
-		IP/NETMASK/GW/DNS等属性的配置文件：/etc/sysconfig/network-scripts/ifcfg-IFACE
-			IFACE：接口名称；
-		路由的相关配置文件：/etc/sysconfig/networkj-scripts/route-IFACE
-					
-		配置文件/etc/sysconfig/network-scripts/ifcfg-IFACE通过大量参数来定义接口的属性；其可通过vim等文本编辑器直接修改，也可以使用专用的命令的进行修改（CentOS 6：system-config-network (setup)，CentOS 7: nmtui）
-		
-			ifcfg-IFACE配置文件参数：
-				DEVICE：此配置文件对应的设备的名称；
-				ONBOOT：在系统引导过程中，是否激活此接口；
-				UUID：此设备的惟一标识；
-				IPV6INIT：是否初始化IPv6；
-				BOOTPROTO：激活此接口时使用什么协议来配置接口属性，常用的有dhcp、bootp、static、none；
-				TYPE：接口类型，常见的有Ethernet, Bridge；
-				DNS1：第一DNS服务器指向；
-				DNS2：备用DNS服务器指向；
-				DOMAIN：DNS搜索域；
-				IPADDR： IP地址；
-				NETMASK：子网掩码；CentOS 7支持使用PREFIX以长度方式指明子网掩码；
-				GATEWAY：默认网关；
-				USERCTL：是否允许普通用户控制此设备；
-				PEERDNS：如果BOOTPROTO的值为“dhcp”，是否允许dhcp server分配的dns服务器指向覆盖本地手动指定的DNS服务器指向；默认为允许；
-				HWADDR：设备的MAC地址；
-				
-				NM_CONTROLLED：是否使用NetworkManager服务来控制接口；
-				
-			网络服务：
-				network
-				NetworkManager 
-				
-				管理网络服务：
-					CentOS 6:  service  SERVICE  {start|stop|restart|status}
-					CentOS 7：systemctl  {start|stop|restart|status}  SERVICE[.service]
-					
-				配置文件修改之后，如果要生效，需要重启网络服务；
-					CentOS 6：# service  network  restart
-					CentOS 7：# systemctl  restart  network.service
-					
-		用到非默认网关路由：/etc/sysconfig/network-scripts/route-IFACE
-			支持两种配置方式，但不可混用；
-				(1) 每行一个路由条目：
-					TARGET  via  GW
-					
-				(2) 每三行一个路由条目：
-					ADDRESS#=TARGET
-					NETMASK#=MASK
-					GATEWAY#=NEXTHOP
-					
-	给接口配置多个地址：
-		ip addr之外，ifconfig或配置文件都可以；
-		
-		(1) ifconfig  IFACE_LABEL  IPADDR/NETMASK
-		
-			IFACE_LABEL： eth0:0, eth0:1, ...
-			
-		(2) 为别名添加配置文件；
-			DEVICE=IFACE_LABEL
-			BOOTPROTO：网上别名不支持动态获取地址；
-				static, none
-				
-	nmcli命令：
-		nmcli  [ OPTIONS ] OBJECT { COMMAND | help }
-			
-			device - show and manage network interfaces
-				COMMAND := { status | show | connect | disconnect | delete | wifi | wimax }
-			
-			connection - start, stop, and manage network connections
-				COMMAND := { show | up | down | add | edit | modify | delete | reload | load }
-				
-				modify [ id | uuid | path ] <ID> [+|-]<setting>.<property> <value>
-				
-				如何修改IP地址等属性：
-					# nmcli  conn  modify  IFACE  [+|-]setting.property  value
-						ipv4.address
-						ipv4.gateway
-						ipv4.dns1
-						ipv4.method
-							manual
-							
-	博客作业：上述所有内容；
-		ifcfg, ip/ss，配置文件 
-		
-	课外作业：nmap, ncat, tcpdump命令；
-			
-回顾：ip命令，ss命令；配置文件；CentOS 7
-
-	ifcfg、ip、netstat、ss
-	配置文件：
-		/etc/sysconfig/network-scripts/
-			ifcfg-IFNAME
-			route-IFNAME
-	CentOS 7: nmcli, nmtui
-
 Linux进程及作业管理
 
 	内核的功用：进程管理、文件系统、网络功能、内存管理、驱动程序、安全功能
@@ -904,7 +178,16 @@ Linux进程及作业管理
 			uptime命令：显示系统时间、运行时长及平均负载；
 				过去1分钟、5分钟和15分钟的平均负载；
 					等待运行的进程队列的长度；
-					
+
+
+
+
+
+
+
+
+
+
 回顾： Linux OS基础概念、进程查看的几工具；
 
 	内核的功能：进程管理（进程调度）
@@ -916,7 +199,15 @@ Linux进程及作业管理
 		Memory：VSZ，RSS，SHM
 		
 	命令： pstree, pgrep, pkill, ps, top, uptime 
-	
+
+
+
+
+
+
+
+
+
 Linux进程及作业管理(2)
 
 	CentOS 6: http://172.16.0.1/fedora-epel/
@@ -1108,7 +399,15 @@ Linux进程及作业管理(2)
 	未涉及到的命令：sar,  tsar,  iostat,  iftop,  nethog,  ...
 	
 	博客作业： htop/dstat/top/ps命令的使用；
-	
+
+
+
+
+
+
+
+
+
 网络客户端工具：
 	
 	ping/lftp/ftp/lftpget/wget等；
@@ -1161,7 +460,14 @@ Linux进程及作业管理(2)
 			-O file：下载的文件的保存位置；
 			-c：续传；
 			--limit-rate=amount：以指定的速率传输文件；
-			
+
+
+
+
+
+
+
+
 bash脚本编程
 
 	顺序执行
@@ -1237,7 +543,11 @@ bash脚本编程
 				done
 				echo 
 			done	
-			
+
+
+
+
+
 CentOS系统启动流程
 
 	Linux系统的组成部分：内核+根文件系统 
@@ -1460,7 +770,14 @@ CentOS系统启动流程
 					# systemctl  {start|stop|restart|status}  name[.service]
 					
 		博客作业：CentOS系统启动流程；
-		
+
+
+
+
+
+
+
+
 回顾：
 	
 	CentOS 6启动流程：

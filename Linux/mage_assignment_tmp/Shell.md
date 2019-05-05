@@ -216,20 +216,17 @@ hostName=$(hostname)
 
 ### 选择执行
 
-- 单分支的if语句
+- 选择执行：
+    1. `&&`, `||`
+    2. if语句
+    3. case语句
+
+#### 单分支的if语句
+
 ```sh
 if  测试条件
 then
     代码分支
-fi
-```
-
--  双分支的if语句
-```sh
-if  测试条件; then
-    条件为真时执行的分支
-else
-    条件为假时执行的分支
 fi
 ```
 
@@ -256,6 +253,16 @@ if ! grep "^$1\>" /etc/passwd &> /dev/null; then
     useradd $1
     echo $1 | passwd --stdin $1 &> /dev/null
     echo "Add user $1 finished."
+fi
+```
+
+#### 双分支的if语句
+
+```sh
+if  测试条件; then
+    条件为真时执行的分支
+else
+    条件为假时执行的分支
 fi
 ```
 
@@ -331,6 +338,201 @@ echo "Max number: $max."
                 fdisk -l $(fdisk -l /dev/[sh]d[a-z] | grep -o "^Disk /dev/[sh]d[a-]" | tail -1 | cut -d' ' -f2)
             fi
 ```
+
+#### 多分支的if语句
+
+```sh
+if  CONDITION1; then
+    条件1为真分支
+elif  CONDITION2; then
+    条件2为真分支
+elif  CONDITION3; then
+    条件3为真分支
+    ...
+elif  CONDITIONn; then
+    条件n为真分支
+else
+    所有条件均不满足时的分支
+fi
+注意：if语句可嵌套；
+```
+
+- 示例：脚本参数传递一个文件路径给脚本，判断此文件的类型；
+
+```sh
+#!/bin/bash
+#
+if [ $# -lt 1 ]; then
+    echo "At least on path."
+    exit 1
+fi
+
+if ! [ -e $1 ]; then
+    echo "No such file."
+    exit 2
+fi
+
+if [ -f $1 ]; then
+    echo "Common file."
+elif [ -d $1 ]; then
+    echo "Directory."
+elif [ -L $1 ]; then
+    echo "Symbolic link."
+elif [ -b $1 ]; then
+    echo "block special file."
+elif [ -c $1 ]; then
+    echo "character special file."
+elif [ -S $1 ]; then
+    echo "Socket file."
+else
+    echo "Unkown."
+fi
+```
+
+- 练习：写一个脚本
+    - (1) 传递一个参数给脚本，此参数为用户名；
+    - (2) 根据其ID号来判断用户类型：
+        - 0： 管理员
+        - 1-999：系统用户
+        - 1000+：登录用户
+```sh
+#!/bin/bash
+#
+[ $# -lt 1 ] && echo "At least on user name." && exit 1
+
+! id $1 &> /dev/null && echo "No such user." && exit 2
+
+userid=$(id -u $1)
+
+if [ $userid -eq 0 ]; then
+    echo "root"
+elif [ $userid -ge 1000 ]; then
+    echo "login user."
+else
+    echo "System user."
+fi                                      
+```
+
+- 练习：写一个脚本
+    - (1) 列出如下菜单给用户：
+    ```
+        disk) show disks info;
+        mem) show memory info;
+        cpu) show cpu info;
+        *) quit;
+    ```
+    - (2) 提示用户给出自己的选择，而后显示对应其选择的相应系统信息；
+
+```sh
+    #!/bin/bash
+    #
+cat << EOF
+disk) show disks info
+mem) show memory info
+cpu) show cpu info
+*) QUIT
+EOF
+read -p "Your choice: " option
+if [[ "$option" == "disk" ]]; then
+    fdisk -l /dev/[sh]d[a-z]
+elif [[ "$option" == "mem" ]]; then
+    free -m
+elif [[ "$option" == "cpu" ]];then
+    lscpu
+else
+    echo "Unkown option."
+    exit 3
+fi
+```
+
+### 循环执行
+
+- 将一段代码重复执行0、1或多次；
+    - 进入条件：条件满足时才进入循环；
+    - 退出条件：每个循环都应该有退出条件，以有机会退出循环；
+        
+- bash脚本：
+    - for循环
+    - while循环
+    - until循环
+
+#### for循环
+
+- 两种格式：
+    - (1) 遍历列表
+        ```sh
+        for  VARAIBLE  in  LIST; do
+            循环体
+        done
+        ```
+        - 进入条件：只要列表有元素，即可进入循环；
+        - 退出条件：列表中的元素遍历完成；
+    - (2) 控制变量
+
+- LISTT的生成方式：
+    - (1) 直接给出；
+    - (2) 整数列表
+        - (a) `{start..end}`
+        - (b) `seq [start [incremtal]] last`
+    - (3) 返回列表的命令
+    - (4) glob 
+    - (5) 变量引用： $@, $*
+
+- 添加三个用户
+
+```sh
+#!/bin/bash
+#
+for username in user21 user22 user23; do
+    if id $username &> /dev/null; then
+        echo "$username exists."
+    else
+        useradd $username && echo "Add user $username finished."
+    fi
+done
+```
+
+- 示例：求100以内所有正整数之和；
+
+```sh
+#!/bin/bash
+#
+declare -i sum=0
+for i in {1..100}; do
+    echo "\$sum is $sum, \$i is $i"
+    sum=$[$sum+$i]
+done
+echo $sum
+```
+
+- 示例：判断/var/log目录下的每一个文件的内容类型
+
+```sh
+#!/bin/bash
+#
+for filename in /var/log/*; do
+    if [ -f $filename ]; then
+        echo "Common file."
+    elif [ -d $filename ]; then
+        echo "Directory."
+    elif [ -L $filename ]; then
+        echo "Symbolic link."
+    elif [ -b $filename ]; then
+        echo "block special file."
+    elif [ -c $filename ]; then
+        echo "character special file."
+    elif [ -S $filename ]; then
+        echo "Socket file."
+    else
+        echo "Unkown."
+    fi                  
+done
+```
+
+- 练习：
+    - 1、分别求100以内所有偶数之和，以及所有奇数之和；
+    - 2、计算当前系统上的所有用的id之和；
+    - 3、通过脚本参数传递一个目录给脚本，而后计算此目录下所有文本文件的行数之和；并说明此类文件的总数；
 
 
 ## 用户交互
