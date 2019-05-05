@@ -309,96 +309,53 @@
 
 - testapp-VERSION-release.src.rpm --> 安装后，使用rpmbuild命令制作成二进制格式的rpm包，而后再安装；
 - 源代码 --> 预处理 --> 编译(gcc) --> 汇编 --> 链接 --> 执行
+- 源代码组织格式：多文件：文件中的代码之间，很可能存在跨文件依赖关系；需要使用**项目管理器**来管理
+    - C、C++： make (configure --> Makefile.in --> makefile)
+    - java: maven
 
-        源代码组织格式：
-            多文件：文件中的代码之间，很可能存在跨文件依赖关系；
+- 开源程序源代码的获取：
+    - 官方自建站点：
+        - apache.org (ASF)
+        - mariadb.org
+    - 代码托管：
+        - SourceForge
+        - Github.com
+        - code.google.com
 
-            C、C++： make (configure --> Makefile.in --> makefile)
-            java: maven
-
-
-            C代码编译安装三步骤：
-                ./configure：
-                    (1) 通过选项传递参数，指定启用特性、安装路径等；执行时会参考用户的指定以及Makefile.in文件生成makefile；
-                    (2) 检查依赖到的外部环境；
-                make：
-                    根据makefile文件，构建应用程序；
-                make install
-
-            开发工具：
-                autoconf: 生成configure脚本
-                automake：生成Makefile.in
-
-            建议：安装前查看INSTALL，README
-
-        开源程序源代码的获取：
-            官方自建站点：
-                apache.org (ASF)
-                mariadb.org
-                ...
-            代码托管：
-                SourceForge
-                Github.com
-                code.google.com
-
-        c/c++: gcc (GNU C Complier)
-
-        编译C源代码：
-            前提：提供开发工具及开发环境
-                开发工具：make, gcc等
-                开发环境：开发库，头文件
-                    glibc：标准库
-
-                通过“包组”提供开发组件
-                    CentOS 6: "Development Tools", "Server Platform Development",
-
-            第一步：configure脚本
-                选项：指定安装位置、指定启用的特性
-
-                --help: 获取其支持使用的选项
-                    选项分类：
-                        安装路径设定：
-                            --prefix=/PATH/TO/SOMEWHERE: 指定默认安装位置；默认为/usr/local/
-                            --sysconfdir=/PATH/TO/SOMEWHERE：配置文件安装位置；
-
-                        System types:
-
-                        Optional Features: 可选特性
-                            --disable-FEATURE
-                            --enable-FEATURE[=ARG]
-
-                        Optional Packages: 可选包
-                            --with-PACKAGE[=ARG]
-                            --without-PACKAGE
-
-            第二步：make
-
-            第三步：make install
-
-        安装后的配置：
-            (1) 导出二进制程序目录至PATH环境变量中；
-                编辑文件/etc/profile.d/NAME.sh
-                    export PATH=/PATH/TO/BIN:$PATH
-
-            (2) 导出库文件路径
-                编辑/etc/ld.so.conf.d/NAME.conf
-                    添加新的库文件所在目录至此文件中；
-
-                让系统重新生成缓存：
-                    ldconfig [-v]
-
-            (3) 导出头文件
-                基于链接的方式实现：
-                    ln -sv 
-
-            (4) 导出帮助手册
-                编辑/etc/man.config文件
-                    添加一个MANPATH
-
-    练习：
-        1、yum的配置和使用；包括yum repository的创建；
-        2、编译安装apache 2.2; 启动此服务；
-
-    博客作业：程序包管理：rpm/yum/编译               
-
+- C代码编译安装三步骤：
+    - 建议：安装前查看INSTALL，README
+    - 前提：提供开发工具及开发环境
+        - 开发工具：make, gcc(GNU C/C++ Complier)等
+            - 开发环境：开发库，头文件, glibc：标准库
+            - 通过“包组”提供开发组件, CentOS 6: "Development Tools", "Server Platform Development",
+    - 第一步：`./configure`：
+        - (1) 通过选项传递参数，指定启用特性、安装路径等；执行时会参考用户的指定以及Makefile.in文件生成makefile；
+        - (2) 检查依赖到的外部环境；
+        - 其依赖于开发工具：autoconf: 生成configure脚本
+        - 选项：指定安装位置、指定启用的特性
+            - --help: 获取其支持使用的选项, 选项分类：
+                - 安装路径设定：
+                    - --prefix=/PATH/TO/SOMEWHERE: 指定默认安装位置；默认为`/usr/local/`
+                    - --sysconfdir=/PATH/TO/SOMEWHERE：配置文件安装位置；
+                - System types:
+                - Optional Features: 可选特性
+                    - --disable-FEATURE
+                    - --enable-FEATURE[=ARG]
+                - Optional Packages: 可选包
+                    - --with-PACKAGE[=ARG]
+                    - --without-PACKAGE
+    - 第二步：`make`：根据makefile文件，构建应用程序；
+        - 其依赖于开发工具：automake：生成Makefile.in
+    - 第三步：`make install`
+    - 安装后的配置：
+        - (1) 导出二进制程序目录至PATH环境变量中: 
+            - 编辑文件`/etc/profile.d/NAME.sh`: `export PATH=/PATH/TO/BIN:$PATH`
+        - (2) 导出库文件路径
+            - 编辑`/etc/ld.so.conf.d/NAME.conf`, 添加新的库文件所在目录至此文件中；
+            - 让系统重新生成缓存：`ldconfig [-v]`
+        - (3) 导出头文件
+            - 基于链接的方式实现：`ln -sv` 
+        - (4) 导出帮助手册
+            - 编辑/etc/man.config文件: 添加一个MANPATH
+            
 桌面环境：Windows 7， OpenSUSE 13.2,  Kubuntu(KDE)
