@@ -219,7 +219,7 @@
 
 - yum命令的用法：
     - yum [options] [command] [package ...]
-    - command is one of:
+    - command (is one of):
         - repolist [all|enabled|disabled]
         - list [...]
         - install package1 [package2] [...]
@@ -253,8 +253,8 @@
         - help [command]
     - 显示仓库列表：repolist [all|enabled|disabled]
     - 显示程序包：list
-        - # yum list [all | glob_exp1] [glob_exp2] [...]
-        - # yum list {available|installed|updates} [glob_exp1] [...]
+        - yum list [all | glob_exp1] [glob_exp2] [...]
+        - yum list {available|installed|updates} [glob_exp1] [...]
     - 安装程序包：
         - install package1 [package2-1.2.3] [...]
         - reinstall package1 [package2] [...]  (重新安装)
@@ -279,39 +279,34 @@
         - grouplist [hidden] [groupwildcard] [...]
         - groupremove group1 [group2] [...]
         - groupinfo group1 [...]
-
-
-
-    yum的命令行选项：
-        --nogpgcheck：禁止进行gpg check；
-        -y: 自动回答为“yes”；
-        -q：静默模式；
-        --disablerepo=repoidglob：临时禁用此处指定的repo；
-        --enablerepo=repoidglob：临时启用此处指定的repo；
-        --noplugins：禁用所有插件；
+    - yum的命令行选项：
+        - --nogpgcheck：禁止进行gpg check；
+        - -y: 自动回答为“yes”；
+        - -q：静默模式；
+        - --disablerepo=repoidglob：临时禁用此处指定的repo；
+        - --enablerepo=repoidglob：临时启用此处指定的repo；
+        - --noplugins：禁用所有插件；
+    - yum的repo配置文件中可用的变量：
+        - $releasever: 当前OS的发行版的主版本号；
+        - $arch: 平台；
+        - $basearch：基础平台；
+        - $YUM0-$YUM9
+    - 创建yum仓库：`createrepo [options] <directory>`
 
 - 如何使用光盘当作本地yum仓库：
-        (1) 挂载光盘至某目录，例如/media/cdrom
-            # mount -r -t iso9660 /dev/cdrom /media/cdrom
-        (2) 创建配置文件
+    - (1) 挂载光盘至某目录，例如/media/cdrom
+        - mount -r -t iso9660 /dev/cdrom /media/cdrom
+    - (2) 创建配置文件
+    ```
         [CentOS7]
         name=
         baseurl=
         gpgcheck=
         enabled=
+    ```
 
-    yum的repo配置文件中可用的变量：
-        $releasever: 当前OS的发行版的主版本号；
-        $arch: 平台；
-        $basearch：基础平台；
-        $YUM0-$YUM9
+## 程序包编译安装
 
-        http://mirrors.magedu.com/centos/$releasever/$basearch/os
-
-    创建yum仓库：
-        createrepo [options] <directory>
-
-## 程序包编译安装：
         testapp-VERSION-release.src.rpm --> 安装后，使用rpmbuild命令制作成二进制格式的rpm包，而后再安装；
 
         源代码 --> 预处理 --> 编译(gcc) --> 汇编 --> 链接 --> 执行
