@@ -254,7 +254,7 @@
 - [IPtables之FORWARD转发链](https://blog.51cto.com/linuxcgi/1965296 "IPtables之FORWARD转发链")
 
 - 要注意的问题：
-    - (0) 开启转发功能：`echo "0" > /proc/sys/net/ipv4/ip_forward`
+    - (0) 开启转发功能：`echo "1" > /proc/sys/net/ipv4/ip_forward`
     - (1) 请求-响应报文均会经由FORWARD链，要注意规则的方向性；
     - (2) 如果要启用conntrack机制，建议将双方向的状态为ESTABLISHED的报文直接放行；
 
@@ -279,7 +279,7 @@
     - SNAT：
         - This target is only valid in the nat table, in the POSTROUTING and INPUT chains, and user-defined chains which are only called from those chains.
         - --to-source [ipaddr[-ipaddr]]
-        - `iptables iptables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT --to-source 123.123.123.123`
+        - `iptables -t nat -A POSTROUTING -s 192.168.122.0/24 -j SNAT --to-source 123.123.123.123`
     - DNAT：
         - This target is only valid in the nat table, in the PREROUTING and OUTPUT chains, and user-defined chains which are only called from those chains.
         - --to-destination [ipaddr[-ipaddr]][:port[-port]]

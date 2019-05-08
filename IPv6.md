@@ -19,4 +19,24 @@
 - ICMPv6组播大概率事件，只会发送给固定的一个终端
 
 ## CentOS配置IPv6地址
+```
+[root@localhost ~]# cat /etc/sysconfig/network-scripts/ifcfg-eth0
+DEVICE=eth0
+BOOTPROTO=static
+IPADDR=10.0.203.2
+NETMASK=255.255.255.0
+ONBOOT=yes
+TYPE=Ethernet
+NM_CONTROLLED=no
+IPV6INIT=yes
+IPV6ADDR=fc00:203::2/64
 
+[root@localhost ~]# cat /etc/sysconfig/network
+NETWORKING=yes
+GATEWAY=10.0.203.1
+NOZEROCONF=yes
+NETWORKING_IPV6=yes
+IPV6INIT=yes
+PEERNTP=no
+IPV6_DEFAULTGW=fc00:203::1%eth0
+```

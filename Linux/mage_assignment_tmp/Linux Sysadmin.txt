@@ -783,6 +783,11 @@ CentOS系统启动流程
 	CentOS 6启动流程：
 		POST --> Boot Sequence(BIOS) --> Boot Loader (MBR) --> Kernel(ramdisk) --> rootfs --> switchroot --> /sbin/init -->(/etc/inittab, /etc/init/*.conf) --> 设定默认运行级别 --> 系统初始化脚本 --> 关闭或启动对应级别下的服务 --> 启动终端
 
+
+
+
+
+
 GRUB(Boot Loader)：
 
 	grub: GRand Unified Bootloader
@@ -867,7 +872,12 @@ GRUB(Boot Loader)：
 			3、为grub设置保护功能；
 
 	博客作业：grub应用；
-	
+
+
+
+
+
+
 Linux Kernel：
     
         CentOS启动流程：POST --> Bootloader(BIOS, MBR) --> Kernel(initrd) --> rootfs --> switch_root --> /sbin/init
@@ -878,7 +888,16 @@ Linux Kernel：
         ldd命令：
                 - print shared library dependencies
                 ldd [OPTION]... FILE...
-                
+
+
+
+
+
+
+
+
+
+
 内核设计体系：单内核、微内核 
 		Linux：单内核设计，但充分借鉴了微内核体系的设计的优点；为内核引入了模块化机制；
 			内核的组成部分：
@@ -999,7 +1018,16 @@ Linux Kernel：
 				udev：通过读取/sys目录下的硬件设备信息按需为各硬件设备创建设备文件；udev是用户空间程序；专用工具：devadmin, hotplug；
 				
 				udev为设备创建设备文件时，会读取其事先定义好的规则文件，一般在/etc/udev/rules.d/目录下，以及/usr/lib/udev/rules.d/目录下；
-		
+
+
+
+
+
+
+
+
+
+
 回顾：内核
 	
 	内核的组成部分：kernel, kernel object, ramdisk
@@ -1015,7 +1043,11 @@ Linux Kernel：
 		2nd stage：/boot/grub/
 			
 		加密：编辑、内核
-	
+
+
+
+
+
 编译内核：
 	
 	程序包的编译安装：
@@ -1122,7 +1154,10 @@ Linux Kernel：
 					# make clean：清理编译生成的绝大多数文件，但会保留config，及编译外部模块所需要的文件；
 					# make mrproper：清理编译生成的所有文件，包括配置生成的config文件及某些备份文件；
 					# make distclean：相当于mrproper，额外清理各种patches以及编辑器备份文件；
-					
+
+
+
+
 CentOS 系统安装：
 	
 	安装程序：anaconda
@@ -1207,7 +1242,12 @@ CentOS 系统安装：
 					dd
 					
 				www.redhat.com/docs , 《installation guide》
-				
+
+
+
+
+
+
 回顾：
 	内核编译、CentOS系统安装
 		内核编译：
@@ -1225,7 +1265,9 @@ CentOS 系统安装：
 						配置文件（自动配置）
 					安装阶段
 					首次启动
-					
+
+
+
 CentOS系统安装：
 	
 	CentOS 6.7 x86_64: 

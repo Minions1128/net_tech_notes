@@ -176,8 +176,7 @@ Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式�
         - -f /PATH/TO/SED_SCRIPT_FILE: 每行一个编辑命令；
         - -r, --regexp-extended：支持使用扩展正则表达式；
         - -i[SUFFIX], --in-place[=SUFFIX]：直接编辑原文件；
-        
-            ~]# sed    -e    's@^#[[:space:]]*@@'     -e    '/^UUID/d'    /etc/fstab
+        - `~]# sed    -e    's@^#[[:space:]]*@@'     -e    '/^UUID/d'    /etc/fstab`
     - script：地址定界编辑命令
         - 地址定界：
             - (1) 空地址：对全文进行处理；
@@ -198,11 +197,18 @@ Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式�
             - p：显示模式空间中的内容；(-n)
             - a \text：在行后面追加文本“text”，支持使用\n实现多行追加；
             - i \text：在行前面插入文本“text”，支持使用\n实现多行插入；
+                - `sed '3i \new line' /etc/fstab`
+                - `sed '/^UUID/a \# add new device based on uuid' /etc/fstab`
             - c \text：把匹配到的行替换为此处指定的文本“text”；
+                - `sed '/^UUID/c \####' /etc/fstab`
             - w /PATH/TO/SOMEFILE：保存模式空间匹配到的行至指定的文件中；
+                - `sed '/^[^#]/w ./ssss.txt' /etc/fstab`
+                - `sed '/^#/!w ./ssss.txt' /etc/fstab`
             - r /PATH/FROM/SOMEFILE：读取指定文件的内容至当前文件被模式匹配到的行后面；文件合并；
             - =：为模式匹配到的行打印行号；
-            - !：条件取反: 地址定界!编辑命令；
+            - !：条件取反: 
+                - 地址定界!编辑命令；
+                - `sed '/^#/!w ./ssss.txt' /etc/fstab`
             - s///：查找替换，其分隔符可自行指定，常用的有s@@@, s###等；
                 - 替换标记：
                     - g：全局替换；
@@ -219,24 +225,28 @@ Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式�
         - d：删除模式空间中的行；
         - D：删除多行模式空间中的所有行；
 
+- 练习1：删除/boot/grub/grub2.cfg文件中所有以空白字符开头的行的行首的所有空白字符；
+```sh
+sed 's@^[[:space:]]\+@@' /etc/grub2.cfg
 ```
- 练习1：删除/boot/grub/grub2.cfg文件中所有以空白字符开头的行的行首的所有空白字符；
-                    ~]# sed    's@^[[:space:]]\+@@' /etc/grub2.cfg
-                练习2：删除/etc/fstab文件中所有以#开头的行的行首的#号及#后面的所有空白字符；
-                    ~]# sed    's@^#[[:space:]]*@@'    /etc/fstab
-                练习3：输出一个绝对路径给sed命令，取出其目录，其行为类似于dirname；
-                    ~]# echo "/var/log/messages/" | sed 's@[^/]\+/\?$@@'
-                    ~]# echo "/var/log/messages" | sed -r 's@[^/]+/?$@@'
-            示例：
-                sed    -n    'n;p'    FILE：显示偶数行；
-                sed    '1!G;h;$!d'    FILE：逆序显示文件的内容；
-                sed    ’$!d'    FILE：取出最后一行；
-                sed    '$!N;$!D' FILE：取出文件后两行；
-                sed '/^$/d;G' FILE：删除原有的所有空白行，而后为所有的非空白行后添加一个空白行；
-                sed    'n;d'    FILE：显示奇数行；
-                sed 'G' FILE：在原有的每行后方添加一个空白行；
-                
-        博客作业：sed的用法；
+- 练习2：删除/etc/fstab文件中所有以#开头的行的行首的#号及#后面的所有空白字符；
+```sh
+sed 's@^#[[:space:]]*@@' /etc/fstab
+```
+- 练习3：输出一个绝对路径给sed命令，取出其目录，其行为类似于dirname；
+```sh
+echo "/var/log/messages/" | sed 's@[^/]\+/\?$@@'
+echo "/var/log/messages" | sed -r 's@[^/]+/?$@@'
+```
+- 练习4：
+```sh
+sed    -n    'n;p'          FILE    # 显示偶数行；
+sed          '1!G;h;$!d'    FILE    # 逆序显示文件的内容；
+sed          '$!d'          FILE    # 取出最后一行；
+sed          '$!N;$!D'      FILE    # 取出文件后两行；
+sed          '/^$/d;G'      FILE    # 删除原有的所有空白行，而后为所有的非空白行后添加一个空白行；
+sed          'n;d'          FILE    # 显示奇数行；
+sed          'G'            FILE    # 在原有的每行后方添加一个空白行；
 ```
 
 ## awk
