@@ -4,20 +4,17 @@
 
 - Process: 运行中的程序的一个副本，存在生命周期
 
-- Linux内核存储进程信息的固定格式：task struct
-        多个任务的的task struct组件的链表：task list
+- Linux内核存储进程信息的固定格式：task struct, 多个任务的task struct组件的链表：task list
 
-    进程创建：
-        init
-            父子关系
-            进程：都由其父进程创建
-                fork(), clone()
-
-        进程优先级：
-            0-139：
-                1-99：实时优先级；
-                100-139：静态优先级；
-                    数字越小，优先级越高；
+- 进程创建：
+    - init
+        - 父子关系
+        - 进程：都由其父进程创建: fork(), clone()
+    - 进程优先级：
+        - 0-139：
+            - 1-99：实时优先级；
+            - 100-139：静态优先级；
+                - 数字越小，优先级越高；
 
                 Nice值：
                     -20,19
@@ -25,13 +22,13 @@
             Big O
                 O(1), O(logn), O(n), O(n^2), O(2^n)
 
-        进程内存：
+    - 进程内存：
             Page Frame: 页框，用存储页面数据
                 存储Page
 
                 MMU：Memory Management Unit
 
-        IPC: Inter Process Communication
+    - IPC: Inter Process Communication
             同一主机上：
                 signal
                 shm: shared memory
@@ -41,7 +38,11 @@
                 rpc: remote procecure call
                 socket: 
 
-    Linux内核：抢占式多任务
+
+
+
+
+Linux内核：抢占式多任务
 
         进程类型：
             守护进程: 在系统引导过程中启动的进程，跟终端无关的进程；
@@ -62,8 +63,13 @@
             IO-Bound
 
         《Linux内核设计与实现》，《深入理解Linux内核》                    
-            
-    Linux系统上的进程查看及管理工具：pstree, ps, pidof, pgrep, top, htop, glances, pmap, vmstat, dstat, kill, pkill, job, bg, fg, nohup, nice, renice, killall, ...
+
+
+
+
+
+
+Linux系统上的进程查看及管理工具：pstree, ps, pidof, pgrep, top, htop, glances, pmap, vmstat, dstat, kill, pkill, job, bg, fg, nohup, nice, renice, killall, ...
         
         CentOS 5:  SysV init
         CentOS 6：upstart
