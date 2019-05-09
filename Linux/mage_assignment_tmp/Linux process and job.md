@@ -15,25 +15,19 @@
             - 1-99：实时优先级；
             - 100-139：静态优先级；
                 - 数字越小，优先级越高；
-
                 Nice值：
                     -20,19
-
             Big O
                 O(1), O(logn), O(n), O(n^2), O(2^n)
-
     - 进程内存：
             Page Frame: 页框，用存储页面数据
                 存储Page
-
                 MMU：Memory Management Unit
-
     - IPC: Inter Process Communication
             同一主机上：
                 signal
                 shm: shared memory
                 semerphor
-
             不同主机上：
                 rpc: remote procecure call
                 socket: 
