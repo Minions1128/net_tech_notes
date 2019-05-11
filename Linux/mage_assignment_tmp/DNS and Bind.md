@@ -56,154 +56,74 @@
 
 - 区域数据库文件：
     - 资源记录：Resource Record, 简称rr；
-        记录有类型：A， AAAA， PTR， SOA， NS， CNAME， MX
-        
-    SOA：Start Of Authority，起始授权记录；一个区域解析库有且只能有一个SOA记录，而且必须放在第一条；
-    NS：Name Service，域名服务记录；一个区域解析库可以有多个NS记录；其中一个为主的；
-    A： Address, 地址记录，FQDN --> IPv4；
-    AAAA：地址记录， FQDN --> IPv6；
-    CNAME：Canonical Name，别名记录；
-    PTR：Pointer，IP --> FQDN
-    MX：Mail eXchanger，邮件交换器；
-        优先级：0-99，数字越小优先级越高；
-        
-    资源记录的定义格式：
-        语法： name    [TTL]   IN  RR_TYPE         value
-    
-    SOA：
-        name: 当前区域的名字；例如”mageud.com.”，或者“2.3.4.in-addr.arpa.”；
-        value：有多部分组成
-            (1) 当前区域的区域名称（也可以使用主DNS服务器名称）；
-            (2) 当前区域管理员的邮箱地址；但地址中不能使用@符号，一般使用点号来替代；
-            (3) (主从服务协调属性的定义以及否定答案的TTL)
-                
-            例如：
-                example.com.     86400   IN      SOA     example.com.     admin.example.com.  (
-                                    2017010801  ; serial
-                                    2H          ; refresh
-                                    10M         ; retry
-                                    1W          ; expire
-                                    1D          ; negative answer ttl 
-                        )   
-                        
-            NS：
-                name: 当前区域的区域名称
-                value：当前区域的某DNS服务器的名字，例如ns.example.com.；
-                    注意：一个区域可以有多个ns记录； 
-                    
-                例如：
-                    example.com.     86400   IN  NS      ns1.example.com.
-                    example.com.     86400   IN  NS      ns2.example.com.
-                    
-            MX：
-                name: 当前区域的区域名称
-                value：当前区域某邮件交换器的主机名；
-                    注意：MX记录可以有多个；但每个记录的value之前应该有一个数字表示其优先级；
-                    
-                例如：
-                    example.com.         IN  MX  10      mx1.example.com.
-                    example.com.         IN  MX  20      mx2.example.com.
-                    
-            A：
-                name：某FQDN，例如www.example.com.
-                value：某IPv4地址；
-                
-                例如：
-                    www.example.com.     IN  A   1.1.1.1
-                    www.example.com.     IN  A   1.1.1.2
-                    bbs.example.com.         IN  A   1.1.1.1
-        
-            AAAA：
-                name：FQDN
-                value: IPv6
-            
-            PTR：
-                name：IP地址，有特定格式，IP反过来写，而且加特定后缀；例如1.2.3.4的记录应该写为4.3.2.1.in-addr.arpa.；
-                value：FQND
-                
-                例如：
-                    4.3.2.1.in-addr.arpa.   IN  PTR www.example.com.
-                    
-            CNAME：
-                name：FQDN格式的别名；
-                value：FQDN格式的正式名字；
-                
-                例如：
-                    web.example.com.     IN      CNAME  www.example.com.
-                    
-                
-注意：
-    (1) TTL可以从全局继承；
-    (2) @表示当前区域的名称；
-    (3) 相邻的两条记录其name相同时，后面的可省略；
-    (4) 对于正向区域来说，各MX，NS等类型的记录的value为FQDN，此FQDN应该有一个A记录；
+    - 记录有类型：A, AAAA, PTR, SOA, NS, CNAME, MX
+        - SOA：Start Of Authority，起始授权记录；一个区域解析库有且只能有一个SOA记录，而且必须放在第一条；
+        - NS：Name Service，域名服务记录；一个区域解析库可以有多个NS记录；其中一个为主的；
+        - A：Address, 地址记录，FQDN --> IPv4；
+        - AAAA：地址记录， FQDN --> IPv6；
+        - CNAME：Canonical Name，别名记录；
+        - PTR：Pointer，IP --> FQDN
+        - MX：Mail eXchanger，邮件交换器；有优先级的概念，优先级：0-99，数字越小优先级越高；
 
+- 资源记录的定义格式：`name [TTL] IN RR_TYPE value`
+    - SOA：
+        - name: 当前区域的名字；例如"example.com."，或者“2.3.4.in-addr.arpa.”；
+        - value：有多部分组成
+            - (1) 当前区域的区域名称（也可以使用主DNS服务器名称）；
+            - (2) 当前区域管理员的邮箱地址；但地址中不能使用@符号，一般使用点号来替代；
+            - (3) `(主从服务协调属性的定义以及否定答案的TTL)`
+        - 例如：
+            ```
+            example.com.    86400    IN    SOA    example.com.    admin.example.com.  (
+                                        2017010801  ; serial
+                                        2H          ; refresh
+                                        10M         ; retry
+                                        1W          ; expire
+                                        1D          ; negative answer ttl
+            )
+            ```
+    - NS：
+        - name: 当前区域的区域名称
+        - value：当前区域的某DNS服务器的名字，例如ns.example.com.；注意：一个区域可以有多个ns记录；
+        - 例如：
+            ```
+            example.com.     86400   IN  NS      ns1.example.com.
+            example.com.     86400   IN  NS      ns2.example.com.
+            ```
+    - MX：
+        - name: 当前区域的区域名称
+        - value：当前区域某邮件交换器的主机名；**注意：MX记录可以有多个；但每个记录的value之前应该有一个数字表示其优先级；**
+        - 例如：
+            ```
+            example.com.         IN  MX  10      mx1.example.com.
+            example.com.         IN  MX  20      mx2.example.com.
+            ```
+    - A：
+        - name：某FQDN，例如www.example.com.
+        - value：某IPv4地址；
+        - 例如：
+            ```
+            www.example.com.     IN  A   1.1.1.1
+            www.example.com.     IN  A   1.1.1.2
+            bbs.example.com.     IN  A   1.1.1.1
+            ```
+    - AAAA：
+        - name：FQDN
+        - value: IPv6
+    - PTR：
+        - name：IP地址，有特定格式，IP反过来写，而且加特定后缀；例如1.2.3.4的记录应该写为4.3.2- n-addr.arpa.；
+        - value：FQND
+        - 例如：`4.3.2.1.in-addr.arpa.   IN  PTR  www.example.com.`
+    - CNAME：
+        - name：FQDN格式的别名；
+        - value：FQDN格式的正式名字；
+        - 例如：`web.example.com.     IN      CNAME  www.example.com.`
+    - 注意：
+        - (1) TTL可以从全局继承；
+        - (2) @表示当前区域的名称；
+        - (3) 相邻的两条记录其name相同时，后面的可省略；
+        - (4) 对于正向区域来说，各MX，NS等类型的记录的value为FQDN，此FQDN应该有一个A记录；
 
-
-## Linux DNS配置举例
-
-解析IPv4地址
-
-```
-vim /etc/default/bind9
-OPTIONS="-u bind -4"
-```
-服务器的配置
-```
-vim /etc/bind/named.conf.options
-options {
-    directory "/var/cache/bind";    # DNS解析文件位置 
-    listen-on port 53 {
-        0.0.0.0/0;
-        any;
-    };    # 监听端口以及IP
-    allow-query {
-        0.0.0.0/0;
-        any;
-    };    # 允许谁访问
-    forward only | first;   # 指定转发方式：递归 | 迭代
-    recursion yes | no;     # yes递归，no迭代
-    forwarders {
-        223.5.5.5;
-        180.76.76.76;
-    };    # 上游服务器
-}
-```
-
-添加一个zone
-
-```
-vim /etc/bind/named.conf.local 
-zone "jesse.com"  {
-    type master;
-    file "/etc/bind/db.jesse.com";
-};
-```
-
-解析地址
-
-```
-cp /etc/bind/db.local /etc/bind/db.jesse.com
-vim /etc/bind/db.jesse.com
-$TTL    604800 
-; 记录在缓存中的生存时间
-;@       IN      SOA     localhost. root.localhost. (
-@       IN      SOA     jesse.com. root.jesse.com. (
-                              2         ; Serial
-                         604800         ; Refresh
-                          86400         ; Retry
-                        2419200         ; Expire
-                         604800 )       ; Negative Cache TTL
-; SOA记录
-@       IN      NS      localhost.  ;DNS服务器
-@       IN      A       127.0.0.1   ;地址
-@       IN      AAAA    ::1
-pc      IN      A       10.207.28.85
-; 即pc.jesse.com对应的地址为10.207.28.85
-iphone  IN      A       10.207.88.88
-www     IN      CNAME   pc.jesse.com
-; 别名记录
-```
 
 
 
@@ -523,3 +443,68 @@ DNS and Bind(2)
     
     博客作业：正向解析区域、反向解析区域；主/从；子域；基本安全控制； 
     
+
+## Linux DNS配置举例
+
+解析IPv4地址
+
+```
+vim /etc/default/bind9
+OPTIONS="-u bind -4"
+```
+服务器的配置
+```
+vim /etc/bind/named.conf.options
+options {
+    directory "/var/cache/bind";    # DNS解析文件位置 
+    listen-on port 53 {
+        0.0.0.0/0;
+        any;
+    };    # 监听端口以及IP
+    allow-query {
+        0.0.0.0/0;
+        any;
+    };    # 允许谁访问
+    forward only | first;   # 指定转发方式：递归 | 迭代
+    recursion yes | no;     # yes递归，no迭代
+    forwarders {
+        223.5.5.5;
+        180.76.76.76;
+    };    # 上游服务器
+}
+```
+
+添加一个zone
+
+```
+vim /etc/bind/named.conf.local 
+zone "jesse.com"  {
+    type master;
+    file "/etc/bind/db.jesse.com";
+};
+```
+
+解析地址
+
+```
+cp /etc/bind/db.local /etc/bind/db.jesse.com
+vim /etc/bind/db.jesse.com
+$TTL    604800 
+; 记录在缓存中的生存时间
+;@       IN      SOA     localhost. root.localhost. (
+@       IN      SOA     jesse.com. root.jesse.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+; SOA记录
+@       IN      NS      localhost.  ;DNS服务器
+@       IN      A       127.0.0.1   ;地址
+@       IN      AAAA    ::1
+pc      IN      A       10.207.28.85
+; 即pc.jesse.com对应的地址为10.207.28.85
+iphone  IN      A       10.207.88.88
+www     IN      CNAME   pc.jesse.com
+; 别名记录
+```
