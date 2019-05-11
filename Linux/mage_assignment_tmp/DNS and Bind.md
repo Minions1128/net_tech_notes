@@ -34,59 +34,51 @@
         - 肯定答案：
         - 否定答案：不存在查询的键，因此，不存在与其查询键对应的值；
         - 权威答案：由直接负责的DNS服务器返回的答案；
-        - 非权威答案：
+        - 非权威答案：例如，缓存返回的结果
 
+- 主-辅DNS服务器：
+    - 主DNS服务器：维护所负责解析的域数据库的那台服务器；读写操作均可进行；
+    - 从DNS服务器：从主DNS服务器那里或其它的从DNS服务器那里“复制”一份解析库；但只能进行读操作；
+    - “复制”操作的实施方式：
+        - 序列号：serial, 也即是数据库的版本号；主服务器数据库内容发生变化时，其版本号递增；
+        - 刷新时间间隔：refresh, 从服务器每多久到主服务器检查序列号更新状况；
+        - 重试时间间隔：retry, 从服务器从主服务器请求同步解析库失败时，再次发起尝试请求的时间间隔；
+        - 过期时长：expire，从服务器始终联系不到主服务器时，多久之后放弃从主服务器同步数据；停止提供服务；
+        - 否定答案的缓存时长：
+    - 主服务器”通知“从服务器随时更新数据；
+    - 区域传送：
+        - 全量传送：axfr (all transfer), 传送整个数据库；
+        - 增量传送：ixfr (incremental transfer), 仅传送变量的数据；
 
+- 区域(zone)和域(domain)：example.com域：
+    - FQDN --> IP: 正向解析库；区域
+    - IP --> FQDN: 反向解析库；区域
 
-主-辅DNS服务器：
-    主DNS服务器：维护所负责解析的域数据库的那台服务器；读写操作均可进行；
-    从DNS服务器：从主DNS服务器那里或其它的从DNS服务器那里“复制”一份解析库；但只能进行读操作；
-        “复制”操作的实施方式：
-        序列号：serial, 也即是数据库的版本号；主服务器数据库内容发生变化时，其版本号递增；
-        刷新时间间隔：refresh, 从服务器每多久到主服务器检查序列号更新状况；
-        重试时间间隔：retry, 从服务器从主服务器请求同步解析库失败时，再次发起尝试请求的时间间隔；
-        过期时长：expire，从服务器始终联系不到主服务器时，多久之后放弃从主服务器同步数据；停止提供服务；
-        否定答案的缓存时长：
-
-
-                主服务器”通知“从服务器随时更新数据；
+- 区域数据库文件：
+    - 资源记录：Resource Record, 简称rr；
+        记录有类型：A， AAAA， PTR， SOA， NS， CNAME， MX
+        
+    SOA：Start Of Authority，起始授权记录；一个区域解析库有且只能有一个SOA记录，而且必须放在第一条；
+    NS：Name Service，域名服务记录；一个区域解析库可以有多个NS记录；其中一个为主的；
+    A： Address, 地址记录，FQDN --> IPv4；
+    AAAA：地址记录， FQDN --> IPv6；
+    CNAME：Canonical Name，别名记录；
+    PTR：Pointer，IP --> FQDN
+    MX：Mail eXchanger，邮件交换器；
+        优先级：0-99，数字越小优先级越高；
+        
+    资源记录的定义格式：
+        语法： name    [TTL]   IN  RR_TYPE         value
+    
+    SOA：
+        name: 当前区域的名字；例如”mageud.com.”，或者“2.3.4.in-addr.arpa.”；
+        value：有多部分组成
+            (1) 当前区域的区域名称（也可以使用主DNS服务器名称）；
+            (2) 当前区域管理员的邮箱地址；但地址中不能使用@符号，一般使用点号来替代；
+            (3) (主从服务协调属性的定义以及否定答案的TTL)
                 
-                区域传送：
-                    全量传送：axfr, 传送整个数据库；
-                    增量传送：ixfr, 仅传送变量的数据；
-                    
-        区域(zone)和域(domain)：
-            example.com域：
-                FQDN --> IP
-                    正向解析库；区域
-                IP --> FQDN
-                    反向解析库；区域
-                    
-        区域数据库文件：
-            资源记录：Resource Record, 简称rr；
-                记录有类型：A， AAAA， PTR， SOA， NS， CNAME， MX
-                
-            SOA：Start Of Authority，起始授权记录； 一个区域解析库有且只能有一个SOA记录，而且必须放在第一条；
-            NS：Name Service，域名服务记录；一个区域解析库可以有多个NS记录；其中一个为主的；
-            A： Address, 地址记录，FQDN --> IPv4；
-            AAAA：地址记录， FQDN --> IPv6；
-            CNAME：Canonical Name，别名记录；
-            PTR：Pointer，IP --> FQDN
-            MX：Mail eXchanger，邮件交换器；
-                优先级：0-99，数字越小优先级越高；
-                
-            资源记录的定义格式：
-                语法： name    [TTL]   IN  RR_TYPE         value
-            
-            SOA：
-                name: 当前区域的名字；例如”mageud.com.”，或者“2.3.4.in-addr.arpa.”；
-                value：有多部分组成
-                    (1) 当前区域的区域名称（也可以使用主DNS服务器名称）；
-                    (2) 当前区域管理员的邮箱地址；但地址中不能使用@符号，一般使用点号来替代；
-                    (3) (主从服务协调属性的定义以及否定答案的TTL)
-                        
-                    例如：
-                        example.com.     86400   IN      SOA     example.com.     admin.example.com.  (
+            例如：
+                example.com.     86400   IN      SOA     example.com.     admin.example.com.  (
                                     2017010801  ; serial
                                     2H          ; refresh
                                     10M         ; retry
@@ -140,11 +132,11 @@
                     web.example.com.     IN      CNAME  www.example.com.
                     
                 
-        注意：
-            (1) TTL可以从全局继承；
-            (2) @表示当前区域的名称；
-            (3) 相邻的两条记录其name相同时，后面的可省略；
-            (4) 对于正向区域来说，各MX，NS等类型的记录的value为FQDN，此FQDN应该有一个A记录；
+注意：
+    (1) TTL可以从全局继承；
+    (2) @表示当前区域的名称；
+    (3) 相邻的两条记录其name相同时，后面的可省略；
+    (4) 对于正向区域来说，各MX，NS等类型的记录的value为FQDN，此FQDN应该有一个A记录；
 
 
 
