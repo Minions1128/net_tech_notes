@@ -1373,7 +1373,11 @@ CentOS系统安装：
 	
 	创建光盘镜像：
 		~]# mkisofs -R -J -T -v --no-emul-boot --boot-load-size 4 --boot-info-table -V "CentOS 6 x86_64 boot" -c isolinux/boot.cat -b isolinux/isolinux.bin -o  /root/boot.iso   myboot/
-		
+
+
+
+
+
 bash脚本编程：
 	顺序执行
 	选择分支
@@ -1522,7 +1526,8 @@ bash脚本编程：
 					done
 					echo
 				done				
-							
+
+
 回顾：循环
 	
 	循环控制：break, continue
@@ -1535,6 +1540,13 @@ bash脚本编程：
 	while read VARAIBLE; do
 		循环体
 	done < /PATH/FROM/SOMEFILE
+
+
+
+
+
+
+
 
 bash脚本编程：
 
@@ -2005,6 +2017,7 @@ Sysmted：
 			
 		练习：为当前系统的httpd服务提供一个unit文件；
 
+
 bash脚本编程：
 	
 	函数、case语言
@@ -2329,6 +2342,11 @@ bash脚本编程：
 			默认，其输出信息被定向到了错误输出流；
 		
 	《高级bash编程指南》，《Linux命令行和shell脚本编程宝典》
+
+
+
+
+
 
 回顾：bash脚本编程数组
 

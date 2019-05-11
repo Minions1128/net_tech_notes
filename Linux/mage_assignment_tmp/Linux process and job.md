@@ -10,60 +10,42 @@
     - init
         - 父子关系
         - 进程：都由其父进程创建: fork(), clone()
-    - 进程优先级：
-        - 0-139：
-            - 1-99：实时优先级；
-            - 100-139：静态优先级；
-                - 数字越小，优先级越高；
-                Nice值：
-                    -20,19
-            Big O
-                O(1), O(logn), O(n), O(n^2), O(2^n)
+    - 进程优先级： 0-139：数字越小，优先级越高；
+        - 1-99：实时优先级；
+        - 100-139：静态优先级；
+        - Nice值：-20(100), 19(139)
     - 进程内存：
-            Page Frame: 页框，用存储页面数据
-                存储Page
-                MMU：Memory Management Unit
+        - Page Frame: 页框，用存储页面数据
+            - 存储Page
+            - MMU: Memory Management Unit
     - IPC: Inter Process Communication
-            同一主机上：
-                signal
-                shm: shared memory
-                semerphor
-            不同主机上：
-                rpc: remote procecure call
-                socket: 
+        - 同一主机上：
+            - signal
+            - shm: shared memory
+            - semaphore
+        - 不同主机上：
+            - rpc: remote procecure call
+            - socket:
 
+- Linux内核：
+    - 抢占式多任务
+    - 进程类型：
+        - 守护进程: 在系统引导过程中启动的进程，跟终端无关的进程；
+        - 前台进程：跟终端相关，通过终端启动的进程
+            - 注意：也可把在前台启动的进程送往后台，以守护模式运行；
+    - 进程状态：
+        - 运行态：running
+        - 就绪态：ready
+        - 睡眠态：
+            - 可中断：interruptable
+            - 不可中断：uninterruptable
+        - 停止态：暂停于内存中，但不会被调度，除非手动启动之；stopped
+        - 僵死态：zombie
+    - 进程的分类：
+        - CPU-Bound
+        - IO-Bound
 
-
-
-
-Linux内核：抢占式多任务
-
-        进程类型：
-            守护进程: 在系统引导过程中启动的进程，跟终端无关的进程；
-            前台进程：跟终端相关，通过终端启动的进程
-                注意：也可把在前台启动的进程送往后台，以守护模式运行；
-
-        进程状态：
-            运行态：running
-            就绪态：ready
-            睡眠态：
-                可中断：interruptable
-                不可中断：uninterruptable
-            停止态：暂停于内存中，但不会被调度，除非手动启动之；stopped
-            僵死态：zombie
-
-        进程的分类：
-            CPU-Bound
-            IO-Bound
-
-        《Linux内核设计与实现》，《深入理解Linux内核》                    
-
-
-
-
-
-
-Linux系统上的进程查看及管理工具：pstree, ps, pidof, pgrep, top, htop, glances, pmap, vmstat, dstat, kill, pkill, job, bg, fg, nohup, nice, renice, killall, ...
+- Linux系统上的进程查看及管理工具：pstree, ps, pidof, pgrep, top, htop, glances, pmap, vmstat, dstat, kill, pkill, job, bg, fg, nohup, nice, renice, killall, ...
         
         CentOS 5:  SysV init
         CentOS 6：upstart
