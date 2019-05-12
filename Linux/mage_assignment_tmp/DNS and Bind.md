@@ -191,7 +191,7 @@
         - `rndc  status`
         - `rndc  flush`
 
-配置解析一个正向区域：以example.com域为例：
+- 配置解析一个正向区域：以example.com域为例：
     - (1) 定义区域: 在主配置文件中或主配置文件辅助配置文件中实现；注意：区域名字即为域名；
         ```
         zone  "ZONE_NAME"  IN  {
