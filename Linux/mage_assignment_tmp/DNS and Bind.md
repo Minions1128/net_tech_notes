@@ -124,214 +124,167 @@
         - (3) 相邻的两条记录其name相同时，后面的可省略；
         - (4) 对于正向区域来说，各MX，NS等类型的记录的value为FQDN，此FQDN应该有一个A记录；
 
+## Bind安装配置
 
+- BIND: Berkeley Internet Name Domain, ISC.org
+    - dns: 协议
+    - bind： dns协议的一种实现
+    - named：bind程序的运行的进程名
 
-
-
-回顾：DNS
-    资源记录类型：SOA，NS，MX，A，AAAA，PTR，CNAME
-    区域传送：axfr, ixfr
-    资源记录定义的格式：
-        name    [ttl]       IN  RR_TYPE         value
-        
-    SOA：
-        序列号、刷新时长、重试时长、过期时长、否定答案的TTL；
-            M，H，D，W
+- 程序包：
+    - bind-libs：被bind和bind-utils包中的程序共同用到的库文件；
+    - bind-utils：bind客户端程序集，例如dig, host, nslookup等；
+    - bind：提供的dns server程序、以及几个常用的测试程序；
+    - bind-chroot：选装，让named运行于jail模式下；
             
-    课外练习：注册一个域名，修改其域名解析服务器为dnspod.cn，dns.la；
+- bind：
+    - 主配置文件：/etc/named.conf, 或包含进来其它文件；
+        - /etc/named.iscdlv.key
+        - /etc/named.rfc1912.zones
+        - /etc/named.root.key
+    - 解析库文件：/var/named/目录下；
+        - 一般名字为：ZONE_NAME.zone
+        - 注意：
+            - (1) 一台DNS服务器可同时为多个区域提供解析；
+            - (2) 必须要有根区域解析库文件： named.ca；
+            - (3) 还应该有两个区域解析库文件：localhost和127.0.0.1的正反向解析库；
+                - 正向：named.localhost
+                - 反向：named.loopback
+    - rndc：remote name domain contoller: 953/tcp，但默认监听于127.0.0.1地址，因此仅允许本地使用；
+    - bind程序安装完成之后，默认即可做缓存名称服务器使用；如果没有专门负责解析的区域，直接即可启动服务；
+        - CentOS 6: `service named start`
+        - CentOS 7: `systemctl start named.service`
+    - 主配置文件格式：
+        - 注意：每个配置语句必须以分号结尾；
+        - 全局配置段：options { ... }
+        - 日志配置段：logging { ... }
+        - 区域配置段：zone { ... } 那些由本机负责解析的区域，或转发的区域；
+        - 缓存名称服务器的配置：监听能与外部主机通信的地址；
+            ```
+            listen-on port 53 { 0.0.0.0; };
+            listen-on port 53 { 172.16.100.67; };
+            ```
+        - 学习时，建议关闭dnssec
+            ```
+            dnssec-enable no;
+            dnssec-validation no;
+            dnssec-lookaside no;
+            ```
+        - 关闭仅允许本地查询：`//allow-query  { localhost; };`or`allow-query  { any; };`
+        - 检查配置文件语法错误：`named-checkconf [/etc/named.conf]`
+                    
+- 测试工具：dig, host, nslookup等
+    - dig命令：`dig  [-t RR_TYPE]  name  [@SERVER]  [query options]`
+        - 用于测试dns系统，因此其不会查询hosts文件；
+        - 查询选项[query options]：
+            - +[no]trace：跟踪解析过程；
+            - +[no]recurse：进行递归解析；
+        - 注意：反向解析测试`dig  -x  IP`
+        - 模拟完全区域传送：`dig -t axfr DOMAIN [@server]`
+    - host命令：`host [-t RR_TYPE] name SERVER_IP`
+    - nslookup命令：`nslookup  [-options]  [name]  [server]`
+        - 交互式模式：nslookup>
+            - server  IP：以指定的IP为DNS服务器进行查询；
+            - set  q=RR_TYPE：要查询的资源记录类型；
+            - name：要查询的名称；
+    - rndc命令：named服务控制命令
+        - `rndc  status`
+        - `rndc  flush`
+
+配置解析一个正向区域：以example.com域为例：
+    - (1) 定义区域: 在主配置文件中或主配置文件辅助配置文件中实现；注意：区域名字即为域名；
+        ```
+        zone  "ZONE_NAME"  IN  {
+            type  {master|slave|hint|forward};
+            file  "ZONE_NAME.zone"; 
+        };
+        ```
+    - (2) 建立区域数据文件（主要记录为A或AAAA记录）在/var/named目录下建立区域数据文件；
+        - 文件为：/var/named/example.com.zone
+            ```
+            $TTL 3600
+            $ORIGIN example.com.
+            @       IN      SOA     ns1.example.com.   dnsadmin.example.com. (
+                    2017010801
+                    1H
+                    10M
+                    3D
+                    1D )
+                IN      NS      ns1
+                IN      MX   10 mx1
+                IN      MX   20 mx2
+            ns1     IN      A       172.16.100.67
+            mx1     IN      A       172.16.100.68
+            mx2     IN      A       172.16.100.69
+            www     IN      A       172.16.100.67
+            web     IN      CNAME   www
+            bbs     IN      A       172.16.100.70
+            bbs     IN      A       172.16.100.71
+            ```
+        - 权限及属组修改：
+            ```
+            chgrp  named  /var/named/example.com.zone
+            chmod  o=  /var/named/example.com.zone
+            ```       
+        - 检查语法错误：
+            ```
+            named-checkzone  ZONE_NAME   ZONE_FILE
+            named-checkconf
+            ```
+    - (3) 让服务器重载配置文件和区域数据文件
+        ```
+        rndc  reload # 或
+        systemctl  reload  named.service
+        ```
+
+- 配置解析一个反向区域
+    - (1) 定义区域
+        - 在主配置文件中或主配置文件辅助配置文件中实现；
+            ```
+            zone  "ZONE_NAME"  IN  {
+                type  {master|slave|hint|forward};
+                file  "ZONE_NAME.zone"; 
+            };
+            ```
+        - 注意：反向区域的名字：
+            - 反写的网段地址.in-addr.arpa
+            - 100.16.172.in-addr.arpa
+    - (2) 定义区域解析库文件（主要记录为PTR）
+        - 示例，区域名称为100.16.172.in-addr.arpa；
+            ```
+            $TTL 3600
+            $ORIGIN 100.16.172.in-addr.arpa.
+            @       IN      SOA     ns1.example.com.  nsadmin.example.com. (
+                    2017010801
+                    1H
+                    10M
+                    3D
+                    12H )
+                IN      NS      ns1.example.com.
+            67      IN      PTR     ns1.example.com.
+            68      IN      PTR     mx1.example.com.
+            69      IN      PTR     mx2.example.com.
+            70      IN      PTR     bbs.example.com.
+            71      IN      PTR     bbs.example.com.
+            67      IN      PTR     www.example.com.
+            ```
+        - 权限及属组修改：
+            ```
+            chgrp  named  /var/named/172.16.100.zone
+            chmod  o=  /var/named/172.16.100.zone
+            ```
+        - 检查语法错误：
+            ```
+            named-checkzone  ZONE_NAME   ZONE_FILE
+            named-checkconf
+            ```
+    - (3) 让服务器重载配置文件和区域数据文件
+        ```
+        rndc  reload #或
+        systemctl  reload  named.service
+        ```
 
 
-
-DNS and Bind(2)
-
-    BIND的安装配置：
-        BIND： Berkeley Internet Name Domain,  ISC.org
-            dns: 协议
-            bind： dns协议的一种实现
-            named：bind程序的运行的进程名
-            
-        程序包：
-            bind-libs：被bind和bind-utils包中的程序共同用到的库文件；
-            bind-utils：bind客户端程序集，例如dig, host, nslookup等；
-            
-            bind：提供的dns server程序、以及几个常用的测试程序；
-            bind-chroot：选装，让named运行于jail模式下；
-            
-        bind：
-            主配置文件：/etc/named.conf 
-                或包含进来其它文件；
-                    /etc/named.iscdlv.key
-                    /etc/named.rfc1912.zones
-                    /etc/named.root.key
-            解析库文件：
-                /var/named/目录下；
-                    一般名字为：ZONE_NAME.zone
-                    
-                注意：(1) 一台DNS服务器可同时为多个区域提供解析；
-                       (2) 必须要有根区域解析库文件： named.ca；
-                       (3) 还应该有两个区域解析库文件：localhost和127.0.0.1的正反向解析库；
-                            正向：named.localhost
-                            反向：named.loopback
-                            
-            rndc：remote name domain contoller
-                953/tcp，但默认监听于127.0.0.1地址，因此仅允许本地使用；
-                
-            bind程序安装完成之后，默认即可做缓存名称服务器使用；如果没有专门负责解析的区域，直接即可启动服务；
-                CentOS 6: service  named  start
-                CentOS 7: systemctl  start  named.service
-                
-            主配置文件格式：
-                全局配置段：
-                    options { ... }
-                日志配置段：
-                    logging { ... }
-                区域配置段：
-                    zone { ... }
-                        那些由本机负责解析的区域，或转发的区域；
-                        
-                    注意：每个配置语句必须以分号结尾；
-                        
-                缓存名称服务器的配置：
-                    监听能与外部主机通信的地址；                  
-                        listen-on port 53;
-                        listen-on port 53 { 172.16.100.67; };
-                        
-                    学习时，建议关闭dnssec
-                        dnssec-enable no;
-                        dnssec-validation no;
-                        dnssec-lookaside no;    
-                        
-                    关闭仅允许本地查询：
-                        //allow-query  { localhost; };
-            
-                检查配置文件语法错误：
-                    named-checkconf   [/etc/named.conf]
-                    
-                测试工具：
-                    dig, host, nslookup等
-                    
-                    dig命令：
-                        dig  [-t RR_TYPE]  name  [@SERVER]  [query options]
-                        
-                            用于测试dns系统，因此其不会查询hosts文件；
-                            
-                            查询选项：
-                                +[no]trace：跟踪解析过程；
-                                +[no]recurse：进行递归解析；
-                                
-                            注意：反向解析测试
-                                dig  -x  IP
-                                
-                            模拟完全区域传送：
-                                dig  -t  axfr  DOMAIN  [@server]
-                                
-                    host命令：
-                        host  [-t  RR_TYPE]  name  SERVER_IP
-                        
-                    nslookup命令：
-                        nslookup  [-options]  [name]  [server]
-                        
-                        交互式模式：
-                            nslookup>
-                                server  IP：以指定的IP为DNS服务器进行查询；
-                                set  q=RR_TYPE：要查询的资源记录类型；
-                                name：要查询的名称；
-                                
-                    rndc命令：named服务控制命令
-                        rndc  status
-                        rndc  flush
-                        
-            配置解析一个正向区域：
-                
-                以example.com域为例：
-                
-                (1) 定义区域
-                    在主配置文件中或主配置文件辅助配置文件中实现；
-                        zone  "ZONE_NAME"  IN  {
-                            type  {master|slave|hint|forward};
-                            file  "ZONE_NAME.zone"; 
-                        };  
-                        
-                        注意：区域名字即为域名；
-                    
-                (2) 建立区域数据文件（主要记录为A或AAAA记录）
-                    在/var/named目录下建立区域数据文件；
-                        
-                        文件为：/var/named/example.com.zone
-                            $TTL 3600
-                            $ORIGIN example.com.
-                            @       IN      SOA     ns1.example.com.   dnsadmin.example.com. (
-                                    2017010801
-                                    1H
-                                    10M
-                                    3D
-                                    1D )
-                                IN      NS      ns1
-                                IN      MX   10 mx1
-                                IN      MX   20 mx2
-                            ns1     IN      A       172.16.100.67
-                            mx1     IN      A       172.16.100.68
-                            mx2     IN      A       172.16.100.69
-                            www     IN      A       172.16.100.67
-                            web     IN      CNAME   www
-                            bbs     IN      A       172.16.100.70
-                            bbs     IN      A       172.16.100.71
-                        
-                        权限及属组修改：
-                            # chgrp  named  /var/named/example.com.zone
-                            # chmod  o=  /var/named/example.com.zone
-                            
-                        检查语法错误：
-                            # named-checkzone  ZONE_NAME   ZONE_FILE
-                            # named-checkconf 
-                            
-                (3) 让服务器重载配置文件和区域数据文件
-                    # rndc  reload 或
-                    # systemctl  reload  named.service
-                    
-            配置解析一个反向区域
-                (1) 定义区域
-                    在主配置文件中或主配置文件辅助配置文件中实现；
-                        zone  "ZONE_NAME"  IN  {
-                            type  {master|slave|hint|forward};
-                            file  "ZONE_NAME.zone"; 
-                        };  
-                        
-                        注意：反向区域的名字
-                            反写的网段地址.in-addr.arpa 
-                                100.16.172.in-addr.arpa
-                                
-                (2) 定义区域解析库文件（主要记录为PTR）
-                    
-                    示例，区域名称为100.16.172.in-addr.arpa；
-                    
-                        $TTL 3600
-                        $ORIGIN 100.16.172.in-addr.arpa.
-                        @       IN      SOA     ns1.example.com.  nsadmin.example.com. (
-                                2017010801
-                                1H
-                                10M
-                                3D
-                                12H )
-                            IN      NS      ns1.example.com.
-                        67      IN      PTR     ns1.example.com.
-                        68      IN      PTR     mx1.example.com.
-                        69      IN      PTR     mx2.example.com.
-                        70      IN      PTR     bbs.example.com.
-                        71      IN      PTR     bbs.example.com.
-                        67      IN      PTR     www.example.com.                 
-                                    
-                        权限及属组修改：
-                            # chgrp  named  /var/named/172.16.100.zone
-                            # chmod  o=  /var/named/172.16.100.zone
-                            
-                        检查语法错误：
-                            # named-checkzone  ZONE_NAME   ZONE_FILE
-                            # named-checkconf 
-                            
-                (3) 让服务器重载配置文件和区域数据文件
-                    # rndc  reload 或
-                    # systemctl  reload  named.service                  
                                                             
                     
     主从服务器：
@@ -438,73 +391,8 @@ DNS and Bind(2)
                     file example.com/external";
                 };
             };
-            
-    课外作业：whois命令； 注册一个域名；
-    
-    博客作业：正向解析区域、反向解析区域；主/从；子域；基本安全控制； 
-    
 
-## Linux DNS配置举例
 
-解析IPv4地址
-
-```
-vim /etc/default/bind9
-OPTIONS="-u bind -4"
-```
-服务器的配置
-```
-vim /etc/bind/named.conf.options
-options {
-    directory "/var/cache/bind";    # DNS解析文件位置 
-    listen-on port 53 {
-        0.0.0.0/0;
-        any;
-    };    # 监听端口以及IP
-    allow-query {
-        0.0.0.0/0;
-        any;
-    };    # 允许谁访问
-    forward only | first;   # 指定转发方式：递归 | 迭代
-    recursion yes | no;     # yes递归，no迭代
-    forwarders {
-        223.5.5.5;
-        180.76.76.76;
-    };    # 上游服务器
-}
-```
-
-添加一个zone
-
-```
-vim /etc/bind/named.conf.local 
-zone "jesse.com"  {
-    type master;
-    file "/etc/bind/db.jesse.com";
-};
-```
-
-解析地址
-
-```
-cp /etc/bind/db.local /etc/bind/db.jesse.com
-vim /etc/bind/db.jesse.com
-$TTL    604800 
-; 记录在缓存中的生存时间
-;@       IN      SOA     localhost. root.localhost. (
-@       IN      SOA     jesse.com. root.jesse.com. (
-                              2         ; Serial
-                         604800         ; Refresh
-                          86400         ; Retry
-                        2419200         ; Expire
-                         604800 )       ; Negative Cache TTL
-; SOA记录
-@       IN      NS      localhost.  ;DNS服务器
-@       IN      A       127.0.0.1   ;地址
-@       IN      AAAA    ::1
-pc      IN      A       10.207.28.85
-; 即pc.jesse.com对应的地址为10.207.28.85
-iphone  IN      A       10.207.88.88
-www     IN      CNAME   pc.jesse.com
-; 别名记录
-```
+- 课外练习：
+    - 注册一个域名，修改其域名解析服务器为dnspod.cn，dns.la；
+    - whois命令；
