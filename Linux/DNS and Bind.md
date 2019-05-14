@@ -313,82 +313,88 @@
 
 - 子域授权：
     - 正向解析区域授权子域的方法：
-            ops.example.com.         IN  NS      ns1.ops.example.com.
-            ops.example.com.         IN  NS      ns2.ops.example.com.
-            ns1.ops.example.com.     IN  A   IP.AD.DR.ESS
-            ns2.ops.example.com.     IN  A   IP.AD.DR.ESS
-    - 定义转发：
-            注意：被转发的服务器必须允许为当前服务做递归；
-            
-            (1) 区域转发：仅转发对某特定区域的解析请求；
-                zone  "ZONE_NAME"  IN {
-                    type  forward;
-                    forward  {first|only};
-                    forwarders  { SERVER_IP; };
-                };
-                
-                first：首先转发；转发器不响应时，自行去迭代查询；
-                only：只转发；
-                
-            (2) 全局转发：针对凡本地没有通过zone定义的区域查询请求，通通转给某转发器；
-                options {
-                    ... ...
-                    forward  {only|first};
-                    forwarders  { SERVER_IP; };
-                    .. ...
-                };
-            
-bind中的安全相关的配置：
-        acl：访问控制列表；把一个或多个地址归并一个命名的集合，随后通过此名称即可对此集全内的所有主机实现统一调用；
-        
-            acl  acl_name  {
-                ip;
-                net/prelen;
+        - ops.example.com.         IN  NS       ns1.ops.example.com.
+        - ops.example.com.         IN  NS       ns2.ops.example.com.
+        - ns1.ops.example.com.     IN  A        IP.AD.DR.ESS
+        - ns2.ops.example.com.     IN  A        IP.AD.DR.ESS
+    - 定义转发：注意：被转发的服务器必须允许为当前服务做递归；
+        - (1) 区域转发：仅转发对某特定区域的解析请求；
+            ```
+            zone  "ZONE_NAME"  IN {
+                type  forward;
+                forward  {first|only};
+                    # first：首先转发；转发器不响应时，自行去迭代查询；
+                    # only：只转发；
+                forwarders  { SERVER_IP; };
             };
-                
-            示例：
-                acl  mynet {
-                    172.16.0.0/16;
-                    127.0.0.0/8;
-                };
-                
-            bind有四个内置的acl
-                none：没有一个主机；
-                any：任意主机；
-                local：本机；
-                localnet：本机所在的IP所属的网络；
-                
-        访问控制指令：
-            allow-query  {};  允许查询的主机；白名单；
-            allow-transfer {};  允许向哪些主机做区域传送；默认为向所有主机；应该配置仅允许从服务器；
-            allow-recursion {}; 允许哪此主机向当前DNS服务器发起递归查询请求； 
-            allow-update {}; DDNS，允许动态更新区域数据库文件中内容；
-        
-bind view：
-        视图：
-            view  VIEW_NAME {
-                zone
-                zone
-                zone
-            }
-            
-            
-            view internal  {
-                match-clients { 172.16.0.0/8; };
-                zone "example.com"  IN {
-                    type master;
-                    file  "example.com/internal";
-                };
+            ```
+        - (2) 全局转发：针对凡本地没有通过zone定义的区域查询请求，通通转给某转发器；
+            ```
+            options {
+                ... ...
+                forward  {only|first};
+                    # first：首先转发；转发器不响应时，自行去迭代查询；
+                    # only：只转发；
+                forwarders  { SERVER_IP; };
+                .. ...
             };
-            
-            view external {
-                match-clients { any; };
-                zone "magecdu.com" IN {
-                    type master;
-                    file example.com/external";
-                };
-            };
+            ```
 
+- bind中的安全相关的配置：
+    - acl：访问控制列表；把一个或多个地址归并一个命名的集合，随后通过此名称即可对此集全内的所有主机实现统一调用；
+        ```
+        acl  acl_name  {
+            ip;
+            net/prelen;
+        };
+        # 示例：
+        acl  mynet {
+            172.16.0.0/16;
+            127.0.0.0/8;
+        };
+        ```
+    - bind有四个内置的acl
+        - none：没有一个主机；
+        - any：任意主机；
+        - local：本机；
+        - localnet：本机所在的IP所属的网络；
+    - 访问控制指令：
+        - allow-query  {};  允许查询的主机；白名单；
+        - allow-transfer {};  允许向哪些主机做区域传送；默认为向所有主机；应该配置仅允许从服务器；
+        - allow-recursion {}; 允许哪此主机向当前DNS服务器发起递归查询请求； 
+        - allow-update {}; DDNS，允许动态更新区域数据库文件中内容；
+
+- bind view：视图：
+    - 格式：
+        ```
+        view  VIEW_NAME {
+            zone
+            zone
+            zone
+        }
+        ```
+    - examples：
+        ```
+        view internal  {
+            match-clients { 172.16.0.0/8; };
+            zone "example.com"  IN {
+                type master;
+                file  "example.com/internal";
+            };
+        };
+        
+        view external {
+            match-clients { any; };
+            zone "example.com" IN {
+                type master;
+                file example.com/external";
+            };
+        };
+        ```
+
+## 编译安装DNS
+
+- [编译安装DNS](https://www.jianshu.com/p/658065f81c99)
 
 - 课外练习：
     - 注册一个域名，修改其域名解析服务器为dnspod.cn，dns.la；
