@@ -206,6 +206,7 @@
     - 配置文件：
         - /etc/yum.conf：为所有仓库提供公共配置
         - `/etc/yum.repos.d/*.repo`：为仓库的指向提供配置
+        - [修改CentOS默认yum源为国内yum镜像源](https://blog.csdn.net/inslow/article/details/54177191)
     - 仓库指向的定义：
         - [repositoryID]
         - name=Some name for this repository
