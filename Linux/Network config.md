@@ -293,6 +293,52 @@
         - DEVICE=IFACE_LABEL
         - BOOTPROTO：网上别名不支持动态获取地址，只能选择static, none
 
+## 网络客户端工具：
+   
+- ping命令：`ping  [OPTION]  destination`
+    - -c #：发送的ping包个数；
+    - -w #：ping命令超时时长；
+    - -W #：一次ping操作中，等待对方响应的超时时长；
+    - -s #：指明ping包报文大小；
+        
+    hping命令： （package: hping3）
+        send (almost) arbitrary TCP/IP packets to network hosts
+        
+            --fast
+            --faster
+            --flood
+            -i uX
+        
+    traceroute命令：
+        - print the route packets trace to network host
+        
+        跟踪从源主机到目标主机之间经过的网关；
+        
+    ftp命令：
+        ftp: File Transfer Protocol
+            
+            ftp服务命令行客户端工具；
+            
+    lftp命令：
+        lftp  [-p port]  [-u user[,pass]] [site]
+        
+        get, mget
+        put, mput
+        rm, mrm
+        
+    lftpget命令：
+        lftpget [-c] [-d] [-v] URL [URL...]
+            -c：继续此前的下载；
+            
+    wget命令：
+        The non-interactive network downloader.
+        
+        wget [option]... [URL]...
+            -b：在后台执行下载操作；
+            -q：静默模式，不显示下载进度；
+            -O file：下载的文件的保存位置；
+            -c：续传；
+            --limit-rate=amount：以指定的速率传输文件；
 
 # comming soon
 
