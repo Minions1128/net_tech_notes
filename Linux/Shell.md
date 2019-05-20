@@ -534,12 +534,84 @@ done
     - 2、计算当前系统上的所有用的id之和；
     - 3、通过脚本参数传递一个目录给脚本，而后计算此目录下所有文本文件的行数之和；并说明此类文件的总数；
 
+#### while循环
+
+```sh
+while  CONDITION; do
+    循环体
+    循环控制变量修正表达式
+done
+
+# 进入条件：CONDITION测试为”真“
+# 退出条件：CONDITION测试为”假“
+```
+
+- 示例：求100以内所有正整数之和
+```sh
+#!/bin/bash
+
+declare -i sum=0
+declare -i i=1
+
+while [ $i -le 100 ]; do
+    let sum+=$i
+    let i++
+done
+
+echo $sum
+```
+        
+#### until循环
+
+```sh
+until  CONDITION; do
+    循环体
+    循环控制变量修正表达式
+done
+
+# 进入条件：CONDITION测试为”假“
+# 退出条件：CONDITION测试为”真“
+```
+- 示例：求100以内所有正整数之和
+
+```sh
+            
+#!/bin/bash
+#
+declare -i sum=0
+declare -i i=1
+
+until [ $i -gt 100 ]; do
+    let sum+=$i
+    let i++
+done
+
+echo $sum
+```
+
+- 练习：分别使用for, while, until实现
+    - 1、分别求100以内所有偶数之和，100以内所奇数之和；
+    - 2、创建10个用户，user101-user110；密码同用户名；
+    - 3、打印九九乘法表；
+    - 4、打印逆序的九九乘法表；
+
+```sh
+#!/bin/bash
+#
+for j in {1..9}; do
+    for i in $(seq 1 $j); do
+        echo -n -e "${i}X${j}=$[${i}*${j}]\t"
+    done
+    echo
+done
+```
 
 ## 用户交互
 
 - 用户交互：通过键盘输入数据，从而完成变量赋值操作；
 
 - 用法
+
 ```sh
     read [option]... [name ...]
         -p 'PROMPT'
@@ -547,6 +619,7 @@ done
 ```
 
 - 例子：
+
 ```sh
     #!/bin/bash
     #
@@ -570,6 +643,7 @@ done
 - 调试执行`bash -x /path/to/some_script`
 
 - 示例：
+
 ```sh
 #!/bin/bash
 # Version: 0.0.1
