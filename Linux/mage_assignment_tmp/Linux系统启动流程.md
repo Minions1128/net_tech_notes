@@ -15,32 +15,27 @@ Linux系统的组成部分：
     - 内核空间：内核代码（系统调用）
 
 - 内核设计流派：
-    - 单内核设计：把所有功能集成于同一个程序；
-            Linux
-    - 微内核设计：每种功能使用一个单独的子系统实现；
-            Windows, Solaris
-            
-        
-        Linux内核特点：
-            支持模块化：  .ko (kernel object)
-            支持模块运行时动态装载或卸载；
-            
-            组成部分：
-                核心文件：/boot/vmlinuz-VERSION-release 
-                ramdisk：
-                    CentOS 5：/boot/initrd-VERSION-release.img
-                    CentOS 6,7：/boot/initramfs-VERSION-release.img
-                模块文件：/lib/modules/VERSION-release 
-            
-CentOS 系统的启动流程：
-        
-        POST：加电自检；
+    - 单内核设计：把所有功能集成于同一个程序 - Linux
+    - 微内核设计：每种功能使用一个单独的子系统实现 - Windows, Solaris
+
+- Linux内核特点：
+    - 支持模块化：  .ko (kernel object)
+    - 支持模块运行时动态装载或卸载；
+    - 组成部分：
+        - 核心文件：/boot/vmlinuz-VERSION-release 
+        - ramdisk(临时根)：
+            - CentOS 5：/boot/initrd-VERSION-release.img
+            - CentOS 6,7：/boot/initramfs-VERSION-release.img
+        - 模块文件：/lib/modules/VERSION-release
+
+- CentOS 系统的启动流程：
+    - POST：加电自检；
             ROM：CMOS
                 BIOS：Basic Input and Output System
                 
             ROM+RAM 
-            
-        Boot Sequence：
+        
+    - Boot Sequence：
             按次序查找各引导设备，第一个有引导程序的设备即为本次启动要用到的设备；
             
             bootloader：引导加载器，程序；
@@ -96,8 +91,8 @@ CentOS 系统的启动流程：
                             工具程序：dracut, mkinitrd
                             
             系统初始化流程（内核级别）： POST --> BootSequence(BIOS) --> BootLoader（MBR）--> Kernel（ramdisk）--> rootfs（readonly）--> /sbin/init ()
-            
-        /sbin/init：
+        
+    - /sbin/init：
             
             CentOS 5： SysV init
                 
@@ -222,5 +217,5 @@ CentOS 系统的启动流程：
                 完全兼容SysV脚本机制；因此，service命令依然可用；不过，建议使用systemctl命令来控制服务；
                 
                     # systemctl  {start|stop|restart|status}  name[.service]
-                    
-        博客作业：CentOS系统启动流程；
+                
+    博客作业：CentOS系统启动流程；
