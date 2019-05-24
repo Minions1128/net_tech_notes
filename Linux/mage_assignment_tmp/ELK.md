@@ -70,32 +70,18 @@
     discovery.zen.minimum_master_nodes: 2
     ```
 
-RESTful API:
-        curl  -X<VERB> '<PROTOCOL>://<HOST>:<PORT>/<PATH>?<QUERY_STRING>' -d '<BODY>'
-            <BODY>：json格式的请求主体；
-            
-        <VERB>
-            GET，POST，PUT，DELETE
-
-        特殊：/_cat, /_search, /_cluster
-            
-        <PATH>
-            /index_name/type/Document_ID/
-    
-    
-         curl -XGET 'http://10.1.0.67:9200/_cluster/health?pretty=true'
-         
-         curl -XGET 'http://10.1.0.67:9200/_cluster/stats?pretty=true'
-            
-        curl -XGET 'http://10.1.0.67:9200/_cat/nodes?pretty'
-        
-        curl -XGET 'http://10.1.0.67:9200/_cat/health?pretty'
-        
-        创建文档：
-            curl  -XPUT  
-        
-        文档：
-            {"key1": "value1", "key2": value, ...}
+- RESTful API:
+    - RESTful API基本测试命令：`curl -X<VERB> '<PROTOCOL>://<HOST>:<PORT>/<PATH>?<QUERY_STRING>' -d '<BODY>'`
+        - `<BODY>`: json格式的请求主体；
+        - `<VERB>`: GET，POST，PUT，DELETE, 特殊：`/_cat`, `/_search`, `/_cluster`
+        - `<PATH>`: /index_name/type/Document_ID/
+    - 举例：
+        - curl -XGET 'http://10.1.0.67:9200/_cluster/health?pretty=true'    集群健康状态
+        - curl -XGET 'http://10.1.0.67:9200/_cluster/stats?pretty=true'     
+        - curl -XGET 'http://10.1.0.67:9200/_cat/nodes?pretty'              有几个主节点
+        - curl -XGET 'http://10.1.0.67:9200/_cat/health?pretty'
+    - 创建文档：`curl  -XPUT`
+    - 文档：`{"key1": "value1", "key2": value, ...}`
 
 ELS：分布式、开源、RESTful、近乎实时
         集群：一个或多个节点的集合；
