@@ -14,10 +14,12 @@
     - 基于依赖关系定义服务控制逻辑；
 
 - 核心概念：unit
-    - unit由其相关配置文件进行标识、识别和配置；文件中主要包含了系统服务、监听的socket、保存的快照以及其它与init相关的信息； 这些配置文件主要保存在：
-    - /usr/lib/systemd/system
-    - /run/systemd/system
-    - /etc/systemd/system
+    - 由其相关配置文件进行标识、识别和配置；
+    - 文件中主要包含了系统服务、监听的socket、保存的快照以及其它与init相关的信息； 
+    - 这些配置文件主要保存在：
+        - /usr/lib/systemd/system
+        - /run/systemd/system
+        - /etc/systemd/system
     
 unit的常见类型：
     - Service unit：文件扩展名为.service，用于定义系统服务；
