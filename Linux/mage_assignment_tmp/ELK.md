@@ -83,13 +83,13 @@
     - 创建文档：`curl  -XPUT`
     - 文档：`{"key1": "value1", "key2": value, ...}`
 
-ELS：分布式、开源、RESTful、近乎实时
+- ELS：分布式、开源、RESTful、近乎实时
         集群：一个或多个节点的集合；
         节点：运行的单个els实例；
         索引：切成多个独立的shard；（以Lucene的视角，每个shard即为一个独立而完整的索引）
             primary shard：r/w
             replica shard: r
-        
+
 查询：
         ELS：很多API
             _cluster, _cat, _search
