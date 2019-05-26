@@ -265,31 +265,112 @@ sed          'G'            FILE    # 在原有的每行后方添加一个空白
 
 ### 1. print
 
-            print item1, item2, ...
+- `print item1, item2, ...`
 
-            要点：
-                (1) 逗号分隔符；
-                (2) 输出的各item可以字符串，也可以是数值；当前记录的字段、变量或awk的表达式；
-                (3) 如省略item，相当于print $0; 
+- 要点：
+    - (1) 逗号分隔符;
+    - (2) 输出的各item可以字符串，也可以是数值；当前记录的字段、变量或awk的表达式;
+    - (3) 如省略item，相当于print $0;
+
+- 例如：
+```sh
+]# tail -5 /etc/fstab | awk '{print $2,$5}'
+/home 0
+/tmp 0
+/usr 0
+/var 0
+swap 0
+```
+
+```sh
+]# tail -5 /etc/fstab | awk '{print "hello: " $2}'
+hello: /home
+hello: /tmp
+hello: /usr
+hello: /var
+hello: swap
+```
 
 ### 2. 变量
-            2.1 内建变量
-                FS：input field seperator，默认为空白字符；
-                OFS：output field seperator，默认为空白字符；
-                RS：input record seperator，输入时的换行符；
-                ORS：output record seperator，输出时的换行符；
 
-                NF：number of field，字段数量
-                    {print NF}, {print $NF}
-                NR：number of record, 行数；
-                FNR：各文件分别计数；行数；
+- 2.1 内建变量
+    - FS：input field seperator，默认为空白字符；
+        ```sh
+        ]# tail -5 /etc/fstab |  awk -v FS='=' '{print $1}'
+        UUID
+        UUID
+        UUID
+        UUID
+        UUID
+        ```
+        ```sh
+        ]# tail -5 /etc/fstab |  awk -F '=' '{print $1}'          
+        UUID
+        UUID
+        UUID
+        UUID
+        UUID
+        ```
+    - OFS：output field seperator，默认为空白字符；
+        ```sh
+        ]# tail -5 /etc/fstab |  awk -v FS='-' -v OFS='%%' '{print $1,$2}' 
+        UUID=5aeef323%%4cbf
+        UUID=d4264ed9%%0440
+        UUID=61901ea4%%9e66
+        UUID=82aaf98d%%f9da
+        UUID=35cfc685%%753d
+        ```
+    - RS：input record seperator，输入时的换行符；
+        ```sh
+        ]# tail -2 /etc/fstab |  awk -v RS='-'  '{print $1,$2}' 
+        UUID=82aaf98d 
+        f9da 
+        4937 
+        9f12 
+        9d6bf026d130 /var
+        753d 
+        439d 
+        9f08 
+        28c1c544b54d swap
+        ```
+    - ORS：output record seperator，输出时的换行符；
+        ```sh
+        ]# tail -2 /etc/fstab | awk -v RS='-' -v OFS='#' '{print $1,$2}'
+        UUID=82aaf98d#
+        f9da#
+        4937#
+        9f12#
+        9d6bf026d130#/var
+        753d#
+        439d#
+        9f08#
+        28c1c544b54d#swap
+        ```
+    - -
+    - NF：number of field，字段数量，`{print NF}`
+        ```sh
+        ]# tail -2 /etc/fstab | awk -F '=' '{print NF}'  
+        2
+        2
+        # {print NF}为打印第二个字段
+        ```
+    - NR：number of record, 行数；
+        ```sh
+        ]# tail -5 /etc/fstab | awk -F '=' '{print NR}' 
+        1
+        2
+        3
+        4
+        5
+        ```
+    - FNR：各文件分别计数；行数；
+    - -
+    - FILENAME：当前文件名；
+    - -
+    - ARGC：命令行参数的个数；
+    - ARGV：数组，保存的是命令行所给定的各参数；
 
-                FILENAME：当前文件名；
-
-                ARGC：命令行参数的个数；
-                ARGV：数组，保存的是命令行所给定的各参数；
-
-            2.2 自定义变量
+- 2.2 自定义变量
                 (1) -v var=value
 
                     变量名区分字符大小写；
