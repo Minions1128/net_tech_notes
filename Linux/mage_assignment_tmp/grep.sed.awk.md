@@ -274,7 +274,7 @@ sed          'G'            FILE    # 在原有的每行后方添加一个空白
 
 - 例如：
 ```sh
-]# tail -5 /etc/fstab | awk '{print $2,$5}'
+tail -5 /etc/fstab | awk '{print $2,$5}'
 /home 0
 /tmp 0
 /usr 0
@@ -283,7 +283,7 @@ swap 0
 ```
 
 ```sh
-]# tail -5 /etc/fstab | awk '{print "hello: " $2}'
+tail -5 /etc/fstab | awk '{print "hello: " $2}'
 hello: /home
 hello: /tmp
 hello: /usr
@@ -296,7 +296,7 @@ hello: swap
 - 2.1 内建变量
     - FS：input field seperator，默认为空白字符；
         ```sh
-        ]# tail -5 /etc/fstab |  awk -v FS='=' '{print $1}'
+        tail -5 /etc/fstab |  awk -v FS='=' '{print $1}'
         UUID
         UUID
         UUID
@@ -304,7 +304,7 @@ hello: swap
         UUID
         ```
         ```sh
-        ]# tail -5 /etc/fstab |  awk -F '=' '{print $1}'          
+        tail -5 /etc/fstab |  awk -F '=' '{print $1}'          
         UUID
         UUID
         UUID
@@ -313,7 +313,7 @@ hello: swap
         ```
     - OFS：output field seperator，默认为空白字符；
         ```sh
-        ]# tail -5 /etc/fstab |  awk -v FS='-' -v OFS='%%' '{print $1,$2}' 
+        tail -5 /etc/fstab |  awk -v FS='-' -v OFS='%%' '{print $1,$2}' 
         UUID=5aeef323%%4cbf
         UUID=d4264ed9%%0440
         UUID=61901ea4%%9e66
@@ -322,7 +322,7 @@ hello: swap
         ```
     - RS：input record seperator，输入时的换行符；
         ```sh
-        ]# tail -2 /etc/fstab |  awk -v RS='-'  '{print $1,$2}' 
+        tail -2 /etc/fstab |  awk -v RS='-'  '{print $1,$2}' 
         UUID=82aaf98d 
         f9da 
         4937 
@@ -335,7 +335,7 @@ hello: swap
         ```
     - ORS：output record seperator，输出时的换行符；
         ```sh
-        ]# tail -2 /etc/fstab | awk -v RS='-' -v OFS='#' '{print $1,$2}'
+        tail -2 /etc/fstab | awk -v RS='-' -v OFS='#' '{print $1,$2}'
         UUID=82aaf98d#
         f9da#
         4937#
@@ -346,60 +346,73 @@ hello: swap
         9f08#
         28c1c544b54d#swap
         ```
-    - -
     - NF：number of field，字段数量，`{print NF}`
         ```sh
-        ]# tail -2 /etc/fstab | awk -F '=' '{print NF}'  
+        tail -2 /etc/fstab | awk -F '=' '{print NF}'  
         2
         2
         # {print NF}为打印第二个字段
         ```
     - NR：number of record, 行数；
         ```sh
-        ]# tail -5 /etc/fstab | awk -F '=' '{print NR}' 
+        tail -5 /etc/fstab | awk -F '=' '{print NR}' 
         1
         2
         3
         4
         5
         ```
-    - FNR：各文件分别计数；行数；
-    - -
+    - FNR：各文件分别计行数；
     - FILENAME：当前文件名；
-    - -
     - ARGC：命令行参数的个数；
     - ARGV：数组，保存的是命令行所给定的各参数；
 
 - 2.2 自定义变量
-                (1) -v var=value
-
-                    变量名区分字符大小写；
-
-                (2) 在program中直接定义
+    - (1) -v var=value，变量名区分字符大小写；
+        - `awk -v test='hello awk' 'BEGIN{print test}'`
+    - (2) 在program中直接定义
+        - `awk 'BEGIN{test="hello awk";print test}'`
 
 ### 3. printf命令
 
-            格式化输出：printf FORMAT, item1, item2, ...
+- 格式化输出：`printf FORMAT, item1, item2, ...`
+    - (1) FORMAT必须给出; 
+    - (2) 不会自动换行，需要显式给出换行控制符，\n
+    - (3) FORMAT中需要分别为后面的每个item指定一个格式化符号；
 
-                (1) FORMAT必须给出; 
-                (2) 不会自动换行，需要显式给出换行控制符，\n
-                (3) FORMAT中需要分别为后面的每个item指定一个格式化符号；
+- 格式符：
+    - %c: 显示字符的ASCII码；
+    - %d, %i: 显示十进制整数；
+    - %e, %E: 科学计数法数值显示；
+    - %f：显示为浮点数；
+    - %g, %G：以科学计数法或浮点形式显示数值；
+    - %s：显示字符串；
+    - %u：无符号整数；
+    - %%: 显示%自身；
 
-                格式符：
-                    %c: 显示字符的ASCII码；
-                    %d, %i: 显示十进制整数；
-                    %e, %E: 科学计数法数值显示；
-                    %f：显示为浮点数；
-                    %g, %G：以科学计数法或浮点形式显示数值；
-                    %s：显示字符串；
-                    %u：无符号整数；
-                    %%: 显示%自身；
+```sh
+tail -5 /etc/fstab | awk -F- '{printf "p1:%s;\tp2:%s\n",$2,$3}'
+p1:4cbf;        p2:40f0
+p1:0440;        p2:4abb
+p1:9e66;        p2:4856
+p1:f9da;        p2:4937
+p1:753d;        p2:439d
+```
 
-                修饰符：
-                    #[.#]：第一个数字控制显示的宽度；第二个#表示小数点后的精度；
-                        %3.1f
-                    -: 左对齐
-                    +：显示数值的符号
+- 修饰符：
+    #[.#]：第一个数字控制显示的宽度；第二个#表示小数点后的精度；
+        %3.1f
+    -: 左对齐
+    +：显示数值的符号
+
+```sh
+tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
++1000.00
++52.00
++1001.00
++1002.00
++25.00
+```
 
 ### 4. 操作符
 
