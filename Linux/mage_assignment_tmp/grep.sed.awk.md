@@ -4,7 +4,9 @@
         - grep：基本正则表达式，-E，支持扩展正则表达式，-F不支持正则表达式
         - egrep：扩展正则表达式，-G，支持基本正则表达式，-F不支持正则表达式
         - fgrep：不支持正则表达式，-E，支持扩展正则表达式，-G，支持基本正则表达式
-    - sed：stream editor，流编辑器，文本编辑工具
+    - sed：stream editor，流（行）编辑器，文本编辑工具
+        - 模式空间
+        - 保持空间
     - (g)awk：文本报告生成器，可以格式化文本
 
 ## grep
@@ -251,31 +253,17 @@ sed          'G'            FILE    # 在原有的每行后方添加一个空白
 
 ## awk
 
-GNU awk：
-    
-    文本处理三工具：grep, sed, awk
-        grep, egrep, fgrep：文本过滤工具；pattern
-        sed: 行编辑器
-            模式空间、保持空间
-        awk：报告生成器，格式化文本输出；
+- GNU awk：Aho, Weinberger, Kernighan --> New AWK, NAWK
+    - pattern scanning and processing language
+    - 基本用法：gawk [options] 'program' FILE ...
+        - program: PATTERN{ACTION STATEMENTS}
+            - 语句之间用分号分隔
+            - 例如：print, printf
+    - 选项：
+        - -F：指明输入时用到的字段分隔符；
+        - -v var=value: 自定义变量；
 
-        AWK: Aho, Weinberger, Kernighan --> New AWK, NAWK
-
-        GNU awk, gawk
-
-    gawk - pattern scanning and processing language
-
-        基本用法：gawk [options] 'program' FILE ...
-            program: PATTERN{ACTION STATEMENTS}
-                语句之间用分号分隔
-
-                print, printf
-
-            选项：
-                -F：指明输入时用到的字段分隔符；
-                -v var=value: 自定义变量；
-
-        1、print
+### 1. print
 
             print item1, item2, ...
 
@@ -284,7 +272,7 @@ GNU awk：
                 (2) 输出的各item可以字符串，也可以是数值；当前记录的字段、变量或awk的表达式；
                 (3) 如省略item，相当于print $0; 
 
-        2、变量
+### 2. 变量
             2.1 内建变量
                 FS：input field seperator，默认为空白字符；
                 OFS：output field seperator，默认为空白字符；
@@ -308,7 +296,7 @@ GNU awk：
 
                 (2) 在program中直接定义
 
-        3、printf命令
+### 3. printf命令
 
             格式化输出：printf FORMAT, item1, item2, ...
 
@@ -332,7 +320,7 @@ GNU awk：
                     -: 左对齐
                     +：显示数值的符号
 
-        4、操作符
+### 4. 操作符
 
             算术操作符：
                 x+y, x-y, x*y, x/y, x^y, x%y
@@ -365,7 +353,7 @@ GNU awk：
 
                 # awk -F: '{$3>=1000?usertype="Common User":usertype="Sysadmin or SysUser";printf "%15s:%-s\n",$1,usertype}' /etc/passwd
 
-        5、PATTERN
+### 5. PATTERN
 
             (1) empty：空模式，匹配每一行；
             (2) /regular expression/：仅处理能够被此处的模式匹配到的行；
@@ -380,7 +368,7 @@ GNU awk：
                 BEGIN{}: 仅在开始处理文件中的文本之前执行一次；
                 END{}：仅在文本处理完成之后执行一次；
 
-        6、常用的action
+### 6. 常用的action
 
             (1) Expressions
             (2) Control statements：if, while等；
@@ -388,7 +376,7 @@ GNU awk：
             (4) input statements
             (5) output statements
 
-        7、控制语句
+### 7. 控制语句
 
             if(condition) {statments} 
             if(condition) {statments} else {statements}
@@ -454,7 +442,7 @@ GNU awk：
 
                 ~]# awk -F: '{if($3%2!=0) next; print $1,$3}' /etc/passwd
 
-        8、array
+### 8. array
 
             关联数组：array[index-expression]
 
@@ -485,7 +473,7 @@ GNU awk：
                     练习2：统计指定文件中每个单词出现的次数；
                     ~]# awk '{for(i=1;i<=NF;i++){count[$i]++}}END{for(i in count) {print i,count[i]}}' /etc/fstab
 
-        9、函数
+### 9. 函数
 
             9.1 内置函数
                 数值处理：
