@@ -102,60 +102,38 @@
         - `/s*/_search`：通配符方式（搜索所有以s开头的索引）；
         - `/INDEX_NAME/TYPE_NAME/_search`：搜索指定的单个索引的指定类型；
     - 简单字符串的语法格式：http://lucene.apache.org/core/6_6_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description
-            
-        查询类型：Query DSL，简单字符串；
-        
-            文本匹配的查询条件：
-                (1) q=KEYWORD, 相当于q=_all:KEYWORD
-                (2) q=DOMAIN:KEYWORD
-        
-                        {
-                            "name" : "Docker in Action",
-                            "publisher" : "wrox",
-                            "datatime" : "2015-12-01",
-                            "author" : "Blair"
-                        }
-                
-                        _all: "Docker in Action Wrox 2015-12-01 Blair"
-        
-                修改默认查询域：df属性
-                
-            查询修饰符：
-                https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html
-                
-            自定义分析器：
-                analyzer=
-                
-            默认操作符：OR/AND
-                default_operator, 默认值为OR
-                
-            返回字段：
-                fields=
-                
-                注：5.X不支持；
-                
-            结果排序：
-                sort=DOMAIN:[asc|desc]
-                
-            搜索超时：
-                timeout=
-                
-            查询结果窗口：
-                from=，默认为0；
-                size=, 默认为10；
-                
-        Lucene的查询语法：
-            q=
-                KEYWORD
-                DOMAIN:KEYWORD
-                
-            +DOMAIN:KEYWORD -DOMAIN:KEYWORD 
-        
-        els支持从多类型的查询：
-            Full text queries
-
-
-
+    - 查询类型：
+        - Query DSL
+        - 简单字符串；
+    - 文本匹配的查询条件：
+        - (1) `q=KEYWORD`, 相当于`q=_all:KEYWORD`
+        - (2) `q=DOMAIN:KEYWORD`
+            ```
+            {
+                "name" : "Docker in Action",
+                "publisher" : "wrox",
+                "datatime" : "2015-12-01",
+                "author" : "Blair"
+            }
+            _all: "Docker in Action Wrox 2015-12-01 Blair"
+            ```
+    - 修改默认查询域：df属性
+    - 查询修饰符：https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html
+    - 自定义分析器(切词器)：analyzer=
+    - 默认操作符：OR/AND： default_operator, 默认值为OR
+    - 返回字段：fields=
+        - 注：5.X不支持；
+    - 结果排序：sort=DOMAIN:[asc|desc]
+    - 搜索超时：timeout=
+    - 查询结果窗口：
+        - from=，默认为0；
+        - size=, 默认为10；
+    - Lucene的查询语法：
+        - q=
+            - KEYWORD
+            - DOMAIN:KEYWORD
+        - +DOMAIN:KEYWORD -DOMAIN:KEYWORD 
+    - els支持从多类型的查询：Full text queries
 
        
 ELK：
