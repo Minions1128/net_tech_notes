@@ -529,67 +529,144 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
 
 ### 7. 控制语句
 
-            if(condition) {statments} 
-            if(condition) {statments} else {statements}
-            while(conditon) {statments}
-            do {statements} while(condition)
-            for(expr1;expr2;expr3) {statements}
-            break
-            continue
-            delete array[index]
-            delete array
-            exit 
-            { statements }
+- 控制语句种类：
+    - if(condition) {statments} 
+    - if(condition) {statments} else {statements}
+    - while(conditon) {statments}
+    - do {statements} while(condition)
+    - for(expr1;expr2;expr3) {statements}
+    - break
+    - continue
+    - delete array[index]
+    - delete array
+    - exit 
+    - { statements }
 
-            7.1 if-else
+- 7.1 if-else
+    - 语法：if(condition) statement [else statement]
+    - 使用场景：对awk取得的整行或某个字段做条件判断；
+    - e.g.1： userid大于1000的显示为“common user”，否则显示为“root or Sysuser”
+        ```sh
+        awk -F: '{if($3>=1000) {printf "Common user: %s\n",$1} else {printf "root or Sysuser: %s\n",$1}}' /etc/passwd
+        root or Sysuser: root
+        root or Sysuser: nobody
+        Common user: shenzj
+        Common user: user1
+        Common user: user2
+        ...
+        ```
+    - e.g.2： 显示以“/bin/bash”结尾的用户
+        ```sh
+        awk -F: '{if($NF=="/bin/bash") print $1}' /etc/passwd
+        root
+        shenzj
+        ...
+        ```
+    - `awk '{if(NF>5) print $0}' /etc/fstab`
+    - `df -h | awk -F[%] '/^\/dev/{print $1}' | awk '{if($NF>=20) print $1}'`
 
-                语法：if(condition) statement [else statement]
+- 7.2 while循环
+    - 语法：while(condition) statement; 条件“真”，进入循环；条件“假”，退出循环；
+    - 使用场景：对一行内的多个字段逐一类似处理时使用；对数组中的各元素逐一处理时使用；
+    - e.g.1: 处理文件`/etc/grub2.cfg`中，linux16开头的每一行，统计其每个字符串的字符个数：
+        ```sh
+        cat /etc/grub2.cfg | grep "^[[:space:]]*linux16" 
+                linux16 /vmlinuz-3.10.0-327.el7.x86_64 root=UUID=19d170bc-a683-4050-adba-978d99e8e910 ro rhgb quiet net.ifnames=0 biosdevname=0 
+                linux16 /vmlinuz-0-rescue-f2646364ecfc443f8bf9c2da8550a3c7 root=UUID=19d170bc-a683-4050-adba-978d99e8e910 ro rhgb quiet net.ifnames=0 biosdevname=0 
+        ####
+        cat /etc/grub2.cfg | grep "^[[:space:]]*linux16" | awk '{i=1;while(i<NF) {printf "string: [%s],\t length is %s\n",$i,length($i);i++}printf"\n"}'
+        awk '/^[[:space:]]*linux16/{i=1;while(i<=NF) {printf "string: [%s],\t length is %s\n", $i, length($i); i++}printf"\n"}' /etc/grub2.cfg
+        string: [linux16],       length is 7
+        string: [/vmlinuz-3.10.0-327.el7.x86_64],        length is 30
+        string: [root=UUID=19d170bc-a683-4050-adba-978d99e8e910],        length is 46
+        string: [ro],    length is 2
+        string: [rhgb],  length is 4
+        string: [quiet],         length is 5
+        string: [net.ifnames=0],         length is 13
 
-                ~]# awk -F: '{if($3>=1000) {printf "Common user: %s\n",$1} else {printf "root or Sysuser: %s\n",$1}}' /etc/passwd
+        string: [linux16],       length is 7
+        string: [/vmlinuz-0-rescue-f2646364ecfc443f8bf9c2da8550a3c7],    length is 50
+        string: [root=UUID=19d170bc-a683-4050-adba-978d99e8e910],        length is 46
+        string: [ro],    length is 2
+        string: [rhgb],  length is 4
+        string: [quiet],         length is 5
+        string: [net.ifnames=0],         length is 13
 
-                ~]# awk -F: '{if($NF=="/bin/bash") print $1}' /etc/passwd
+        # {
+        #     i=1;
+        #     while(i<NF) 
+        #     {
+        #         printf "string: [%s],\t length is %s\n",$i,length($i);
+        #         i++
+        #     }
+        #     printf"\n"
+        # }
+        ```
+    - e.g.2: 在e.g.1中，只显示长度大于等于7的字符串及其长度 
+        ```sh
+        cat /etc/grub2.cfg | grep "^[[:space:]]*linux16" | awk '{i=1;while(i<NF){if(length($i)>=7) printf "string: [%s],\t length is %s\n", $i, length($i); i++}printf "\n"}'
+        awk '/^[[:space:]]*linux16/{i=1;while(i<NF){if(length($i)>=7) printf "string: [%s],\t length is %s\n", $i, length($i); i++}printf "\n"}' /etc/grub2.cfg
+        string: [linux16],       length is 7
+        string: [/vmlinuz-3.10.0-327.el7.x86_64],        length is 30
+        string: [root=UUID=19d170bc-a683-4050-adba-978d99e8e910],        length is 46
+        string: [net.ifnames=0],         length is 13
 
-                ~]# awk '{if(NF>5) print $0}' /etc/fstab
+        string: [linux16],       length is 7
+        string: [/vmlinuz-0-rescue-f2646364ecfc443f8bf9c2da8550a3c7],    length is 50
+        string: [root=UUID=19d170bc-a683-4050-adba-978d99e8e910],        length is 46
+        string: [net.ifnames=0],         length is 13
 
-                ~]# df -h | awk -F[%] '/^\/dev/{print $1}' | awk '{if($NF>=20) print $1}'
+        # {
+        #     i=1;
+        #     while(i<NF)
+        #     {
+        #         if(length($i)>=7) 
+        #             printf "string: [%s],\t length is %s\n", $i, length($i);
+        #         i++
+        #     }
+        #     printf "\n"
+        # }
+        ```
 
-                使用场景：对awk取得的整行或某个字段做条件判断；
+- 7.3 do-while循环
+    - 语法：do statement while(condition)
+    - 意义：至少执行一次循环体
 
-            7.2 while循环
-                语法：while(condition) statement
-                    条件“真”，进入循环；条件“假”，退出循环；
+- 7.4 for循环
+    - 语法：for(variable assignment;condition;iteration process) {for-body}
+    - 能够遍历数组中的元素：
+        - 语法：for(var in array) {for-body}
+    - 7.2中的e.g.2
+        ```sh
+        cat /etc/grub2.cfg | grep "^[[:space:]]*linux16" | awk '{for(i=1;i<NF;i++){printf "string: [%s],\t length is %s\n", $i, length($i)}printf "\n"}'
+        awk '/^[[:space:]]*linux16/{for(i=1;i<NF;i++){printf "string: [%s],\t length is %s\n", $i, length($i)}printf "\n"}' /etc/grub2.cfg
+        string: [linux16],       length is 7
+        string: [/vmlinuz-3.10.0-327.el7.x86_64],        length is 30
+        string: [root=UUID=19d170bc-a683-4050-adba-978d99e8e910],        length is 46
+        string: [ro],    length is 2
+        string: [rhgb],  length is 4
+        string: [quiet],         length is 5
+        string: [net.ifnames=0],         length is 13
 
-                使用场景：对一行内的多个字段逐一类似处理时使用；对数组中的各元素逐一处理时使用；
+        string: [linux16],       length is 7
+        string: [/vmlinuz-0-rescue-f2646364ecfc443f8bf9c2da8550a3c7],    length is 50
+        string: [root=UUID=19d170bc-a683-4050-adba-978d99e8e910],        length is 46
+        string: [ro],    length is 2
+        string: [rhgb],  length is 4
+        string: [quiet],         length is 5
+        string: [net.ifnames=0],         length is 13
 
-                ~]# awk '/^[[:space:]]*linux16/{i=1;while(i<=NF) {print $i,length($i); i++}}' /etc/grub2.cfg
+        ```
 
-                ~]# awk '/^[[:space:]]*linux16/{i=1;while(i<=NF) {if(length($i)>=7) {print $i,length($i)}; i++}}' /etc/grub2.cfg
+- 7.5 switch语句
+    - 语法：switch(expression) {case VALUE1 or /REGEXP/: statement; case VALUE2 or /REGEXP2/: statement; ...; default: statement}
 
-            7.3 do-while循环
-                语法：do statement while(condition)
-                    意义：至少执行一次循环体
+- 7.6 break和continue
+    - break [n]
+    - continue
 
-            7.4 for循环
-                语法：for(expr1;expr2;expr3) statement
-
-                    for(variable assignment;condition;iteration process) {for-body}
-
-                ~]# awk '/^[[:space:]]*linux16/{for(i=1;i<=NF;i++) {print $i,length($i)}}' /etc/grub2.cfg
-
-                特殊用法：
-                    能够遍历数组中的元素；
-                        语法：for(var in array) {for-body}
-
-            7.5 switch语句
-                语法：switch(expression) {case VALUE1 or /REGEXP/: statement; case VALUE2 or /REGEXP2/: statement; ...; default: statement}
-
-            7.6 break和continue
-                break [n]
-                continue
-
-            7.7 next
-
-                提前结束对本行的处理而直接进入下一行；
+- 7.7 next
+    - 提前结束对本行的处理而直接进入下一行；
 
                 ~]# awk -F: '{if($3%2!=0) next; print $1,$3}' /etc/passwd
 
