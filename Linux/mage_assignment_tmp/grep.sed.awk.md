@@ -415,59 +415,109 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
 
 ### 4. 操作符
 
-            算术操作符：
-                x+y, x-y, x*y, x/y, x^y, x%y
-                -x
-                +x: 转换为数值；
+- 算术操作符：
+    - `x+y, x-y, x*y, x/y, x^y, x%y`
+    - `-x`
+    - `+x`: 转换为数值；
 
-            字符串操作符：没有符号的操作符，字符串连接
+- 字符串操作符：没有符号的操作符，字符串连接
 
-            赋值操作符：
-                =, +=, -=, *=, /=, %=, ^=
-                ++, --
+- 赋值操作符：
+    - `=, +=, -=, *=, /=, %=, ^=`
+    - `++, --`
 
-            比较操作符：
-                >, >=, <, <=, !=, ==
+- 比较操作符：
+    - `>, >=, <, <=, !=, ==`
 
-            模式匹配符：
-                ~：是否匹配
-                !~：是否不匹配
+- 模式匹配符：
+    - ~：是否匹配
+    - !~：是否不匹配
 
-            逻辑操作符：
-                &&
-                ||
-                !
+- 逻辑操作符：
+    - &&
+    - ||
+    - !
 
-            函数调用：
-                function_name(argu1, argu2, ...)
+- 函数调用：
+    - `function_name(argu1, argu2, ...)`
 
-            条件表达式：
-                selector?if-true-expression:if-false-expression
-
-                # awk -F: '{$3>=1000?usertype="Common User":usertype="Sysadmin or SysUser";printf "%15s:%-s\n",$1,usertype}' /etc/passwd
+- 条件表达式：
+    - `selector?IF-TRUE-EXPRESSION:IF-FALSE-EXPRESSION`
+    - 例如：`awk -F: '{$3>=1000?usertype="Common User":usertype="Sysadmin or SysUser";printf "%15s:%-s\n",$1,usertype}' /etc/passwd`
 
 ### 5. PATTERN
 
-            (1) empty：空模式，匹配每一行；
-            (2) /regular expression/：仅处理能够被此处的模式匹配到的行；
-            (3) relational expression: 关系表达式；结果有“真”有“假”；结果为“真”才会被处理；
-                真：结果为非0值，非空字符串；
-            (4) line ranges：行范围，
-                startline,endline：/pat1/,/pat2/
+- (1) empty：空模式，匹配每一行；
+- (2) /regular expression/：仅处理能够被此处的模式匹配到的行；
+    - !: 对结果取反
+    ```sh
+    awk -F- '/^UUID/{print $1}' /etc/fstab   
+    UUID=19d170bc
+    UUID=06fe9c9e
+    UUID=1a6af1df
+    UUID=24203acf
+    UUID=718dab94
+    UUID=42090979
+    UUID=d1fd90b7
+    UUID=9d83aed5
+    ```
+    ```sh
+    awk '!/^UUID/{print $1}' /etc/fstab     
 
-                注意： 不支持直接给出数字的格式
-                ~]# awk -F: '(NR>=2&&NR<=10){print $1}' /etc/passwd
-            (5) BEGIN/END模式
-                BEGIN{}: 仅在开始处理文件中的文本之前执行一次；
-                END{}：仅在文本处理完成之后执行一次；
+    #
+    #
+    #
+    #
+    #
+    ```
+- (3) relational expression: 关系表达式；结果有“真”有“假”；
+    - 结果为“真”才会被处理；
+    - 真：结果为非0值，非空字符串；
+    ```sh
+    awk -F: '$3>=1000{print $3}' /etc/passwd
+    65534
+    1000
+    1001
+    1002
+    1003
+    2002
+    1005
+    2003
+    2020
+    ```
+    ```sh
+    awk -F: '$NF=="/bin/bash"{print $1,$NF}' /etc/passwd
+    awk -F: '$NF~/bash$/{print $1,$NF}' /etc/passwd
+    root /bin/bash
+    shenzj /bin/bash
+    hadoop /bin/bash
+    bash /bin/bash
+    testbash /bin/bash
+    user1 /bin/bash
+    user2 /bin/bash
+    ```
+- (4) line ranges：行范围，
+    - startline,endline：/pat1/,/pat2/
+    - 注意： 不支持直接给出数字的格式
+    ```sh
+    awk -F: '(NR>=11&&NR<=15){print $3}' /etc/passwd # 在11行到15行之间的
+    12
+    14
+    99
+    66
+    170swd
+    ```
+- (5) BEGIN/END模式
+    - BEGIN{}: 仅在开始处理文件中的文本之前执行一次；
+    - END{}：仅在文本处理完成之后执行一次；
 
 ### 6. 常用的action
 
-            (1) Expressions
-            (2) Control statements：if, while等；
-            (3) Compound statements：组合语句；
-            (4) input statements
-            (5) output statements
+- (1) Expressions
+- (2) Control statements：if, while等；
+- (3) Compound statements：组合语句；
+- (4) input statements
+- (5) output statements
 
 ### 7. 控制语句
 
