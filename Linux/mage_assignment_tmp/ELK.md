@@ -25,7 +25,7 @@
 
 ## ElasticSearch
 
-- ![elk.es.arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.es.arch.png)
+![elk.es.arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.es.arch.png)
 
 - ES的核心组件：
     - 物理组件：
@@ -91,6 +91,8 @@
     - 索引：切成多个独立的shard；（以Lucene的视角，每个shard即为一个独立而完整的索引）
         - primary shard：r/w
         - replica shard: r
+
+![elk.query](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.query.png)
 
 - 查询：
     - `curl -X GET '<SCHEME://<HOST>:<PORT>/[INDEX/TYPE/]_search?q=KEYWORD&sort=DOMAIN:[asc|desc]&from=#&size=#&_source=DOMAIN_LIST'`
