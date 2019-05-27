@@ -25,6 +25,8 @@
 
 ## ElasticSearch
 
+- ![elk.es.arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.es.arch.png)
+
 - ES的核心组件：
     - 物理组件：
         - 集群：有状态：green, yellow, red
@@ -76,34 +78,28 @@
         - `<VERB>`: GET，POST，PUT，DELETE, 特殊：`/_cat`, `/_search`, `/_cluster`
         - `<PATH>`: /index_name/type/Document_ID/
     - 举例：
-        - curl -XGET 'http://10.1.0.67:9200/_cluster/health?pretty=true'    集群健康状态
-        - curl -XGET 'http://10.1.0.67:9200/_cluster/stats?pretty=true'     
-        - curl -XGET 'http://10.1.0.67:9200/_cat/nodes?pretty'              有几个主节点
-        - curl -XGET 'http://10.1.0.67:9200/_cat/health?pretty'
+        - `curl -XGET 'http://10.1.0.67:9200/_cluster/health?pretty=true'    # 集群健康状态`
+        - `curl -XGET 'http://10.1.0.67:9200/_cluster/stats?pretty=true'`
+        - `curl -XGET 'http://10.1.0.67:9200/_cat/nodes?pretty'              # 有几个主节点`
+        - `curl -XGET 'http://10.1.0.67:9200/_cat/health?pretty'`
     - 创建文档：`curl  -XPUT`
     - 文档：`{"key1": "value1", "key2": value, ...}`
 
 - ELS：分布式、开源、RESTful、近乎实时
-        集群：一个或多个节点的集合；
-        节点：运行的单个els实例；
-        索引：切成多个独立的shard；（以Lucene的视角，每个shard即为一个独立而完整的索引）
-            primary shard：r/w
-            replica shard: r
+    - 集群：一个或多个节点的集合；
+    - 节点：运行的单个els实例；
+    - 索引：切成多个独立的shard；（以Lucene的视角，每个shard即为一个独立而完整的索引）
+        - primary shard：r/w
+        - replica shard: r
 
-查询：
-        ELS：很多API
-            _cluster, _cat, _search
-            
-        curl -X GET '<SCHEME://<HOST>:<PORT>/[INDEX/TYPE/]_search?q=KEYWORD&sort=DOMAIN:[asc|desc]&from=#&size=#&_source=DOMAIN_LIST'
-        
-            /_search：搜索所有的索引和类型；
-            /INDEX_NAME/_search：搜索指定的单个索引；
-            /INDEX1,INDEX2/_search：搜索指定的多个索引；
-            /s*/_search：搜索所有以s开头的索引；
-            /INDEX_NAME/TYPE_NAME/_search：搜索指定的单个索引的指定类型；
-        
-        简单字符串的语法格式
-            http://lucene.apache.org/core/6_6_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description
+- 查询：
+    - `curl -X GET '<SCHEME://<HOST>:<PORT>/[INDEX/TYPE/]_search?q=KEYWORD&sort=DOMAIN:[asc|desc]&from=#&size=#&_source=DOMAIN_LIST'`
+        - `/_search`：搜索所有的索引和类型；
+        - `/INDEX_NAME/_search`：搜索指定的单个索引；
+        - `/INDEX1,INDEX2/_search`：搜索指定的多个索引；
+        - `/s*/_search`：通配符方式（搜索所有以s开头的索引）；
+        - `/INDEX_NAME/TYPE_NAME/_search`：搜索指定的单个索引的指定类型；
+    - 简单字符串的语法格式：http://lucene.apache.org/core/6_6_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description
             
         查询类型：Query DSL，简单字符串；
         
@@ -155,7 +151,11 @@
         
         els支持从多类型的查询：
             Full text queries
-        
+
+
+
+
+       
 ELK：
         E: elasticsearch
         L: logstash，日志收集工具；
