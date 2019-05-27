@@ -505,10 +505,18 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
     14
     99
     66
-    170swd
+    170
     ```
 - (5) BEGIN/END模式
     - BEGIN{}: 仅在开始处理文件中的文本之前执行一次；
+        ```sh
+        awk -F: 'BEGIN{print "\tUSERNAME: \tUID\t\n----------------------------------------------"}(NR>=11&&NR<=13){printf "%20s\t%s\t\n",$1,$3}' /etc/passwd
+                USERNAME:       UID
+        ----------------------------------------------
+                      shenzj    1012
+                       test1    1014
+                      nobody    1099
+        ```
     - END{}：仅在文本处理完成之后执行一次；
 
 ### 6. 常用的action
