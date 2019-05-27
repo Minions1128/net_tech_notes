@@ -134,57 +134,48 @@
             - DOMAIN:KEYWORD
         - +DOMAIN:KEYWORD -DOMAIN:KEYWORD 
     - els支持从多类型的查询：Full text queries
-
        
-ELK：
-        E: elasticsearch
-        L: logstash，日志收集工具；
-            ELK Beats Platform：
-                PacketBeat：网络报文分析工具，统计收集报文信息；
-                Filebeat：是logstash forwarder的替换者，因此是一个日志收集工具；
-                Topbeat：用来收集系统基础数据，如cpu、内存、io等相关的统计信息；
-                Winlogbeat
-                Metricbeat
-                用户自定义beat：
-        
-                
-        input {
-            ...
-        }
-        
-        filter{
-            ...
-        }
-        
-        output {
-            ...
-        }
-                
-        
-        grok：
-            %{SYNTAX:SEMANTIC}
-                SYNTAX：预定义的模式名称；
-                SEMANTIC：给模式匹配到的文本所定义的键名；
-                
-                1.2.3.4 GET /logo.jpg  203 0.12
-                %{IP:clientip} %{WORD:method} %{URIPATHPARAM:request} %{NUMBER:bytes} %{NUMBER:duration}
-                
-                { clientip: 1.2.3.4, method: GET, request: /logo.jpg, bytes: 203, duration: 0.12}
-                
-                
-                %{IPORHOST:client_ip} %{USER:ident} %{USER:auth} \[%{HTTPDATE:timestamp}\] "(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:http_version})?|-)" %{HOST:domain} %{NUMBER:response} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent} "(%{WORD:x_forword}|-)" (%{URIHOST:upstream_host}|-) %{NUMBER:upstream_response} (%{WORD:upstream_cache_status}|-) %{QS:upstream_content_type} (%{BASE16FLOAT:upstream_response_time}) > (%{BASE16FLOAT:request_time})
-                
-                 "message" => "%{IPORHOST:clientip} \[%{HTTPDATE:time}\] \"%{WORD:verb} %{URIPATHPARAM:request} HTTP/%{NUMBER:httpversion}\" %{NUMBER:http_status_code} %{NUMBER:bytes} \"(?<http_referer>\S+)\" \"(?<http_user_agent>\S+)\" \"(?<http_x_forwarded_for>\S+)\""
-                 
-                 filter {
-                    grok {
-                        match => {
-                            "message" => "%{IPORHOST:clientip} \[%{HTTPDATE:time}\] \"%{WORD:verb} %{URIPATHPARAM:request} HTTP/%{NUMBER:httpversion}\" %{NUMBER:http_status_code} %{NUMBER:bytes} \"(?<http_referer>\S+)\" \"(?<http_user_agent>\S+)\" \"(?<http_x_forwarded_for>\S+)\""
-                        }
-                        remote_field: message
-                    }   
+## Logstash
+
+- 配置文件举例：
+
+```
+input {
+    ...
+}
+
+filter{
+    ...
+}
+
+output {
+    ...
+}
+```
+
+- grok重要的过滤插件：
+    - `%{SYNTAX:SEMANTIC}`
+        - SYNTAX：预定义的模式名称；
+        - SEMANTIC：给模式匹配到的文本所定义的键名；
+    - `~/patterns/grok-patterns`定义了多种模式
+    - 例如：
+        - 1.2.3.4 GET /logo.jpg  203 0.12
+        - %{IP:clientip} %{WORD:method} %{URIPATHPARAM:request} %{NUMBER:bytes} %{NUMBER:duration}
+        - { clientip: 1.2.3.4, method: GET, request: /logo.jpg, bytes: 203, duration: 0.12}
+        - -
+        - `%{IPORHOST:client_ip} %{USER:ident} %{USER:auth} \[%{HTTPDATE:timestamp}\] "(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:http_version})?|-)" %{HOST:domain} %{NUMBER:response} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent} "(%{WORD:x_forword}|-)" (%{URIHOST:upstream_host}|-) %{NUMBER:upstream_response} (%{WORD:upstream_cache_status}|-) %{QS:upstream_content_type} (%{BASE16FLOAT:upstream_response_time}) > (%{BASE16FLOAT:request_time})`
+        - `"message" => "%{IPORHOST:clientip} \[%{HTTPDATE:time}\] \"%{WORD:verb} %{URIPATHPARAM:request} HTTP/%{NUMBER:httpversion}\" %{NUMBER:http_status_code} %{NUMBER:bytes} \"(?<http_referer>\S+)\" \"(?<http_user_agent>\S+)\" \"(?<http_x_forwarded_for>\S+)\""`
+    - 配置举例：
+        ```
+        filter {
+            grok {
+                match => {
+                    "message" => "%{IPORHOST:clientip} \[%{HTTPDATE:time}\] \"%{WORD:verb} %{URIPATHPARAM:request} HTTP/%{NUMBER:httpversion}\" %{NUMBER:http_status_code} %{NUMBER:bytes} \"(?<http_referer>\S+)\" \"(?<http_user_agent>\S+)\" \"(?<http_x_forwarded_for>\S+)\""
                 }
-                
+                remote_field: message
+            }
+        }
+        ```
                 nginx.remote.ip
                 [nginx][remote][ip] 
                 
@@ -196,7 +187,7 @@ ELK：
                         " %{NUMBER:[nginx][access][response_code]} %{NUMBER:[nginx][access][body_sent][bytes]} \"%{DATA:[nginx][access][referrer]}\" \"
                         %{DATA:[nginx][access][agent]}\""] }
                         remove_field => "message"
-                    }  
+                    }
                     date {
                         match => [ "[nginx][access][time]", "dd/MMM/YYYY:H:m:s Z" ]
                         remove_field => "[nginx][access][time]"
@@ -224,5 +215,5 @@ ELK：
                 注意：
                     1、输出的日志文件名必须以“logstash-”开头，方可将geoip.location的type自动设定为"geo_point"；
                     2、target => "geoip"
-                
-        除了使用grok filter plugin实现日志输出json化之外，还可以直接配置服务输出为json格式；
+
+除了使用grok filter plugin实现日志输出json化之外，还可以直接配置服务输出为json格式；
