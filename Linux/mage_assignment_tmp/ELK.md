@@ -165,55 +165,44 @@ output {
         - -
         - `%{IPORHOST:client_ip} %{USER:ident} %{USER:auth} \[%{HTTPDATE:timestamp}\] "(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:http_version})?|-)" %{HOST:domain} %{NUMBER:response} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent} "(%{WORD:x_forword}|-)" (%{URIHOST:upstream_host}|-) %{NUMBER:upstream_response} (%{WORD:upstream_cache_status}|-) %{QS:upstream_content_type} (%{BASE16FLOAT:upstream_response_time}) > (%{BASE16FLOAT:request_time})`
         - `"message" => "%{IPORHOST:clientip} \[%{HTTPDATE:time}\] \"%{WORD:verb} %{URIPATHPARAM:request} HTTP/%{NUMBER:httpversion}\" %{NUMBER:http_status_code} %{NUMBER:bytes} \"(?<http_referer>\S+)\" \"(?<http_user_agent>\S+)\" \"(?<http_x_forwarded_for>\S+)\""`
-    - 配置举例：
+    - nginx日志的配置举例：
         ```
+        nginx.remote.ip
+        [nginx][remote][ip]
+
         filter {
             grok {
-                match => {
-                    "message" => "%{IPORHOST:clientip} \[%{HTTPDATE:time}\] \"%{WORD:verb} %{URIPATHPARAM:request} HTTP/%{NUMBER:httpversion}\" %{NUMBER:http_status_code} %{NUMBER:bytes} \"(?<http_referer>\S+)\" \"(?<http_user_agent>\S+)\" \"(?<http_x_forwarded_for>\S+)\""
-                }
-                remote_field: message
+                match => { "message" => ["%{IPORHOST:[nginx][access][remote_ip]} - %{DATA:[nginx][access][user_name]} \[%{HTTPDATE:[nginx
+                ][access][time]}\] \"%{WORD:[nginx][access][method]} %{DATA:[nginx][access][url]} HTTP/%{NUMBER:[nginx][access][http_version]}\
+                " %{NUMBER:[nginx][access][response_code]} %{NUMBER:[nginx][access][body_sent][bytes]} \"%{DATA:[nginx][access][referrer]}\" \"
+                %{DATA:[nginx][access][agent]}\""] }
+                remove_field => "message"
+            }
+            date {
+                match => [ "[nginx][access][time]", "dd/MMM/YYYY:H:m:s Z" ]
+                remove_field => "[nginx][access][time]"
+            }  
+            useragent {
+                source => "[nginx][access][agent]"
+                target => "[nginx][access][user_agent]"
+                remove_field => "[nginx][access][agent]"
+            }
+            geoip {
+                source => "[nginx][access][remote_ip]"
+                target => "geoip"
+                database => "/etc/logstash/GeoLite2-City.mmdb"
             }
         }
+        
+        output {
+            elasticsearch {
+                hosts => ["node1:9200","node2:9200","node3:9200"]
+                index => "logstash-ngxaccesslog-%{+YYYY.MM.dd}"
+            }
+        }
+        # 注意：
+            # 1、输出的日志文件名必须以“logstash-”开头，方可将geoip.location的type自动设定为"geo_point"；
+            # 2、target => "geoip"
         ```
-                nginx.remote.ip
-                [nginx][remote][ip] 
-                
-                
-                filter {
-                    grok {
-                        match => { "message" => ["%{IPORHOST:[nginx][access][remote_ip]} - %{DATA:[nginx][access][user_name]} \[%{HTTPDATE:[nginx
-                        ][access][time]}\] \"%{WORD:[nginx][access][method]} %{DATA:[nginx][access][url]} HTTP/%{NUMBER:[nginx][access][http_version]}\
-                        " %{NUMBER:[nginx][access][response_code]} %{NUMBER:[nginx][access][body_sent][bytes]} \"%{DATA:[nginx][access][referrer]}\" \"
-                        %{DATA:[nginx][access][agent]}\""] }
-                        remove_field => "message"
-                    }
-                    date {
-                        match => [ "[nginx][access][time]", "dd/MMM/YYYY:H:m:s Z" ]
-                        remove_field => "[nginx][access][time]"
-                    }  
-                    useragent {
-                        source => "[nginx][access][agent]"
-                        target => "[nginx][access][user_agent]"
-                        remove_field => "[nginx][access][agent]"
-                    }  
-                    geoip {
-                        source => "[nginx][access][remote_ip]"
-                        target => "geoip"
-                        database => "/etc/logstash/GeoLite2-City.mmdb"
-                    }  
-                                                                    
-                }   
-                
-                output {                                                                                                     
-                    elasticsearch {                                                                                      
-                        hosts => ["node1:9200","node2:9200","node3:9200"]                                            
-                        index => "logstash-ngxaccesslog-%{+YYYY.MM.dd}"                                              
-                    }                                                                                                    
-                }
-                
-                注意：
-                    1、输出的日志文件名必须以“logstash-”开头，方可将geoip.location的type自动设定为"geo_point"；
-                    2、target => "geoip"
 
-除了使用grok filter plugin实现日志输出json化之外，还可以直接配置服务输出为json格式；
+- 除了使用grok filter plugin实现日志输出json化之外，还可以直接配置服务输出为json格式；
