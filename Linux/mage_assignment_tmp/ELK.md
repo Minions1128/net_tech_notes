@@ -136,7 +136,7 @@
             - DOMAIN:KEYWORD
         - +DOMAIN:KEYWORD -DOMAIN:KEYWORD 
     - els支持从多类型的查询：Full text queries
-       
+
 ## Logstash
 
 ![elk.logstash.arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.logstash.arch.png) 
