@@ -8,6 +8,8 @@
         - Solr: SolrTM is a high performance search server built using Lucene Core, with XML/HTTP and JSON/Python/Ruby APIs, hit highlighting, faceted search, caching, replication, and a web admin interface.
         - ElasticSearch: Elasticsearch is a distributed, RESTful search and analytics engine capable of solving a growing number of use cases. As the heart of the Elastic Stack, it centrally stores your data so you can discover the expected and uncover the unexpected.
 
+![elk.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.1.jpg)
+
 - Elastic Stack：Elasticsearch、Logstash、Kibana三个开源软件的组合,每个完成不同的功能，官方网站 www.elastic.co
     - ElasticSearch: 可实现数据的实时全文搜索搜索、支持分布式可实现高可用、提供API接口，可以处理大规模日志数据，比如Nginx、Tomcat、系统日志等。
     - Logstash： is an open source, server-side data processing pipeline that ingests data from a multitude of sources simultaneously, transforms it, and then sends it to your favorite “stash.” (Ours is Elasticsearch, naturally.) 通过插件实现日志收集，支持日志过滤，支持普通log、自定义json格式的日志解析。
@@ -21,7 +23,7 @@
         - Heartbeat：Uptime Monitoring
     - Kibana：Kibana lets you visualize your Elasticsearch data and navigate the Elastic Stack, so you can do anything from learning why you're getting paged at 2:00 a.m. to understanding the impact rain might have on your quarterly numbers.调用elasticsearch的数据，并进行前端数据可视化的展现。
 
-![elk.1](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.1.jpg)
+![elk.implment](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.implement.png)
 
 ## ElasticSearch
 
@@ -134,8 +136,10 @@
             - DOMAIN:KEYWORD
         - +DOMAIN:KEYWORD -DOMAIN:KEYWORD 
     - els支持从多类型的查询：Full text queries
-       
+
 ## Logstash
+
+![elk.logstash.arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.logstash.arch.png) 
 
 - 配置文件举例：
 
