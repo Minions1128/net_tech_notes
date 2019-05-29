@@ -137,6 +137,8 @@
        
 ## Logstash
 
+![elk.logstash.arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.logstash.arch.png) 
+
 - 配置文件举例：
 
 ```
