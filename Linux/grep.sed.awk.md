@@ -662,60 +662,74 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
     - 语法：switch(expression) {case VALUE1 or /REGEXP/: statement; case VALUE2 or /REGEXP2/: statement; ...; default: statement}
 
 - 7.6 break和continue
-    - break [n]
+    - break [n], 可以退出n重循环
     - continue
 
 - 7.7 next
     - 提前结束对本行的处理而直接进入下一行；
-
-                ~]# awk -F: '{if($3%2!=0) next; print $1,$3}' /etc/passwd
+    - `awk -F: '{if($3%2!=0) next; print $1,$3}' /etc/passwd`
 
 ### 8. array
 
-            关联数组：array[index-expression]
+- 关联数组：array[index-expression]
 
-                index-expression:
-                    (1) 可使用任意字符串；字符串要使用双引号；
-                    (2) 如果某数组元素事先不存在，在引用时，awk会自动创建此元素，并将其值初始化为“空串”；
+- index-expression:
+    - (1) 可使用任意字符串；字符串要使用双引号；
+    - (2) 如果某数组元素事先不存在，在引用时，awk会自动创建此元素，并将其值初始化为“空串”；
 
-                    若要判断数组中是否存在某元素，要使用"index in array"格式进行；
+- 若要判断数组中是否存在某元素，要使用"index in array"格式进行；
+    - weekdays["mon"]="Monday"
+    ```sh
+    awk 'BEGIN{weekdays["mon"]="Monday";weekdays["tue"]="Tuesday";print weekdays["tue"];print weekdays["mon"]}'
+    Tuesday
+    Monday
+    ```
 
-                    weekdays[mon]="Monday"
+- 若要遍历数组中的每个元素，要使用for循环: `for(var in array) {for-body}`
+    - `awk 'BEGIN{weekdays["mon"]="Monday";weekdays["tue"]="Tuesday";for(i in weekdays) {print weekdays[i]}}'` **注意：var会遍历array的每个索引**
+    - 统计`netstat -tan`中，每种状态各出现了多少次
+        ```sh
+        # state["LISTEN"]++
+        # state["ESTABLISHED"]++
+        netstat -tan | awk '/^tcp\>/{state[$NF]++}END{for(i in state) { print i,state[i]}}'
+        LISTEN 15
+        CLOSE_WAIT 29
+        ESTABLISHED 24
+        TIME_WAIT 214
+        ```
 
-                若要遍历数组中的每个元素，要使用for循环；
-                    for(var in array) {for-body}
+- 练习1：统计/etc/fstab文件中每个文件系统类型出现的次数；
 
-                    ~]# awk 'BEGIN{weekdays["mon"]="Monday";weekdays["tue"]="Tuesday";for(i in weekdays) {print weekdays[i]}}'
+```sh
+awk '/^UUID/{f[$3]++}END{for (i in f) {print i,f[i]}}' /etc/fstab
+```
 
-                    注意：var会遍历array的每个索引；
-                    state["LISTEN"]++
-                    state["ESTABLISHED"]++
+- 练习2：统计指定文件中每个单词出现的次数；
 
-                    ~]# netstat -tan | awk '/^tcp\>/{state[$NF]++}END{for(i in state) { print i,state[i]}}'
-
-                    ~]# awk '{ip[$1]++}END{for(i in ip) {print i,ip[i]}}' /var/log/httpd/access_log
-
-                    练习1：统计/etc/fstab文件中每个文件系统类型出现的次数；
-                    ~]# awk '/^UUID/{fs[$3]++}END{for(i in fs) {print i,fs[i]}}' /etc/fstab
-
-                    练习2：统计指定文件中每个单词出现的次数；
-                    ~]# awk '{for(i=1;i<=NF;i++){count[$i]++}}END{for(i in count) {print i,count[i]}}' /etc/fstab
+```sh
+awk '{for(i=1;i<=NF;i++){count[$i]++}}END{for(i in count) {print i,count[i]}}' /etc/fstab
+```
 
 ### 9. 函数
 
-            9.1 内置函数
-                数值处理：
-                    rand()：返回0和1之间一个随机数；
+- 9.1 内置函数
+    - 数值处理：
+        - rand()：返回0和1之间一个随机浮点数；
+        - 数学相关：cos( x ), sin( x ), exp( x ), log( x ), sqrt( x ), int( x )
+    - 字符串处理：
+        - length([s])：返回指定字符串的长度；
+        - sub(r,s,[t])：以r表示的模式来查找t所表示的字符中的匹配的内容，并将其第一次出现替换为s所表示的内容；
+        - gsub(r,s,[t])：以r表示的模式来查找t所表示的字符中的匹配的内容，并将其所有出现均替换为s所表示的内容；
+        - split(s,a[,r])：以r为分隔符切割字符s，并将切割后的结果保存至a所表示的数组中；
+            - `netstat -tan | awk '/^tcp\>/{split($5,ip,":");count[ip[1]]++}END{for (i in count) {print i,count[i]}}'`
 
-                字符串处理：
-                    length([s])：返回指定字符串的长度；
-                    sub(r,s,[t])：以r表示的模式来查找t所表示的字符中的匹配的内容，并将其第一次出现替换为s所表示的内容；
-                    gsub(r,s,[t])：以r表示的模式来查找t所表示的字符中的匹配的内容，并将其所有出现均替换为s所表示的内容；
+- 9.2 自定义函数
+    - 《sed和awk》
 
-                    split(s,a[,r])：以r为分隔符切割字符s，并将切割后的结果保存至a所表示的数组中；
+### 一些例子：
 
-                    ~]# netstat -tan | awk '/^tcp\>/{split($5,ip,":");count[ip[1]]++}END{for (i in count) {print i,count[i]}}'
-
-            9.2 自定义函数
-
-                《sed和awk》
+- 清楚ARP表项
+```sh
+arp -n | awk '/^[1-9]/{system("arp -d "$1)}'
+arp -n | awk '/^[1-9]/{print "arp -d ",$1}' | sh -x
+```
