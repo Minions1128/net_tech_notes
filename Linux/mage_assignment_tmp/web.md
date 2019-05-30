@@ -17,7 +17,7 @@
             - AF_INET：Address Family，IPv4
             - AF_INET6：ipv6
             - AF_UNIX：同一主机上的不同进程间基于socket套接字通信使用的一种地址；Unix_SOCK
-            
+
 - TCP FSM：CLOSED -> LISTEN -> SYN_SENT -> SYN_RECV -> ESTABLISHED -> FIN_WAIT1 -> CLOSE_WAIT -> FIN_WAIT2 -> LAST_ACK -> TIMEWAIT -> CLOSED
 
 - TCP协议的特性：
@@ -63,7 +63,7 @@
 
 - 接收请求的模型：并发访问响应模型：
     - 单进程I/O模型：启动一个进程处理用户请求；这意味着，一次只能处理一个请求，多个请求被串行响应；
-    - 多进程I/O结构：并行启动多个进程，每个进程响应一个请求；
+    - 多进程I/O结构：由父进程并行启动多个进程，每个子进程响应一个请求；
     - 复用的I/O结构：一个进程响应n个请求；
         - 多线程模式：一个进程生成n个线程，一个线程处理一个请求；
         - 事件驱动(event-driven)：一个进程直接n个请求；
@@ -71,142 +71,100 @@
         - 响应的请求的数量：`m*n`
 
 - 处理请求：分析请求报文的http请求报文首部
-                http协议：
-                    http请求报文首部 
-                    http响应报文首部
-                    
-                请求报文首部的格式：
-                    <method> <URL> <VERSION>
-                    HEADERS: (name: value)
-                    <request body>
-        
-访问资源：获取请求报文中请求的资源
-    
-                web服务器，即存放了web资源的主机，负责向请求者提供对方请求的静态资源，或动态资源运行生成的结果；这些资源通常应该放置于本地文件系统某路径下；此路径称为DocRoot；
-                
-                    /var/www/html/：
-                        images/logo.jgp
-                        
-                        http://www.magedu.com/images/logo.jpg
-                        
-                    web服务器的资源路径映射方式：
-                        (a) docroot 
-                        (b) alias
-                        (c) 虚拟主机的docroot
-                        (d) 用户家目录的docroot 
-                        
-        http请求处理中的连接模式：
-            保持连接（长连接）：keep-alive
-                时间：
-                数量：
-            非保持连接（短连接）：
-            
-    http服务器程序：
-        httpd (apache)
-        nginx
-        lighttpd
-        
-        应用程序服务器：
-            IIS： .Net 
-            tomcat： .jsp
-        
-        www.netcraft.com 
-        
-        httpd的安装和使用：
-            ASF： apache software foundation
-                httpd：apache
-                    a patchy server = apache
-                        httpd
-                        
-        httpd的特性：
-            高度模块化： core + modules
-            DSO：dynamic shared object
-            MPM：Multipath processing Modules (多路处理模块)
-                prefork：多进程模型，每个进程响应一个请求；
-                    一个主进程：负责生成子进程及回收子进程；负责创建套接字；负责接收请求，并将其派发给某子进程进行处理；
-                    n个子进程：每个子进程处理一个请求；
-                    工作模型：会预先生成几个空闲进程，随时等待用于响应用户请求；最大空闲和最小空闲；
-                worker：多进程多线程模型，每线程处理一个用户请求；
-                    一个主进程：负责生成子进程；负责创建套接字；负责接收请求，并将其派发给某子进程进行处理；
-                    多个子进程：每个子进程负责生成多个线程；
-                    每个线程：负责响应用户请求；
-                    并发响应数量：m*n
-                        m：子进程数量
-                        n：每个子进程所能创建的最大线程数量；
-                event：事件驱动模型，多进程模型，每个进程响应多个请求；
-                    一个主进程 ：负责生成子进程；负责创建套接字；负责接收请求，并将其派发给某子进程进行处理；
-                    子进程：基于事件驱动机制直接响应多个请求；
-                    
-                    httpd-2.2: 仍为测试使用模型；
-                    httpd-2.4：event可生产环境中使用；
-                    
-        httpd的程序版本：
-            httpd 1.3：官方已经停止维护；
-            httpd 2.0：
-            httpd 2.2: 
-            httpd 2.4：目前最新稳定版；
-            
-        httpd的功能特性：
-            CGI：Common Gateway Interface
-            虚拟主机：IP，PORT， FQDN
-            反向代理
-            负载均衡
-            路径别名
-            丰富的用户认证机制
-                basic 
-                digest
-            支持第三方模块
-            ......
-            
-        安装httpd：
-            rpm包：CentOS 发行版中直接提供；
-            编译安装：定制新功能，或其它原因；
-            
-        CentOS 6：httpd-2.2
-            程序环境：
-                配置文件：
-                    /etc/httpd/conf/httpd.conf
-                    /etc/httpd/conf.d/*.conf
-                服务脚本：
-                    /etc/rc.d/init.d/httpd
-                    脚本配置文件：/etc/sysconfig/httpd
-                主程序文件：
-                    /usr/sbin/httpd
-                    /usr/sbin/httpd.event
-                    /usr/sbin/httpd.worker
-                日志文件：
-                    /var/log/httpd:
-                        access_log：访问日志
-                        error_log：错误日志
-                站点文档：
-                    /var/www/html
-                模块文件路径：
-                    /usr/lib64/httpd/modules
-                    
-                服务控制和启动：
-                    chkconfig  httpd  on|off
-                    service  {start|stop|restart|status|configtest|reload}  httpd
-                
-        CentOS 7：httpd-2.4
-            程序环境：
-                配置文件：
-                    /etc/httpd/conf/httpd.conf
-                    /etc/httpd/conf.d/*.conf
-                    模块相关的配置文件：/etc/httpd/conf.modules.d/*.conf
-                systemd unit file：
-                    /usr/lib/systemd/system/httpd.service
-                主程序文件：
-                    /usr/sbin/httpd
-                        httpd-2.4支持MPM的动态切换；
-                日志文件：
-                    /var/log/httpd:
-                        access_log：访问日志
-                        error_log：错误日志
-                站点文档：
-                    /var/www/html
-                模块文件路径：
-                    /usr/lib64/httpd/modules    
-                    
-                服务控制：
-                    systemctl  enable|disable  httpd.service
-                    systemctl  {start|stop|restart|status}  httpd.service
+    - http协议：
+        - http请求报文首部
+        - http响应报文首部
+    - 请求报文首部的格式：
+        - <method> <URL> <VERSION>
+        - HEADERS: (name: value)
+        - <request body>
+
+- http服务器程序：
+    - httpd (apache)
+    - nginx
+    - lighttpd
+
+- 应用程序服务器：
+    - IIS： .Net 
+    - tomcat： .jsp
+
+- httpd的安装和使用：
+    - ASF： apache software foundation
+        - httpd：apache (a patchy server)
+
+- httpd的特性：
+    - 高度模块化： core + modules
+    - DSO：dynamic shared object
+    - MPM：Multipath processing Modules (多路处理模块)
+        - prefork：多进程模型，每个进程响应一个请求；
+            - 一个主进程：负责生成子进程及回收子进程；负责创建套接字；负责接收请求，并将其派发给某子进程进行处理；
+            - n个子进程：每个子进程处理一个请求；
+            - 工作模型：会预先生成几个空闲进程，随时等待用于响应用户请求；最大空闲和最小空闲；
+        - worker：多进程多线程模型，每线程处理一个用户请求；
+            - 一个主进程：负责生成子进程；负责创建套接字；负责接收请求，并将其派发给某子进程进行处理；
+            - 多个子进程：每个子进程负责生成多个线程；
+            - 每个线程：负责响应用户请求；
+            - 并发响应数量：`m*n`
+                - m：子进程数量
+                - n：每个子进程所能创建的最大线程数量；
+        - event：事件驱动模型，多进程模型，每个进程响应多个请求；
+            - 一个主进程 ：负责生成子进程；负责创建套接字；负责接收请求，并将其派发给某子进程进行处理；
+            - 子进程：基于事件驱动机制直接响应多个请求；
+            - httpd-2.2: 仍为测试使用模型；
+            - httpd-2.4：event可生产环境中使用；
+
+- httpd的程序版本：
+    - httpd 1.3：官方已经停止维护；
+    - httpd 2.0
+    - httpd 2.2
+    - httpd 2.4：目前最新稳定版；
+
+- 安装httpd：
+    - rpm包：CentOS 发行版中直接提供；
+    - 编译安装：定制新功能，或其它原因；
+
+- CentOS 6：httpd-2.2
+    - 程序环境：
+        - 配置文件：
+            - `/etc/httpd/conf/httpd.conf`
+            - `/etc/httpd/conf.d/*.conf`
+        - 服务脚本：
+            - /etc/rc.d/init.d/httpd
+            - 脚本配置文件：/etc/sysconfig/httpd
+        - 主程序文件：
+            - /usr/sbin/httpd
+            - /usr/sbin/httpd.event
+            - /usr/sbin/httpd.worker
+        - 日志文件：
+            - /var/log/httpd:
+                - access_log：访问日志
+                - error_log：错误日志
+        - 站点文档：
+            - /var/www/html
+        - 模块文件路径：
+            - /usr/lib64/httpd/modules
+    - 服务控制和启动：
+        - chkconfig  httpd  on|off
+        - service  {start|stop|restart|status|configtest|reload}  httpd
+
+- CentOS 7：httpd-2.4
+    - 程序环境：
+        - 配置文件：
+            - /etc/httpd/conf/httpd.conf
+            - `/etc/httpd/conf.d/*.conf`
+            - 模块相关的配置文件：`/etc/httpd/conf.modules.d/*.conf`
+        - systemd unit file：
+            - /usr/lib/systemd/system/httpd.service
+        - 主程序文件：
+            - /usr/sbin/httpd（httpd-2.4支持MPM的动态切换）
+        - 日志文件：
+            - /var/log/httpd:
+                - access_log：访问日志
+                - error_log：错误日志
+        - 站点文档：
+            - /var/www/html
+        - 模块文件路径：
+            - /usr/lib64/httpd/modules    
+    - 服务控制：
+        - systemctl  enable|disable  httpd.service
+        - systemctl  {start|stop|restart|status}  httpd.service
