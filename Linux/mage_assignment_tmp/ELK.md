@@ -137,6 +137,15 @@
         - +DOMAIN:KEYWORD -DOMAIN:KEYWORD 
     - els支持从多类型的查询：Full text queries
 
+- 删除
+```sh
+DATE=`date -d "30 days ago" +%Y.%m.%d`
+LOG_NAME="logstash-nginx-accesslog-0018"
+FILE_NAME=${LOG_NAME}-${DATE}
+curl -XDELETE http://x.x.x.x:9200/${FILE_NAME}
+echo "${FILE_NAME} delelte success."
+```
+
 ## Logstash
 
 ![elk.logstash.arch](https://github.com/Minions1128/net_tech_notes/blob/master/img/elk.logstash.arch.png) 
