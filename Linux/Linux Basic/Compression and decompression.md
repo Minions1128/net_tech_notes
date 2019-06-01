@@ -21,9 +21,9 @@
 - bzip2/bunzip2/bzcat
     - bzip2, bunzip2 - a block-sorting file compressor, v1.0.6
     - bzip2  [OPTION]...  FILE...
-        -d：解压缩
-        -#：指定压缩比；默认是6；数字越大压缩比越大（1-9）；
-        -k：keep，保留原文件；
+        - d：解压缩
+        - #：指定压缩比；默认是6；数字越大压缩比越大（1-9）；
+        - k：keep，保留原文件；
     - bunzip2: 解压文件
     - bacat：查看压缩文件
 
