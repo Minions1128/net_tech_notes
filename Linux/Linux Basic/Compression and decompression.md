@@ -11,9 +11,9 @@
 - gzip/gunzip/zcat
     - gzip, gunzip, zcat - compress or expand files
     - gzip  [OPTION]...  FILE... 直接压缩文件，删除源文件，只保留压缩文件，解压后的文件为源文件名.gz
-        -d：解压缩，相当于gunzip；
-        -#：指定压缩比，默认是6；数字越大压缩比越大（1-9）；
-        -c：将压缩结果输出至标准输出；
+        - d：解压缩，相当于gunzip；
+        - #：指定压缩比，默认是6；数字越大压缩比越大（1-9）；
+        - c：将压缩结果输出至标准输出；
             - `gzip -c FILE > /PATH/TO/SOMEFILE.gz`压缩后，保留源文件
     - gunzip: 解压文件，删除压缩文件，保留解压后的文件
     - zcat: 查看压缩文件
