@@ -96,13 +96,14 @@
 
 - @set 
     - SADD
-    - SPOP
-    - SREM 
-    - SRANDMEMBER
-    - SINTER
-    - SUNION
+    - SPOP： 随机弹出一个元素
+    - SREM：删除
+    - SRANDMEMBER：获取指定键的所有元素
+    - SINTER：交集
+    - SUNION：并集
+    - SDIFF：差集
 
-- @sorted_set
+- @sorted_set：有序集合
     - ZADD
     - ZCARD
     - ZCOUNT
