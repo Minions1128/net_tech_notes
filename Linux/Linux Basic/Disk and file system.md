@@ -2,7 +2,7 @@
 
 ## Summary
 
-文件系统管理
+- 文件系统管理
     - 管理工具：
     ```
     mkfs, mke2fs, e2label, tune2fs, dumpe2fs, e2fsck, blkid
