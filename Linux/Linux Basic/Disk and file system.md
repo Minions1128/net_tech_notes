@@ -548,3 +548,16 @@ key: https://blog.51cto.com/arm2012/1955817
 - 透明压缩机制：mount -o compress={lzo|zlib} DEVICE MOUNT_POINT
 - 动态增减空间：btrfs filesystem resize {{+|-}5G|max} MOUNT_POINT
 - 子命令：filesystem, device, balance, subvolume
+
+# 一些命令
+
+```sh
+/opt/MegaRAID/MegaCli/MegaCli -pdlist -aall
+/opt/MegaRAID/MegaCli/MegaCli  -LDInfo -Lall -aALL
+cat /etc/fstab 
+fdisk -l
+fdisk /dev/sdb
+mount
+mkfs.xfs /dev/sdb1 
+mount /dev/sdb1 /mysqldata/  
+```

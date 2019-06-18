@@ -72,6 +72,8 @@
         "quit" to exit      
     ```
 
+### 简单命令
+
 - @string
     - SET
     - GET
@@ -126,75 +128,52 @@
     - PSUBSCRIBE
     - PUNSUBSCRIBE
 
-回顾：
-    分布式系统两个基础理论：CAP/BASE
-        CAP：AP，CP
-            C、A、P：三者其中之二；
-                AP：可用性、分区容错性、弱一致性；
-        BASE：BA，S，E
-            BA：基本可用、S：软状态、E：最终一致性；
-            
-    分布式系统：  
-        分布式存储：
-            NoSQL：
-                kv、document、column families、GraphDB
-            分布式文件系统：文件系统接口
-                分布式存储：API，不能挂载；
-        分布式运算：mapreduce, ...
-        
-        NewSQL：
-            PingCAP：TiDB(MySQL protocol)...
-        
-    redis：REmote DIctionary Server
-        数据结构：String, List, Set, sorted_set, Hash, pubsub ...
+### 配置Redis
 
-Redis(2)
-        
-    配置和使用Redis：
-        基本配置项
-        网络配置项
-        持久化相关配置
-        复制相关的配置
-        安全相关配置
-        Limit相关的配置
-        SlowLog相关的配置
-        INCLUDES
-        Advanced配置
-        
-        通用配置项：
-            daemonize, supervised, loglevel, pidfile, logfile, 
-            databases：设定数据库数量，默认为16个，每个数据库的名字均为整数，从0开始编号，默认操作的数据库为0；
-            切换数据库的方法：
-                 SELECT <dbid>
-                 
-        网络配置项：
-            bind IP
-            port PORT
-            protected-mode
-            tcp-backlog
-            unixsocket 
-            timeout：连接的空闲超时时长； 
-            
-        安全配置：
-            requirepass <PASSWORD>
-            rename-command <COMMAND> <NEW_CMND_NAME>
-                在AOF或Replication环境中，不推荐使用；
-                
-        Limits相关的配置：
-            maxclients
-            maxmemory <bytes>
-            maxmemory-policy noeviction
-                淘汰策略：volatile-lru, allkeys-lru, volatile-random, allkeys-random, volatile-ttl, noeviction
-             maxmemory-samples 5
-                淘汰算法运行时的采样样本数；
-                
-        SlowLog相关的配置:
+- 配置项
+    - 基本配置项
+    - 网络配置项
+    - 持久化相关配置
+    - 复制相关的配置
+    - 安全相关配置
+    - Limit相关的配置
+    - SlowLog相关的配置
+    - INCLUDES
+    - Advanced配置
+
+- 通用配置项：
+    - daemonize, supervised, loglevel, pidfile, logfile, 
+    - databases：设定数据库数量，默认为16个，每个数据库的名字均为整数，从0开始编号，默认操作的数据库为0；
+    - 切换数据库的方法：`SELECT <dbid>`
+
+- 网络配置项：
+    - bind IP
+    - port PORT
+    - protected-mode
+    - tcp-backlog
+    - unixsocket
+    - timeout：连接的空闲超时时长；
+
+- 安全配置：
+    - `requirepass <PASSWORD>`
+    - `rename-command <COMMAND> <NEW_CMND_NAME>`
+        - 在AOF或Replication环境中，不推荐使用；
+
+- Limits相关的配置：
+    - maxclients
+    - maxmemory <bytes>
+    - maxmemory-policy noeviction
+        - 淘汰策略：volatile-lru, allkeys-lru, volatile-random, allkeys-random, volatile-ttl, noeviction
+    - maxmemory-samples 5
+        - 淘汰算法运行时的采样样本数；
+
+- SlowLog相关的配置:
             slowlog-log-slower-than 10000
                 单位是微秒；
             slowlog-max-len 128
                 SlowLog记录的日志最大条目；
-                
-        ADVANCED配置：
+
+- ADVANCED配置：
             hash-max-ziplist-entries 512
             hash-max-ziplist-value 64   
             
