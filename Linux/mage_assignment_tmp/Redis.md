@@ -168,23 +168,18 @@
         - 淘汰算法运行时的采样样本数；
 
 - SlowLog相关的配置:
-            slowlog-log-slower-than 10000
-                单位是微秒；
-            slowlog-max-len 128
-                SlowLog记录的日志最大条目；
+    - `slowlog-log-slower-than 10000`，单位是微秒；
+    - `slowlog-max-len 128`，SlowLog记录的日志最大条目；
 
 - ADVANCED配置：
-            hash-max-ziplist-entries 512
-            hash-max-ziplist-value 64   
-            
-                设置ziplist的键数量最大值，每个值的最大空间； 
-            
-            client-output-buffer-limit normal 0 0 0
-            client-output-buffer-limit slave 256mb 64mb 60
-            client-output-buffer-limit pubsub 32mb 8mb 60
-                <hard-limit>
-                <soft-limit>
-                <soft-limit seconds>
+    - hash-max-ziplist-entries 512
+    - hash-max-ziplist-value 64，设置ziplist的键数量最大值，每个值的最大空间； 
+    - client-output-buffer-limit normal 0 0 0
+    - client-output-buffer-limit slave 256mb 64mb 60
+    - client-output-buffer-limit pubsub 32mb 8mb 60
+        - <hard-limit>
+        - <soft-limit>
+        - <soft-limit seconds>
 
     redis-cli命令：
         Usage: redis-cli [OPTIONS] [cmd [arg [arg ...]]]
