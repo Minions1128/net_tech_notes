@@ -554,10 +554,11 @@ key: https://blog.51cto.com/arm2012/1955817
 ```sh
 /opt/MegaRAID/MegaCli/MegaCli -pdlist -aall
 /opt/MegaRAID/MegaCli/MegaCli  -LDInfo -Lall -aALL
-cat /etc/fstab 
+cat /etc/fstab
 fdisk -l
 fdisk /dev/sdb
 mount
-mkfs.xfs /dev/sdb1 
-mount /dev/sdb1 /mysqldata/  
+mkfs.xfs /dev/sdb1
+mount /dev/sdb1 /mysqldata/
+blkid
 ```

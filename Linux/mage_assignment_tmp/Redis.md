@@ -181,46 +181,40 @@
         - <soft-limit>
         - <soft-limit seconds>
 
-    redis-cli命令：
-        Usage: redis-cli [OPTIONS] [cmd [arg [arg ...]]]
-            
-            -h HOST
-            -p PORT
-            -a PASSWORD
-            -n DBID
-            
-        与Connection相关命令：
-            help @connection
-            
-            AUTH <password> 
-            ECHO <message>
-            PING 
-            QUIT
-            SELECT dbid
-            
-        清空数据库：
-             FLUSHDB：Remove all keys from the current database
-                清空当前数据库；
-             FLUSHALL：Remove all keys from all databases
-                清空所有数据库；
-             
-        Server相关的命令：
-             CLIENT GETNAME
-             *CLIENT KILL
-                CLIENT KILL [ip:port] [ID client-id] [TYPE normal|master|slave|pubsub] [ADDR ip:port] [SKIPME yes/no]
-             *CLIENT LIST
-             CLIENT PAUSE
-                CLIENT PAUSE timeout
-             CLIENT REPLY               
-             CLIENT SETNAME：Set the current connection name
-             
-              SHUTDOWN [NOSAVE|SAVE]
-             
-             CONFIG GET
-             CONFIG RESETSTAT
-             CONFIG REWRITE
-             CONFIG SET
-             
+### redis-cli命令
+
+- Usage: redis-cli [OPTIONS] [cmd [arg [arg ...]]]
+    - -h HOST
+    - -p PORT
+    - -a PASSWORD
+    - -n DBID
+
+- 与Connection相关命令：
+    - help @connection
+    - AUTH <password> 
+    - ECHO <message>
+    - PING 
+    - QUIT
+    - SELECT dbid
+
+- 清空数据库：
+    - FLUSHDB：Remove all keys from the current database，清空当前数据库；
+    - FLUSHALL：Remove all keys from all databases，清空所有数据库；
+
+- Server相关的命令：
+    - CLIENT GETNAME
+    - CLIENT KILL [ip:port] [ID client-id] [TYPE normal|master|slave|pubsub] [ADDR ip:port] [SKIPME yes/no]
+    - CLIENT LIST
+    - CLIENT PAUSE
+        - CLIENT PAUSE timeout
+    - CLIENT REPLY               
+    - CLIENT SETNAME：Set the current connection name
+    - SHUTDOWN [NOSAVE|SAVE]
+    - 配置参数可运行时修改：
+        - CONFIG GET
+        - CONFIG RESETSTAT
+        - CONFIG REWRITE，利用内存中的设置重写到配置文件中
+        - CONFIG SET
              INFO：服务器状态信息查看；分为多个secion；
                 INFO [section]
              
@@ -233,7 +227,7 @@
             记录每次写操作至指定的文件尾部实现的持久化；当redis重启时，可通过重新执行文件中的命令在内存中重建出数据库；
                 BGREWRITEAOF：AOF文件重写；
                     不会读取正在使用AOF文件，而是通过将内存中的数据以命令的方式保存至临时文件中，完成之后替换原来的AOF文件； 
-                    
+                     
         RDB相关的配置：
             *save <seconds> <changes>
             
