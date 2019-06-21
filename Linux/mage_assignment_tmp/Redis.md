@@ -215,132 +215,98 @@
         - CONFIG RESETSTAT
         - CONFIG REWRITE，利用内存中的设置重写到配置文件中
         - CONFIG SET
-             INFO：服务器状态信息查看；分为多个secion；
-                INFO [section]
+        - INFO：服务器状态信息查看；分为多个secion；
+            - INFO [section]
              
-    Redis的持久化:
-        RDB：snapshotting, 二进制格式；按事先定制的策略，周期性地将数据从内存同步至磁盘；数据文件默认为dump.rdb；
-            客户端显式使用SAVE或BGSAVE命令来手动启动快照保存机制；
-                SAVE：同步，即在主线程中保存快照，此时会阻塞所有客户端请求；
-                BGSAVE：异步；
-        AOF：Append Only File, fsync
-            记录每次写操作至指定的文件尾部实现的持久化；当redis重启时，可通过重新执行文件中的命令在内存中重建出数据库；
-                BGREWRITEAOF：AOF文件重写；
-                    不会读取正在使用AOF文件，而是通过将内存中的数据以命令的方式保存至临时文件中，完成之后替换原来的AOF文件； 
-                     
-        RDB相关的配置：
-            *save <seconds> <changes>
-            
-                save 900 1
-                save 300 10
-                save 60 10000
-                
-                表示：三个策略满足其中任意一个均会触发SNAPSHOTTING操作；900s内至少有一个key有变化，300s内至少有10个key有变化，60s内至少有1W个key发生变化；
-                
-            stop-writes-on-bgsave-error yes
-                dump操作出现错误时，是否禁止新的写入操作请求；
-                
-            rdbcompression yes
-            rdbchecksum yes
-            
-            dbfilename dump.rdb：指定rdb文件名
-            *dir /var/lib/redis：rdb文件的存储路径
-            
-        AOF相关的配置
-            *appendonly no
-            appendfilename "appendonly.aof"
-            
-            *appendfsync 
-                Redis supports three different modes:
-                    no：redis不执行主动同步操作，而是OS进行；
-                    everysec：每秒一次；
-                    always：每语句一次；
-                    
-            no-appendfsync-on-rewrite no
-                是否在后台执行aof重写期间不调用fsync，默认为no，表示调用；
-                
-            auto-aof-rewrite-percentage 100
-            auto-aof-rewrite-min-size 64mb  
-                上述两个条件同时满足时，方会触发重写AOF；与上次aof文件大小相比，其增长量超过100%，且大小不少于64MB; 
-                
-            aof-load-truncated yes
-            
-        注意：持久机制本身不能取代备份；应该制订备份策略，对redis库定期备份；
-        
-        RDB与AOF同时启用： 
-            (1) BGSAVE和BGREWRITEAOF不会同时进行；
-            (2) Redis服务器启动时用持久化的数据文件恢复数据，会优先使用AOF；
-            
-    复制：
-        特点：
-            一个Master可以有多个slave主机，支持链式复制；
-            Master以非阻塞方式同步数据至slave主机；
-            
-        配置slave节点：
-            redis-cli> SLAVEOF <MASTER_IP> <MASTER_PORT>
-            redis-cli> CONFIG SET masterauth <PASSWORD>
-            
-        配置参数：
-            *slaveof
-            *masterauth 
-            
-            slave-serve-stale-data yes
-            slave-read-only yes
-            *repl-diskless-sync no
-                no, Disk-backed, Diskless
-                
-                新的从节点或某较长时间未能与主节点进行同步的从节点重新与主节点通信，需要做“full synchronization"，此时其同步方式有两种style：
-                    Disk-backend：主节点新创建快照文件于磁盘中，而后将其发送给从节点；
-                    Diskless：主节占新创建快照后直接通过网络套接字文件发送给从节点；为了实现并行复制，通常需要在复制启动前延迟一个时间段；
-            
-            repl-diskless-sync-delay 5
-            repl-ping-slave-period 10
-            
-            *repl-timeout 60
-            
-            repl-disable-tcp-nodelay no
-            repl-backlog-size 1mb
-            
-            *slave-priority 100
-                复制集群中，主节点故障时，sentinel应用场景中的主节点选举时使用的优先级；数字越小优先级越高，但0表示不参与选举； 
-            
-            min-slaves-to-write 3：主节点仅允许其能够通信的从节点数量大于等于此处的值时接受写操作；
-            min-slaves-max-lag 10：从节点延迟时长超出此处指定的时长时，主节点会拒绝写入操作；
-            
-    sentinel：
-        主要完成三个功能：监控、通知、自动故障转移
-        
-            选举：流言协议、投票协议
-            
-        配置项：
-            port 26379
-            sentinel monitor <master-name> <ip> <redis-port> <quorum>
-            sentinel auth-pass <master-name> <password>
-            
-                <quorum>表示sentinel集群的quorum机制，即至少有quorum个sentinel节点同时判定主节点故障时，才认为其真的故障；
-                    s_down: subjectively down
-                    o_down: objectively down
-            
-            sentinel down-after-milliseconds <master-name> <milliseconds>
-                监控到指定的集群的主节点异常状态持续多久方才将标记为“故障”；
-                
-            sentinel parallel-syncs <master-name> <numslaves>
-                指在failover过程中，能够被sentinel并行配置的从节点的数量；
-                
-            sentinel failover-timeout <master-name> <milliseconds>
-                sentinel必须在此指定的时长内完成故障转移操作，否则，将视为故障转移操作失败；
-                
-            sentinel notification-script <master-name> <script-path>
-                通知脚本，此脚本被自动传递多个参数；
-                
-            redis-cli -h SENTINEL_HOST -p SENTINEL_PORT 
-                redis-cli> 
-                    SENTINEL masters
-                    SENTINEL slaves <MASTER_NAME>
-                    SENTINEL failover <MASTER_NAME>
-                    SENTINEL get-master-addr-by-name <MASTER_NAME>
+- Redis的持久化:
+    - RDB：snapshotting
+        - 二进制格式；
+        - 按事先定制的策略，周期性地将数据从内存同步至磁盘；
+        - 数据文件默认为dump.rdb；
+        - 客户端显式使用SAVE或BGSAVE命令来手动启动快照保存机制；
+            - SAVE：同步，即在主线程中保存快照，此时会阻塞所有客户端请求；
+            - BGSAVE：异步；
+    - AOF：Append Only File, fsync
+        - 记录每次写操作至指定的文件尾部实现的持久化；
+        - 当redis重启时，可通过重新执行文件中的命令在内存中重建出数据库；
+        - BGREWRITEAOF：AOF文件重写；不会读取正在使用AOF文件，而是通过将内存中的数据以命令的方式保存至临时文件中，完成之后替换原来的AOF文件； 
 
-    redis的集群技术：
+- RDB相关的配置：
+    - `save <seconds> <changes>`
+        - save 900 1
+        - save 300 10
+        - save 60 10000
+        - 表示：三个策略满足其中任意一个均会触发SNAPSHOTTING操作；900s内至少有一个key有变化，300s内至少有10个key有变化，60s内至少有1W个key发生变化；
+    - `stop-writes-on-bgsave-error yes`： dump操作出现错误时，是否禁止新的写入操作请求；
+    - rdbcompression yes: 是否压缩
+    - rdbchecksum yes: 是否校验
+    - dbfilename dump.rdb：指定rdb文件名
+        - `dir /var/lib/redis`：rdb文件的存储路径
+
+- AOF相关的配置
+    - appendonly no
+    - appendfilename "appendonly.aof"
+    - appendfsync: Redis supports three different modes:
+        - no：redis不执行主动同步操作，而是OS进行；
+        - everysec：每秒一次；
+        - always：每语句一次；
+    - no-appendfsync-on-rewrite no: 是否在后台执行aof重写期间不调用fsync，默认为no，表示调用；
+    - `auto-aof-rewrite-percentage 100`和`auto-aof-rewrite-min-size 64mb`: 这两个条件同时满足时，方会触发重写AOF；与上次aof文件大小相比，其增长量超过100%，且大小不少于64MB; 
+    - aof-load-truncated yes
+    - 注意：持久机制本身不能取代备份；应该制订备份策略，对redis库定期备份；
+        
+- 建议RDB和AOF不要同时启用，如果RDB与AOF同时启用： 
+    - (1) BGSAVE和BGREWRITEAOF不会同时进行；
+    - (2) Redis服务器启动时用持久化的数据文件恢复数据，会优先使用AOF；
+            
+- 主从复制：
+    - 特点：
+        - 一个Master可以有多个slave主机，支持链式复制；
+        - Master以非阻塞方式同步数据至slave主机；
+    - 配置slave节点：
+        - redis-cli> SLAVEOF <MASTER_IP> <MASTER_PORT>
+        - redis-cli> CONFIG SET masterauth <PASSWORD>
+    - 配置参数：
+        - `*slaveof`
+        - `*masterauth`
+        - slave-serve-stale-data yes
+        - slave-read-only yes
+        - `*repl-diskless-sync no`
+            - no
+            - Disk-backend：主节点新创建快照文件于磁盘中，而后将其发送给从节点；
+            - Diskless：主节占新创建快照后直接通过网络套接字文件发送给从节点；为了实现并行复制，通常需要在复制启动前延迟一个时间段；
+            - 新的从节点或某较长时间未能与主节点进行同步的从节点重新与主节点通信，需要做“full synchronization"，此时其同步方式有两种style：
+        - repl-diskless-sync-delay 5
+        - repl-ping-slave-period 10
+        - `*repl-timeout 60`
+        - repl-disable-tcp-nodelay no
+        - repl-backlog-size 1mb
+        - `*slave-priority 100`: 复制集群中，主节点故障时，sentinel应用场景中的主节点选举时使用的优先级；数字越小优先级越高，但0表示不参与选举； 
+        - min-slaves-to-write 3：主节点仅允许其能够通信的从节点数量大于等于此处的值时接受写操作；
+        - min-slaves-max-lag 10：从节点延迟时长超出此处指定的时长时，主节点会拒绝写入操作；
+
+- sentinel：
+    - 主要完成三个功能：监控、通知、自动故障转移
+    - 选举：流言协议、投票协议
+    - 配置项：
+        - port 26379
+        - sentinel monitor <master-name> <ip> <redis-port> <quorum>
+        - sentinel auth-pass <master-name> <password>
+            - <quorum>表示sentinel集群的quorum机制，即至少有quorum个sentinel节点同时判定主节点故障时，才认为其真的故障；
+                - s_down: subjectively down
+                - o_down: objectively down
+        - sentinel down-after-milliseconds <master-name> <milliseconds>: 监控到指定的集群的主节点异常状态持续多久方才将标记为“故障”；
+        - sentinel parallel-syncs <master-name> <numslaves>: 指在failover过程中，能够被sentinel并行配置的从节点的数量；
+        - sentinel failover-timeout <master-name> <milliseconds>: sentinel必须在此指定的时长内完成故障转移操作，否则，将视为故障转移操作失败；
+        - sentinel notification-script <master-name> <script-path>: 通知脚本，此脚本被自动传递多个参数；
+    - redis-cli -h SENTINEL_HOST -p SENTINEL_PORT
+        - redis-cli> 
+        - SENTINEL masters
+        - SENTINEL slaves <MASTER_NAME>
+        - SENTINEL failover <MASTER_NAME>
+        - SENTINEL get-master-addr-by-name <MASTER_NAME>
+
+- redis的集群技术：
         客户端分片
         代理分片：
             豌豆荚：codis
