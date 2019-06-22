@@ -307,25 +307,10 @@
         - SENTINEL get-master-addr-by-name <MASTER_NAME>
 
 - redis的集群技术：
-        客户端分片
-        代理分片：
-            豌豆荚：codis
-            twitter：twemproxy
-        redis cluster
-        
-        课外实践：codis的测试和应用；
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-        博客作业：
-            (1) replication, sentinel
-            (2) rdb, aof 
-            
-        课外实践：
-            (1) codis
-            (2) redis cluster
+    - 豌豆荚：codis
+    - twitter：twemproxy
+    - redis cluster
+
+# Comming soon
+
+- codis的测试和应用；
