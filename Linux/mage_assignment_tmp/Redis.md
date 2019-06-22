@@ -311,6 +311,10 @@
     - twitter：twemproxy
     - redis cluster
 
+# Read more
+
+- [Redis 3.2集群环境搭建和测试](https://blog.frognew.com/2017/03/redis-3.2-cluster-install-and-test.html "Redis 3.2集群环境搭建和测试")
+
 # Comming soon
 
 - codis的测试和应用；
