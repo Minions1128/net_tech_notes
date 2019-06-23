@@ -47,16 +47,17 @@
             - 2、密钥分发困难；
     - 公钥加密：密钥分为公钥与私钥
         - 公钥：从私钥中提取产生；可公开给所有人；pubkey
-        - 私钥：通过工具创建，使用者自己留存，必须保证其私密性；secret key；
+        - 私钥：通过工具创建，使用者自己留存，必须保证其私密性；private key；
         - 特点：用公钥加密的数据，只能使用与之配对儿的私钥解密；反之亦然；
         - 用途：
             - 数字签名：主要在于让接收方确认发送方的身份；
             - 密钥交换：发送方用对方公钥加密一个对称密钥，并发送给对方；
             - 数据加密
-        - 算法：RSA， DSA， ELGamal
+        - 算法：RSA，DSA，ELGamal
+            - RSA: 可以实现签名和加解密
             - DSS: Digital Signature Standard
-            - DSA：Digital Signature Algorithm
-    - 单向加密：即提出数据指纹；只能加密，不能解密；
+            - DSA：Digital Signature Algorithm, 仅能实现签名，不能加解密
+    - 单向加密：即提出数据指纹；只能加密，不能解密；摘要
         - 特性：定长输出、雪崩效应；
         - 功能：完整性；
         - 算法：
@@ -64,64 +65,71 @@
             - sha1：Secure Hash Algorithm 1, 160bits
             - sha224, sha256, sha384, sha512
     - 认证协议
+    - 密钥交换： IKE（Internet Key Exchange），其实现方法有：
+        - 公钥加密
+        - DH（Deffie-Hellman）：AB双方生成明文的大素数: p, g；并且AB双方自己产生x, y; 即：
+            - A有: p, g, x
+            - B有: p, g, y
+            - A将p^x%g发送给B
+            - B将p^y%g发送给A
+            - A得到(p^y%g)^x=p^(yx)%g，B得到(p^x%g)^y=p^(xy)%g，即AB得到相同的值
+
+- PKI：Public Key Infrastructure
+    - 包含内同：
+        - 签证机构：CA
+        - 注册机构：RA
+        - 证书吊销列表：CRL
+        - 证书存取库：
+    - X.509v3：定义了证书的结构以及认证协议标准：版本号，序列号，签名算法ID，发行者名称，有效期限，主体名称，主体公钥，发行者的惟一标识，主体的惟一标识，扩展，发行者的签名
+
+- SSL：Secure sockets Layer
+    - Netscape: 1994
+    - V1.0, V2.0, V3.0
+    - SSL会话主要三步
+        - 客户端向服务器端索要并验正证书；
+        - 双方协商生成“会话密钥”；
+        - 双方采用“会话密钥”进行加密通信；
+
+- TLS: Transport Layer Security
+    - IETF: 1999          
+    - V1.0, V1.1, V1.2, V1.3
+
+![ssl.tls.handshake.process](https://github.com/Minions1128/net_tech_notes/blob/master/img/ssl.tls.handshake.process.png "ssl.tls.handshake.process")
+
+- SSL Handshake Protocol：
+    - 第一阶段：ClientHello：
+        - 支持的协议版本，比如tls 1.2；
+        - 客户端生成一个随机数，稍后用户生成“会话密钥”
+        - 支持的加密算法，比如AES、3DES、RSA；
+        - 支持的压缩算法；
+    - 第二阶段：ServerHello
+        - 确认使用的加密通信协议版本，比如tls 1.2；
+        - 服务器端生成一个随机数，稍后用于生成“会话密钥”
+        - 确认使用的加密方法；
+        - 服务器证书；
+    - 第三阶段：
+        - 验正服务器证书，在确认无误后取出其公钥；（发证机构、证书完整性、证书持有者、证书有效期、吊销列表）
+        - 发送以下信息给服务器端：
+            - 一个随机数；
+            - 编码变更通知，表示随后的信息都将用双方商定的加密方法和密钥发送；
+            - 客户端握手结束通知；
+    - 第四阶段：
+        - 收到客户端发来的第三个随机数pre-master-key后，计算生成本次会话所有到的“会话密钥”；
+        - 向客户端发送如下信息：
+            - 编码变更通知，表示随后的信息都将用双方商定的加密方法和密钥发送；
+            - 服务端握手结束通知；
+           
 
 
 
 
+分层设计：
+    1、最底层：基础算法原语的实现，aes, rsa, md5
+    2、向上一层：各种算法的实现； 
+    3、再向上一层：组合算法实现的半成品；
+    4、用各种组件拼装而成的各种成品密码学协议软件；
 
-
-
-            密钥交换： IKE（Internet Key Exchange）
-                公钥加密
-                DH（Deffie-Hellman）
-                    A：p, g
-                    B：p, g
-                    
-                    A: x
-                        --> p^x%g ==> B
-                        
-                        A: (p^y%g)^x=p^yx%g
-                        
-                    B: y
-                        --> p^y%g ==> A
-                        
-                        B: (p^x%g)^y=p^xy%g
-                        
-        PKI：Public Key Infrastructure
-            公钥基础设施：
-                签证机构：CA
-                注册机构：RA
-                证书吊销列表：CRL
-                证书存取库：
-                
-            X.509v3：定义了证书的结构以及认证协议标准
-                版本号
-                序列号
-                签名算法ID
-                发行者名称
-                有效期限
-                主体名称
-                主体公钥
-                发行者的惟一标识
-                主体的惟一标识
-                扩展
-                发行者的签名
-                
-        SSL：Secure sockets Layer
-            Netscape: 1994
-            V1.0, V2.0, V3.0
-
-        TLS: Transport Layer Security
-            IETF: 1999          
-            V1.0, V1.1, V1.2, V1.3
-            
-            分层设计：
-                1、最底层：基础算法原语的实现，aes, rsa, md5
-                2、向上一层：各种算法的实现； 
-                3、再向上一层：组合算法实现的半成品；
-                4、用各种组件拼装而成的各种成品密码学协议软件；
-                
-            协议的开源实现：OpenSSL
+协议的开源实现：OpenSSL
 
 
 
@@ -157,37 +165,7 @@
             libssl 
             openssl
             
-        SSL会话主要三步：
-            客户端向服务器端索要并验正证书；
-            双方协商生成“会话密钥”；
-            双方采用“会话密钥”进行加密通信；
-            
-            SSL Handshake Protocol：
-                第一阶段：ClientHello：
-                    支持的协议版本，比如tls 1.2；
-                    客户端生成一个随机数，稍后用户生成“会话密钥”
-                    支持的加密算法，比如AES、3DES、RSA；
-                    支持的压缩算法；
-                    
-                第二阶段：ServerHello
-                    确认使用的加密通信协议版本，比如tls 1.2；
-                    服务器端生成一个随机数，稍后用于生成“会话密钥”
-                    确认使用的加密方法；
-                    服务器证书；
-                    
-                第三阶段：
-                    验正服务器证书，在确认无误后取出其公钥；（发证机构、证书完整性、证书持有者、证书有效期、吊销列表）               
-                    发送以下信息给服务器端：
-                        一个随机数；
-                        编码变更通知，表示随后的信息都将用双方商定的加密方法和密钥发送；
-                        客户端握手结束通知；
-                        
-                第四阶段：
-                    收到客户端发来的第三个随机数pre-master-key后，计算生成本次会话所有到的“会话密钥”；
-                    向客户端发送如下信息：
-                        编码变更通知，表示随后的信息都将用双方商定的加密方法和密钥发送；
-                        服务端握手结束通知；
-                
+     
         PKI：公钥基础设施
             签证机构：CA
             注册机构：RA
@@ -210,43 +188,33 @@
 
 OpenSSL(2)
     
-    组件：
-        libcrypto, libssl主要由开发者使用；
-        openssl：多用途命令行工具；
-            
-    openssl:
-        从多子命令，分为三类：
-            标准命令
-            消息摘要命令（dgst子命令）
-            加密命令（enc子命令）
-            
-        标准命令： enc, ca, req, genrsa, ...
+组件：
+    libcrypto, libssl主要由开发者使用；
+    openssl：多用途命令行工具；
         
-        对称加密：
-            工具：openssl  enc,  gpg
-            支持的算法：3des, aes, blowfish, towfish
-            
-            enc命令：
-                加密：~]# openssl  enc  -e  -des3  -a  -salt  -in fstab   -out fstab.ciphertext
-                解密：~]# openssl  enc  -d  -des3  -a  -salt  -out fstab   -in fstab.ciphertext
-        
+openssl:
+    从多子命令，分为三类：
+        标准命令
+        消息摘要命令（dgst子命令）
+        加密命令（enc子命令）
+    标准命令： enc, ca, req, genrsa, ...
+    对称加密：
+        工具：openssl  enc,  gpg
+        支持的算法：3des, aes, blowfish, towfish
+        enc命令：
+            加密：~]# openssl  enc  -e  -des3  -a  -salt  -in fstab   -out fstab.ciphertext
+            解密：~]# openssl  enc  -d  -des3  -a  -salt  -out fstab   -in fstab.ciphertext
         单向加密：
             工具：openssl dgst, md5sum, sha1sum, sha224sum, ...
-            
             dgst命令：
                 ~]# openssl  dgst  -md5  /PATH/TO/SOMEFILE
-                
         生成用户密码：
             工具：passwd, openssl  passwd
-            
                 openssl  passwd  -1  -salt  SALT
-                
         生成随机数：
             工具：openssl  rand
-            
             ~]# openssl  rand  -hex  NUM
             ~]# openssl  rand  -base  NUM
-            
         公钥加密：
             加密解密：
                 算法：RSA，ELGamal
@@ -256,31 +224,25 @@ OpenSSL(2)
                 工具：
             密钥交换：
                 算法：DH
-                
             生成密钥：
                 生成私钥： ~]# (umask 077;  openssl  genrsa  -out  /PATH/TO/PRIVATE_KEY_FILE  NUM_BITS)
                 提出公钥： ~]#  openssl  rsa  -in  /PATH/FROM/PRIVATE_KEY_FILE  -pubout
-                
     Linux系统上的随机数生成器：
         /dev/random：仅从熵池返回随机数；随机数用尽，阻塞；
         /dev/urandom：从熵池返回随机数；随机数用尽，会利用软件生成伪随机数，非阻塞；
             伪随机数不安全；
-            
             熵池中随机数的来源：
                 硬盘IO中断时间间隔；
                 键盘IO中断时间间隔；
-                
-    CA：
-        公共信任的CA，私有CA；
-        
-        建立私有CA：
-            openssl
-            OpenCA
-            
-        openssl命令：
-            配置文件：/etc/pki/tls/openssl.cnf
-            
-            构建私有CA:
+CA：
+    公共信任的CA，私有CA；
+    建立私有CA：
+        openssl
+        OpenCA
+openssl命令：
+    配置文件：/etc/pki/tls/openssl.cnf
+    
+    构建私有CA:
                 在确定配置为CA的服务上生成一个自签证书，并为CA提供所需要的目录及文件即可；
                 
                 步骤：
@@ -297,8 +259,8 @@ OpenSSL(2)
                         ~]# mkdir  -pv  /etc/pki/CA/{certs,crl,newcerts}
                         ~]# touch  /etc/pki/CA/{serial,index.txt}
                         ~]# echo  01 > /etc/pki/CA/serial
-                        
-            要用到证书进行安全通信的服务器，需要向CA请求签署证书：
+                
+    要用到证书进行安全通信的服务器，需要向CA请求签署证书：
                 
                 步骤：（以httpd为例）
                     (1) 用到证书的主机生成私钥；
@@ -314,27 +276,27 @@ OpenSSL(2)
                         
                         查看证书中的信息：
                             ~]# openssl  x509  -in /etc/pki/CA/certs/httpd.crt  -noout  -serial  -subject
-                            
-            吊销证书：
-                步骤：
-                    (1) 客户端获取要吊销的证书的serial（在使用证书的主机执行）：
-                        ~]# openssl  x509  -in /etc/pki/CA/certs/httpd.crt  -noout  -serial  -subject
-                    (2) CA主机吊销证书
-                        先根据客户提交的serial和subject信息，对比其与本机数据库index.txt中存储的是否一致；
-                        
-                        吊销：
-                            # openssl  ca  -revoke  /etc/pki/CA/newcerts/SERIAL.pem
-                            
-                                其中的SERIAL要换成证书真正的序列号；
-                                
-                    (3) 生成吊销证书的吊销编号（第一次吊销证书时执行）
-                        # echo  01  > /etc/pki/CA/crlnumber
                     
-                    (4) 更新证书吊销列表
-                        # openssl  ca  -gencrl  -out  thisca.crl 
-                        
-                        查看crl文件：
-                            # openssl  crl  -in  /PATH/FROM/CRL_FILE.crl  -noout  -text
-                            
-    博客作业：加密解密技术基础、PKI及创建私有私有CA；
-    
+- 吊销证书：
+    步骤：
+        (1) 客户端获取要吊销的证书的serial（在使用证书的主机执行）：
+            ~]# openssl  x509  -in /etc/pki/CA/certs/httpd.crt  -noout  -serial  -subject
+        (2) CA主机吊销证书
+            先根据客户提交的serial和subject信息，对比其与本机数据库index.txt中存储的是否一致；
+            
+            吊销：
+                # openssl  ca  -revoke  /etc/pki/CA/newcerts/SERIAL.pem
+                
+                    其中的SERIAL要换成证书真正的序列号；
+                    
+        (3) 生成吊销证书的吊销编号（第一次吊销证书时执行）
+            # echo  01  > /etc/pki/CA/crlnumber
+        
+        (4) 更新证书吊销列表
+            # openssl  ca  -gencrl  -out  thisca.crl 
+            
+            查看crl文件：
+                # openssl  crl  -in  /PATH/FROM/CRL_FILE.crl  -noout  -text
+        
+博客作业：加密解密技术基础、PKI及创建私有私有CA；
+
