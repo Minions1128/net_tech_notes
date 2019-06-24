@@ -1,5 +1,11 @@
 # HAProxy
 
+- LB Cluster:
+    - 四层：
+        - lvs, nginx(stream)，haproxy(mode tcp)
+    - 七层：
+        - http: nginx(http, ngx_http_upstream_module), haproxy(mode http), httpd, ats, perlbal, pound...
+
 - HAProxy is a TCP/HTTP reverse proxy which is particularly suited for high availability environments. Indeed, it can:
     - route HTTP requests depending on statically assigned cookies
     - spread load among several servers while assuring server persistence through the use of HTTP cookies
@@ -10,60 +16,31 @@
     - block requests matching particular patterns
     - report detailed status to authenticated users from a URI intercepted by the application
 
-    LB Cluster:
-        四层：
-            lvs, nginx(stream)，haproxy(mode tcp)
-        七层：
-            http: nginx(http, ngx_http_upstream_module), haproxy(mode http), httpd, ats, perlbal, pound...
-            
-    HAProxy：
-        http://www.haproxy.org
-        http://www.haproxy.com 
-        
-        文档：
-            http://cbonte.github.io/haproxy-dconv/
+- 程序环境：
+    - 主程序：/usr/sbin/haproxy
+    - 主配置文件：/etc/haproxy/haproxy.cfg
+    - Unit file：/usr/lib/systemd/system/haproxy.service
 
-            
-        HAProxy is a TCP/HTTP reverse proxy which is particularly suited for high availability environments. Indeed, it can:
-            :  - route HTTP requests depending on statically assigned cookies
-            :  - spread load among several servers while assuring server persistence
-            :    through the use of HTTP cookies
-            :  - switch to backup servers in the event a main server fails
-            :  - accept connections to special ports dedicated to service monitoring
-            :  - stop accepting connections without breaking existing ones
-            :  - add, modify, and delete HTTP headers in both directions
-            :  - block requests matching particular patterns
-            :  - report detailed status to authenticated users from a URI intercepted by the application
-            
-        版本：1.4, 1.5, 1.6, 1.7
-        
-        程序环境：
-            主程序：/usr/sbin/haproxy
-            主配置文件：/etc/haproxy/haproxy.cfg
-            Unit file：/usr/lib/systemd/system/haproxy.service
-            
-        配置段：
-            global：全局配置段
-                进程及安全配置相关的参数
-                性能调整相关参数
-                Debug参数
-            proxies：代理配置段
-                defaults：为frontend, listen, backend提供默认配置；
-                fronted：前端，相当于nginx, server {}
-                backend：后端，相当于nginx, upstream {}
-                listen：同时拥前端和后端
-            
-            
-            简单的配置示例：
-                frontend web
-                    bind *:80
-                    default_backend     websrvs
-            
-                backend websrvs
-                    balance roundrobin
-                    server srv1 172.16.100.6:80 check
-                    server srv2 172.16.100.7:80 check               
-                
+- 配置段：
+    - global：全局配置段
+        - 进程及安全配置相关的参数
+        - 性能调整相关参数
+        - Debug参数
+    - proxies：代理配置段
+        - defaults：为frontend, listen, backend提供默认配置；
+        - fronted：前端，相当于nginx, server {}
+        - backend：后端，相当于nginx, upstream {}
+        - listen：同时拥前端和后端
+
+- 简单的配置示例：
+    - frontend web
+        - `bind *:80`
+        - `default_backend  websrvs`
+    - backend websrvs
+        - balance roundrobin
+        - server srv1 172.16.100.6:80 check
+        - server srv2 172.16.100.7:80 check               
+
             global配置参数：
                 进程及安全管理：chroot, deamon，user, group, uid, gid
                 
@@ -154,6 +131,33 @@
                     default-server [param*]
                         为backend中的各server设定默认选项；
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 回顾：
     tcp/http reverse proxy；
     haproxy.cfg
@@ -168,7 +172,37 @@
         proxies：bind、balance、hash-type、default_backend、server
             balance：
                 roundrobin、static-rr、leastconn、first、source、uri、hdr(<HEADER>)、url_param、...
-            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 HAProxy(2)
                 
                     server <name> <address>[:[port]] [param*]
