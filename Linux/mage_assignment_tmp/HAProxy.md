@@ -1,5 +1,7 @@
 # HAProxy
 
+## 概述
+
 - LB Cluster:
     - 四层：
         - lvs, nginx(stream)，haproxy(mode tcp)
@@ -20,6 +22,8 @@
     - 主程序：/usr/sbin/haproxy
     - 主配置文件：/etc/haproxy/haproxy.cfg
     - Unit file：/usr/lib/systemd/system/haproxy.service
+
+## 配置
 
 - 配置段：
     - global：全局配置段
@@ -43,78 +47,75 @@
         server srv2 172.16.100.7:80 check
     ```
 
-- global配置参数：
-    - 进程及安全管理：chroot, deamon，user, group, uid, gid
-        - log：定义全局的syslog服务器；最多可以定义两个；
-            - `log <address> [len <length>] <facility> [max level [min level]]`
-        - `nbproc <number>`：要启动的haproxy的进程数量；
-        - `ulimit-n <number>`：每个haproxy进程可打开的最大文件数；
-    - 性能调整：
-        - `maxconn <number>`：设定每个haproxy进程所能接受的最大并发连接数；Sets the maximum per-process number of concurrent connections to `<number>`.
-        - `maxconnrate <number>`：Sets the maximum per-process number of connections per second to `<number>`. 每个进程每秒种所能创建的最大连接数量；
-        - `maxsessrate <number>`：
-        - `maxsslconn <number>`: Sets the maximum per-process number of concurrent SSL connections to `<number>`.
-        - `spread-checks <0..50, in percent>`
+### global配置参数
 
-- 代理配置段：
-                - defaults <name>
-                - frontend <name>
-                - backend  <name>
-                - listen   <name>
-                
-                A "frontend" section describes a set of listening sockets accepting client connections.
-                A "backend" section describes a set of servers to which the proxy will connect to forward incoming connections.
-                A "listen" section defines a complete proxy with its frontend and backend parts combined in one section. It is generally useful for TCP-only traffic.
+- 进程及安全管理：chroot, deamon，user, group, uid, gid
+    - log：定义全局的syslog服务器；最多可以定义两个；
+        - `log <address> [len <length>] <facility> [max level [min level]]`
+    - `nbproc <number>`：要启动的haproxy的进程数量；
+    - `ulimit-n <number>`：每个haproxy进程可打开的最大文件数；
+
+- 性能调整：
+    - `maxconn <number>`：设定每个haproxy进程所能接受的最大并发连接数；Sets the maximum per-process number of concurrent connections to `<number>`.
+    - `maxconnrate <number>`：Sets the maximum per-process number of connections per second to `<number>`. 每个进程每秒种所能创建的最大连接数量；
+    - `maxsessrate <number>`：
+    - `maxsslconn <number>`: Sets the maximum per-process number of concurrent SSL connections to `<number>`.
+    - `spread-checks <0..50, in percent>`
+
+### 代理配置段
+
+- `defaults <name>`
+- `frontend <name>`: A "frontend" section describes a set of listening sockets accepting client connections.
+- `backend  <name>`: A "backend" section describes a set of servers to which the proxy will connect to forward incoming connections.
+- `listen   <name>`: A "listen" section defines a complete proxy with its frontend and backend parts combined in one section. It is generally useful for TCP-only traffic.
+
+- `All proxy names must be formed from upper and lower case letters, digits, '-' (dash), '_' (underscore) , '.' (dot) and ':' (colon).` 区分字符大小写；
+
+#### 配置参数
+
+- 参考：http://cbonte.github.io/haproxy-dconv/1.5/configuration.html#4.1
+
+- bind：Define one or several listening addresses and/or ports in a frontend.
+    - `bind [<address>]:<port_range> [, ...] [param*]`
+    - listen http_proxy
+        - bind :80,:443
+        - bind 10.0.0.1:10080,10.0.0.1:10443
+        - bind /var/run/ssl-frontend.sock user root mode 600 accept-proxy
+
+- balance：后端服务器组内的服务器调度算法
+    - `balance <algorithm> [ <arguments> ]`
+    - `balance url_param <param> [check_post]`
+    - 算法：
+        - roundrobin：Each server is used in turns, according to their weights.
+            - server options： weight #
+            - 动态算法：支持权重的运行时调整，支持慢启动；每个后端中最多支持4095个server；
+        - static-rr：
+            - 静态算法：不支持权重的运行时调整及慢启动；后端主机数量无上限；
+        - leastconn：
+            - 推荐使用在具有较长会话的场景中，例如MySQL、LDAP等；
+        - first：
+            根据服务器在列表中的位置，自上而下进行调度；前面服务器的连接数达到上限，新请求才会分配给下一台服务；
             
-                All proxy names must be formed from upper and lower case letters, digits, '-' (dash), '_' (underscore) , '.' (dot) and ':' (colon). 区分字符大小写；
-                
-                配置参数：
-                    
-                bind：Define one or several listening addresses and/or ports in a frontend.
-                    bind [<address>]:<port_range> [, ...] [param*]
-                    
-                    listen http_proxy
-                        bind :80,:443
-                        bind 10.0.0.1:10080,10.0.0.1:10443
-                        bind /var/run/ssl-frontend.sock user root mode 600 accept-proxy
+        - source：源地址hash；
+            除权取余法：
+            一致性哈希：
             
-                balance：后端服务器组内的服务器调度算法
-                    balance <algorithm> [ <arguments> ]
-                    balance url_param <param> [check_post]              
-        
-                    算法：
-                        roundrobin：Each server is used in turns, according to their weights.
-                            server options： weight #
-                            动态算法：支持权重的运行时调整，支持慢启动；每个后端中最多支持4095个server；
-                        static-rr：
-                            静态算法：不支持权重的运行时调整及慢启动；后端主机数量无上限；
-                            
-                        leastconn：
-                            推荐使用在具有较长会话的场景中，例如MySQL、LDAP等；
-                            
-                        first：
-                            根据服务器在列表中的位置，自上而下进行调度；前面服务器的连接数达到上限，新请求才会分配给下一台服务；
-                            
-                        source：源地址hash；
-                            除权取余法：
-                            一致性哈希：
-                            
-                        uri：
-                            对URI的左半部分做hash计算，并由服务器总权重相除以后派发至某挑出的服务器；
-                            
-                                <scheme>://<user>:<password>@<host>:<port>/<path>;<params>?<query>#<frag>
-                                    左半部分：/<path>;<params>
-                                    整个uri：/<path>;<params>?<query>#<frag>
-                                    
-                        url_param：对用户请求的uri听<params>部分中的参数的值作hash计算，并由服务器总权重相除以后派发至某挑出的服务器；通常用于追踪用户，以确保来自同一个用户的请求始终发往同一个Backend Server；
+        - uri：
+            对URI的左半部分做hash计算，并由服务器总权重相除以后派发至某挑出的服务器；
+            
+                <scheme>://<user>:<password>@<host>:<port>/<path>;<params>?<query>#<frag>
+                    左半部分：/<path>;<params>
+                    整个uri：/<path>;<params>?<query>#<frag>
+                    
+        - url_param：对用户请求的uri听<params>部分中的参数的值作hash计算，并由服务器总权重相除以后派发至某挑出的服务器；通常用于追踪用户，以确保来自同一个用户的请求始终发往同一个Backend Server；
                         
-                        hdr(<name>)：对于每个http请求，此处由<name>指定的http首部将会被取出做hash计算； 并由服务器总权重相除以后派发至某挑出的服务器；没有有效值的会被轮询调度； 
-                            hdr(Cookie)
-                            
-                        rdp-cookie
-                        rdp-cookie(<name>)  
+        hdr(<name>)：对于每个http请求，此处由<name>指定的http首部将会被取出做hash计算； 并由服务器总权重相除以后派发至某挑出的服务器；没有有效值的会被轮询调度； 
+            hdr(Cookie)
+            
+        rdp-cookie
+        rdp-cookie(<name>)  
                         
-                    hash-type：哈希算法
+- hash-type：哈希算法
                         hash-type <method> <function> <modifier>
                             map-based：除权取余法，哈希数据结构是静态的数组；
                             consistent：一致性哈希，哈希数据结构是一个树；
@@ -124,10 +125,10 @@
                             djb2
                             wt6
 
-                    default_backend <backend>
+- default_backend <backend>
                         设定默认的backend，用于frontend中；
                         
-                    default-server [param*]
+- default-server [param*]
                         为backend中的各server设定默认选项；
 
 
