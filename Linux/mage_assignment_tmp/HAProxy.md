@@ -33,31 +33,30 @@
         - listen：同时拥前端和后端
 
 - 简单的配置示例：
-    - frontend web
-        - `bind *:80`
-        - `default_backend  websrvs`
-    - backend websrvs
-        - balance roundrobin
-        - server srv1 172.16.100.6:80 check
-        - server srv2 172.16.100.7:80 check               
+    ```
+    frontend web
+        bind *:80
+        default_backend  websrvs
+    backend websrvs
+        balance roundrobin
+        server srv1 172.16.100.6:80 check
+        server srv2 172.16.100.7:80 check
+    ```
 
-            global配置参数：
-                进程及安全管理：chroot, deamon，user, group, uid, gid
-                
-                    log：定义全局的syslog服务器；最多可以定义两个；
-                        log <address> [len <length>] <facility> [max level [min level]]
-                        
-                    nbproc <number>：要启动的haproxy的进程数量；
-                    ulimit-n <number>：每个haproxy进程可打开的最大文件数；
-            
-                性能调整：
-                    maxconn <number>：设定每个haproxy进程所能接受的最大并发连接数；Sets the maximum per-process number of concurrent connections to <number>.
-                    maxconnrate <number>：Sets the maximum per-process number of connections per second to <number>. 每个进程每秒种所能创建的最大连接数量；
-                    maxsessrate <number>：
-                    maxsslconn <number>: Sets the maximum per-process number of concurrent SSL connections to <number>.
-                    spread-checks <0..50, in percent>
-                    
-            代理配置段：
+- global配置参数：
+    - 进程及安全管理：chroot, deamon，user, group, uid, gid
+        - log：定义全局的syslog服务器；最多可以定义两个；
+            - log <address> [len <length>] <facility> [max level [min level]]
+        - nbproc <number>：要启动的haproxy的进程数量；
+        - ulimit-n <number>：每个haproxy进程可打开的最大文件数；
+    - 性能调整：
+        - maxconn <number>：设定每个haproxy进程所能接受的最大并发连接数；Sets the maximum per-process number of concurrent connections to <number>.
+        - maxconnrate <number>：Sets the maximum per-process number of connections per second to <number>. 每个进程每秒种所能创建的最大连接数量；
+        - maxsessrate <number>：
+        - maxsslconn <number>: Sets the maximum per-process number of concurrent SSL connections to <number>.
+        - spread-checks <0..50, in percent>
+
+- 代理配置段：
                 - defaults <name>
                 - frontend <name>
                 - backend  <name>
