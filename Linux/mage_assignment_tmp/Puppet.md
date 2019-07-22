@@ -70,156 +70,141 @@
     - ensure：资源的目标状态； 
     - provider：指明资源的管理接口；
 
+- 资源引用：
+    - Type['title']
+    - 类型的首字母必须大写；
+
+- 资源有特殊属性：
+    - 名称变量(namevar)：name可省略，此时将由title表示；
+    - ensure：定义资源的目标状态；
+    - 元参数：metaparameters
+        - 关系元参数：before/require
+            ```
+            A before B: B依赖于A，定义在A资源中；
+                {
+                    ...
+                    before  => Type['B'],
+                    ...
+                }
+            B require A： B依赖于A，定义在B资源中；
+                {
+                    ...
+                    require => Type['A'],
+                    ...
+                }
+            ```
+        - 通知关系：通知相关的其它资源进行“刷新”操作；
+            ```
+            notify
+                A notify B：B依赖于A，且A发生改变后会通知B，接受由A触发refresh；
+                    {
+                        ...
+                        notify => Type['B'],
+                        ...
+                    }
+            subscribe
+                B subscribe A：B依赖于A，且B监控A资源的变化产生的事件，接受由A触发refresh；
+                    {
+                        ...
+                        subscribe => Type['A'],
+                        ...
+                    }
+            ```
+
+
 - 资源类型：
-    - group：Manage groups. 属性包括：
+    - group： Manage groups.
         - name：组名；
         - gid：GID；
         - system：是否为系统组，true OR false；
         - ensure：目标状态，present/absent；
         - members：成员用户；
-    - user：Manage users.
+    - user： Manage users.
         - name：用户名；
         - uid: UID;
         - gid：基本组ID；
         - groups：附加组，不能包含基本组；
-        - comment：注释； 
-        - expiry：过期时间 ；
-        - home：家目录； 
+        - comment：注释；
+        - expiry：过期时间；
+        - home：家目录；
         - shell：默认shell类型；
-        - system：是否为系统用户 ；
+        - system：是否为系统用户；
         - ensure：present/absent；
-        - password：加密后的密码串； 
+        - password：加密后的密码串；
+    - package： Manage packages.
+        - ensure：installed, present, latest, absent
+        - name：包名；
+        - source：程序包来源，仅对不会自动下载相关程序包的provider有用，例如rpm或dpkg；
+    - service： Manage running services.
+        - ensure：Whether a service should be running. Valid values are `stopped` (also called `false`), `running` (also called `true`).
+        - enable：Whether a service should be enabled to start at boot. Valid values are `true`, `false`, `manual`.
+        - name：
+        - path：The search path for finding init scripts. Multiple values should be separated by colons or provided as an array.脚本的搜索路径，默认为/etc/init.d/；
+        - hasrestart：
+        - hasstatus：
+        - start：手动定义启动命令；
+        - stop:
+        - status：
+        - restart：Specify a *restart* command manually.  If left unspecified, the service will be stopped and then started. 通常用于定义reload操作；
+    - file：Manages files, including their content, ownership, and permissions.
+        - ensure：Whether the file should exist, and if so what kind of file it should be. Possible values are `present`, `absent`, `file`, `directory`, and `link`.
+            - file：类型为普通文件，其内容由content属性生成或复制由source属性指向的文件路径来创建；
+            - link：类型为符号链接文件，必须由target属性指明其链接的目标文件；
+            - directory：类型为目录，可通过source指向的路径复制生成，recurse属性指明是否递归复制；
+        - path：文件路径；
+        - source：源文件；
+        - content：文件内容；
+        - target：符号链接的目标文件； 
+        - owner：属主
+        - group：属组
+        - mode：权限；
+        - atime/ctime/mtime：时间戳；
 
-    关系元参数：before/require
-        A before B: B依赖于A，定义在A资源中；
-            {
-                ...
-                before  => Type['B'],
-                ...
-            }
-        B require A： B依赖于A，定义在B资源中；
-            {
-                ...
-                require => Type['A'],
-                ...
-            }
-            
-    package：
-        Manage packages.
-        
-        属性：
-            ensure：installed, present, latest, absent
-            name：包名；
-            source：程序包来源，仅对不会自动下载相关程序包的provider有用，例如rpm或dpkg；
-            
+- 示例1：
+    ```
+    file{'test.txt':
+        path    => '/tmp/test.txt',
+        ensure  => file,
+        source  => '/etc/fstab',
+    }
 
-                service：
-                    Manage running services.
-                    
-                    属性：
-                        ensure：Whether a service should be running. Valid values are `stopped` (also called `false`), `running` (also called `true`).
-                        enable：Whether a service should be enabled to start at boot. Valid values are `true`, `false`, `manual`.
-                        name：
-                        path：The search path for finding init scripts.  Multiple values should be separated by colons or provided as an array. 脚本的搜索路径，默认为/etc/init.d/；
-                        hasrestart：
-                        hasstatus：
-                        start：手动定义启动命令；
-                        stop:
-                        status：
-                        restart：Specify a *restart* command manually.  If left unspecified, the service will be stopped and then started. 通常用于定义reload操作；
-                        
-                资源引用：
-                    Type['title']
-                    
-                    类型的首字母必须大写；
-                    
-                资源有特殊属性：
-                    名称变量(namevar)：
-                        name可省略，此时将由title表示；
-                    ensure：
-                        定义资源的目标状态；
-                    元参数：metaparameters
-                        依赖关系：
-                            before
-                            require
-                        通知关系：通知相关的其它资源进行“刷新”操作；
-                            notify
-                                A notify B：B依赖于A，且A发生改变后会通知B；
-                                    {
-                                        ...
-                                        notify => Type['B'],
-                                        ...
-                                    }
-                            subscribe
-                                B subscribe A：B依赖于A，且B监控A资源的变化产生的事件；
-                                    {
-                                        ...
-                                        subscribe => Type['A'],
-                                        ...
-                                    }
+    file{'test.symlink':
+        path    => '/tmp/test.symlink',
+        ensure  => link,
+        target  => '/tmp/test.txt',
+        require => File['test.txt'],
+    }
 
-                file：
-                    Manages files, including their content, ownership, and permissions.
-                    
-                    ensure：Whether the file should exist, and if so what kind of file it should be. Possible values are `present`, `absent`, `file`, `directory`, and `link`.
-                        file：类型为普通文件，其内容由content属性生成或复制由source属性指向的文件路径来创建；
-                        link：类型为符号链接文件，必须由target属性指明其链接的目标文件；
-                        directory：类型为目录，可通过source指向的路径复制生成，recurse属性指明是否递归复制；
-                    path：文件路径；
-                    source：源文件；
-                    content：文件内容；
-                    target：符号链接的目标文件； 
-                    owner：属主
-                    group：属组
-                    mode：权限；
-                    atime/ctime/mtime：时间戳；
-            
-                通知元参数：
-                    A notify B：B依赖于A，接受由A触发refresh；
-                    B subscribe A：B依赖于A，接受由A触发refresh；
-                    
-                    示例1：
-                        file{'test.txt':
-                            path    => '/tmp/test.txt',
-                            ensure  => file,
-                            source  => '/etc/fstab',
-                        }
+    file{'test.dir':
+        path    => '/tmp/test.dir',
+        ensure  => directory,
+        source  => '/etc/yum.repos.d/',
+        recurse => true,
+    }
+    ```
 
-                        file{'test.symlink':
-                            path    => '/tmp/test.symlink',
-                            ensure  => link,
-                            target  => '/tmp/test.txt',
-                            require => File['test.txt'],
-                        }
+- 示例2：
+    ```
+    service{'httpd':
+        ensure  => running,
+        enable  => true,
+        restart => 'systemctl restart httpd.service',
+        # subscribe       => File['httpd.conf'],
+    }
 
-                        file{'test.dir':
-                            path    => '/tmp/test.dir',
-                            ensure  => directory,
-                            source  => '/etc/yum.repos.d/',
-                            recurse => true,
-                        }
-                    
-            示例2：
-                service{'httpd':
-                    ensure  => running,
-                    enable  => true,
-                    restart => 'systemctl restart httpd.service',
-                #       subscribe       => File['httpd.conf'],
-                }
+    package{'httpd':
+        ensure  => installed,
+    }
 
-                package{'httpd':
-                    ensure  => installed,
-                }
+    file{'httpd.conf':
+        path    => '/etc/httpd/conf/httpd.conf',
+        source  => '/root/manifests/httpd.conf',
+        ensure  => file,
+        notify  => Service['httpd'],
+    }
 
-                file{'httpd.conf':
-                    path    => '/etc/httpd/conf/httpd.conf',
-                    source  => '/root/manifests/httpd.conf',
-                    ensure  => file,
-                    notify  => Service['httpd'],
-                }
-
-                Package['httpd'] -> File['httpd.conf'] -> Service['httpd']                          
-
+    Package['httpd'] -> File['httpd.conf'] ~> Service['httpd']                          
+    ```
 
 回顾：
     Bootstraping，Configuration, Command and Control；
