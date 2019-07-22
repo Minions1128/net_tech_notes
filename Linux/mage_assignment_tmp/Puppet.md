@@ -25,107 +25,93 @@
         - 主程序：/usr/bin/puppet
     - master/agent：由agent周期性地向Master请求清单并自动应用于本地；
 
-        puppet程序：
-            Usage: puppet <subcommand> [options] <action> [options]
+- puppet程序：Usage: `puppet <subcommand> [options] <action> [options]`
+    - help              Display Puppet help.
+    - apply             Apply Puppet manifests locally
+    - describe       Display help about resource types
+    - agent            The puppet agent daemon
+    - master          The puppet master daemon
+    - module        Creates, installs and searches for modules on the Puppet Forge
+    - `'puppet help <subcommand>' for help on a specific subcommand.`
+    - `'puppet help <subcommand> <action>' for help on a specific subcommand action.`
 
-            help              Display Puppet help.
-            apply             Apply Puppet manifests locally
-            describe       Display help about resource types
-            agent            The puppet agent daemon
-            master          The puppet master daemon
-            module        Creates, installs and searches for modules on the Puppet Forge
+- puppet apply：Applies a standalone Puppet manifest to the local system.
+    - `puppet apply  [-d|--debug] [-v|--verbose] [-e|--execute] [--noop] <file>`
+
+### Puppet 资源
+
+- 资源抽象的纬度（RAL如何抽象资源的？）：
+    - 类型：具有类似属性的组件，例如package、service、file；
+    - 将资源的属性或状态与其实现方式分离；
+    - 仅描述资源的目标状态，也即期望其实现的结果状态，而不是具体过程； 
+    - RAL由“类型”和提供者(provider)；
+
+- puppet describe：
+    - Prints help about Puppet resource types, providers, and metaparameters.
+    - `puppet describe [-h|--help] [-s|--short] [-p|--providers] [-l|--list] [-m|--meta] [type]`
+        - -l：列出所有资源类型；
+        - -s：显示指定类型的简要帮助信息；
+        - -m：显示指定类型的元参数，一般与-s一同使用；
+
+- 资源定义：向资源类型的属性赋值来实现，可称为资源类型实例化；
+    - 定义了资源实例的文件即清单，manifest；
+    - 定义资源的语法：
+        ```
+        type {'title':
+            attribute1  => value1,
+            atrribute2  => value2,
             ……
+        }
+        ```
+    - 注意：type必须使用小写字符；title是一个字符串，在同一类型中必须惟一；
+
+- 资源属性中的三个特殊属性：
+    - namevar， 可简称为name；
+    - ensure：资源的目标状态； 
+    - provider：指明资源的管理接口；
+
+- 资源类型：
+    - group：Manage groups. 属性包括：
+        - name：组名；
+        - gid：GID；
+        - system：是否为系统组，true OR false；
+        - ensure：目标状态，present/absent；
+        - members：成员用户；
+    - user：Manage users.
+        - name：用户名；
+        - uid: UID;
+        - gid：基本组ID；
+        - groups：附加组，不能包含基本组；
+        - comment：注释； 
+        - expiry：过期时间 ；
+        - home：家目录； 
+        - shell：默认shell类型；
+        - system：是否为系统用户 ；
+        - ensure：present/absent；
+        - password：加密后的密码串； 
+
+    关系元参数：before/require
+        A before B: B依赖于A，定义在A资源中；
+            {
+                ...
+                before  => Type['B'],
+                ...
+            }
+        B require A： B依赖于A，定义在B资源中；
+            {
+                ...
+                require => Type['A'],
+                ...
+            }
             
-            'puppet help <subcommand>' for help on a specific subcommand.
-            'puppet help <subcommand> <action>' for help on a specific subcommand action.
+    package：
+        Manage packages.
+        
+        属性：
+            ensure：installed, present, latest, absent
+            name：包名；
+            source：程序包来源，仅对不会自动下载相关程序包的provider有用，例如rpm或dpkg；
             
-        puppet apply：
-            Applies a standalone Puppet manifest to the local system.
-            
-            puppet apply  [-d|--debug] [-v|--verbose] [-e|--execute] [--noop] <file>
-            
-        puppet资源：
-            资源抽象的纬度（RAL如何抽象资源的？）：
-                类型：具有类似属性的组件，例如package、service、file；
-                将资源的属性或状态与其实现方式分离；
-                仅描述资源的目标状态，也即期望其实现的结果状态，而不是具体过程； 
-                
-                RAL由“类型”和提供者(provider)；
-                
-            puppet describe：
-                Prints help about Puppet resource types, providers, and metaparameters.
-                
-                puppet describe [-h|--help] [-s|--short] [-p|--providers] [-l|--list] [-m|--meta] [type]
-                    -l：列出所有资源类型；
-                    -s：显示指定类型的简要帮助信息；
-                    -m：显示指定类型的元参数，一般与-s一同使用；
-                    
-            资源定义：向资源类型的属性赋值来实现，可称为资源类型实例化；
-                定义了资源实例的文件即清单，manifest；
-                
-                定义资源的语法：
-                    type {'title':
-                        attribute1  => value1,
-                        atrribute2  => value2,
-                        ……
-                    }
-                    
-                注意：type必须使用小写字符；title是一个字符串，在同一类型中必须惟一；
-                
-            资源属性中的三个特殊属性：
-                Namevar， 可简称为name；
-                ensure：资源的目标状态； 
-                Provider：指明资源的管理接口；
-                
-            资源类型：
-                group：
-                    Manage groups.
-                    
-                    属性：
-                        name：组名；
-                        gid：GID；
-                        system：是否为系统组，true OR false；
-                        ensure：目标状态，present/absent；
-                        members：成员用户;
-                        
-                user：
-                    Manage users.
-                    
-                    属性：
-                        name：用户名；
-                        uid: UID;
-                        gid：基本组ID；
-                        groups：附加组，不能包含基本组；
-                        comment：注释； 
-                        expiry：过期时间 ；
-                        home：家目录； 
-                        shell：默认shell类型；
-                        system：是否为系统用户 ；
-                        ensure：present/absent；
-                        password：加密后的密码串； 
-                
-                关系元参数：before/require
-                    A before B: B依赖于A，定义在A资源中；
-                        {
-                            ...
-                            before  => Type['B'],
-                            ...
-                        }
-                    B require A： B依赖于A，定义在B资源中；
-                        {
-                            ...
-                            require => Type['A'],
-                            ...
-                        }
-                        
-                package：
-                    Manage packages.
-                    
-                    属性：
-                        ensure：installed, present, latest, absent
-                        name：包名；
-                        source：程序包来源，仅对不会自动下载相关程序包的provider有用，例如rpm或dpkg；
-                        
 
                 service：
                     Manage running services.
@@ -234,6 +220,7 @@
 
                 Package['httpd'] -> File['httpd.conf'] -> Service['httpd']                          
 
+
 回顾：
     Bootstraping，Configuration, Command and Control；
     
@@ -257,9 +244,9 @@
         
     资源类型：group, user, package, service, file；exec, cron, notify, ...
         puppet describe 
-    
-                
-                
+
+
+
 Puppet(2) 
 
     资源类型：
@@ -757,7 +744,8 @@ Puppet(2)
                 tomcat
                 mariadb 
                 httpd(反代请求至tomcat，ajp连接器；mpm允许用户通过参数指定)
-                
+
+
 
 回顾：
     puppet核心资源类型：group, user, file, package, service, exec, cron, notify
@@ -837,8 +825,9 @@ Puppet(2)
             
         standalone: 
             puppet  apply -e 'include CLASS_NAME'
-                
-                
+
+
+
 puppet(3)
 
     standalone：puppet apply
