@@ -111,6 +111,16 @@
                     }
             ```
 
+- 核心类型：
+    - group: 组
+    - user：用户
+    - packge：程序包 
+    - service：服务
+    - file：文件
+    - exec：执行自定义命令，要求幂等
+    - cron：周期性任务计划
+    - notify：通知
+
 - 资源类型：
     - group： Manage groups.
         - name：组名；
@@ -158,31 +168,71 @@
         - group：属组
         - mode：权限；
         - atime/ctime/mtime：时间戳；
+        - 示例：
+            ```
+            file{'test.txt':
+                path    => '/tmp/test.txt',
+                ensure  => file,
+                source  => '/etc/fstab',
+            }
 
-- 示例1：
-    ```
-    file{'test.txt':
-        path    => '/tmp/test.txt',
-        ensure  => file,
-        source  => '/etc/fstab',
-    }
+            file{'test.symlink':
+                path    => '/tmp/test.symlink',
+                ensure  => link,
+                target  => '/tmp/test.txt',
+                require => File['test.txt'],
+            }
 
-    file{'test.symlink':
-        path    => '/tmp/test.symlink',
-        ensure  => link,
-        target  => '/tmp/test.txt',
-        require => File['test.txt'],
-    }
+            file{'test.dir':
+                path    => '/tmp/test.dir',
+                ensure  => directory,
+                source  => '/etc/yum.repos.d/',
+                recurse => true,
+            }
+            ```
+    - exec: Executes external commands. Any command in an `exec` resource **must** be able to run multiple times without causing harm --- that is, it must be *idempotent*.
+        - **command** (*namevar*)：要运行的命令；
+        - cwd：The directory from which to run the command. 定义工作目录
+        - **creates**：文件路径，仅此路径表示的文件不存在时，command方才执行；
+        - user/group：运行命令的用户身份；
+        - path：The search path used for command execution. Commands must be fully qualified if no path is specified. 类似于环境变量
+        - onlyif：此属性指定一个命令，此命令正常（退出码为0）运行时，当前command才会运行；
+        - unless：此属性指定一个命令，此命令非正常（退出码为非0）运行时，当前command才会运行；
+        - refresh：重新执行当前command的替代命令；
+        - refreshonly：仅接收到订阅的资源的通知时方才运行；
+        - 示例：
+            ```
+            exec{'mkdir':
+                command     =>  'mkdir /tmp/testdir',
+                path        =>  '/bin:/sbin:/usr/bin:/usr/sbin',
+                creates     =>  '/tmp/testdir',
+            }
+            ```
+    - cron: Installs and manages cron jobs.  Every cron resource created by Puppet requires a command and at least one periodic attribute (hour, minute, month, monthday, weekday, or special).
+        - command：要执行的任务；
+        - ensure：present/absent；
+        - hour：
+        - minute:
+        - monthday:
+        - month:
+        - weekday：
+        - user：以哪个用户的身份运行命令
+        - target：添加为哪个用户的任务
+        - name：cron job的名称；
+        - 示例：
+            ```
+            cron{'timesync':
+                command => '/usr/sbin/ntpdate 10.1.0.1 &> /dev/null',
+                ensure  => present,
+                minute  => '*/3',
+                user    => 'root',
+            }
+            ```
+    - notify: Sends an arbitrary message to the agent run-time log.
+        - message：信息内容
+        - name：信息名称；
 
-    file{'test.dir':
-        path    => '/tmp/test.dir',
-        ensure  => directory,
-        source  => '/etc/yum.repos.d/',
-        recurse => true,
-    }
-    ```
-
-- 示例2：
+- 示例：
     ```
     service{'httpd':
         ensure  => running,
@@ -204,58 +254,8 @@
 
     Package['httpd'] -> File['httpd.conf'] ~> Service['httpd']                          
     ```
-
-- 核心资源类型：
-    - exec: Executes external commands. Any command in an `exec` resource **must** be able to run multiple times without causing harm --- that is, it must be *idempotent*.
-        - **command** (*namevar*)：要运行的命令；
-        - cwd：The directory from which to run the command.
-        - **creates**：文件路径，仅此路径表示的文件不存在时，command方才执行；
-        - user/group：运行命令的用户身份；
-        - path：The search path used for command execution. Commands must be fully qualified if no path is specified.
-        - onlyif：此属性指定一个命令，此命令正常（退出码为0）运行时，当前command才会运行；
-        - unless：此属性指定一个命令，此命令非正常（退出码为非0）运行时，当前command才会运行；
-        - refresh：重新执行当前command的替代命令；
-        - refreshonly：仅接收到订阅的资源的通知时方才运行；
-    - cron：
-            Installs and manages cron jobs.  Every cron resource created by Puppet requires a command and at least one periodic attribute (hour, minute, month, monthday, weekday, or special).
-            
-            command：要执行的任务；
-            ensure：present/absent；
-            hour：
-            minute:
-            monthday:
-            month:
-            weekday：
-            user：以哪个用户的身份运行命令
-            target：添加为哪个用户的任务
-            name：cron job的名称；
-            
-            示例：
-                cron{'timesync':
-                    command => '/usr/sbin/ntpdate 10.1.0.1 &> /dev/null',
-                    ensure  => present,
-                    minute  => '*/3',
-                    user    => 'root',
-                }           
-            
-        notify：
-            Sends an arbitrary message to the agent run-time log.
-            
-            属性：
-                message：信息内容
-                name：信息名称；
-
-        核心类型：
-            group: 组
-            user：用户
-            packge：程序包 
-            service：服务
-            file：文件
-            exec：执行自定义命令，要求幂等
-            cron：周期性任务计划
-            notify：通知
-            
-    puppet variable：
+        
+- puppet variable：
     
         $variable_name=value
         
