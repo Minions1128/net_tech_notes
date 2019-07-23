@@ -228,9 +228,9 @@
                 user    => 'root',
             }
             ```
-    - notify: Sends an arbitrary message to the agent run-time log.
+    - notify: Sends an arbitrary message to the agent run-time log. 类似于echo
         - message：信息内容
-        - name：信息名称；
+        - name：信息名称
 
 - 示例：
     ```
@@ -252,14 +252,11 @@
         notify  => Service['httpd'],
     }
 
-    Package['httpd'] -> File['httpd.conf'] ~> Service['httpd']                          
+    Package['httpd'] -> File['httpd.conf'] ~> Service['httpd']
     ```
-        
-- puppet variable：
-    
-        $variable_name=value
-        
-        数据类型：
+
+- puppet variable：`$variable_name=value`
+    - 数据类型：
             字符型：引号可有可无；但单引号为强引用，双引号为弱引用；
             数值型：默认均识别为字符串，仅在数值上下文才以数值对待；
             数组：[]中以逗号分隔元素列表；
