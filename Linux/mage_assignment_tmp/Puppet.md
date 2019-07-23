@@ -111,7 +111,6 @@
                     }
             ```
 
-
 - 资源类型：
     - group： Manage groups.
         - name：组名；
@@ -206,49 +205,18 @@
     Package['httpd'] -> File['httpd.conf'] ~> Service['httpd']                          
     ```
 
-回顾：
-    Bootstraping，Configuration, Command and Control；
-    
-    puppet：Configuration
-        apply：standalone
-        master/agent：
-        
-    manifest：
-        resource 
-        node
-        
-    资源：resource 
-        type{'title':
-            atrribute => value,
-            ...
-        }
-        
-        关系元参数：before/require, notify/subscribe
-        特殊参数：NameVar
-        目标状态：ensure
-        
-    资源类型：group, user, package, service, file；exec, cron, notify, ...
-        puppet describe 
-
-
-
-Puppet(2) 
-
-    资源类型：
-        exec：
-            Executes external commands. Any command in an `exec` resource **must** be able to run multiple times without causing harm --- that is, it must be *idempotent*.
-            
-            **command** (*namevar*)：要运行的命令；
-            cwd：The directory from which to run the command.
-            **creates**：文件路径，仅此路径表示的文件不存在时，command方才执行；
-            user/group：运行命令的用户身份；
-            path：The search path used for command execution. Commands must be fully qualified if no path is specified.
-            onlyif：此属性指定一个命令，此命令正常（退出码为0）运行时，当前command才会运行；
-            unless：此属性指定一个命令，此命令非正常（退出码为非0）运行时，当前command才会运行；
-            refresh：重新执行当前command的替代命令；
-            refreshonly：仅接收到订阅的资源的通知时方才运行；
-            
-        cron：
+- 核心资源类型：
+    - exec: Executes external commands. Any command in an `exec` resource **must** be able to run multiple times without causing harm --- that is, it must be *idempotent*.
+        - **command** (*namevar*)：要运行的命令；
+        - cwd：The directory from which to run the command.
+        - **creates**：文件路径，仅此路径表示的文件不存在时，command方才执行；
+        - user/group：运行命令的用户身份；
+        - path：The search path used for command execution. Commands must be fully qualified if no path is specified.
+        - onlyif：此属性指定一个命令，此命令正常（退出码为0）运行时，当前command才会运行；
+        - unless：此属性指定一个命令，此命令非正常（退出码为非0）运行时，当前command才会运行；
+        - refresh：重新执行当前command的替代命令；
+        - refreshonly：仅接收到订阅的资源的通知时方才运行；
+    - cron：
             Installs and manages cron jobs.  Every cron resource created by Puppet requires a command and at least one periodic attribute (hour, minute, month, monthday, weekday, or special).
             
             command：要执行的任务；
