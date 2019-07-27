@@ -17,9 +17,24 @@
         - fabric(fab)
         - func
 
-## Puppet
+## Feature
 
-- puppet的工作模型：
+- 一个IT基础设施自动化管理、基于“定义目标状态”的工具
+    - 可以帮助SA管理基础设施的整个生命周期：
+        - provisioning
+        - configuration
+        - orchestration
+        - reporting
+    - 基于Ruby语言开发
+    - 对于系统管理员是抽象的，只依赖于ruby与facter
+    - Manifest：Puppet的程序文件，以.pp结尾
+        - 该文件实现了常见程序逻辑，用来“定义资源”
+        - 使用`puppet apply`子命令将manifest中描述的目标状态强制实现
+    - Catalog：由于puppet通过manifest同步资源时，不会直接应用manifest文件，而是先将manifest文件中的条件判断、变量、函数及其它的程序逻辑进行预先编译，manifest文件被编译后的文件称作catalog的文件
+
+![puppet.proc](https://github.com/Minions1128/net_tech_notes/blob/master/img/puppet.proc.jpg "puppet.proc")
+
+- puppet的工作模型：通过Puppet的声明性配置语言定义基础设置配置的目标状态
     - 单机模型：手动应用清单；
         - 配置文件：/etc/puppet/puppet.conf
         - 主程序：/usr/bin/puppet
@@ -40,7 +55,7 @@
 
 ### Puppet 资源
 
-- 资源抽象的纬度（RAL如何抽象资源的？）：
+- 资源抽象的维度（RAL如何抽象资源的？）：
     - 类型：具有类似属性的组件，例如package、service、file；
     - 将资源的属性或状态与其实现方式分离；
     - 仅描述资源的目标状态，也即期望其实现的结果状态，而不是具体过程； 
@@ -56,11 +71,20 @@
 - 资源定义：向资源类型的属性赋值来实现，可称为资源类型实例化；
     - 定义了资源实例的文件即清单，manifest；
     - 定义资源的语法：
-        ```
+        ```rb
         type {'title':
             attribute1  => value1,
             atrribute2  => value2,
             ……
+        }
+        ## e.g..
+        user {'jesse':
+            ensure      =>  present,
+            uid         =>  '601',
+            gid         =>  '601',
+            shell       =>  '/bin/bash',
+            home        =>  '/home/jesse',
+            managehome  =>  true,
         }
         ```
     - 注意：type必须使用小写字符；title是一个字符串，在同一类型中必须惟一；
@@ -69,47 +93,6 @@
     - namevar， 可简称为name；
     - ensure：资源的目标状态； 
     - provider：指明资源的管理接口；
-
-- 资源引用：
-    - Type['title']
-    - 类型的首字母必须大写；
-
-- 资源有特殊属性：
-    - 名称变量(namevar)：name可省略，此时将由title表示；
-    - ensure：定义资源的目标状态；
-    - 元参数：metaparameters
-        - 关系元参数：before/require
-            ```
-            A before B: B依赖于A，定义在A资源中；
-                {
-                    ...
-                    before  => Type['B'],
-                    ...
-                }
-            B require A： B依赖于A，定义在B资源中；
-                {
-                    ...
-                    require => Type['A'],
-                    ...
-                }
-            ```
-        - 通知关系：通知相关的其它资源进行“刷新”操作；
-            ```
-            notify
-                A notify B：B依赖于A，且A发生改变后会通知B，接受由A触发refresh；
-                    {
-                        ...
-                        notify => Type['B'],
-                        ...
-                    }
-            subscribe
-                B subscribe A：B依赖于A，且B监控A资源的变化产生的事件，接受由A触发refresh；
-                    {
-                        ...
-                        subscribe => Type['A'],
-                        ...
-                    }
-            ```
 
 - 核心类型：
     - group: 组
@@ -169,7 +152,7 @@
         - mode：权限；
         - atime/ctime/mtime：时间戳；
         - 示例：
-            ```
+            ```rb
             file{'test.txt':
                 path    => '/tmp/test.txt',
                 ensure  => file,
@@ -201,7 +184,7 @@
         - refresh：重新执行当前command的替代命令；
         - refreshonly：仅接收到订阅的资源的通知时方才运行；
         - 示例：
-            ```
+            ```rb
             exec{'mkdir':
                 command     =>  'mkdir /tmp/testdir',
                 path        =>  '/bin:/sbin:/usr/bin:/usr/sbin',
@@ -220,7 +203,7 @@
         - target：添加为哪个用户的任务
         - name：cron job的名称；
         - 示例：
-            ```
+            ```rb
             cron{'timesync':
                 command => '/usr/sbin/ntpdate 10.1.0.1 &> /dev/null',
                 ensure  => present,
@@ -232,8 +215,51 @@
         - message：信息内容
         - name：信息名称
 
+- 资源有特殊属性：
+    - 名称变量(namevar)：name可省略，此时将由title表示；
+    - ensure：定义资源的目标状态；
+    - 资源引用：
+        - Type['title']
+        - 类型的首字母必须大写；
+    - 元参数：metaparameters
+        - 关系元参数：before/require
+            ```ruby
+            A before B: B依赖于A，定义在A资源中；
+                {
+                    ...
+                    before  => Type['B'],
+                    ...
+                }
+            B require A： B依赖于A，定义在B资源中；
+                {
+                    ...
+                    require => Type['A'],
+                    ...
+                }
+            ```
+        - 通知关系：通知相关的其它资源进行“刷新”操作；
+            ```rb
+            notify
+                A notify B：B依赖于A，且A发生改变后会通知B，接受由A触发refresh；
+                    {
+                        ...
+                        notify => Type['B'],
+                        ...
+                    }
+            subscribe
+                B subscribe A：B依赖于A，且B监控A资源的变化产生的事件，接受由A触发refresh；
+                    {
+                        ...
+                        subscribe => Type['A'],
+                        ...
+                    }
+            ```
+        - `->` (ordering arrow; a hyphen and a greater-than sign) — Applies the resource on the left before the resource on the right.
+        - `~>` (notifying arrow; a tilde and a greater-than sign) — Applies the resource on the left first. If the left-hand resource changes, the right-hand resource will refresh.
+        - `Package['ntp'] -> File['/etc/ntp.conf'] ~> Service['ntpd']`
+
 - 示例：
-    ```
+    ```rb
     service{'httpd':
         ensure  => running,
         enable  => true,
@@ -255,366 +281,365 @@
     Package['httpd'] -> File['httpd.conf'] ~> Service['httpd']
     ```
 
-- puppet variable：`$variable_name=value`
-    - 数据类型：
-            字符型：引号可有可无；但单引号为强引用，双引号为弱引用；
-            数值型：默认均识别为字符串，仅在数值上下文才以数值对待；
-            数组：[]中以逗号分隔元素列表；
-            布尔型值：true, false；
-            hash：{}中以逗号分隔k/v数据列表； 键为字符型，值为任意puppet支持的类型；{ 'mon' => 'Monday', 'tue' => 'Tuesday', }；
-            undef：未定义 ；
-            
-        正则表达式：
-            (?<ENABLED OPTION>:<PATTERN>)
-            (?-<DISABLED OPTION>:<PATTERN>)
-            
-                OPTIONS：
-                    i：忽略字符大小写；
-                    m：把.当换行符；
-                    x：忽略<PATTERN>中的空白字符
-                    
-                (?i-mx:PATTERN）
-                    
-            不能赋值给变量 ，仅能用在接受=~或!~操作符的位置；
-            
-        puppet的变量类型：
-            
-            facts：
-                由facter提供；top scope；
-            内建变量：
-                master端变量 
-                agent端变量 
-                parser变量
-            用户自定义变量：
-            
-            变量有作用域，称为Scope；
-                top scope：   $::var_name
-                node scope
-                class scope
-                            
-                
-        puppet流程控制语句：
-            if语句：
-                if  CONDITION {
-                    ...
-                } else {
-                    ...
-                }
-            
-                CONDITION的给定方式：
-                    (1) 变量
-                    (2) 比较表达式 
-                    (3) 有返回值的函数
-                    
-                
-                    if $osfamily =~ /(?i-mx:debian)/ {
-                        $webserver = 'apache2'
-                    } else {
-                        $webserver = 'httpd'
-                    }
+- puppet variable：`$variable_name=value`，变量名以`$`开头，赋值操作为`=`，每个变量都有两个名字：简短名称和长格式完全限定名称（FQN），FQN的格式为：`$scope::varibale`
+    - puppet的变量类型：
+        - facts：由facter提供；top scope；
+        - 内建变量：
+            - master端变量 
+            - agent端变量 
+            - parser变量
+        - 用户自定义变量：
+    - 变量有作用域，称为Scope；
+        - top scope：   $::var_name
+        - node scope
+        - class scope
 
-                    package{"$webserver":
-                        ensure  => installed,
-                        before  => [ File['httpd.conf'], Service['httpd'] ],
-                    }
+- 数据类型：
+    - 字符型：引号可有可无；但单引号为强引用，双引号为弱引用；
+    - 数值型：默认均识别为字符串，仅在数值上下文才以数值对待；
+    - 数组：[]中以逗号分隔元素列表；
+    - 布尔型值：true, false；
+    - hash：{}中以逗号分隔k/v数据列表； 键为字符型，值为任意puppet支持的类型；{ 'mon' => 'Monday', 'tue' => 'Tuesday', }；
+    - undef：未定义 ；
+    - 正则表达式：属于puppet的非标准数据类型，不能赋值给变量，仅能用在接受=~或!~操作符的位置；
+        - `(?<ENABLED OPTION>:<PATTERN>)`
+        - `(?-<DISABLED OPTION>:<PATTERN>)`
+        - `(?i-mx:PATTERN)`
+        - OPTIONS：
+            - i：忽略字符大小写；
+            - m：把.当换行符；
+            - x：忽略<PATTERN>中的空白字符
 
-                    file{'httpd.conf':
-                        path    => '/etc/httpd/conf/httpd.conf',
-                        source  => '/root/manifests/httpd.conf',
-                        ensure  => file,
-                    }
-
-                    service{'httpd':
-                        ensure  => running,
-                        enable  => true,
-                        restart => 'systemctl restart httpd.service',
-                        subscribe => File['httpd.conf'],
-                    }           
-                
-                
-            case语句：
-                case CONTROL_EXPRESSION {
-                    case1: { ... }
-                    case2: { ... }
-                    case3: { ... }
-                    ...
-                    default: { ... }
-                }
-                
-                 CONTROL_EXPRESSION:
-                    (1) 变量
-                    (2) 表达式 
-                    (3) 有返回值的函数
-                    
-                各case的给定方式：
-                    (1) 直接字串；
-                    (2) 变量 
-                    (3) 有返回值的函数
-                    (4) 正则表达式模式；
-                    (5) default 
-
-                    case $osfamily {
-                        "RedHat": { $webserver='httpd' }
-                        /(?i-mx:debian)/: { $webserver='apache2' }
-                        default: { $webserver='httpd' }
-                    }
-
-                    package{"$webserver":
-                        ensure  => installed,
-                        before  => [ File['httpd.conf'], Service['httpd'] ],
-                    }
-
-                    file{'httpd.conf':
-                        path    => '/etc/httpd/conf/httpd.conf',
-                        source  => '/root/manifests/httpd.conf',
-                        ensure  => file,
-                    }
-
-                    service{'httpd':
-                        ensure  => running,
-                        enable  => true,
-                        restart => 'systemctl restart httpd.service',
-                        subscribe => File['httpd.conf'],
-                    }                   
-                                        
-            selector语句：
-                CONTROL_VARIABLE ? {
-                    case1 => value1,
-                    case2 => value2,
-                    ...
-                    default => valueN,
-                }
-                
-                CONTROL_VARIABLE的给定方法：
-                    (1) 变量
-                    (2) 有返回值的函数
-                    
-                各case的给定方式：
-                    (1) 直接字串；
-                    (2) 变量 
-                    (3) 有返回值的函数
-                    (4) 正则表达式模式；
-                    (5) default 
-                    
-                    注意：不能使用列表格式；但可以是其它的selecor；
-                    
-                    $pkgname = $operatingsystem ? {
-                        /(?i-mx:(ubuntu|debian))/       => 'apache2',
-                        /(?i-mx:(redhat|fedora|centos))/        => 'httpd',
-                        default => 'httpd',
-                    }
-
-                    package{"$pkgname":
-                        ensure  => installed,
-                    }           
-
-                    示例2：
-                    $webserver = $osfamily ? {
-                        "Redhat" => 'httpd',
-                        /(?i-mx:debian)/ => 'apache2',
-                        default => 'httpd',
-                    }
-
-
-                    package{"$webserver":
-                        ensure  => installed,
-                        before  => [ File['httpd.conf'], Service['httpd'] ],
-                    }
-
-                    file{'httpd.conf':
-                        path    => '/etc/httpd/conf/httpd.conf',
-                        source  => '/root/manifests/httpd.conf',
-                        ensure  => file,
-                    }
-
-                    service{'httpd':
-                        ensure  => running,
-                        enable  => true,
-                        restart => 'systemctl restart httpd.service',
-                        subscribe => File['httpd.conf'],
-                    }                   
-                    
-    puppet的类：
-        类：puppet中命名的代码模块，常用于定义一组通用目标的资源，可在puppet全局调用；
-            类可以被继承，也可以包含子类；
-            
-        语法格式：
-            class NAME {
-                ...puppet code...
+- puppet流程控制语句：
+    - if语句：
+        - 格式
+            ```
+            if  CONDITION {
+                ...
+            } else {
+                ...
             }
-            
-            class NAME(parameter1, parameter2) {
-                ...puppet code...
+            ```
+        - CONDITION的给定方式：
+            - (1) 变量
+            - (2) 比较表达式 
+            - (3) 有返回值的函数
+        - 举例：
+            ```rb
+            if $osfamily =~ /(?i-mx:debian)/ {
+                $webserver = 'apache2'
+            } else {
+                $webserver = 'httpd'
             }
-            
-        类代码只有声明后才会执行，调用方式：
-            (1) include CLASS_NAME1, CLASS_NAME2, ...
-            (2) class{'CLASS_NAME':
-                attribute => value,
-                 }
-              
-            示例1：
-                class apache2 {
-                    $webpkg = $operatingsystem ? {
-                        /(?i-mx:(centos|redhat|fedora))/        => 'httpd',
-                        /(?i-mx:(ubuntu|debian))/       => 'apache2',
-                        default => 'httpd',
-                    }
 
-                    package{"$webpkg":
-                        ensure  => installed,
-                    }
+            package{"$webserver":
+                ensure  => installed,
+                before  => [ File['httpd.conf'], Service['httpd'] ],
+            }
 
-                    file{'/etc/httpd/conf/httpd.conf':
-                        ensure  => file,
-                        owner   => root,
-                        group   => root,
-                        source  => '/tmp/httpd.conf',
-                        require => Package["$webpkg"],
-                        notify  => Service['httpd'],
-                    }
+            file{'httpd.conf':
+                path    => '/etc/httpd/conf/httpd.conf',
+                source  => '/root/manifests/httpd.conf',
+                ensure  => file,
+            }
 
-                    service{'httpd':
-                        ensure  => running,
-                        enable  => true,
-                    }
-                }
+            service{'httpd':
+                ensure  => running,
+                enable  => true,
+                restart => 'systemctl restart httpd.service',
+                subscribe => File['httpd.conf'],
+            }
+            ```
+    - case语句：
+        - 格式：
+            ```
+            case CONTROL_EXPRESSION {
+                case1: { ... }
+                case2: { ... }
+                case3: { ... }
+                ...
+                default: { ... }
+            }
+            ```
+        - CONTROL_EXPRESSION
+            - (1) 变量
+            - (2) 表达式 
+            - (3) 有返回值的函数
+        - 各case的给定方式：
+            - (1) 直接字串；
+            - (2) 变量
+            - (3) 有返回值的函数
+            - (4) 正则表达式模式；
+            - (5) default
+        - 举例：
+            ```rb
+            case $osfamily {
+                "RedHat": { $webserver='httpd' }
+                /(?i-mx:debian)/: { $webserver='apache2' }
+                default: { $webserver='httpd' }
+            }
 
-                include apache2     
-                
+            package{"$webserver":
+                ensure  => installed,
+                before  => [ File['httpd.conf'], Service['httpd'] ],
+            }
+
+            file{'httpd.conf':
+                path    => '/etc/httpd/conf/httpd.conf',
+                source  => '/root/manifests/httpd.conf',
+                ensure  => file,
+            }
+
+            service{'httpd':
+                ensure  => running,
+                enable  => true,
+                restart => 'systemctl restart httpd.service',
+                subscribe => File['httpd.conf'],
+            }
+            ```
+    - selector语句：
+        - 作用：
+            - 与case语句类似，与case不同的是，其会返回一个值，而case是执行代码块；
+            - selector不能用于一个已经嵌套于selector的case中，也不能用于一个已经嵌套于case的case中
+        - 格式：
+            ```
+            CONTROL_VARIABLE ? {
+                case1 => value1,
+                case2 => value2,
+                ...
+                default => valueN,
+            }
+            ```
+        - CONTROL_VARIABLE的给定方法：
+            - (1) 变量
+            - (2) 有返回值的函数
+        - 各case的给定方式：
+            - (1) 直接字串；
+            - (2) 变量 
+            - (3) 有返回值的函数
+            - (4) 正则表达式模式；
+            - (5) default
+            - 注意：不能使用列表格式；但可以是其它的selecor；
+        - 举例：
+            ```rb
+            $pkgname = $operatingsystem ? {
+                /(?i-mx:(ubuntu|debian))/       => 'apache2',
+                /(?i-mx:(redhat|fedora|centos))/        => 'httpd',
+                default => 'httpd',
+            }
+
+            package{"$pkgname":
+                ensure  => installed,
+            }           
+
             示例2：
-                class dbserver($pkgname) {
-                    package{"$pkgname":
-                        ensure  => latest,
-                    }
+            $webserver = $osfamily ? {
+                "Redhat" => 'httpd',
+                /(?i-mx:debian)/ => 'apache2',
+                default => 'httpd',
+            }
 
-                    service{"$pkgname":
-                        ensure  => running,
-                        enable  => true,
-                    }
-                }
+            package{"$webserver":
+                ensure  => installed,
+                before  => [ File['httpd.conf'], Service['httpd'] ],
+            }
 
-                #include dbserver
+            file{'httpd.conf':
+                path    => '/etc/httpd/conf/httpd.conf',
+                source  => '/root/manifests/httpd.conf',
+                ensure  => file,
+            }
 
+            service{'httpd':
+                ensure  => running,
+                enable  => true,
+                restart => 'systemctl restart httpd.service',
+                subscribe => File['httpd.conf'],
+            }
+            ```
+    - 函数
 
-                if $operatingsystem == "CentOS" {
-                    $dbpkg = $operatingsystemmajrelease ? {
-                        7 => 'mariadb-server',
-                        default => 'mysqld-server',
-                    }
-                }
+### Puppet Class
 
-                class{'dbserver':
-                    pkgname => $dbpkg,
-                }
-                
-            类继承的方式：
-                class SUB_CLASS_NAME inherits PARENT_CLASS_NAME {
-                    ...puppet code...
-                }
-                
-                示例：
-                class nginx {
-                    package{'nginx':
-                        ensure  => installed,
-                    }
+- 类：puppet中命名的代码模块，常用于定义一组通用目标的资源，可在puppet全局调用；类可以被继承，也可以包含子类；
 
-                    service{'nginx':
-                        ensure  => running,
-                        enable  => true,
-                        restart => '/usr/sbin/nginx -s reload',
-                    }
-                }
+- 语法格式：
+    ```
+    class NAME {
+        ...puppet code...
+    }
+    
+    class NAME(parameter1, parameter2) {
+        ...puppet code...
+    }
+    ```
 
-                class nginx::web inherits nginx {
-                    Service['nginx'] {
-                        subscribe => File['ngx-web.conf'],
-                    }
-
-                    file{'ngx-web.conf':
-                        path    => '/etc/nginx/conf.d/ngx-web.conf',
-                        ensure  => file,
-                        source  => '/root/manifests/ngx-web.conf',
-                    }
-                }
-
-                class nginx::proxy inherits nginx {
-                    Service['nginx'] {
-                        subscribe => File['ngx-proxy.conf'],
-                    }
-
-                    file{'ngx-proxy.conf':
-                        path    => '/etc/nginx/conf.d/ngx-proxy.conf',
-                        ensure  => file,
-                        source  => '/root/manifests/ngx-proxy.conf',
-                    }
-                }
-
-                include nginx::proxy    
-                
-            在子类中为父类的资源新增属性或覆盖指定的属性的值：
-                Type['title'] {
-                    attribute1 => value,
-                    ...
-                }
-                
-            在子类中为父类的资源的某属性增加新值：
-                Type['title'] {
-                    attribute1 +> value,
-                    ...
-                }           
-                
-    puppet模板：
-        
-        erb：模板语言，embedded ruby；
-        
-        puppet兼容的erb语法：
-            https://docs.puppet.com/puppet/latest/reference/lang_template_erb.html
-            
-        file{'title':
-            ensure  => file,
-            content => template('/PATH/TO/ERB_FILE'),
+- 类代码只有声明后才会执行，调用方式：
+    - (1) include CLASS_NAME1, CLASS_NAME2, ...
+    - (2) 
+        ```rb
+        class {'CLASS_NAME':
+            attribute => value,
         }
-        
-        文本文件中内嵌变量替换机制：
-            <%= @VARIABLE_NAME %>
-            
-        示例：
-            class nginx {
-                package{'nginx':
-                    ensure  => installed,
-                }
+        ```
 
-                service{'nginx':
-                    ensure  => running,
-                    enable  => true,
-                    require => Package['nginx'],
-                }
-            }
+- 示例1：
+    ```rb
+    class apache2 {
+        $webpkg = $operatingsystem ? {
+            /(?i-mx:(centos|redhat|fedora))/        => 'httpd',
+            /(?i-mx:(ubuntu|debian))/       => 'apache2',
+            default => 'httpd',
+        }
 
-            class nginx::web inherits nginx {
-                file{'ngx-web.conf':
-                    path    => '/etc/nginx/conf.d/ngx-web.conf',
-                    ensure  => file,
-                    require => Package['nginx'],
-                    source  => '/root/manifests/nginx/ngx-web.conf',
-                }
+        package{"$webpkg":
+            ensure  => installed,
+        }
 
-                file{'nginx.conf':
-                    path    => '/etc/nginx/nginx.conf',
-                    ensure  => file,
-                    content => template('/root/manifests/nginx.conf.erb'),
-                    require => Package['nginx'],
-                }
+        file{'/etc/httpd/conf/httpd.conf':
+            ensure  => file,
+            owner   => root,
+            group   => root,
+            source  => '/tmp/httpd.conf',
+            require => Package["$webpkg"],
+            notify  => Service['httpd'],
+        }
 
-                Service['nginx'] {
-                    subscribe => [ File['ngx-web.conf'], File['nginx.conf'] ],
-                }
-            }
+        service{'httpd':
+            ensure  => running,
+            enable  => true,
+        }
+    }
 
-            include nginx::web      
-            
-    puppet模块：
+    include apache2     
+    ```
+
+- 示例2：
+    ```rb
+    class dbserver($pkgname) {
+        package {"$pkgname":
+            ensure  => latest,
+        }
+
+        service {"$pkgname":
+            ensure  => running,
+            enable  => true,
+        }
+    }
+
+    #include dbserver
+
+    if $operatingsystem == "CentOS" {
+        $dbpkg = $operatingsystemmajrelease ? {
+            7 => 'mariadb-server',
+            default => 'mysqld-server',
+        }
+    }
+
+    class {'dbserver':
+        pkgname => $dbpkg,
+    }
+    ```
+
+- 类继承的方式：
+    ```rb
+    class SUB_CLASS_NAME inherits PARENT_CLASS_NAME {
+        ...puppet code...
+    }
+    ```
+
+- 示例：
+    ```rb
+    class nginx {
+        package{'nginx':
+            ensure  => installed,
+        }
+
+        service{'nginx':
+            ensure  => running,
+            enable  => true,
+            restart => '/usr/sbin/nginx -s reload',
+        }
+    }
+
+    class nginx::web inherits nginx {
+        Service['nginx'] {
+            subscribe => File['ngx-web.conf'],
+        }
+
+        file{'ngx-web.conf':
+            path    => '/etc/nginx/conf.d/ngx-web.conf',
+            ensure  => file,
+            source  => '/root/manifests/ngx-web.conf',
+        }
+    }
+
+    class nginx::proxy inherits nginx {
+        Service['nginx'] {
+            subscribe => File['ngx-proxy.conf'],
+        }
+
+        file{'ngx-proxy.conf':
+            path    => '/etc/nginx/conf.d/ngx-proxy.conf',
+            ensure  => file,
+            source  => '/root/manifests/ngx-proxy.conf',
+        }
+    }
+
+    include nginx::proxy
+    ```
+
+- 在子类中为父类的资源新增属性或覆盖指定的属性的值：
+    ```
+    Type['title'] {
+        attribute1 => value,
+        ...
+    }
+    #### e.g..
+    Service['nginx'] {
+        enable  => false,
+    }
+    ```
+
+- 在子类中为父类的资源的某属性增加新值：
+    ```
+    Type['title'] {
+        attribute1 +> value,
+        ...
+    }
+    ```
+
+### Puppet模版
+
+- erb：模板语言，embedded ruby；
+
+- puppet兼容的erb语法
+    ```rb
+    file{'title':
+        ensure  => file,
+        content => template('/PATH/TO/ERB_FILE'),
+    }
+    ```
+
+- 文本文件中内嵌变量替换机制：`<%= @VARIABLE_NAME %>`
+
+- 示例：
+    ```rb
+    ############### manifests.pp
+    package {'nginx':
+        ensure  =>  lastest,
+    }
+
+    file {'nginx.conf':
+        path        =>  '/etc/nginx/nginx.conf',
+        content     =>  template('/root/manifests/nginx.conf.erb')
+    }
+    ###### /root/manifests/nginx.conf.erb
+    # worker_processes <%= @processorcount %>;
+    ```
+
+### Puppet模块
+
         模块就是一个按约定的、预定义的结构存放了多个文件或子目录的目录，目录里的这些文件或子目录必须遵循一定格式的命名规范； 
         puppet会在配置的路径下查找所需要的模块；
             
