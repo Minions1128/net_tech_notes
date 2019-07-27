@@ -640,42 +640,41 @@
 
 ### Puppet模块
 
-        模块就是一个按约定的、预定义的结构存放了多个文件或子目录的目录，目录里的这些文件或子目录必须遵循一定格式的命名规范； 
-        puppet会在配置的路径下查找所需要的模块；
-            
-            MODULES_NAME：
-                manifests/
-                    init.pp
-                files/
-                templates/
-                lib/
-                spec/
-                tests/
-                
-            模块名只能以小写字母开头，可以包含小写字母、数字和下划线；但不能使用”main"和"settings“；
-                
-                manifests/
-                    init.pp：必须一个类定义，类名称必须与模块名称相同；
-                files/：静态文件；
-                    puppet URL: 
-                        puppet:///modules/MODULE_NAME/FILE_NAME
-                templates/：
-                    tempate('MOD_NAME/TEMPLATE_FILE_NAME')
-                lib/：插件目录，常用于存储自定义的facts以及自定义类型；
-                spec/：类似于tests目录，存储lib/目录下插件的使用帮助和范例；
-                tests/：当前模块的使用帮助或使用范例文件；
-                
+- 模块就是一个按约定的、预定义的结构存放了多个文件或子目录的目录，目录里的这些文件或子目录必须遵循一定格式的命名规范；
+
+- puppet会在配置的路径下查找所需要的模块；
+    ```
+    MODULES_NAME：
+        manifests/
+            init.pp
+        files/
+        templates/
+        lib/
+        spec/
+        tests/
+    ```
+
+- 模块名只能以小写字母开头，可以包含小写字母、数字和下划线；但不能使用”main"和"settings“；
+    - manifests/init.pp：必须一个类定义，类名称必须与模块名称相同；
+    - files/：静态文件；
+        - puppet URL: `puppet:///modules/MODULE_NAME/FILE_NAME`
+    - templates/：tempate('MOD_NAME/TEMPLATE_FILE_NAME')
+    - lib/：插件目录，常用于存储自定义的facts以及自定义类型；
+    - spec/：类似于tests目录，存储lib/目录下插件的使用帮助和范例；
+    - tests/：当前模块的使用帮助或使用范例文件；
+
             注意：
                 1、puppet 3.8及以后的版本中，资源清单文件的文件名要与文件听类名保持一致，例如某子类名为“base_class::child_class”，其文件名应该为child_class.pp；
                 2、无需再资源清单文件中使用import语句；
                 3、manifests目录下可存在多个清单文件，每个清单文件包含一个类，其文件名同类名；
-                
-                
-        puppet config命令：
-            获取或设定puppet配置参数；
-                puppet config print [argument]
-                
-                puppet查找模块文件的路径：modulepath
+
+
+
+- puppet config命令：
+    - 获取或设定puppet配置参数；
+        - puppet config print [argument]
+            - puppet查找模块文件的路径：modulepath
+        - 
                 
             mariadb模块中的清单文件示例：
                 class mariadb($datadir='/var/lib/mysql') {
