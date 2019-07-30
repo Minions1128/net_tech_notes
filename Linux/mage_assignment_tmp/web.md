@@ -172,9 +172,9 @@
 ### httpd-2.4的常用配置
     
 - 主配置文件：/etc/httpd/conf/httpd.conf
-    - ### 1: Global Environment
-    - ### 2: 'Main' server configuration
-    - ### 3: Virtual Hosts
+    - 1: Global Environment
+    - 2: 'Main' server configuration
+    - 3: Virtual Hosts
 
 - 配置格式： directive  value
     - directive：不区分字符大小写；
