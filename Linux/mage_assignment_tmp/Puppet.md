@@ -799,8 +799,8 @@
 
 - 站点清单的定义：
     - 主机名定义：主机名(主机角色)#-机架-机房-运营商-区域.域名`www1-rack1-yz-unicom-bj.example.com`
-        ```
-        /etc/puppet/manifests/site.pp
+        ```rb
+        # vim /etc/puppet/manifests/site.pp
             node 'base' {
                 include ntp 
             }
@@ -815,8 +815,7 @@
 
             node /node[0-9]+\.example\.com/
         ```
-            
-            节点定义的继承：
+    - 节点定义的继承：
                 node NODE inherits PAR_NODE_DEF {
                     ...puppet code...
                 }
