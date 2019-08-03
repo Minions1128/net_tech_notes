@@ -756,98 +756,13 @@
     - mariadb 
     - httpd(反代请求至tomcat，ajp连接器；mpm允许用户通过参数指定)
 
+## Puppet Master/agent
 
-
-回顾：
-    puppet核心资源类型：group, user, file, package, service, exec, cron, notify
-        puppet describe [-l] [type]
-    
-    资源清单：manifests, *.pp
-        type{'title':
-            attribute => value,
-            ...
-        }
-        
-        引用：Type['title']
-        
-        元参数：
-            before/require
-            notify/subscribe
-            ->, ~>
-        
-        数据类型：字符串、数值、布尔型、数组、hash、undef
-        
-        正则表达式：(?<enable_flag>-<disable_flag>:<PATTERN>)
-            flag: i, m, x
-            
-    变量：$variable,
-        FQN:    $::scope1::scope2::variable
-                     $variable
-        
-    编程元素：
-        流程控制：
-            if, case, selector, unless
-            
-        类：
-            class class_name[($parameter1[=value1], $parameter2)] {
-                ...puppet code...
-            }
-            
-            class sub_class_name inherits class_name {
-                ... puppet code ...
-            }
-            
-                sub_class_name：
-                    base_class::sub_class_name
-            
-            子类中引用父类的资源：
-                Type['title'] {
-                    attribute => value,
-                    atrribute +> value,
-                }
-                
-            声明类：
-                include class_name
-                class{'class_name':
-                    attribute => value,
-                }
-                
-    模板：
-        erb：Embedded RuBy
-            <%= erb code %>
-            <% erb code %>
-            <%# erb code %>
-            
-        file类型的资源
-            content => template('/PATH/TO/ERB_FILE')
-            
-    模块：
-        modulepath配置参数指定的目录路径下(puppet config print modulepath)；
-            manifests/
-                init.pp (至少得存在一个与模块名同名的类)
-                sub_class_name.pp
-            files/
-                puppet:///modules/MOD_NAME/FILE_NAME
-            templates/
-                template('MOD_NAME/ERB_FILE')
-            lib/
-            tests/
-            spec/
-            
-        standalone: 
-            puppet  apply -e 'include CLASS_NAME'
-
-
-
-puppet(3)
-
-    standalone：puppet apply
-    master/agent：agent每隔30分钟到master端请求与自己相关的catalog
+- master/agent：agent每隔30分钟到master端请求与自己相关的catalog
         master: site manifest
             node 'node_name' {
                 ...puppet code...
             }
-            
         node_name
         
         程序包下载路径：
