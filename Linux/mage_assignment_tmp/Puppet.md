@@ -759,59 +759,47 @@
 ## Puppet Master/agent
 
 - master/agent：agent每隔30分钟到master端请求与自己相关的catalog
-        master: site manifest
-            node 'node_name' {
-                ...puppet code...
-            }
-        node_name
-        
-        程序包下载路径：
-            https://yum.puppetlabs.com/
-            
-        官方文档：
-            https://docs.puppet.com/puppet/3/reference/
-            
-        内建函数：
-            https://docs.puppet.com/puppet/3/reference/function.html
-            
-        配置参数列表：
-            https://docs.puppet.com/puppet/3/reference/configuration.html
-            
-    部署master：
-        安装程序包：facter, puppet, puppet-server 
-        
-        初始化master：
-            puppet master --no-daemonize --verbose 
-            
-        生成一个完整的配置参数列表：
-            puppet master --genconfig 
-            puppet agent --genconfig 
-            ...
-            
-        打印基于默认配置生效的各配置参数列表：
-            puppet config <action> [--section SECTION_NAME]
-            
-            puppet  config  print 
-            
-        基于命令行设定某参数的值：
-            puppet config set 
-            
-            
-    master端管理证书签署：
-        puppet cert <action> [--all] [<host>]   
-            action：
-                list
-                sign
-                revoke
-                clean：吊销指定的客户端的证书，并删除与其相关的所有文件；
-                
-            
-    站点清单的定义：
-        主机名定义：
-            主机名(主机角色)#-机架-机房-运营商-区域.域名
-                www1-rack1-yz-unicom-bj.magedu.com 
+    ```
+    master: site manifest
+        node 'node_name' {
+            ...puppet code...
+        }
+    node_name
+    ```
 
-            
+- 相关安装路径：
+    - 程序包下载路径：https://yum.puppetlabs.com/
+    - 官方文档：https://docs.puppet.com/puppet/3/reference/
+    - 内建函数：https://docs.puppet.com/puppet/3/reference/function.html
+    - 配置参数列表：https://docs.puppet.com/puppet/3/reference/configuration.html
+
+- 部署master：
+    - 安装程序包：facter, puppet, puppet-server
+    - 初始化master：`puppet master --no-daemonize --verbose`
+    - 生成一个完整的配置参数列表：
+        ```
+        puppet master --genconfig 
+        puppet agent --genconfig 
+        ...
+        ```
+    - 打印基于默认配置生效的各配置参数列表：
+        ```
+        puppet config <action> [--section SECTION_NAME]
+        puppet  config  print
+        ```
+    - 基于命令行设定某参数的值：`puppet config set`
+
+- master端管理证书签署：
+    - `puppet cert <action> [--all] [<host>]`
+        - action：
+            - list
+            - sign
+            - revoke
+            - clean：吊销指定的客户端的证书，并删除与其相关的所有文件；
+
+- 站点清单的定义：
+    - 主机名定义：主机名(主机角色)#-机架-机房-运营商-区域.域名`www1-rack1-yz-unicom-bj.example.com`
+        ```
         /etc/puppet/manifests/site.pp
             node 'base' {
                 include ntp 
@@ -824,8 +812,9 @@
             node /PATTERN/ {
                 ...puppet code...
             }
-            
-                node /node[0-9]+\.magedu\.com/
+
+            node /node[0-9]+\.example\.com/
+        ```
             
             节点定义的继承：
                 node NODE inherits PAR_NODE_DEF {
@@ -900,7 +889,7 @@
             path /run
             method save 
             auth any 
-            allow master.magedu.com 
+            allow master.example.com 
             
             path /
             auth any
