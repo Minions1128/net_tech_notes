@@ -39,12 +39,153 @@
         - spdy
     - http/2.0
 
+- http协议：stateless, 服务器无法持续追踪访问者来源, cookie, session
+
 - HTTP工作模式：
     - http请求报文：http request
+        ```
+        <method> <request-URL> <version>
+        <headers>
+        <entity-body>
+        ```
     - http响应报文: http response
+        ```
+        <version> <status> <reason-phrase>
+        <headers>
+        <entity-body>
+        ```
+    - version: `HTTP/<major>.<minor>`
+    - reason-phrase：状态码所标记的状态的简要描述；
+    - entity-body：请求时附加的数据或响应时附加的数据；
+    - method: 请求方法，标明客户端希望服务器对资源执行的动作
+        - GET：从服务器获取一个资源；
+        - HEAD：只从服务器获取文档的响应首部；
+        - POST：向服务器发送要处理的数据；
+        - PUT：将请求的主体部分存储在服务器上；
+        - DELETE：请求删除服务器上指定的文档；
+        - TRACE：追踪请求到达服务器中间经过的代理服务器；
+        - OPTIONS：请求服务器返回对指定资源支持使用的请求方法；
+        - 协议查看或分析的工具： tcpdump, tshark, wireshark
+    - status: 三位数字，如200，301, 302, 404, 502; 标记请求处理过程中发生的情况；
+        - 1xx：100-101, 信息提示；
+        - 2xx：200-206, 成功
+        - 3xx：300-305, 重定向
+        - 4xx：400-415, 错误类信息，客户端错误
+        - 5xx：500-505, 错误类信息，服务器端错误
+        - 常用的状态码：
+            - 200： 成功，请求的所有数据通过响应报文的entity-body部分发送；OK
+            - 301： 请求的URL指向的资源已经被删除；但在响应报文中通过首部Location指明了资源现在所处的新位置；Moved Permanently
+            - 302： 与301相似，但在响应报文中通过Location指明资源现在所处临时新位置; Found
+            - 304： 客户端发出了条件式请求，但服务器上的资源未曾发生改变，则通过响应此响应状态码通知客户端；Not Modified
+            - 401： 需要输入账号和密码认证方能访问资源；Unauthorized
+            - 403： 请求被禁止；Forbidden
+            - 404： 服务器无法找到客户端请求的资源；Not Found
+            - 500： 服务器内部错误；Internal Server Error
+            - 502： 代理服务器从后端服务器收到了一条伪响应；Bad Gateway
+    - headers：
+    每个请求或响应报文可包含任意个首部；每个首部都有首部名称，后面跟一个冒号，而后跟上一个可选空格，接着是一个值；
+               headers：
+                格式：
+                    Name: Value
+
+                    Cache-Control:public, max-age=600
+                    Connection:keep-alive
+                    Content-Type:image/png
+                    Date:Tue, 28 Apr 2015 01:43:54 GMT
+                    ETag:"5af34e-ce6-504ea605b2e40"
+                    Last-Modified:Wed, 08 Oct 2014 14:46:09 GMT
+
+
+                    Accept:image/webp,*/*;q=0.8
+                    Accept-Encoding:gzip, deflate, sdch
+                    Accept-Language:zh-CN,zh;q=0.8
+                    Cache-Control:max-age=0
+                    Connection:keep-alive
+                    Host:access.redhat.com
+                    If-Modified-Since:Wed, 08 Oct 2014 14:46:09 GMT
+                    If-None-Match:"5af34e-ce6-504ea605b2e40"
+                    Referer:https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html-single/Installation_Guide/index.html
+                    User-Agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36
+
+                首部的分类：
+                    通用首部
+                    请求首部
+                    响应首部
+                    实体首部
+                    扩展首部
+
+                    通用首部：
+                        Date: 报文的创建时间
+                        Connection：连接状态，如keep-alive, close
+                        Via：显示报文经过的中间节点
+                        Cache-Control：控制缓存
+                        Pragma：
+
+                    请求首部：
+                        Accept：通过服务器自己可接受的媒体类型；
+                        Accept-Charset：
+                        Accept-Encoding：接受编码格式，如gzip
+                        Accept-Language：接受的语言
+
+                        Client-IP: 
+                        Host: 请求的服务器名称和端口号
+                        Referer：包含当前正在请求的资源的上一级资源；
+                        User-Agent：客户端代理
+
+                        条件式请求首部：
+                            Expect：
+                            If-Modified-Since：自从指定的时间之后，请求的资源是否发生过修改；
+                            If-Unmodified-Since：
+                            If-None-Match：本地缓存中存储的文档的ETag标签是否与服务器文档的Etag不匹配；
+                            If-Match：
+
+                        安全请求首部：
+                            Authorization：向服务器发送认证信息，如账号和密码；
+                            Cookie: 客户端向服务器发送cookie
+                            Cookie2：
+
+                        代理请求首部：
+                            Proxy-Authorization: 向代理服务器认证
+
+                    响应首部：
+                        信息性：
+                            Age：响应持续时长
+                            Server：服务器程序软件名称和版本
+
+                        协商首部：某资源有多种表示方法时使用
+                            Accept-Ranges：服务器可接受的请求范围类型
+                            Vary：服务器查看的其它首部列表；
+
+                        安全响应首部：
+                            Set-Cookie：向客户端设置cookie；
+                            Set-Cookie2: 
+                            WWW-Authenticate：来自服务器的对客户端的质询认证表单
+
+                    实体首部：
+                        Allow: 列出对此实体可使用的请求方法
+                        Location：告诉客户端真正的实体位于何处
+
+                        Content-Encoding:
+                        Content-Language:
+                        Content-Length: 主体的长度
+                        Content-Location: 实体真正所处位置；
+                        Content-Type：主体的对象类型
+
+                        缓存相关：
+                            ETag：实体的扩展标签；
+                            Expires：实体的过期时间；
+                            Last-Modified：最后一次修改的时间
+    
+
+            
+
+
+
+ 
+
 
 - web资源：web resource
-    - 静态资源（无须服务端做出额外处理）： .jpg, .png, .gif, .html, txt, .js, .css, .mp3, .avi                  
+    - 静态资源（无须服务端做出额外处理）： .jpg, .png, .gif, .html, txt, .js, .css, .mp3, .avi
     - 动态资源（服务端需要通过执行程序做出处理，发送给客户端的是程序的运行结果）： .php, .jsp
     - 注意：一个页面中展示的资源可能有多个；每个资源都需要单独请求；
     - 资源的标识机制：URL，Uniform Resource Locator：用于描述服务器某特定资源的位置；
@@ -87,6 +228,19 @@
 - 应用程序服务器：
     - IIS： .Net 
     - tomcat： .jsp
+
+- URL：Unifrom Resource Locator
+    - URL方案：scheme
+    - 服务器地址：ip:port
+    - 资源路径：
+        - http://www.example.com:80/bbs/index.php,
+        - https://
+    - 基本语法：`<scheme>://<user>:<password>@<host>:<port>/<path>[;<params>][?<query>][#<frag>]`
+        - params: 参数，http://www.example.com/bbs/hello;gender=f
+        - query：http://www.example.com/bbs/item.php?username=tom&title=abc
+        - frag：https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html-single/Installation_Guide/index.html#ch-Boot-x86
+        - 相对URL
+        - 绝对URL
 
 - httpd的安装和使用：
     - ASF： apache software foundation
@@ -169,7 +323,7 @@
         - systemctl  enable|disable  httpd.service
         - systemctl  {start|stop|restart|status}  httpd.service
 
-### httpd-2.4的常用配置
+### httpd的常用配置
     
 - 主配置文件：/etc/httpd/conf/httpd.conf
     - 1: Global Environment
@@ -507,3 +661,669 @@
                 </RequireAll>
             </Location>
             ```
+
+
+---
+
+
+        14、curl命令
+
+            curl是基于URL语法在命令行方式下工作的文件传输工具，它支持FTP, FTPS, HTTP, HTTPS, GOPHER, TELNET, DICT, FILE及LDAP等协议。curl支持HTTPS认证，并且支持HTTP的POST、PUT等方法， FTP上传， kerberos认证，HTTP上传，代理服务器， cookies， 用户名/密码认证， 下载文件断点续传，上载文件断点续传, http代理服务器管道（ proxy tunneling）， 甚至它还支持IPv6， socks5代理服务器,，通过http代理服务器上传文件到FTP服务器等等，功能十分强大。
+            
+            MIME： major/minor,  image/png, image/gif
+
+            curl  [options]  [URL...]
+
+            curl的常用选项：
+
+                -A/--user-agent <string> 设置用户代理发送给服务器
+                --basic 使用HTTP基本认证
+                --tcp-nodelay 使用TCP_NODELAY选项
+                -e/--referer <URL> 来源网址
+                --cacert <file> CA证书 (SSL)
+                --compressed 要求返回是压缩的格式
+                -H/--header <line>自定义首部信息传递给服务器
+                -I/--head 只显示响应报文首部信息
+                --limit-rate <rate> 设置传输速度
+                -u/--user <user[:password]>设置服务器的用户和密码
+                -0/--http1.0 使用HTTP 1.0 
+
+            用法：curl [options] [URL...]
+
+            另一个工具：elinks
+                elinks  [OPTION]... [URL]...
+                    -dump: 不进入交互式模式，而直接将URL的内容输出至标准输出； 
+
+        15、user/group
+            
+            指定以哪个用户的身份运行httpd服务进程；
+                User apache
+                Group apache
+            
+            SUexec
+                    
+        16、使用mod_deflate模块压缩页面优化传输速度
+
+            适用场景：
+                (1) 节约带宽，额外消耗CPU；同时，可能有些较老浏览器不支持；
+                (2) 压缩适于压缩的资源，例如文件文件；
+
+            SetOutputFilter DEFLATE
+
+            # mod_deflate configuration
+        
+         
+            # Restrict compression to these MIME types
+            AddOutputFilterByType DEFLATE text/plain 
+            AddOutputFilterByType DEFLATE text/html
+            AddOutputFilterByType DEFLATE application/xhtml+xml
+            AddOutputFilterByType DEFLATE text/xml
+            AddOutputFilterByType DEFLATE application/xml
+            AddOutputFilterByType DEFLATE application/x-javascript
+            AddOutputFilterByType DEFLATE text/javascript
+            AddOutputFilterByType DEFLATE text/css
+         
+            # Level of compression (Highest 9 - Lowest 1)
+            DeflateCompressionLevel 9
+             
+            # Netscape 4.x has some problems.
+            BrowserMatch ^Mozilla/4  gzip-only-text/html
+             
+            # Netscape 4.06-4.08 have some more problems
+            BrowserMatch  ^Mozilla/4\.0[678]  no-gzip
+             
+            # MSIE masquerades as Netscape, but it is fine
+            BrowserMatch \bMSI[E]  !no-gzip !gzip-only-text/html
+
+        17、https,  http over ssl 
+
+            SSL会话的简化过程
+                (1) 客户端发送可供选择的加密方式，并向服务器请求证书；
+                (2) 服务器端发送证书以及选定的加密方式给客户端；
+                (3) 客户端取得证书并进行证书验正：
+                    如果信任给其发证书的CA：
+                        (a) 验正证书来源的合法性；用CA的公钥解密证书上数字签名；
+                        (b) 验正证书的内容的合法性：完整性验正
+                        (c) 检查证书的有效期限；
+                        (d) 检查证书是否被吊销；
+                        (e) 证书中拥有者的名字，与访问的目标主机要一致；
+                (4) 客户端生成临时会话密钥（对称密钥），并使用服务器端的公钥加密此数据发送给服务器，完成密钥交换；
+                (5) 服务用此密钥加密用户请求的资源，响应给客户端；
+
+                注意：SSL会话是基于IP地址创建；所以单IP的主机上，仅可以使用一个https虚拟主机；
+
+            回顾几个术语：PKI，CA，CRL，X.509 (v1, v2, v3)
+
+            配置httpd支持https：
+                (1) 为服务器申请数字证书；
+                    测试：通过私建CA发证书
+                        (a) 创建私有CA
+                        (b) 在服务器创建证书签署请求
+                        (c) CA签证
+                        
+                (2) 配置httpd支持使用ssl，及使用的证书；
+                    # yum -y install mod_ssl
+
+                    配置文件：/etc/httpd/conf.d/ssl.conf
+                        DocumentRoot
+                        ServerName
+                        SSLCertificateFile
+                        SSLCertificateKeyFile
+                        
+                (3) 测试基于https访问相应的主机；
+                    # openssl  s_client  [-connect host:port] [-cert filename] [-CApath directory] [-CAfile filename]
+                    
+        18、httpd自带的工具程序
+            
+            htpasswd：basic认证基于文件实现时，用到的账号密码文件生成工具；
+            apachectl：httpd自带的服务控制脚本，支持start和stop；
+            apxs：由httpd-devel包提供，扩展httpd使用第三方模块的工具；
+            rotatelogs：日志滚动工具；
+                access.log -->
+                    access.log, access.1.log  -->
+                        access.log, acccess.1.log, access.2.log
+            suexec：访问某些有特殊权限配置的资源时，临时切换至指定用户身份运行；
+            ab： apache bench
+            
+        19、httpd的压力测试工具
+            
+            ab, webbench, http_load, seige
+            
+            jmeter, loadrunner
+            
+            tcpcopy：网易，复制生产环境中的真实请求，并将之保存下来；
+            
+            ab  [OPTIONS]  URL
+                -n：总请求数；
+                -c：模拟的并行数；
+                -k：以持久连接模式 测试；
+                
+
+---
+
+回顾：http协议基础， httpd-2.2的基础配置
+
+    http协议： 请求<-->响应
+        request：
+            <method>  <URL>  <version>
+            <HEADERS>
+            
+            <entity>
+            
+        response
+            <version>  <status code>  <reason phrase>
+            <HEADERS>
+            
+            <entity>
+            
+        请求方法：GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, ...
+        
+    httpd-2.2基本配置
+        mod_deflate
+        User/Group
+        https (443/tcp)
+        
+    命令工具：curl, ab
+    
+    课外作业：理解ab命令执行结果输出信息的意义；
+    
+httpd的基本应用(3)
+
+    httpd-2.4：
+        
+        新特性：
+            (1) MPM支持运行为DSO机制；以模块形式按需加载；
+            (2) event MPM生产环境可用；
+            (3) 异步读写机制；
+            (4) 支持每模块及每目录的单独日志级别定义；
+            (5) 每请求相关的专用配置；
+            (6) 增强版的表达式分析式；
+            (7) 毫秒级持久连接时长定义；
+            (8) 基于FQDN的虚拟主机也不再需要NameVirutalHost指令；
+            (9) 新指令，AllowOverrideList；
+            (10) 支持用户自定义变量；
+            (11) 更低的内存消耗；
+            
+        新模块：
+            (1) mod_proxy_fcgi
+            (2) mod_proxy_scgi
+            (3) mod_remoteip
+            
+        安装httpd-2.4
+        
+            依赖于apr-1.4+, apr-util-1.4+, [apr-iconv]
+                apr： apache portable runtime
+                
+            CentOS 6：
+                默认：apr-1.3.9, apr-util-1.3.9
+                
+                开发环境包组：Development Tools, Server Platform Development
+                开发程序包：pcre-devel 
+                
+                编译安装步骤：
+                    (1) apr-1.4+
+                        # ./configure  --prefix=/usr/local/apr
+                        # make && make install
+                        
+                    (2) apr-util-1.4+
+                        # ./configure  --prefix=/usr/local/apr-util  --with-apr=/usr/local/apr
+                        # make && make install
+                        
+                    (3) httpd-2.4
+                        # ./configure --prefix=/usr/local/apache24 --sysconfdir=/etc/httpd24  --enable-so --enable-ssl --enable-cgi --enable-rewrite --with-zlib --with-pcre --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr-util --enable-modules=most --enable-mpms-shared=all --with-mpm=prefork
+                        # make  && make install
+                        
+                        自带的服务控制脚本：apachectl
+                        
+            CentOS 7：
+                # yum install  httpd
+                
+                配置文件：
+                    /etc/httpd/conf/httpd.conf
+                    /etc/httpd/conf.modules.d/*.conf
+                    /etc/httpd/conf.d/*.conf
+                    
+                配置应用：
+                    (1) 切换使用的MPM
+                        编辑配置文件/etc/httpd/conf.modules.d/00-mpm.conf，启用要启用的MPM相关的LoadModule指令即可。
+                        
+                    (2) 基于IP的访问控制
+                        允许所有主机访问：Require  all  granted
+                        拒绝所有主机访问：Require  all  deny
+                        
+                        控制特定的IP访问：
+                            Require  ip  IPADDR：授权指定来源的IP访问；
+                            Require  not  ip  IPADDR：拒绝
+                            
+                        控制特定的主机访问：
+                            Require  host  HOSTNAME：授权指定来源的主机访问；
+                            Require  not  host  HOSTNAME：拒绝
+                            
+                            HOSTNAME：
+                                FQDN：特定主机
+                                domin.tld：指定域名下的所有主机
+                                                        
+                        <RequireAll>
+                            Require all granted
+                            Require not ip 172.16.100.2
+                        </RequireAll>                       
+                        
+                    (3) 虚拟主机
+                        基于FQDN的虚拟主机也不再需要NameVirutalHost指令；
+                        
+                        <VirtualHost *:80>
+                            ServerName www.b.net
+                            DocumentRoot "/apps/b.net/htdocs"
+                            <Directory "/apps/b.net/htdocs">
+                                Options None
+                                AllowOverride None
+                                Require all granted
+                            </Directory>
+                        </VirtualHost>  
+                        
+                        注意：任意目录下的页面只有显式授权才能被访问；
+                        
+                    (4) ssl
+                    
+                    (5)  KeepAliveTimeout  #ms
+                        毫秒级持久连接时长定义；
+                        
+    练习题：分别使用httpd-2.2和httpd-2.4实现；
+    
+        1、建立httpd服务，要求：
+            (1) 提供两个基于名称的虚拟主机：
+                www1.stuX.com，页面文件目录为/web/vhosts/www1；错误日志为/var/log/httpd/www1/error_log，访问日志为/var/log/httpd/www1/access_log；
+                www2.stuX.com，页面文件目录为/web/vhosts/www2；错误日志为/var/log/httpd/www2/error_log，访问日志为/var/log/httpd/www2/access_log；
+            (2) 通过www1.stuX.com/server-status输出其状态信息，且要求只允许提供账号的用户访问；
+            (3) www1不允许192.168.1.0/24网络中的主机访问；
+            
+        2、为上面的第2个虚拟主机提供https服务，使得用户可以通过https安全的访问此web站点；
+            (1) 要求使用证书认证，证书中要求使用国家（CN），州（Beijing），城市（Beijing），组织为(MageEdu)；
+            (2) 设置部门为Ops, 主机名为www2.stuX.com；
+            
+    
+    LAMP：
+        a: apache (httpd)
+        m: mysql, mariadb
+        p: php, perl, python
+        
+        WEB资源类型：
+            静态资源：原始形式与响应内容一致；
+            动态资源：原始形式通常为程序文件，需要在服务器端执行之后，将执行结果返回给客户端；
+            
+            客户端技术： javascript
+            服务器端技术：php, jsp
+            
+        CGI：Common Gateway Interface
+            可以让一个客户端，从网页浏览器向执行在网络服务器上的程序传输数据；CGI描述了客户端和服务器程序之间传输的一种标准；
+            
+            程序=指令+数据
+                数据模型：
+                    层次模型
+                    网状模型
+                    关系模型：表（行+列）
+                    
+                关系模型：IngreSQL, Oracle, Sybase, Infomix, DB2, SQL Server, MySQL, PostgreSQL, MariaDB
+                
+                指令：代码文件
+                数据：数据存储系统、文件
+                
+            请求流程：
+                Client -- (httpd) --> httpd -- (cgi) --> application server (program file) -- (mysql) --> mysql 
+                
+        php: 脚本编程语言、嵌入到html中的嵌入式web程序开发语言；
+            基于zend编译成opcode（二进制格式的字节码，重复运行，可省略编译环境）
+    
+        关于PHP
+
+            一、PHP简介
+                
+            PHP是通用服务器端脚本编程语言，其主要用于web开发以实现动态web页面，它也是最早实现将脚本嵌入HTML源码文档中的服务器端脚本语言之一。同时，php还提供了一个命令行接口，因此，其也可以在大多数系统上作为一个独立的shell来使用。
+
+            Rasmus Lerdorf于1994年开始开发PHP，它是初是一组被Rasmus Lerdorf称作“Personal Home Page Tool” 的Perl脚本， 这些脚本可以用于显示作者的简历并记录用户对其网站的访问。后来，Rasmus Lerdorf使用C语言将这些Perl脚本重写为CGI程序，还为其增加了运行Web forms的能力以及与数据库交互的特性，并将其重命名为“Personal Home Page/Forms Interpreter”或“PHP/FI”。此时，PHP/FI已经可以用于开发简单的动态web程序了，这即是PHP 1.0。1995年6月，Rasmus Lerdorf把它的PHP发布于comp.infosystems.www.authoring.cgi Usenet讨论组，从此PHP开始走进人们的视野。1997年，其2.0版本发布。
+
+            1997年，两名以色列程序员Zeev Suraski和Andi Gutmans重写的PHP的分析器(parser)成为PHP发展到3.0的基础，而且从此将PHP重命名为PHP: Hypertext Preprocessor。此后，这两名程序员开始重写整个PHP核心，并于1999年发布了Zend Engine 1.0，这也意味着PHP 4.0的诞生。2004年7月，Zend Engine 2.0发布，由此也将PHP带入了PHP 5时代。PHP5包含了许多重要的新特性，如增强的面向对象编程的支持、支持PDO(PHP Data Objects)扩展机制以及一系列对PHP性能的改进。
+
+            二、PHP Zend Engine
+
+            Zend Engine是开源的、PHP脚本语言的解释器，它最早是由以色列理工学院(Technion)的学生Andi Gutmans和Zeev Suraski所开发，Zend也正是此二人名字的合称。后来两人联合创立了Zend Technologies公司。
+
+            Zend Engine 1.0于1999年随PHP 4发布，由C语言开发且经过高度优化，并能够做为PHP的后端模块使用。Zend Engine为PHP提供了内存和资源管理的功能以及其它的一些标准服务，其高性能、可靠性和可扩展性在促进PHP成为一种流行的语言方面发挥了重要作用。
+
+            Zend Engine的出现将PHP代码的处理过程分成了两个阶段：首先是分析PHP代码并将其转换为称作Zend opcode的二进制格式(类似Java的字节码)，并将其存储于内存中；第二阶段是使用Zend Engine去执行这些转换后的Opcode。
+
+            三、PHP的Opcode
+
+            Opcode是一种PHP脚本编译后的中间语言，就像Java的ByteCode,或者.NET的MSL。PHP执行PHP脚本代码一般会经过如下4个步骤(确切的来说，应该是PHP的语言引擎Zend)：
+            1、Scanning(Lexing) —— 将PHP代码转换为语言片段(Tokens)
+            2、Parsing —— 将Tokens转换成简单而有意义的表达式
+            3、Compilation —— 将表达式编译成Opocdes
+            4、Execution —— 顺次执行Opcodes，每次一条，从而实现PHP脚本的功能
+
+                扫描-->分析-->编译-->执行
+
+            四、php的加速器
+
+            基于PHP的特殊扩展机制如opcode缓存扩展也可以将opcode缓存于php的共享内存中，从而可以让同一段代码的后续重复执行时跳过编译阶段以提高性能。由此也可以看出，这些加速器并非真正提高了opcode的运行速度，而仅是通过分析opcode后并将它们重新排列以达到快速执行的目的。
+
+            常见的php加速器有：
+
+            1、APC (Alternative PHP Cache)
+            遵循PHP License的开源框架，PHP opcode缓存加速器，目前的版本不适用于PHP 5.4。项目地址，http://pecl.php.net/package/APC。
+
+            2、eAccelerator
+            源于Turck MMCache，早期的版本包含了一个PHP encoder和PHP loader，目前encoder已经不在支持。项目地址， http://eaccelerator.net/。
+
+            3、XCache
+            快速而且稳定的PHP opcode缓存，经过严格测试且被大量用于生产环境。项目地址，http://xcache.lighttpd.net/
+
+            4、Zend Optimizer和Zend Guard Loader
+            Zend Optimizer并非一个opcode加速器，它是由Zend Technologies为PHP5.2及以前的版本提供的一个免费、闭源的PHP扩展，其能够运行由Zend Guard生成的加密的PHP代码或模糊代码。 而Zend Guard Loader则是专为PHP5.3提供的类似于Zend Optimizer功能的扩展。项目地址，http://www.zend.com/en/products/guard/runtime-decoders
+
+            5、NuSphere PhpExpress
+            NuSphere的一款开源PHP加速器，它支持装载通过NuSphere PHP Encoder编码的PHP程序文件，并能够实现对常规PHP文件的执行加速。项目地址，http://www.nusphere.com/products/phpexpress.htm
+
+            五、PHP源码目录结构
+
+            PHP的源码在结构上非常清晰。其代码根目录中主要包含了一些说明文件以及设计方案，并提供了如下子目录：
+
+            1、build —— 顾名思义，这里主要放置一些跟源码编译相关的文件，比如开始构建之前的buildconf脚本及一些检查环境的脚本等。
+            2、ext —— 官方的扩展目录，包括了绝大多数PHP的函数的定义和实现，如array系列，pdo系列，spl系列等函数的实现。 个人开发的扩展在测试时也可以放到这个目录，以方便测试等。
+            3、main —— 这里存放的就是PHP最为核心的文件了，是实现PHP的基础设施，这里和Zend引擎不一样，Zend引擎主要实现语言最核心的语言运行环境。
+            4、Zend —— Zend引擎的实现目录，比如脚本的词法语法解析，opcode的执行以及扩展机制的实现等等。
+            5、pear —— PHP 扩展与应用仓库，包含PEAR的核心文件。
+            6、sapi —— 包含了各种服务器抽象层的代码，例如apache的mod_php，cgi，fastcgi以及fpm等等接口。
+            7、TSRM —— PHP的线程安全是构建在TSRM库之上的，PHP实现中常见的*G宏通常是对TSRM的封装，TSRM(Thread Safe Resource Manager)线程安全资源管理器。
+            8、tests —— PHP的测试脚本集合，包含PHP各项功能的测试文件。
+            9、win32 —— 这个目录主要包括Windows平台相关的一些实现，比如sokcet的实现在Windows下和*Nix平台就不太一样，同时也包括了Windows下编译PHP相关的脚本。
+
+        LAMP：
+            httpd：接收用户的web请求；静态资源则直接响应；动态资源为php脚本，对此类资源的请求将交由php来运行；
+            php：运行php程序；
+            MariaDB：数据管理系统； 
+            
+            http与php结合的方式：
+                CGI 
+                FastCGI 
+                modules (把php编译成为httpd的模块)
+                    MPM:
+                        prefork: libphp5.so
+                        event, worker: libphp5-zts.so
+                        
+            安装lamp：
+                CentOS 6: httpd, php, mysql-server, php-mysql
+                    # service httpd  start
+                    # service  mysqld  start
+                CentOS 7: httpd, php, php-mysql, mariadb-server
+                    # systemctl  start  httpd.service
+                    # systemctl  start  mariadb.service
+                    
+                MySQL的命令行客户端程序：mysql
+                    -u 
+                    -h
+                    -p
+                    
+                    支持SQL语句对数据管理：
+                        DDL，DML
+                            DDL： CREATE， ALTER， DROP， SHOW
+                            DML： INSERT， DELETE，SELECT， UPDATE
+                            
+                    授权能远程的连接用户：
+                        mysql> GRANT  ALL  PRIVILEGES  ON  db_name.tbl_name TO  username@host  IDENTIFIED BY 'password'; 
+                        
+                php测试代码
+                    <php?
+                        phpinfo();
+                    ?>
+                
+                php连接mysql的测试代码：
+                    <?php
+                        $conn = mysql_connect('172.16.100.67','testuser','testpass');
+                        if ($conn) 
+                            echo "OK";
+                        else
+                            echo "Failure";
+                    ?>  
+                    
+        实践作业：部署lamp，以虚拟主机安装wordpress, phpwind, discuz; 
+        
+回顾： httpd, lamp
+    
+    httpd: mod_deflate, https, 
+    amp： 
+        静态资源：Client -- http --> httpd
+        动态资源：Client -- http --> httpd --> libphp5.so ()
+        动态资源：Client -- http --> httpd --> libphp5.so () -- mysql --> MySQL server
+        
+    httpd+php:
+        modules: 把php编译成为httpd的模块
+        cgi：
+        fastcgi：
+        
+    php：zend engine
+        编译：Opcode是一种PHP脚本编译后的中间语言
+        执行：
+        
+        Scanning --> Parsing --> Compilation --> Execution
+        
+        加速器：APC，eAccelerator, Xcache
+        
+LAMP(2) 
+    
+    快速部署amp：
+        CentOS 7:
+            Modules：程序包，httpd, php, php-mysql, mariadb-server
+            FastCGI：程序包，httpd, php-fpm, php-mysql, mariadb-server
+        CentOS 6：
+            httpd, php, php-mysql, mysql-server
+            
+    php：
+        脚本语言解释器
+            配置文件：/etc/php.ini,  /etc/php.d/*.ini 
+            
+            配置文件在php解释器启动时被读取，因此，对配置文件的修改如何生效？
+                Modules：重启httpd服务；
+                FastCGI：重启php-fpm服务；
+            
+            ini：
+                [foo]：Section Header
+                directive = value
+                
+                注释符：较新的版本中，已经完全使用;进行注释；
+                #：纯粹的注释信息
+                ;：用于注释可启用的directive
+                
+                php.ini的核心配置选项文档：  http://php.net/manual/zh/ini.core.php
+                php.ini配置选项列表：http://php.net/manual/zh/ini.list.php
+                
+        <?php 
+            ...php code...
+        ?>
+        
+    mariadb(mysql)：
+        
+        数据模型：层次模型、网状模型、关系模型
+            
+            关系模型：
+                二维关系：
+                    表：row, column
+                    索引：index
+                    视图：view
+                    
+                SQL接口：Structured Query Language
+                    类似于OS的shell接口；也提供编程功能；
+                    
+                    ANSI： SQL标准，SQL-86, SQL-89, SQL-92, SQL-99, SQL-03, ...
+                        xml
+                        
+                    DDL：Data Defined Language
+                        CREATE, ALTER, DROP
+                    DML: Data Manapulating Language
+                        INSERT, DELETE, UPDATE, SELECT
+                        
+                    编程接口：选择、循环；
+                    
+                    SQL代码：
+                        存储过程：procedure
+                        存储函数：function
+                        触发器：trigger
+                        事件调度器：event scheduler
+                        
+                        例程：routine
+                        
+                用户和权限：
+                    用户：用户名和密码；
+                    权限：管理类、数据库、表、字段
+                    
+            DBMS：DataBase Management System
+                RDBMS：Relational
+                    
+                MySQL：单进程，多线程 
+                    用户连接：通过线程来实现；
+                        线程池：
+        
+        事务(Transaction)：组织多个操作为一个整体，要么全部都执行，要么全部都不执行；
+            “回滚”， rollback
+            
+            Bob:8000, 8000-2000
+            Alice:5000, 5000+2000
+            
+            一个存储系统是否支持事务，测试标准：
+                ACID：
+                    A：原子性；
+                    C：一致性；
+                    I：隔离性；
+                    D：持久性；
+            
+            SQL接口：分析器和优化器
+            存储引擎：
+            
+        
+        补充材料：RDMBS设计范式基础概念
+
+            设计关系数据库时，遵从不同的规范要求，设计出合理的关系型数据库，这些不同的规范要求被称为不同的范式，各种范式呈递次规范，越高的范式数据库冗余越小。
+
+            目前关系数据库有六种范式：第一范式（1NF）、第二范式（2NF）、第三范式（3NF）、巴德斯科范式（BCNF）、第四范式(4NF）和第五范式（5NF，又称完美范式）。满足最低要求的范式是第一范式（1NF）。在第一范式的基础上进一步满足更多规范要求的称为第二范式（2NF），其余范式以次类推。一般说来，数据库只需满足第三范式(3NF）就行了。
+
+            (1) 第一范式（1NF）
+
+            所谓第一范式（1NF）是指在关系模型中，对域添加的一个规范要求，所有的域都应该是原子性的，即数据库表的每一列都是不可分割的原子数据项，而不能是集合，数组，记录等非原子数据项。即实体中的某个属性有多个值时，必须拆分为不同的属性。在符合第一范式（1NF）表中的每个域值只能是实体的一个属性或一个属性的一部分。简而言之，第一范式就是无重复的域。
+
+            说明：在任何一个关系数据库中，第一范式（1NF）是对关系模式的设计基本要求，一般设计中都必须满足第一范式（1NF）。不过有些关系模型中突破了1NF的限制，这种称为非1NF的关系模型。换句话说，是否必须满足1NF的最低要求，主要依赖于所使用的关系模型。
+
+            (2) 第二范式(2NF)
+
+            第二范式（2NF）是在第一范式（1NF）的基础上建立起来的，即满足第二范式（2NF）必须先满足第一范式（1NF）。第二范式（2NF）要求数据库表中的每个实例或记录必须可以被唯一地区分。选取一个能区分每个实体的属性或属性组，作为实体的唯一标识。
+
+            第二范式（2NF）要求实体的属性完全依赖于主关键字。所谓完全依赖是指不能存在仅依赖主关键字一部分的属性，如果存在，那么这个属性和主关键字的这一部分应该分离出来形成一个新的实体，新实体与原实体之间是一对多的关系。为实现区分通常需要为表加上一个列，以存储各个实例的唯一标识。简而言之，第二范式就是在第一范式的基础上属性完全依赖于主键。
+
+            (3) 第三范式（3NF）
+
+            第三范式（3NF）是第二范式（2NF）的一个子集，即满足第三范式（3NF）必须满足第二范式（2NF）。简而言之，第三范式（3NF）要求一个关系中不能包含已在其它关系已包含的非主关键字信息。简而言之，第三范式就是属性不依赖于其它非主属性，也就是在满足2NF的基础上，任何非主属性不得传递依赖于主属性。
+        
+        数据库：数据集合
+            表：为了满足范式设计要求，将一个数据集分拆为多个；
+            
+            约束：constraint，向数据表插入的数据要遵守的限制规则；
+                主键：一个或多个字段的组合，填入主键中的数据，必须不同于已存在的数据；不能为空；
+                外键：一个表中某字段中能插入的数据，取决于另外一张表的主键中的数据；
+                惟一键：一个或多个字段的组合，填入惟一键中的数据，必须不同于已存在的数据；可以为空；
+                检查性约束：取决于表达式的要求；
+                
+            索引：将表中的某一个或某些字段抽取出来，单独将其组织一个独特的数据结构中；
+                常用的索引类型：
+                    树型：
+                    hash：
+                    
+                注意：有助于读请求，但不利于写请求；
+                
+            关系运算：
+                选择：挑选出符合条件的行；
+                投影：挑选出符合需要的列；
+                连接：将多张表关联起来；
+                    
+            数据抽象：
+                物理层：决定数据的存储格式，即如何将数据组织成为物理文件；
+                逻辑层：描述DB存储什么数据，以及数据间存在什么样的关系；
+                视图层：描述DB中的部分数据；
+                
+            关系模型的分类：
+                关系模型
+                实体-关系模型
+                基于对象的关系模型
+                半结构化关系模型
+                
+        MariaDB(mysql)：
+            
+            Unireg
+            
+            MySQL AB  --> MySQL
+                Solaris：二进制版本；
+                
+                www.mysql.com
+                
+            MariaDB: www.mariadb.org
+            
+            MariaDB的特性：
+                插件式存储引擎：存储管理器有多种实现版本，彼此间的功能和特性可能略有区别；用户可根据需要灵活选择； 
+                
+                存储引擎也称为“表类型”；
+                
+                (1) 更多的存储引擎；
+                    MyISAM：不支持事务；
+                    MyISAM --> Aria
+                    InnoDB --> XtraDB 
+                        ：支持事务；
+                (2) 诸多扩展和新特性；
+                (3) 提供了较多的测试组件；
+                (4) truly open source；
+                
+            MySQL的发行机制：
+                Enterprise：提供了更丰富的功能；
+                Community：
+                
+            安装和使用MariaDB：
+                
+                安装方式：
+                    (1) rpm包；
+                        (a) 由OS的发行商提供；
+                        (b) 程序官方提供；
+                    (2) 源码包；
+                    (3) 通用二进制格式的程序包；
+                    
+                通用二进制格式安装MariaDB：
+                    (1) 准备数据目录；
+                        以/mydata/data目录为例；
+                    (2) 安装配置mariadb                     
+                        # useradd  -r  mysql
+                        # tar xf  mariadb-VERSION.tar.xz  -C  /usr/local
+                        # cd /usr/local
+                        # ln  -sv  mariadb-VERSION  mysql
+                        # cd  /usr/local/mysql
+                        # chown  -R  root:mysql  ./*
+                        # scripts/mysql_install_db  --user=mysql  -datadir=/mydata/data
+                        # cp  support-files/mysql.server   /etc/init.d/mysqld
+                        # chkconfig   --add  mysqld
+                    (3) 提供配置文件
+                        ini格式的配置文件；各程序均可通过此配置文件获取配置信息；
+                            [program_name]
+                                            
+                        OS Vendor提供mariadb rpm包安装的服务的配置文件查找次序：
+                            /etc/mysql/my.cnf  --> /etc/my.cnf  --> --default-extra-file=/PATH/TO/CONF_FILE  --> ~/.my.cnf
+                            
+                        通用二进制格式安装的服务程序其配置文件查找次序：
+                            /etc/my.cnf  --> /etc/mysql/my.cnf  --> --default-extra-file=/PATH/TO/CONF_FILE  --> ~/.my.cnf
+                            
+                        获取其读取次序的方法：
+                            mysqld  --verbose  --help
+                            
+                        # cp  support-files/my-large.cnf  /etc/my.cnf
+                        
+                        添加三个选项：
+                            datadir = /mydata/data
+                            innodb_file_per_table = ON
+                            skip_name_resolve = ON
+                            
+                    (4) 启动服务
+                        # service  mysqld  start
+                        
