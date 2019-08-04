@@ -416,7 +416,7 @@
             - IP不同，但端口均为默认端口；
             - FQDN不同；
                 - 请求报文中首部
-                - Host: www.magedu.com 
+                - Host: www.example.com 
         - 有三种实现方案：
             - 基于ip： 为每个虚拟主机准备至少一个ip地址；
             - 基于port： 为每个虚拟主机使用至少一个独立的port；
