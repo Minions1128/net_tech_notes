@@ -161,7 +161,7 @@
 
 - Limits相关的配置：
     - maxclients
-    - maxmemory <bytes>
+    - `maxmemory <bytes>`
     - maxmemory-policy noeviction
         - 淘汰策略：volatile-lru, allkeys-lru, volatile-random, allkeys-random, volatile-ttl, noeviction
     - maxmemory-samples 5
@@ -177,13 +177,13 @@
     - client-output-buffer-limit normal 0 0 0
     - client-output-buffer-limit slave 256mb 64mb 60
     - client-output-buffer-limit pubsub 32mb 8mb 60
-        - <hard-limit>
-        - <soft-limit>
-        - <soft-limit seconds>
+        - `<hard-limit>`
+        - `<soft-limit>`
+        - `<soft-limit seconds>`
 
 ### redis-cli命令
 
-- Usage: redis-cli [OPTIONS] [cmd [arg [arg ...]]]
+- Usage: `redis-cli [OPTIONS] [cmd [arg [arg ...]]]`
     - -h HOST
     - -p PORT
     - -a PASSWORD
@@ -191,8 +191,8 @@
 
 - 与Connection相关命令：
     - help @connection
-    - AUTH <password> 
-    - ECHO <message>
+    - `AUTH <password>`
+    - `ECHO <message>`
     - PING 
     - QUIT
     - SELECT dbid
@@ -203,7 +203,7 @@
 
 - Server相关的命令：
     - CLIENT GETNAME
-    - CLIENT KILL [ip:port] [ID client-id] [TYPE normal|master|slave|pubsub] [ADDR ip:port] [SKIPME yes/no]
+    - `CLIENT KILL [ip:port] [ID client-id] [TYPE normal|master|slave|pubsub] [ADDR ip:port] [SKIPME yes/no]`
     - CLIENT LIST
     - CLIENT PAUSE
         - CLIENT PAUSE timeout
@@ -216,7 +216,7 @@
         - CONFIG REWRITE，利用内存中的设置重写到配置文件中
         - CONFIG SET
         - INFO：服务器状态信息查看；分为多个secion；
-            - INFO [section]
+            - `INFO [section]`
              
 - Redis的持久化:
     - RDB：snapshotting
@@ -290,15 +290,15 @@
     - 选举：流言协议、投票协议
     - 配置项：
         - port 26379
-        - sentinel monitor <master-name> <ip> <redis-port> <quorum>
-        - sentinel auth-pass <master-name> <password>
-            - <quorum>表示sentinel集群的quorum机制，即至少有quorum个sentinel节点同时判定主节点故障时，才认为其真的故障；
+        - `sentinel monitor <master-name> <ip> <redis-port> <quorum>`
+        - `sentinel auth-pass <master-name> <password>`
+            - `<quorum>`表示sentinel集群的quorum机制，即至少有quorum个sentinel节点同时判定主节点故障时，才认为其真的故障；
                 - s_down: subjectively down
                 - o_down: objectively down
-        - sentinel down-after-milliseconds <master-name> <milliseconds>: 监控到指定的集群的主节点异常状态持续多久方才将标记为“故障”；
-        - sentinel parallel-syncs <master-name> <numslaves>: 指在failover过程中，能够被sentinel并行配置的从节点的数量；
-        - sentinel failover-timeout <master-name> <milliseconds>: sentinel必须在此指定的时长内完成故障转移操作，否则，将视为故障转移操作失败；
-        - sentinel notification-script <master-name> <script-path>: 通知脚本，此脚本被自动传递多个参数；
+        - `sentinel down-after-milliseconds <master-name> <milliseconds>`: 监控到指定的集群的主节点异常状态持续多久方才将标记为“故障”；
+        - `sentinel parallel-syncs <master-name> <numslaves>`: 指在failover过程中，能够被sentinel并行配置的从节点的数量；
+        - `sentinel failover-timeout <master-name> <milliseconds>`: sentinel必须在此指定的时长内完成故障转移操作，否则，将视为故障转移操作失败；
+        - `sentinel notification-script <master-name> <script-path>`: 通知脚本，此脚本被自动传递多个参数；
     - redis-cli -h SENTINEL_HOST -p SENTINEL_PORT
         - redis-cli> 
         - SENTINEL masters
