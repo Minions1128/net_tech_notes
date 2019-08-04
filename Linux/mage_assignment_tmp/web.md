@@ -345,7 +345,7 @@
         - 访问日志：
             - LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
             - CustomLog  logs/access_log  combined
-            - LogFormat format strings:http://httpd.apache.org/docs/2.2/mod/mod_log_config.html#formats
+            - LogFormat format strings: http://httpd.apache.org/docs/2.2/mod/mod_log_config.html#formats
                 - %h：客户端IP地址；
                 - %l：Remote User, 通常为一个减号（“-”）；
                 - %u：Remote user (from auth; may be bogus if return status (%s) is 401)；非为登录访问时，其为一个减号；
@@ -356,170 +356,154 @@
                 - %{Referer}i：请求报文中首部“referer”的值；即从哪个页面中的超链接跳转至当前页面的；
                 - %{User-Agent}i：请求报文中首部“User-Agent”的值；即发出请求的应用程序；
     - 11、基于用户的访问控制
-                
-                认证质询：
-                    WWW-Authenticate：响应码为401，拒绝客户端请求，并说明要求客户端提供账号和密码；
-                
-                认证：
-                    Authorization：客户端用户填入账号和密码后再次发送请求报文；认证通过时，则服务器发送响应的资源；
-                    
-                    认证方式有两种：
-                        basic：明文 
-                        digest：消息摘要认证
-                
-                安全域：需要用户认证后方能访问的路径；应该通过名称对其进行标识，以便于告知用户认证的原因；
-                
-                用户的账号和密码存放于何处？
-                    虚拟账号：仅用于访问某服务时用到的认证标识
-                    
-                    存储：
-                        文本文件；
-                        SQL数据库；
-                        ldap目录存储；
-                
-                basic认证配置示例：
-                    (1) 定义安全域
-                        <Directory "">
-                            Options None
-                            AllowOverride None
-                            AuthType Basic
-                            AuthName "String“
-                            AuthUserFile  "/PATH/TO/HTTPD_USER_PASSWD_FILE"
-                            Require  user  username1  username2 ...
-                        </Directory>
-                        
-                        允许账号文件中的所有用户登录访问：
-                            Require  valid-user
-                        
-                    (2) 提供账号和密码存储（文本文件）
-                        使用专用命令完成此类文件的创建及用户管理
-                            htpasswd  [options]   /PATH/TO/HTTPD_PASSWD_FILE  username 
-                                -c：自动创建此处指定的文件，因此，仅应该在此文件不存在时使用；
-                                -m：md5格式加密
-                                -s: sha格式加密
-                                -D：删除指定用户
-                                -b：批模式添加用户 
-                                    htpasswd -b  [options]   /PATH/TO/HTTPD_PASSWD_FILE  username password
-                                
-                    另外：基于组账号进行认证；
-                        (1) 定义安全域
-                            <Directory "">
-                                Options None
-                                AllowOverride None
-                                AuthType Basic
-                                AuthName "String“
-                                AuthUserFile  "/PATH/TO/HTTPD_USER_PASSWD_FILE"
-                                AuthGroupFile "/PATH/TO/HTTPD_GROUP_FILE"
-                                Require  group  grpname1  grpname2 ...
-                            </Directory>
-                            
-                        (2) 创建用户账号和组账号文件；
-                            
-                            组文件：每一行定义一个组
-                                GRP_NAME: username1  username2  ...
-                                            
+        - 认证质询：
+            - WWW-Authenticate：响应码为401，拒绝客户端请求，并说明要求客户端提供账号和密码；
+        - 认证：
+            - Authorization：客户端用户填入账号和密码后再次发送请求报文；认证通过时，则服务器发送响应的资源；
+            - 认证方式有两种：
+                - basic：明文
+                - digest：消息摘要认证
+        - 安全域：需要用户认证后方能访问的路径；应该通过名称对其进行标识，以便于告知用户认证的原因；
+        - 用户的账号和密码存放于何处？
+            - 虚拟账号：仅用于访问某服务时用到的认证标识
+            - 存储：
+                - 文本文件；
+                - SQL数据库；
+                - ldap目录存储；
+        - basic认证配置示例：
+            - (1) 定义安全域
+                ```
+                <Directory "">
+                    Options None
+                    AllowOverride None
+                    AuthType Basic
+                    AuthName "String“
+                    AuthUserFile  "/PATH/TO/HTTPD_USER_PASSWD_FILE"
+                    Require  user  username1  username2 ...
+                    # Require  valid-user 允许账号文件中的所有用户登录访问
+                </Directory>
+                ```
+            - (2) 提供账号和密码存储（文本文件），使用专用命令完成此类文件的创建及用户管理
+                - `htpasswd  [options]   /PATH/TO/HTTPD_PASSWD_FILE  username `
+                    - -c：自动创建此处指定的文件，因此，仅应该在此文件不存在时使用；
+                    - -m：md5格式加密
+                    - -s: sha格式加密
+                    - -D：删除指定用户
+                    - -b：批模式添加用户
+                        ```
+                        htpasswd -cb /PATH/TO/HTTPD_PASSWD_FILE  username1 password1
+                        htpasswd -cb /PATH/TO/HTTPD_PASSWD_FILE  username2 password2
+                        ```
+        - 另外：基于组账号进行认证
+            - (1) 定义安全域
+                ```
+                <Directory "">
+                    Options None
+                    AllowOverride None
+                    AuthType Basic
+                    AuthName "String“
+                    AuthUserFile  "/PATH/TO/HTTPD_USER_PASSWD_FILE"
+                    AuthGroupFile "/PATH/TO/HTTPD_GROUP_FILE"
+                    Require  group  grpname1  grpname2 ...
+                </Directory>
+                ```
+            - (2) 创建用户账号和组账号文件
+                - 组文件：每一行定义一个组
+                - GRP_NAME: username1  username2  ...
     - 12、虚拟主机
-            
-                站点标识： socket
-                    IP相同，但端口不同；
-                    IP不同，但端口均为默认端口；
-                    FQDN不同；
-                        请求报文中首部
-                        Host: www.magedu.com 
-                        
-                有三种实现方案：
-                    基于ip：
-                        为每个虚拟主机准备至少一个ip地址；
-                    基于port：
-                        为每个虚拟主机使用至少一个独立的port；
-                    基于FQDN:
-                        为每个虚拟主机使用至少一个FQDN；
-            
-                注意(专用于httpd-2.2)：一般虚拟机不要与中心主机混用；因此，要使用虚拟主机，得先禁用'main'主机；
-                    禁用方法：注释中心主机的DocumentRoot指令即可；
-                    
-                虚拟主机的配置方法：
-                    <VirtualHost  IP:PORT>
-                        ServerName FQDN
-                        DocumentRoot  ""
-                    </VirtualHost>
-                    
-                    其它可用指令：
-                        ServerAlias：虚拟主机的别名；可多次使用；
-                        ErrorLog：
-                        CustomLog：
-                        <Directory "">
-                        ...
-                        </Directory>
-                        Alias
-                        ...
-                        
-                    基于IP的虚拟主机示例：
-                    <VirtualHost 172.16.100.6:80>
-                        ServerName www.a.com
-                        DocumentRoot "/www/a.com/htdocs"
-                    </VirtualHost>
+        - 站点标识： socket
+            - IP相同，但端口不同；
+            - IP不同，但端口均为默认端口；
+            - FQDN不同；
+                - 请求报文中首部
+                - Host: www.magedu.com 
+        - 有三种实现方案：
+            - 基于ip： 为每个虚拟主机准备至少一个ip地址；
+            - 基于port： 为每个虚拟主机使用至少一个独立的port；
+            - 基于FQDN: 为每个虚拟主机使用至少一个FQDN；
+        - 注意(专用于httpd-2.2)：一般虚拟机不要与中心主机混用；因此，要使用虚拟主机，得先禁用'main'主机；
+            - 禁用方法：注释中心主机的DocumentRoot指令即可；
+        - 虚拟主机的配置方法：
+            ```
+            <VirtualHost  IP:PORT>
+                ServerName FQDN
+                DocumentRoot  ""
+            </VirtualHost>
+            ```
+        - 其它可用指令：
+            - ServerAlias：虚拟主机的别名；可多次使用；
+            - ErrorLog：
+            - CustomLog：
+            - `<Directory ""> ... </Directory>`
+            - Alias
+        - 基于IP的虚拟主机示例：
+            ```
+            <VirtualHost 172.16.100.6:80>
+                ServerName www.a.com
+                DocumentRoot "/www/a.com/htdocs"
+            </VirtualHost>
 
-                    <VirtualHost 172.16.100.7:80>
-                        ServerName www.b.net
-                        DocumentRoot "/www/b.net/htdocs"
-                    </VirtualHost>
+            <VirtualHost 172.16.100.7:80>
+                ServerName www.b.net
+                DocumentRoot "/www/b.net/htdocs"
+            </VirtualHost>
 
-                    <VirtualHost 172.16.100.8:80>
-                        ServerName www.c.org
-                        DocumentRoot "/www/c.org/htdocs"
-                    </VirtualHost>
-                    
-                    基于端口的虚拟主机：
-                    <VirtualHost 172.16.100.6:80>
-                        ServerName www.a.com
-                        DocumentRoot "/www/a.com/htdocs"
-                    </VirtualHost>
+            <VirtualHost 172.16.100.8:80>
+                ServerName www.c.org
+                DocumentRoot "/www/c.org/htdocs"
+            </VirtualHost>
+            ```
+        - 基于端口的虚拟主机：
+            ```
+            <VirtualHost 172.16.100.6:80>
+                ServerName www.a.com
+                DocumentRoot "/www/a.com/htdocs"
+            </VirtualHost>
 
-                    <VirtualHost 172.16.100.6:808>
-                        ServerName www.b.net
-                        DocumentRoot "/www/b.net/htdocs"
-                    </VirtualHost>
+            <VirtualHost 172.16.100.6:808>
+                ServerName www.b.net
+                DocumentRoot "/www/b.net/htdocs"
+            </VirtualHost>
 
-                    <VirtualHost 172.16.100.6:8080>
-                        ServerName www.c.org
-                        DocumentRoot "/www/c.org/htdocs"
-                    </VirtualHost>
-                    
-                    基于FQDN的虚拟主机：
+            <VirtualHost 172.16.100.6:8080>
+                ServerName www.c.org
+                DocumentRoot "/www/c.org/htdocs"
+            </VirtualHost>
+            ```
+        - 基于FQDN的虚拟主机：
+            ```
+            <VirtualHost 172.16.100.6:80>
+                ServerName www.a.com
+                DocumentRoot "/www/a.com/htdocs"
+            </VirtualHost>
 
-                    <VirtualHost 172.16.100.6:80>
-                        ServerName www.a.com
-                        DocumentRoot "/www/a.com/htdocs"
-                    </VirtualHost>
+            <VirtualHost 172.16.100.6:80>
+                ServerName www.b.net
+                DocumentRoot "/www/b.net/htdocs"
+            </VirtualHost>
 
-                    <VirtualHost 172.16.100.6:80>
-                        ServerName www.b.net
-                        DocumentRoot "/www/b.net/htdocs"
-                    </VirtualHost>
-
-                    <VirtualHost 172.16.100.6:80>
-                        ServerName www.c.org
-                        DocumentRoot "/www/c.org/htdocs"
-                    </VirtualHost>  
-                    
-                    注意：如果是httpd-2.2，则使用基于FQDN的虚拟主机时，需要事先使用如下指令：
-                        NameVirtualHost IP:PORT
-
+            <VirtualHost 172.16.100.6:80>
+                ServerName www.c.org
+                DocumentRoot "/www/c.org/htdocs"
+            </VirtualHost>
+            ```
+        - 注意：如果是httpd-2.2，则使用基于FQDN的虚拟主机时，需要事先使用如下指令： NameVirtualHost IP:PORT
     - 13、status页面
-                LoadModule  status_module  modules/mod_status.so
-                
-                httpd-2.2
-                    <Location /server-status>
-                        SetHandler server-status
-                        Order allow,deny
-                        Allow from 172.16
-                    </Location>
-                    
-                httpd-2.4
-                    <Location /server-status>
-                        SetHandler server-status
-                        <RequireAll>
-                            Require ip 172.16
-                        </RequireAll>
-                    </Location>             
+        - LoadModule  status_module  modules/mod_status.so
+        - httpd-2.2
+            ```
+            <Location /server-status>
+                SetHandler server-status
+                Order allow,deny
+                Allow from 172.16
+            </Location>
+            ```
+        - httpd-2.4
+            ```
+            <Location /server-status>
+                SetHandler server-status
+                <RequireAll>
+                    Require ip 172.16
+                </RequireAll>
+            </Location>
+            ```
