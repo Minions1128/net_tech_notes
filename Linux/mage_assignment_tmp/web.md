@@ -262,142 +262,100 @@
                     /images/logo.jpg    -->     /var/www/html/images/logo.jpg
                     ```
     - 6、站点访问控制常见机制
-            
-                可基于两种机制指明对哪些资源进行何种访问控制
+        - 可基于两种机制指明对哪些资源进行何种访问控制
+            - 文件系统路径：
+                ```
+                <Directory  "">
+                ...
+                </Directory>
+                <File  "">
+                ...
+                </File>
+                <FileMatch  "PATTERN">
+                ...
+                </FileMatch>
+                ```
+            - URL路径：
+                ```
+                <Location  "">
+                ...
+                </Location>
                 
-                    文件系统路径：
-                        <Directory  "">
+                <LocationMatch "PATTERN">
+                ...
+                </LocationMatch>
+                ```
+        - `<Directory>`中“基于源地址”实现访问控制：
+            - httpd-2.2：order和allow、deny
+                - order：定义生效次序；写在后面的表示默认法则；
+                - Allow from, Deny from
+                    - 来源地址：
+                        - IP
+                        - NetAddr:
+                            - 172.16
+                            - 172.16.0.0
+                            - 172.16.0.0/16
+                            - 172.16.0.0/255.255.0.0
+            - httpd-2.4：
+                - 基于IP控制：
+                    - Require ip  IP地址或网络地址
+                    - Require not ip IP地址或网络地址
+                - 基于主机名控制：
+                    - Require host 主机名或域名
+                    - Require not host 主机名或域名
+                - 要放置于<RequireAll>配置块中或<RequireAny>配置块中；
+            - 控制页面资源允许、拒绝所有来源的主机可访问：
+                - httpd-2.2
+                    ```
+                    <Directory "">
                         ...
-                        </Directory>
-                        
-                        <File  "">
+                        Order allow,deny
+                        Allow from all          # 允许
+                        Allow from 172.30.50    # 允许172.30.50端访问
+                        Deny from all           # 拒绝
+                    </Directory>
+                    ```
+                - httpd-2.4
+                    ```
+                    <Directory "">
                         ...
-                        </File>
-                        
-                        <FileMatch  "PATTERN">
-                        ...
-                        </FileMatch>
-                    URL路径：
-                        <Location  "">
-                        ...
-                        </Location>
-                        
-                        <LocationMatch "PATTERN">
-                        ...
-                        </LocationMatch>
-                        
-                <Directory>中“基于源地址”实现访问控制：
-
-                    
-                    httpd-2.2：
-                                
-                         order和allow、deny
-                            order：定义生效次序；写在后面的表示默认法则；
-                            
-                            Allow from, Deny from
-                                来源地址：
-                                    IP
-                                    NetAddr:
-                                        172.16
-                                        172.16.0.0
-                                        172.16.0.0/16
-                                        172.16.0.0/255.255.0.0
-                    
-                    httpd-2.4：
-                        基于IP控制：
-                            Require ip  IP地址或网络地址
-                            Require not ip IP地址或网络地址
-                        基于主机名控制：
-                            Require host 主机名或域名
-                            Require not host 主机名或域名
-                            
-                        要放置于<RequireAll>配置块中或<RequireAny>配置块中；
-                    
-                    控制页面资源允许所有来源的主机可访问：
-                        httpd-2.2
-                            <Directory "">
-                                ...
-                                Order allow,deny
-                                Allow from all 
-                            </Directory>
-                            
-                        httpd-2.4
-                            <Directory "">
-                                ...
-                                Require all granted
-                            </Directory>    
-                            
-                    控制页面资源拒绝所有来源的主机可访问：
-                        httpd-2.2
-                            <Directory "">
-                                ...
-                                Order allow,deny
-                                Deny from all 
-                            </Directory>
-                            
-                        httpd-2.4
-                            <Directory "">
-                                ...
-                                Require all denied
-                            </Directory>    
-                            
-                    Options：Configures what features are available in a particular directory
-                        后跟1个或多个以空白字符分隔的“选项”列表；
-                            Indexes：指明的URL路径下不存在与定义的主页面资源相符的资源文件时，返回索引列表给用户；
-                            FollowSymLinks：允许跟踪符号链接文件所指向的源文件；
-                            None：
-                            All：All options except for MultiViews.
-                                                        
-                            
-            7、定义站点主页面：
-                DirectoryIndex  index.html  index.html.var
-                            
-            8、定义路径别名
-                格式：
-                    Alias  /URL/  "/PATH/TO/SOMEDIR/"
-                
-                DocumentRoot "/www/htdocs"
-                    http://www.magedu.com/download/bash-4.4.2-3.el6.x86_64.rpm 
-                        /www/htdocs/download/bash-4.4.2-3.el6.x86_64.rpm 
-                        
-                Alias  /download/  "/rpms/pub/"
-                    http://www.magedu.com/download/bash-4.4.2-3.el6.x86_64.rpm 
-                        /rpms/pub/bash-4.4.2-3.el6.x86_64.rpm
-                        
-                    http://www.magedu.com/images/logo.png
-                        /www/htdocs/images/logo.png
-                    
-            9、设定默认字符集
-                AddDefaultCharset  UTF-8
-                
-                中文字符集：GBK, GB2312, GB18030
-                
-            10、日志设定
-                日志类型：访问日志 和 错误日志
-                
-                错误日志：
-                    ErrorLog  logs/error_log
-                    LogLevel  warn
-                        Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
-                        
-                访问日志：
-                    LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
-                    CustomLog  logs/access_log  combined
-                    
-                    LogFormat format strings:
-                        http://httpd.apache.org/docs/2.2/mod/mod_log_config.html#formats
-                    
-                        %h：客户端IP地址；
-                        %l：Remote User, 通常为一个减号（“-”）；
-                        %u：Remote user (from auth; may be bogus if return status (%s) is 401)；非为登录访问时，其为一个减号；
-                        %t：服务器收到请求时的时间；
-                        %r：First line of request，即表示请求报文的首行；记录了此次请求的“方法”，“URL”以及协议版本；
-                        %>s：响应状态码；
-                        %b：响应报文的大小，单位是字节；不包括响应报文的http首部；
-                        %{Referer}i：请求报文中首部“referer”的值；即从哪个页面中的超链接跳转至当前页面的；
-                        %{User-Agent}i：请求报文中首部“User-Agent”的值；即发出请求的应用程序；
-                                                                            
-            11、基于用户的访问控制
+                        Require all granted     # 允许
+                        Require all denied      # 拒绝
+                    </Directory>
+                    ```
+        - Options：Configures what features are available in a particular directory，后跟1个或多个以空白字符分隔的“选项”列表；
+            - Indexes：指明的URL路径下不存在与定义的主页面资源相符的资源文件时，返回索引列表给用户；
+            - FollowSymLinks：允许跟踪符号链接文件所指向的源文件；
+            - None：
+            - All：All options except for MultiViews.
+    - 7、定义站点主页面：
+        - DirectoryIndex  index.html  index.html.var
+    - 8、定义路径别名
+        - 格式：`Alias  /URL/  "/PATH/TO/SOMEDIR/"` 
+        - Alias  /download/  "/rpms/pub/"
+    - 9、设定默认字符集
+        - AddDefaultCharset  UTF-8
+        - 中文字符集：GBK, GB2312, GB18030
+    - 10、日志设定
+        - 日志类型：访问日志 和 错误日志
+        - 错误日志：
+            - ErrorLog  logs/error_log
+            - LogLevel  warn
+            - Possible values include: debug, info, notification, warning, error, crital, alert, emergency.
+        - 访问日志：
+            - LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+            - CustomLog  logs/access_log  combined
+            - LogFormat format strings:http://httpd.apache.org/docs/2.2/mod/mod_log_config.html#formats
+                - %h：客户端IP地址；
+                - %l：Remote User, 通常为一个减号（“-”）；
+                - %u：Remote user (from auth; may be bogus if return status (%s) is 401)；非为登录访问时，其为一个减号；
+                - %t：服务器收到请求时的时间；
+                - %r：First line of request，即表示请求报文的首行；记录了此次请求的“方法”，“URL”以及协议版本；
+                - %>s：响应状态码；
+                - %b：响应报文的大小，单位是字节；不包括响应报文的http首部；
+                - %{Referer}i：请求报文中首部“referer”的值；即从哪个页面中的超链接跳转至当前页面的；
+                - %{User-Agent}i：请求报文中首部“User-Agent”的值；即发出请求的应用程序；
+    - 11、基于用户的访问控制
                 
                 认证质询：
                     WWW-Authenticate：响应码为401，拒绝客户端请求，并说明要求客户端提供账号和密码；
@@ -460,7 +418,7 @@
                             组文件：每一行定义一个组
                                 GRP_NAME: username1  username2  ...
                                             
-            12、虚拟主机
+    - 12、虚拟主机
             
                 站点标识： socket
                     IP相同，但端口不同；
@@ -548,8 +506,7 @@
                     注意：如果是httpd-2.2，则使用基于FQDN的虚拟主机时，需要事先使用如下指令：
                         NameVirtualHost IP:PORT
 
-                                    
-            13、status页面
+    - 13、status页面
                 LoadModule  status_module  modules/mod_status.so
                 
                 httpd-2.2
@@ -566,4 +523,3 @@
                             Require ip 172.16
                         </RequireAll>
                     </Location>             
-
