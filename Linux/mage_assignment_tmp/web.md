@@ -876,7 +876,7 @@ httpd的基本应用(3)
             (2) 设置部门为Ops, 主机名为www2.stuX.com;
             
     
-    LAMP: 
+LAMP: 
         a: apache (httpd)
         m: mysql, mariadb
         p: php, perl, python
