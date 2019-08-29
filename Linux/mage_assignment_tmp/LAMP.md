@@ -1,11 +1,5 @@
 # Web Service
 
-<font face="华文行楷" size=4> 
-
-- 定义类
-
-</font>
-
 ## TCP协议概述
 
 - 端口: 
