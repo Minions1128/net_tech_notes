@@ -91,17 +91,17 @@ R4的路由表中
 
 ### 4.2 7类邻接关系
 
-- 1. Down，接口刚被宣告进入OSPF，即没有发送，也没有收到hello报文；
-- 2. Attempt，只发生NBMA网络中，使用单播更新，发送HELLO分组，但从邻居没有收到任何信息。
-- 3. Init，路由器一方发送了hello报文，但是不知道对方是否收到；
+1. Down，接口刚被宣告进入OSPF，即没有发送，也没有收到hello报文；
+2. Attempt，只发生NBMA网络中，使用单播更新，发送HELLO分组，但从邻居没有收到任何信息。
+3. Init，路由器一方发送了hello报文，但是不知道对方是否收到；
     - 或者只有一方收到的另一方的HELLO数据包，并且在邻居字段中收到对方的route-id.
-- 4. 2-way，双方都收到neighbor字段有自己的RID的hello报文；
+4. 2-way，双方都收到neighbor字段有自己的RID的hello报文；
     - 此时开始DR/BDR的选举；
-- 5. Exstart，交互三个不带LSA的DBD，选出Master/Slave。
+5. Exstart，交互三个不带LSA的DBD，选出Master/Slave。
     - 接口MTU不一致会一直卡在这一状态。接口使用命令ip ospf mtu-ignore忽略MTU检查；
-- 6. Exchange，主从关系确立后，开始交换DBD报文，即所有LSDB的摘要信息；
-- 7. Loading，路由器与邻居之间相互发送LSR报文、LSU报文、LSAck报文。
-- 8. Full，LSDB同步完成。
+6. Exchange，主从关系确立后，开始交换DBD报文，即所有LSDB的摘要信息；
+7. Loading，路由器与邻居之间相互发送LSR报文、LSU报文、LSAck报文。
+8. Full，LSDB同步完成。
 
 ### 4.3 MA网络邻接关系
 MA网络DR和BDR可以建立full邻接关系，others建立2-way邻接关系。
