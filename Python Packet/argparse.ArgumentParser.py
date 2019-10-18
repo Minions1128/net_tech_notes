@@ -1,4 +1,21 @@
+'''
+    ~]$ python argparse.ArgumentParser.py
+    usage: [-h] [-a PARA] [-b PARB]
+    ~]$ python argparse.ArgumentParser.py -h
+    usage: temp.py [-h] [-a PARA] [-b PARB]
+
+    喂我两个数字，我就吐出他们的积
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -a PARA, --ParA PARA  我是A
+      -b PARB, --ParB PARB  我是B
+    ~]$ python argparse.ArgumentParser.py -a 3 -b 99
+    啊，两个都吃到啦！积是 99
+'''
+
 from argparse import ArgumentParser
+
 
 parser = ArgumentParser()
 parser.description = '喂我两个数字，我就吐出他们的积'
