@@ -6,11 +6,13 @@
 - 主程序：
     - ansible
     - ansible-playbook
-    - ansible-doc
+    - ansible-doc: 查看文档
+        - `ansible-doc -l`: 获取模块列表
+        - `ansible-doc -s MOD_NAME`
 - ansible的简单使用格式：`ansible HOST-PATTERN -m MOD_NAME -a MOD_ARGS -f FORKS -C -u USERNAME -c CONNECTION`
 
 - 常用模块：
-    - `ansible-doc -l`: 获取模块列表
+    - copy: `ansible HOST-PATTERN -m copy -a "src=/PATH/file.file dest=/tmp/PATH/file.file.ansible mode=600"`
     - shell: `ansible HOST-PATTERN -m shell -a "mkdir -pv /home/testuser/test"`
     - user: `ansible HOST-PATTERN -m user -a MOD_ARGS`
         - MOD_ARGS
