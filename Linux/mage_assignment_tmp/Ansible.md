@@ -64,11 +64,97 @@
         ```
 
 ## Playbook
-Playbook：YAML格式，任务（task）
-YAML：YAML（/•jæm•l/，尾音类似camel骆驼）是一个可读性高，用来表达数据序列的格式。YAML参考了其他多种语言，包括：C语言、Python、Perl，并从XML、电子邮件的数据格式（RFC 2822）中获得灵感。Clark Evans在2001年首次发表了这种语言，另外Ingy döt Net与Oren Ben-Kiki也是这语言的共同设计者。目前已经有数种编程语言或脚本语言支持（或者说解析）这种语言。
-YAML是"YAML Ain't a Markup Language"（YAML不是一种标记语言）的递归缩写。在开发的这种语言时，YAML 的意思其实是："Yet Another Markup Language"（仍是一种标记语言），但为了强调这种语言以数据做为中心，而不是以标记语言为重点，而用反向缩略语重命名。
-YAML的语法和其他高级语言类似，并且可以简单表达清单、散列表，标量等数据形态。它使用空白符号缩进和大量依赖外观的特色，特别适合用来表达或编辑数据结构、各种配置文件、倾印除错内容、文件大纲（例如：许多电子邮件标题格式和YAML非常接近）。
-基本数据结构：
-标量、数组、关联数组
-维基百科
-https://zh.wikipedia.org/wiki/YAML
+
+- Playbook：YAML格式，任务（task）
+    - Example:
+    ```
+        - hosts: all
+          remote_user: root
+          tasks:
+            - name: install redis
+              yum: name=redis state=latest
+            - name: copy config file
+              copy: src=/home/shenzhejian/playbook/redis.conf dest=/etc/redis.conf owner=redis
+              notify: restart redis
+              tags: configfiles
+            - name: start redis
+              service: name=redis state=started
+          handlers:
+            - name: restart redis
+              service: name=redis state=restarted
+    ```
+    - YAML, YAML Ain't a Markup Language, YAML不是一种标记语言; 基本数据结构：标量、数组、关联数组
+    - Playbook的核心元素：
+        - Hosts：主机
+        - Tasks：任务列表
+        - Variables：
+        - Templates：包含了模板语法的文本文件；
+        - Handlers：由特定条件触发的任务；
+        - Roles
+    - 运行playbook的方式：
+        - (1) 测试
+            - `ansible-playbook --check` 只检测可能会发生的改变，但不真正执行操作；
+            - `ansible-playbook --list-hosts` 列出运行任务的主机；
+        - (2) 运行
+    - 基础组件：
+        - Hosts：运行指定任务的目标主机；
+        - remoute_user: 在远程主机上执行任务的用户，如，sudo_user：
+        - tasks：任务列表
+            - 模块，模块参数；
+            - 格式：
+                - (1) action: module arguments
+                - (2) module: arguments
+                - 注意：shell和command模块后面直接跟命令，而非key=value类的参数列表；
+                - (1) 某任务的状态在运行后为changed时，可通过“notify”通知给相应的handlers；
+                - (2) 任务可以通过"tags“打标签，而后可在ansible-playbook命令上使用-t指定进行调用；
+        - handlers：任务，在特定条件下触发；
+            - 接收到其它任务的通知时被触发；notify: HANDLER TASK NAME
+        - variables：
+            - 变量引用：{{ variable }}
+            - (1) facts：可直接调用，可使用setup模块直接获取目标主机的facters；
+                ```yaml
+                    - hosts: 172.17.0.111
+                      remote_user: root
+                      tasks:
+                        - name: copy file
+                          copy: content={{ ansible_env }} dest=/tmp/ansible.env
+                ```
+            - (2) 用户自定义变量：
+                - (a) ansible-playbook命令的命令行中的: -e VARS, --extra-vars=VARS
+                - (b) 在playbook中定义变量的方法：
+                    ```
+                        - var1: value1
+                        - var2: value2
+                    ```
+                    ```
+                        - hosts: all
+                          remote_user: root
+                          tasks:
+                            - name: install {{ pkgname }} package
+                              yum: name={{ pkgname }} state=latest
+                        # ansible-playbook -e pkgname=mencached 1.yaml
+                    ```
+            - (3) 通过roles传递变量；
+            - (4) Host Inventory
+                - (a) 用户自定义变量
+                    - (i) 向不同的主机传递不同的变量；
+                        - IP/HOSTNAME varaiable=value var2=value2
+                    - (ii) 向组中的主机传递相同的变量；
+                        - [groupname:vars]
+                        - variable=value
+                - (b) invertory参数: 用于定义ansible远程连接目标主机时使用的参数，而非传递给playbook的变量；
+                    - ansible_ssh_host
+                    - ansible_ssh_port
+                    - ansible_ssh_user
+                    - ansible_ssh_pass
+                    - ansbile_sudo_pass
+                    ```/etc/ansible/hosts
+                        10.0.0.1  ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=root@123
+                    ```
+        - setup模块：
+        - template模块：基于模板方式生成一个文件复制到远程主机
+            - \*src=
+            - \*dest=
+            - owner=
+            - group=
+            - mode=
