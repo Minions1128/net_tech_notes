@@ -68,20 +68,20 @@
 - Playbook：YAML格式，任务（task）
     - Example:
     ```
-        - hosts: all
-          remote_user: root
-          tasks:
-            - name: install redis
-              yum: name=redis state=latest
-            - name: copy config file
-              copy: src=/home/shenzhejian/playbook/redis.conf dest=/etc/redis.conf owner=redis
-              notify: restart redis
-              tags: configfiles
-            - name: start redis
-              service: name=redis state=started
-          handlers:
-            - name: restart redis
-              service: name=redis state=restarted
+    - hosts: all
+      remote_user: root
+      tasks:
+        - name: install redis
+          yum: name=redis state=latest
+        - name: copy config file
+          copy: src=/home/shenzhejian/playbook/redis.conf dest=/etc/redis.conf owner=redis
+          notify: restart redis
+          tags: configfiles
+        - name: start redis
+          service: name=redis state=started
+      handlers:
+        - name: restart redis
+          service: name=redis state=restarted
     ```
     - YAML, YAML Ain't a Markup Language, YAML不是一种标记语言; 基本数据结构：标量、数组、关联数组
     - Playbook的核心元素：
@@ -113,26 +113,26 @@
             - 变量引用：{{ variable }}
             - (1) facts：可直接调用，可使用setup模块直接获取目标主机的facters；
                 ```yaml
-                    - hosts: 172.17.0.111
-                      remote_user: root
-                      tasks:
-                        - name: copy file
-                          copy: content={{ ansible_env }} dest=/tmp/ansible.env
+                - hosts: 172.17.0.111
+                  remote_user: root
+                  tasks:
+                    - name: copy file
+                      copy: content={{ ansible_env }} dest=/tmp/ansible.env
                 ```
             - (2) 用户自定义变量：
                 - (a) ansible-playbook命令的命令行中的: -e VARS, --extra-vars=VARS
                 - (b) 在playbook中定义变量的方法：
                     ```
-                        - var1: value1
-                        - var2: value2
+                    - var1: value1
+                    - var2: value2
                     ```
                     ```
-                        - hosts: all
-                          remote_user: root
-                          tasks:
-                            - name: install {{ pkgname }} package
-                              yum: name={{ pkgname }} state=latest
-                        # ansible-playbook -e pkgname=mencached 1.yaml
+                    - hosts: all
+                      remote_user: root
+                      tasks:
+                        - name: install {{ pkgname }} package
+                          yum: name={{ pkgname }} state=latest
+                    # ansible-playbook -e pkgname=mencached 1.yaml
                     ```
             - (3) 通过roles传递变量；
             - (4) Host Inventory
@@ -149,7 +149,7 @@
                     - ansible_ssh_pass
                     - ansbile_sudo_pass
                     ```/etc/ansible/hosts
-                        10.0.0.1  ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=root@123
+                    10.0.0.1  ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=root@123
                     ```
         - setup模块：
         - template模块：基于模板方式生成一个文件复制到远程主机
