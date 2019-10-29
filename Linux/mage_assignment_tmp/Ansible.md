@@ -139,18 +139,42 @@
                 - (a) 用户自定义变量
                     - (i) 向不同的主机传递不同的变量；
                         - IP/HOSTNAME varaiable=value var2=value2
-                    - (ii) 向组中的主机传递相同的变量；
-                        - [groupname:vars]
-                        - variable=value
+                    - (ii) 向组中的主机传递相同的变量；在host文件中，定义：
+                    ```
+                    - [groupname:vars]
+                    - variable=value
+                    ```
                 - (b) invertory参数: 用于定义ansible远程连接目标主机时使用的参数，而非传递给playbook的变量；
                     - ansible_ssh_host
                     - ansible_ssh_port
                     - ansible_ssh_user
                     - ansible_ssh_pass
                     - ansbile_sudo_pass
-                    ```/etc/ansible/hosts
+                    ```
+                    # vim /etc/ansible/hosts
                     10.0.0.1  ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=root@123
                     ```
+            ```
+            # hosts
+            10.0.0.1 http_port=80
+            10.0.0.2 http_port=80
+
+            # var.yaml
+            - hosts: websrvs
+              remote_user: root
+              vars:
+                - pbvar: playbook var testing
+              tasks:
+                - name: command line var
+                  copy: content={{ cmdvar }} dest=/tmp/cmd.var
+                - name: playbook var
+                  copy: content={{ pbvar }} dest=/tmp/pb.var
+                - name: host inv var
+                  copy: content={{ hivar }} dest=/tmp/hi.var
+
+            # ansible-playbook -e "cmdvar='asdf asdf asdf'" var.yaml
+            # cat cmd.var pb.var hi.var
+            ```
         - setup模块：
         - template模块：基于模板方式生成一个文件复制到远程主机
             - \*src=
@@ -158,3 +182,63 @@
             - owner=
             - group=
             - mode=
+    - 模板：templates: 文本文件，嵌套有脚本（使用模板编程语言编写）,Jinja2
+        - 示例：
+        ```
+        # cat var.yaml
+        - hosts: websrvs
+          remote_user: root
+          tasks:
+            - name: install nginx
+              yum: name=nginx state=present
+            - name: install conf file
+              template: src=files/nginx.conf.j2 dest=/etc/nginx/nginx.conf
+              notify: restart nginx
+              tags: instconf
+            - name: start nginx service
+              service: name=nginx state=started
+          handlers:
+            - name: restart nginx
+              service: name=nginx state=restarted
+
+        # nginx.conf.j2
+        worker_processes {{ ansible_processor_vcpus }};
+        listen {{ http_port }};
+        ```
+    - 条件测试：
+        - when语句：在task中使用，jinja2的语法格式
+        ```yaml
+        - hosts: websrvs
+          remote_user: root
+          tasks:
+            - name: install conf file to centos7
+              template: src=files/nginx.conf.c7.j2
+              when: ansible_distribution_major_version == "7"
+            - name: install conf file to centos6
+              template: src=files/nginx.conf.c6.j2
+              when: ansible_distribution_major_version == "6"
+        ```
+    - 循环：迭代，需要重复执行的任务；对迭代项的引用，固定变量名为”item“; 而后，要在task中使用with_items给定要迭代的元素列表；
+    ```yaml
+    - hosts: websrvs
+      remote_user: root
+      tasks:
+        - name: install some packages
+          yum: name={{ item }} state=present
+          with_items:
+            - nginx
+            - memcached
+            - php-fpm
+        - name: add some groups
+          group: name={{ item }} state=present
+          with_items:
+            - group11
+            - group12
+            - group13
+        - name: add some users
+          user: name={{ item.name }} group={{ item.group }} state=present
+          with_items:
+            - { name: 'user11', group: 'group11' }
+            - { name: 'user12', group: 'group12' }
+            - { name: 'user13', group: 'group13' }
+    ```
