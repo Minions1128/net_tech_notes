@@ -1,5 +1,7 @@
 # Ansible
 
+- [Ansible中文权威指南](http://www.ansible.com.cn "Ansible中文权威指南")
+
 - 安装：epel, ansible
 - 配置文件：/etc/ansible/ansible.cfg
 - 主机清单：/etc/ansible/hosts
@@ -242,3 +244,42 @@
             - { name: 'user12', group: 'group12' }
             - { name: 'user13', group: 'group13' }
     ```
+    - 角色(roles)：
+        - 角色集合：
+            - roles/
+            - mysql/
+            - httpd/
+            - nginx/
+            - memcached/
+        - 每个角色，以特定的层级目录结构进行组织：
+            - mysql/
+            - files/ ：存放由copy或script模块等调用的文件；
+            - templates/：template模块查找所需要模板文件的目录；
+            - tasks/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
+            - handlers/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
+            - vars/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
+            - meta/：至少应该包含一个名为main.yml的文件，定义当前角色的特殊设定及其依赖关系；其它的文件需要在此文件中通过include进行包含；
+            - default/：设定默认变量时使用此目录中的main.yml文件；
+        - 在playbook调用角色方法1：
+        ```
+        - hosts: websrvs
+          remote_user: root
+          roles:
+            - mysql
+            - memcached
+            - nginx
+        在playbook调用角色方法2：传递变量给角色
+        - hosts:
+        remote_user:
+        roles:
+        - { role: nginx, username: nginx }
+        键role用于指定角色名称；后续的k/v用于传递变量给角色；
+        还可以基于条件测试实现角色调用；
+        roles:
+        - { role: nginx, when: "ansible_distribution_major_version == '7' " }
+        ```
+- ansible-vcs：https://github.com/andrewrothstein/ansible-vcs
+- 实战项目：
+    - 主/备模式高可用keepalived+nginx(proxy)
+    - 两台主机：httpd+php
+    - 一台主机：mysql-server或mariadb-server；
