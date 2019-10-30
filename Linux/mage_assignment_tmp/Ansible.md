@@ -97,14 +97,16 @@
           service: name=redis state=restarted
     ```
     - YAML, YAML Ain't a Markup Language, YAML不是一种标记语言; 基本数据结构：标量、数组、关联数组
-    - Playbook的核心元素：
-        - Hosts：主机
-        - Tasks：任务列表
-        - Variables：
-        - Templates：包含了模板语法的文本文件；
-        - Handlers：由特定条件触发的任务；
-        - Roles
-    - 运行playbook的方式：
+
+- Playbook的核心元素：
+    - Hosts：主机
+    - Tasks：任务列表
+    - Variables：
+    - Templates：包含了模板语法的文本文件；
+    - Handlers：由特定条件触发的任务；
+    - Roles
+
+- 运行playbook的方式：
         - (1) 测试
             - `ansible-playbook --check` 只检测可能会发生的改变，但不真正执行操作；
             - `ansible-playbook --list-hosts` 列出运行任务的主机；
