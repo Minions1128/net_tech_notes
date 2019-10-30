@@ -16,54 +16,65 @@
 
 - ansible的简单使用格式：`ansible HOST-PATTERN -m MOD_NAME -a MOD_ARGS -f FORKS -C -u USERNAME -c CONNECTION`
 
-- 常用模块：
-    - copy: `ansible HOST-PATTERN -m copy -a "src=/PATH/file.file dest=/tmp/PATH/file.file.ansible mode=600"`
-        - src
-        - dest
-        - content
-        - group
-        - mode
-    - fetch：Fetches a file from remote nodes
-    - command模块: 在远程主机运行命令；
-    - shell: `ansible HOST-PATTERN -m shell -a "mkdir -pv /home/testuser/test"`
-    - user: `ansible HOST-PATTERN -m user -a MOD_ARGS`
-        - MOD_ARGS
-            - \*name=
-            - system=
-            - uid=
-            - shell=
-            - group=
-            - groups=
-            - comment=
-            - home=
-    - group: `ansible HOST-PATTERN -m group -a "gid=<int> name=<GROUP-NAME> state={present|absent} system={yes|no}"`
-    - file: Sets attributes of files
-        - (1) 创建链接文件：\*path= src= state=link
-        - (2) 修改属性：path= owner= mode= group=
-        - (3) 创建目录：path= state=directory
-    - cron: Manage cron.d and crontab entries. `ansible all -m cron -a "minute=*/3 job='/sbin/ntpdate ntp.ksyun.cn &> /dev/null' name='asdf' state=present"`
-        - minute=
-        - day=
-        - month=
-        - weekday=
-        - hour=
-        - job=
+### 常用模块：
+
+- copy: `ansible HOST-PATTERN -m copy -a "src=/PATH/file.file dest=/tmp/PATH/file.file.ansible mode=600"`
+    - src
+    - dest
+    - content
+    - group
+    - mode
+
+- fetch：Fetches a file from remote nodes
+
+- command模块: 在远程主机运行命令；
+
+- shell: `ansible HOST-PATTERN -m shell -a "mkdir -pv /home/testuser/test"`
+
+- user: `ansible HOST-PATTERN -m user -a MOD_ARGS`
+    - MOD_ARGS
         - \*name=
-        - state=
-            - present：创建
-            - absent：删除
-    - yum: Manages packages with the 'yum' package manager. `ansible all -m yum -a "name=nginx state=installed"`
-        - name=：程序包名称，可以带版本号；
-        - state=
-            - present, latest, installed
-            - absent
-    - service: 管理服务`ansible all -m service -a "*name=nginx state={started|stopped|restarted} [enalbed={yes|no}]"`
-    - script: `ansible all -m script -a "/tmp/test.sh"`
-        - /tmp/test.sh:
-        ```
-            #!/bin/bash
-            echo "ansible script" > /tmp/ansible.test.txt
-        ```
+        - system=
+        - uid=
+        - shell=
+        - group=
+        - groups=
+        - comment=
+        - home=
+
+- group: `ansible HOST-PATTERN -m group -a "gid=<int> name=<GROUP-NAME> state={present|absent} system={yes|no}"`
+
+- file: Sets attributes of files
+    - (1) 创建链接文件：\*path= src= state=link
+    - (2) 修改属性：path= owner= mode= group=
+    - (3) 创建目录：path= state=directory
+
+- cron: Manage cron.d and crontab entries. `ansible all -m cron -a "minute=*/3 job='/sbin/ntpdate ntp.ksyun.cn &> /dev/null' name='asdf' state=present"`
+    - minute=
+    - day=
+    - month=
+    - weekday=
+    - hour=
+    - job=
+    - \*name=
+    - state=
+        - present：创建
+        - absent：删除
+
+- yum: Manages packages with the 'yum' package manager. `ansible all -m yum -a "name=nginx state=installed"`
+    - name=：程序包名称，可以带版本号；
+    - state=
+        - present, latest, installed
+        - absent
+
+- service: 管理服务`ansible all -m service -a "*name=nginx state={started|stopped|restarted} [enalbed={yes|no}]"`
+
+- script: `ansible all -m script -a "/tmp/test.sh"`
+    - /tmp/test.sh:
+    ```
+        #!/bin/bash
+        echo "ansible script" > /tmp/ansible.test.txt
+    ```
 
 ## Playbook
 
