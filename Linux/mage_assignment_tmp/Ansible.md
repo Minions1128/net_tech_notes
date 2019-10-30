@@ -80,22 +80,22 @@
 
 - Playbook：YAML格式，任务（task）
     - Example:
-    ```
-    - hosts: all
-      remote_user: root
-      tasks:
-        - name: install redis
-          yum: name=redis state=latest
-        - name: copy config file
-          copy: src=/home/shenzhejian/playbook/redis.conf dest=/etc/redis.conf owner=redis
-          notify: restart redis
-          tags: configfiles
-        - name: start redis
-          service: name=redis state=started
-      handlers:
-        - name: restart redis
-          service: name=redis state=restarted
-    ```
+```
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: install redis
+      yum: name=redis state=latest
+    - name: copy config file
+      copy: src=/home/shenzhejian/playbook/redis.conf dest=/etc/redis.conf owner=redis
+      notify: restart redis
+      tags: configfiles
+    - name: start redis
+      service: name=redis state=started
+  handlers:
+    - name: restart redis
+      service: name=redis state=restarted
+```
     - YAML, YAML Ain't a Markup Language, YAML不是一种标记语言; 基本数据结构：标量、数组、关联数组
 
 - Playbook的核心元素：
