@@ -111,64 +111,70 @@
             - `ansible-playbook --check` 只检测可能会发生的改变，但不真正执行操作；
             - `ansible-playbook --list-hosts` 列出运行任务的主机；
         - (2) 运行
-    - 基础组件：
-        - Hosts：运行指定任务的目标主机；
-        - remoute_user: 在远程主机上执行任务的用户，如，sudo_user：
-        - tasks：任务列表
-            - 模块，模块参数；
-            - 格式：
-                - (1) action: module arguments
-                - (2) module: arguments
-                - 注意：shell和command模块后面直接跟命令，而非key=value类的参数列表；
-                - (1) 某任务的状态在运行后为changed时，可通过“notify”通知给相应的handlers；
-                - (2) 任务可以通过"tags“打标签，而后可在ansible-playbook命令上使用-t指定进行调用；
-        - handlers：任务，在特定条件下触发；
-            - 接收到其它任务的通知时被触发；notify: HANDLER TASK NAME
-        - variables：
-            - 变量引用：{{ variable }}
-            - (1) facts：可直接调用，可使用setup模块直接获取目标主机的facters；
-                ```yaml
-                - hosts: 172.17.0.111
-                  remote_user: root
-                  tasks:
-                    - name: copy file
-                      copy: content={{ ansible_env }} dest=/tmp/ansible.env
-                ```
-            - (2) 用户自定义变量：
-                - (a) ansible-playbook命令的命令行中的: -e VARS, --extra-vars=VARS
-                - (b) 在playbook中定义变量的方法：
-                    ```
-                    - var1: value1
-                    - var2: value2
-                    ```
-                    ```
-                    - hosts: all
-                      remote_user: root
-                      tasks:
-                        - name: install {{ pkgname }} package
-                          yum: name={{ pkgname }} state=latest
-                    # ansible-playbook -e pkgname=mencached 1.yaml
-                    ```
-            - (3) 通过roles传递变量；
-            - (4) Host Inventory
-                - (a) 用户自定义变量
-                    - (i) 向不同的主机传递不同的变量；
-                        - IP/HOSTNAME varaiable=value var2=value2
-                    - (ii) 向组中的主机传递相同的变量；在host文件中，定义：
-                    ```
-                    - [groupname:vars]
-                    - variable=value
-                    ```
-                - (b) invertory参数: 用于定义ansible远程连接目标主机时使用的参数，而非传递给playbook的变量；
-                    - ansible_ssh_host
-                    - ansible_ssh_port
-                    - ansible_ssh_user
-                    - ansible_ssh_pass
-                    - ansbile_sudo_pass
-                    ```
-                    # vim /etc/ansible/hosts
-                    10.0.0.1  ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=root@123
-                    ```
+
+### 基础组件
+
+- Hosts：运行指定任务的目标主机；
+
+- remoute_user: 在远程主机上执行任务的用户，如，sudo_user
+
+- tasks：任务列表
+    - 模块，模块参数；
+    - 格式：
+        - (1) action: module arguments
+        - (2) module: arguments
+        - 注意：shell和command模块后面直接跟命令，而非key=value类的参数列表；
+        - (1) 某任务的状态在运行后为changed时，可通过“notify”通知给相应的handlers；
+        - (2) 任务可以通过"tags“打标签，而后可在ansible-playbook命令上使用-t指定进行调用；
+
+- handlers：任务，在特定条件下触发；
+    - 接收到其它任务的通知时被触发；notify: HANDLER TASK NAME
+
+- variables：
+    - 变量引用：{{ variable }}
+    - (1) facts：可直接调用，可使用setup模块直接获取目标主机的facters；
+        ```yaml
+        - hosts: 172.17.0.111
+          remote_user: root
+          tasks:
+            - name: copy file
+              copy: content={{ ansible_env }} dest=/tmp/ansible.env
+        ```
+    - (2) 用户自定义变量：
+        - (a) ansible-playbook命令的命令行中的: -e VARS, --extra-vars=VARS
+        - (b) 在playbook中定义变量的方法：
+            ```
+            - var1: value1
+            - var2: value2
+            ```
+            ```
+            - hosts: all
+              remote_user: root
+              tasks:
+                - name: install {{ pkgname }} package
+                  yum: name={{ pkgname }} state=latest
+            # ansible-playbook -e pkgname=mencached 1.yaml
+            ```
+    - (3) 通过roles传递变量；
+    - (4) Host Inventory
+        - (a) 用户自定义变量
+            - (i) 向不同的主机传递不同的变量；
+                - IP/HOSTNAME varaiable=value var2=value2
+            - (ii) 向组中的主机传递相同的变量；在host文件中，定义：
+            ```
+            - [groupname:vars]
+            - variable=value
+            ```
+        - (b) invertory参数: 用于定义ansible远程连接目标主机时使用的参数，而非传递给playbook的变量；
+            - ansible_ssh_host
+            - ansible_ssh_port
+            - ansible_ssh_user
+            - ansible_ssh_pass
+            - ansbile_sudo_pass
+            ```
+            # vim /etc/ansible/hosts
+            10.0.0.1  ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=root@123
+            ```
             ```
             # hosts
             10.0.0.1 http_port=80
@@ -190,50 +196,59 @@
             # ansible-playbook -e "cmdvar='asdf asdf asdf'" var.yaml
             # cat cmd.var pb.var hi.var
             ```
-        - setup模块：
-        - template模块：基于模板方式生成一个文件复制到远程主机
-            - \*src=
-            - \*dest=
-            - owner=
-            - group=
-            - mode=
-    - 模板：templates: 文本文件，嵌套有脚本（使用模板编程语言编写）,Jinja2
-        - 示例：
-        ```
-        # cat var.yaml
-        - hosts: websrvs
-          remote_user: root
-          tasks:
-            - name: install nginx
-              yum: name=nginx state=present
-            - name: install conf file
-              template: src=files/nginx.conf.j2 dest=/etc/nginx/nginx.conf
-              notify: restart nginx
-              tags: instconf
-            - name: start nginx service
-              service: name=nginx state=started
-          handlers:
-            - name: restart nginx
-              service: name=nginx state=restarted
 
-        # nginx.conf.j2
-        worker_processes {{ ansible_processor_vcpus }};
-        listen {{ http_port }};
-        ```
-    - 条件测试：
-        - when语句：在task中使用，jinja2的语法格式
-        ```yaml
-        - hosts: websrvs
-          remote_user: root
-          tasks:
-            - name: install conf file to centos7
-              template: src=files/nginx.conf.c7.j2
-              when: ansible_distribution_major_version == "7"
-            - name: install conf file to centos6
-              template: src=files/nginx.conf.c6.j2
-              when: ansible_distribution_major_version == "6"
-        ```
-    - 循环：迭代，需要重复执行的任务；对迭代项的引用，固定变量名为”item“; 而后，要在task中使用with_items给定要迭代的元素列表；
+- setup模块
+
+### 模板
+
+- template模块：基于模板方式生成一个文件复制到远程主机
+    - \*src=
+    - \*dest=
+    - owner=
+    - group=
+    - mode=
+
+- templates: 文本文件，嵌套有脚本（使用模板编程语言编写）,Jinja2，示例：
+    ```
+    # cat var.yaml
+    - hosts: websrvs
+      remote_user: root
+      tasks:
+        - name: install nginx
+          yum: name=nginx state=present
+        - name: install conf file
+          template: src=files/nginx.conf.j2 dest=/etc/nginx/nginx.conf
+          notify: restart nginx
+          tags: instconf
+        - name: start nginx service
+          service: name=nginx state=started
+      handlers:
+        - name: restart nginx
+          service: name=nginx state=restarted
+
+    # nginx.conf.j2
+    worker_processes {{ ansible_processor_vcpus }};
+    listen {{ http_port }};
+    ```
+
+### 条件测试
+
+- when语句：在task中使用，jinja2的语法格式
+    ```yaml
+    - hosts: websrvs
+      remote_user: root
+      tasks:
+        - name: install conf file to centos7
+          template: src=files/nginx.conf.c7.j2
+          when: ansible_distribution_major_version == "7"
+        - name: install conf file to centos6
+          template: src=files/nginx.conf.c6.j2
+          when: ansible_distribution_major_version == "6"
+    ```
+
+### 循环
+
+- 迭代，需要重复执行的任务；对迭代项的引用，固定变量名为”item“; 而后，要在task中使用with_items给定要迭代的元素列表；
     ```yaml
     - hosts: websrvs
       remote_user: root
@@ -257,7 +272,8 @@
             - { name: 'user12', group: 'group12' }
             - { name: 'user13', group: 'group13' }
     ```
-    - 角色(roles)：
+
+### 角色(roles)
         - 角色集合：
             - roles/
             - mysql/
@@ -291,7 +307,11 @@
         roles:
         - { role: nginx, when: "ansible_distribution_major_version == '7' " }
         ```
+
+## Others
+
 - ansible-vcs：https://github.com/andrewrothstein/ansible-vcs
+
 - 实战项目：
     - 主/备模式高可用keepalived+nginx(proxy)
     - 两台主机：httpd+php
