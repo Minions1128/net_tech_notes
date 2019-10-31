@@ -107,10 +107,10 @@
     - Roles
 
 - 运行playbook的方式：
-        - (1) 测试
-            - `ansible-playbook --check` 只检测可能会发生的改变，但不真正执行操作；
-            - `ansible-playbook --list-hosts` 列出运行任务的主机；
-        - (2) 运行
+    - (1) 测试
+        - `ansible-playbook --check` 只检测可能会发生的改变，但不真正执行操作；
+        - `ansible-playbook --list-hosts` 列出运行任务的主机；
+    - (2) 运行
 
 ### 基础组件
 
@@ -123,7 +123,7 @@
     - 格式：
         - (1) action: module arguments
         - (2) module: arguments
-        - 注意：shell和command模块后面直接跟命令，而非key=value类的参数列表；
+    - 注意：shell和command模块后面直接跟命令，而非key=value类的参数列表；
         - (1) 某任务的状态在运行后为changed时，可通过“notify”通知给相应的handlers；
         - (2) 任务可以通过"tags“打标签，而后可在ansible-playbook命令上使用-t指定进行调用；
 
@@ -274,22 +274,24 @@
     ```
 
 ### 角色(roles)
-        - 角色集合：
-            - roles/
-            - mysql/
-            - httpd/
-            - nginx/
-            - memcached/
-        - 每个角色，以特定的层级目录结构进行组织：
-            - mysql/
-            - files/ ：存放由copy或script模块等调用的文件；
-            - templates/：template模块查找所需要模板文件的目录；
-            - tasks/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
-            - handlers/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
-            - vars/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
-            - meta/：至少应该包含一个名为main.yml的文件，定义当前角色的特殊设定及其依赖关系；其它的文件需要在此文件中通过include进行包含；
-            - default/：设定默认变量时使用此目录中的main.yml文件；
-        - 在playbook调用角色方法1：
+
+- 角色集合：
+    - roles/
+    - mysql/
+    - httpd/
+    - nginx/
+    - memcached/
+
+- 每个角色，以特定的层级目录结构进行组织：
+    - mysql/
+    - files/ ：存放由copy或script模块等调用的文件；
+    - templates/：template模块查找所需要模板文件的目录；
+    - tasks/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
+    - handlers/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
+    - vars/：至少应该包含一个名为main.yml的文件；其它的文件需要在此文件中通过include进行包含；
+    - meta/：至少应该包含一个名为main.yml的文件，定义当前角色的特殊设定及其依赖关系；其它的文件需要在此文件中通过include进行包含；
+    - default/：设定默认变量时使用此目录中的main.yml文件；
+    - 在playbook调用角色方法1：
         ```
         - hosts: websrvs
           remote_user: root
@@ -297,13 +299,17 @@
             - mysql
             - memcached
             - nginx
-        在playbook调用角色方法2：传递变量给角色
+        ```
+    - 在playbook调用角色方法2：传递变量给角色
+        ```
         - hosts:
-        remote_user:
-        roles:
-        - { role: nginx, username: nginx }
-        键role用于指定角色名称；后续的k/v用于传递变量给角色；
-        还可以基于条件测试实现角色调用；
+          remote_user:
+          roles:
+            - { role: nginx, username: nginx }
+        ```
+    - 键role用于指定角色名称；后续的k/v用于传递变量给角色；
+    - 还可以基于条件测试实现角色调用；
+        ```
         roles:
         - { role: nginx, when: "ansible_distribution_major_version == '7' " }
         ```
