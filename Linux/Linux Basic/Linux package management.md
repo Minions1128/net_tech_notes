@@ -1,12 +1,12 @@
 # Linux程序包管理
-    
+
 ## 概述
 
 - API：Application Program Interface
 - ABI：Application Binary Interface
     - Unix-like: ELF
     - Windows: exe, msi
-                    
+
 - 库级别的虚拟化
     - Linux: WinE
     - Windows: Cywin
@@ -46,7 +46,7 @@
 
 - rpm包命名格式：name-VERSION-release.arch.rpm
     - VERSION：major.minor.release
-    - release.arch：rpm包的发行号: 
+    - release.arch：rpm包的发行号:
         - release.os: 2.el7.i386.rpm
         - archetecture：i386, x64(amd64), ppc, noarch(平台无关)
     - 例如：redis-3.0.2.tar.gz --> redis-3.0.2-1.centos7.x64.rpm
@@ -74,16 +74,16 @@
 
 - 获取程序包的途径：
     - (1) 系统发行版的光盘或官方的文件服务器（或镜像站点）：
-        - http://mirrors.aliyun.com, 
+        - http://mirrors.aliyun.com,
         - http://mirrors.sohu.com,
-        - http://mirrors.163.com 
+        - http://mirrors.163.com
     - (2) 项目的官方站点
     - (3) 第三方组织：
         - (a) EPEL
         - (b) 搜索引擎
             - http://pkgs.org
-            - http://rpmfind.net 
-            - http://rpm.pbone.net 
+            - http://rpmfind.net
+            - http://rpm.pbone.net
     - (4) 自动动手，丰衣足食
     - 下载完成后的建议：检查其合法性
         - 来源合法性；
@@ -98,7 +98,8 @@
     - 查询：-q, --query
     - 校验：-V, --verify
     - 数据库维护：--builddb, --initdb
-
+    - 详细信息：-v Print verbose information - normally routine progress messages will be displayed.
+    - -h, --hash: Print 50 hash marks as the package archive is unpacked.  Use with -v|--verbose for a nicer display.
 - 安装：
     - rpm {-i|--install} [install-options] PACKAGE_FILE ...
     - rpm  -ivh  PACKAGE_FILE ...
@@ -113,7 +114,7 @@
             - 注意：rpm可以自带脚本；有四类：--noscripts
                 - preinstall：安装过程开始之前运行的脚本，%pre ， --nopre
                 - postinstall：安装过程完成之后运行的脚本，%post , --nopost
-                - preuninstall：卸载过程真正开始执行之前运行的脚本，%preun, --nopreun 
+                - preuninstall：卸载过程真正开始执行之前运行的脚本，%preun, --nopreun
                 - postuninstall：卸载过程完成之后运行的脚本，%postun , --nopostun
             - --nosignature：不检查包签名信息，不检查来源合法性；
             - --nodigest：不检查包完整性信息；
@@ -146,7 +147,7 @@
         - -a, --all：查询所有已经安装过的包；
         - -f  FILE：查询指定的文件由哪个程序包安装生成；
             ```sh
-            ~]# rpm -qf /etc/dhcp/dhclient.d/ntp.sh 
+            ~]# rpm -qf /etc/dhcp/dhclient.d/ntp.sh
             ntp-4.2.6p5-28.el7.centos.x86_64
             ```
         - -p, --package PACKAGE_FILE：用于实现对未安装的程序包执行查询操作；
@@ -349,12 +350,12 @@
         - 其依赖于开发工具：automake：生成Makefile.in
     - 第三步：`make install`
     - 安装后的配置：
-        - (1) 导出二进制程序目录至PATH环境变量中: 
+        - (1) 导出二进制程序目录至PATH环境变量中:
             - 编辑文件`/etc/profile.d/NAME.sh`: `export PATH=/PATH/TO/BIN:$PATH`
         - (2) 导出库文件路径
             - 编辑`/etc/ld.so.conf.d/NAME.conf`, 添加新的库文件所在目录至此文件中；
             - 让系统重新生成缓存：`ldconfig [-v]`
         - (3) 导出头文件
-            - 基于链接的方式实现：`ln -sv` 
+            - 基于链接的方式实现：`ln -sv`
         - (4) 导出帮助手册
             - 编辑/etc/man.config文件: 添加一个MANPATH
