@@ -9,7 +9,7 @@
 
 - Download
     - frr: `git clone https://github.com/FRRouting/frr.git`
-    - libyang: `https://github.com/CESNET/libyang.git`
+    - libyang: `git clone https://github.com/CESNET/libyang.git`
 
 - Install required packages：
     - Yum install required packages
