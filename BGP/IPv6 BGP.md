@@ -306,10 +306,13 @@ interface TenGigE0/0/0/0.600
 !
 route-policy set_1_in_to_1
   set next-hop 16::1
+  ! 设置收到的路由，下一跳指向对端
 end-policy
-!         
+!
 route-policy set_6_out_to_6
   set next-hop 16::6
+  ! 设置发出的路由，下一跳指向本地对端
+  ! 言外之意，可以发出下一跳不指向本地的路由？
 end-policy
 !
 router bgp 600
@@ -320,7 +323,7 @@ router bgp 600
  neighbor 16::1
   remote-as 100
   address-family ipv6 unicast
-   route-policy et_1_in_to_1 in
+   route-policy set_1_in_to_1 in
    route-policy set_6_out_to_6 out
   !
  !
@@ -363,27 +366,27 @@ Tunnel protocol/transport UDP_VXLAN/IP
 #### VxLAN的MAC地址表
 
 ```
-<H3C-6800-2>display l2vpn mac-address 
-MAC Address    State    VSI Name                        Link ID/Name    Aging   
-4c4e-35cf-ae31 Dynamic  vpna                            Tunnel1         Aging   
-4c4e-35e9-8309 Dynamic  vpna                            XGE1/0/2        Aging   
-4c4e-35e9-8309 Dynamic  vpnb                            XGE1/0/2        Aging   
-d46d-500d-d298 Dynamic  vpnb                            Tunnel1         Aging  
+<H3C-6800-2>display l2vpn mac-address
+MAC Address    State    VSI Name                        Link ID/Name    Aging
+4c4e-35cf-ae31 Dynamic  vpna                            Tunnel1         Aging
+4c4e-35e9-8309 Dynamic  vpna                            XGE1/0/2        Aging
+4c4e-35e9-8309 Dynamic  vpnb                            XGE1/0/2        Aging
+d46d-500d-d298 Dynamic  vpnb                            Tunnel1         Aging
 
 ##################################################
 
-<H3C-6800-4>display l2vpn mac-address 
-MAC Address    State    VSI Name                        Link ID/Name    Aging   
-4c4e-35cf-ae31 Dynamic  vpna                            XGE1/0/2        Aging   
-4c4e-35e9-8309 Dynamic  vpna                            Tunnel1         Aging   
-4c4e-35e9-8309 Dynamic  vpnb                            Tunnel1         Aging   
-d46d-500d-d298 Dynamic  vpnb                            XGE1/0/3        Aging 
+<H3C-6800-4>display l2vpn mac-address
+MAC Address    State    VSI Name                        Link ID/Name    Aging
+4c4e-35cf-ae31 Dynamic  vpna                            XGE1/0/2        Aging
+4c4e-35e9-8309 Dynamic  vpna                            Tunnel1         Aging
+4c4e-35e9-8309 Dynamic  vpnb                            Tunnel1         Aging
+d46d-500d-d298 Dynamic  vpnb                            XGE1/0/3        Aging
 ```
 
 #### BGP 邻居关系
 
 ```
-Cisco-2901-1#show bgp ipv6 unicast summary 
+Cisco-2901-1#show bgp ipv6 unicast summary
 BGP router identifier 1.1.1.1, local AS number 100
 BGP table version is 6, main routing table version 6
 3 network entries using 516 bytes of memory
@@ -401,7 +404,7 @@ Neighbor  V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRc
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-Cisco-2901-5#sh bgp ipv6 unicast summary 
+Cisco-2901-5#sh bgp ipv6 unicast summary
 BGP router identifier 5.5.5.5, local AS number 500
 BGP table version is 10, main routing table version 10
 3 network entries using 516 bytes of memory
@@ -418,7 +421,7 @@ Neighbor  V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRc
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-RP/0/RSP0/CPU0:ASR-9K#show bgp ipv6 unicast summary 
+RP/0/RSP0/CPU0:ASR-9K#show bgp ipv6 unicast summary
 Thu Aug 16 01:41:38.159 UTC
 BGP router identifier 6.6.6.6, local AS number 600
 BGP generic scan interval 60 secs
@@ -440,11 +443,11 @@ Neighbor        Spk    AS MsgRcvd MsgSent   TblVer  InQ OutQ  Up/Down  St/PfxRcd
 #### BGP路由条目
 
 ```
-Cisco-2901-1#show bgp ipv6 unicast         
+Cisco-2901-1#show bgp ipv6 unicast
 BGP table version is 6, local router ID is 1.1.1.1
-Status codes: s suppressed, d damped, h history, * valid, > best, i - internal, 
-              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter, 
-              x best-external, a additional-path, c RIB-compressed, 
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter,
+              x best-external, a additional-path, c RIB-compressed,
 Origin codes: i - IGP, e - EGP, ? - incomplete
 RPKI validation codes: V valid, I invalid, N Not found
 
@@ -455,11 +458,11 @@ RPKI validation codes: V valid, I invalid, N Not found
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-Cisco-2901-5#sh bgp ipv6 unicast         
+Cisco-2901-5#sh bgp ipv6 unicast
 BGP table version is 10, local router ID is 5.5.5.5
-Status codes: s suppressed, d damped, h history, * valid, > best, i - internal, 
-              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter, 
-              x best-external, a additional-path, c RIB-compressed, 
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter,
+              x best-external, a additional-path, c RIB-compressed,
 Origin codes: i - IGP, e - EGP, ? - incomplete
 RPKI validation codes: V valid, I invalid, N Not found
 
@@ -470,7 +473,7 @@ RPKI validation codes: V valid, I invalid, N Not found
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-RP/0/RSP0/CPU0:ASR-9K#show bgp ipv6 unicast         
+RP/0/RSP0/CPU0:ASR-9K#show bgp ipv6 unicast
 Thu Aug 16 01:42:54.887 UTC
 BGP router identifier 6.6.6.6, local AS number 600
 BGP generic scan interval 60 secs
@@ -491,7 +494,7 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 #### 路由表
 
 ```
-Cisco-2901-1#show ipv6 route bgp 
+Cisco-2901-1#show ipv6 route bgp
 B   5::5/128 [20/0]
      via FE80::4E4E:35FF:FECF:AE31, GigabitEthernet0/1.500
 B   6::6/128 [20/0]
@@ -499,7 +502,7 @@ B   6::6/128 [20/0]
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-Cisco-2901-5#show ipv6 route bgp 
+Cisco-2901-5#show ipv6 route bgp
 IPv6 Routing Table - default - 12 entries
 B   1::1/128 [20/0]
      via FE80::4E4E:35FF:FEE9:8309, GigabitEthernet0/1.500
@@ -508,12 +511,12 @@ B   6::6/128 [20/0]
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-RP/0/RSP0/CPU0:ASR-9K#show route ipv6 bgp 
+RP/0/RSP0/CPU0:ASR-9K#show route ipv6 bgp
 Thu Aug 16 01:52:25.134 UTC
 
-B    1::1/128 
+B    1::1/128
       [20/0] via 16::1, 2d18h
-B    5::5/128 
+B    5::5/128
       [20/0] via 16::1, 2d18h
 ```
 
@@ -718,7 +721,7 @@ end
 #### BGP 邻居关系
 
 ```
-R1#show bgp ipv6 unicast summary 
+R1#show bgp ipv6 unicast summary
 BGP router identifier 1.1.1.1, local AS number 100
 BGP table version is 3, main routing table version 3
 2 network entries using 344 bytes of memory
@@ -735,7 +738,7 @@ Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-R3#sh bgp ipv6 unicast summary 
+R3#sh bgp ipv6 unicast summary
 BGP router identifier 3.3.3.3, local AS number 200
 BGP table version is 3, main routing table version 3
 2 network entries using 344 bytes of memory
@@ -754,11 +757,11 @@ Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State
 #### BGP路由条目
 
 ```
-R1#show bgp ipv6 unicast         
+R1#show bgp ipv6 unicast
 BGP table version is 3, local router ID is 1.1.1.1
-Status codes: s suppressed, d damped, h history, * valid, > best, i - internal, 
-              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter, 
-              x best-external, a additional-path, c RIB-compressed, 
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter,
+              x best-external, a additional-path, c RIB-compressed,
 Origin codes: i - IGP, e - EGP, ? - incomplete
 RPKI validation codes: V valid, I invalid, N Not found
 
@@ -768,11 +771,11 @@ RPKI validation codes: V valid, I invalid, N Not found
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-R3#sh bgp ipv6 unicast         
+R3#sh bgp ipv6 unicast
 BGP table version is 3, local router ID is 3.3.3.3
-Status codes: s suppressed, d damped, h history, * valid, > best, i - internal, 
-              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter, 
-              x best-external, a additional-path, c RIB-compressed, 
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter,
+              x best-external, a additional-path, c RIB-compressed,
 Origin codes: i - IGP, e - EGP, ? - incomplete
 RPKI validation codes: V valid, I invalid, N Not found
 
