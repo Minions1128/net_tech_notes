@@ -7,9 +7,9 @@
 ### 1.1 IOS平台交换机制
 
 - 思科IOS交换分为：进程交换、快速交换和CEF(Cisco Express Forwarding, 思科快速转发)
-    - 1. 进程交换：路由器对每个报文进行route表和arp表的查询。缺点消耗CPU资源以及增加延迟, 优点支持各种负载均衡。
-    - 2. 快速交换：路由器会对报文进行分类, 将去往相同目的地的报文分到一类。对每一类的第一个报文进行route表和arp表的查询, 将结果存到cache中。后续报文会查看cache进行转发。缺点：第一个报文还是需要进程查表, 无法实现基于报文的负载均衡。优点：比进程交换速度快。
-    - 3. CEF：开启cef之后, 路由器会生成两张表被ASIC调用
+    - 进程交换：路由器对每个报文进行route表和arp表的查询。缺点消耗CPU资源以及增加延迟, 优点支持各种负载均衡。
+    - 快速交换：路由器会对报文进行分类, 将去往相同目的地的报文分到一类。对每一类的第一个报文进行route表和arp表的查询, 将结果存到cache中。后续报文会查看cache进行转发。缺点：第一个报文还是需要进程查表, 无法实现基于报文的负载均衡。优点：比进程交换速度快。
+    - CEF：开启cef之后, 路由器会生成两张表被ASIC调用
         - 邻接表: 优化后的二层表(ARP表)。
         - FIB(Forwarding Information Base, 转发信息库): 优化后的路由表, 标签是基于FIB分发的。
 
@@ -26,18 +26,18 @@
 
 - 转发标签的协议有：LDP/TDP, BGP(MPLS VPN), RSVP(MPLS TE)
 
-### 2.1 标签
-
-![mpls label](/img/mpls_label.jpg "mpls label")
-
-- Label：20 bit, 取值范围是16 ~ 1048575(2^20-1)
-- EXP：3 bit, 实验位, 作QoS
-- S：1 bit, 栈底标签标志位
-- TTL：8 bit, 防止出现环路
+### 2.1 标签报文
 
 ![mpls multi label](/img/mpls_multi_label.jpg "mpls multi label")
 
-该报文在二层到三层报文之间。以太网的类型值为0x8847(单播), 0x8848(组播和广播)
+- 该报文在二层到三层报文之间。以太网的类型值为0x8847(单播), 0x8848(组播和广播)
+
+![mpls label](/img/mpls_label.jpg "mpls label")
+
+- Label：20 bit ,标签值字段, 用来标识一个FEC, 取值范围是16 ~ 1048575(2^20-1),
+- EXP：3 bit, 实验位, 作QoS, 现在通常用做CoS（Class of Service）, 其作用与Ethernet802.1p的作用类似。
+- S：1 bit, MPLS支持多重标签, 值为1时表示为最底层标签。
+- TTL：8 bit, 和IP分组中的TTL意义相同，可以用来防止环路。
 
 ### 2.2 分发标签的过程
 
