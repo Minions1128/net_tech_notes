@@ -24,6 +24,15 @@
     - content
     - group
     - mode
+    ```
+    ansible -i hosts all -m copy -a "
+        { src=/home/shenzhejian/gwFlow_go | content=asdd }
+        dest=/home/shenzhejian/
+        group=shenzhejian
+        owner=shenzhejian
+        mode=0755
+    "
+    ```
 
 - fetch：Fetches a file from remote nodes
 
