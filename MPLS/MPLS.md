@@ -18,7 +18,7 @@
 - FEC, Forwarding Equivalent Class, 转发等价类, 具有相同属性的一类(报文), 这种相同的属性可以是：L3 VPN地址, 相同的目的地址.可以理解为一条路由条目, 对应一个标签.
 - LDP, Label Distribution Protocol, 标签分发协议, 基于TCP/UDP 646端口, 与TDP相比, 该协议支持认证.该协议用于标签的分发.
 - LIB, Label Information Base, 标签信息库, 是一种拓扑表, 存放路由条目与标签的映射关系.
-- LFIB, Label Forwarding Information Base, 标签转发信息库, 发送带标签的报文时查询入标签与出标签映射的表.
+- LFIB, Label Forwarding Information Base, 标签转发信息库, 发送带标签的报文时查询入标签与出标签映射的表. 由FIB和LDP的邻居表得来.
 - LSR, Label Switch Router, 也称为P路由器.
 - LSP, Label Switch Path, 标签交换路径, 使用MPLS建立起来的, 由LSR分组转发路径.
 
