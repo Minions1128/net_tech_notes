@@ -156,38 +156,38 @@ sh mpls forwarding-table
 
 ```
 R2:
-ip vrf r45
+ip vrf A
  rd 10:10
  route-target export 10:10
  route-target import 10:10
-ip vrf r67
+ip vrf B
  rd 20:20
  route-target export 20:20
  route-target import 20:20
 interface FastEthernet1/0
- ip vrf forwarding r45
+ ip vrf forwarding A
  ip address 24.1.1.2 255.255.255.0
  no shutdown
 int fa1/1
- ip vrf forwarding r67
+ ip vrf forwarding B
  ip add 26.1.1.2 255.255.255.0
  no shutdown
 
 R3:
-ip vrf r45
+ip vrf A
  rd 10:10
  route-target export 10:10
  route-target import 10:10
-ip vrf r67
+ip vrf B
  rd 20:20
  route-target export 20:20
  route-target import 20:20
 interface FastEthernet1/0
- ip vrf forwarding r45
+ ip vrf forwarding A
  ip address 35.1.1.3 255.255.255.0
  no shutdown
 interface FastEthernet1/1
- ip vrf forwarding r67
+ ip vrf forwarding B
  ip address 37.1.1.3 255.255.255.0
  no shutdown
 ```
@@ -222,34 +222,34 @@ sh ip bgp all summary
 
 ```
 R2:
-router ospf 110 vrf r45
+router ospf 110 vrf A
  router-id 2.2.2.2
  redistribute bgp 1 subnets
  network 24.1.1.2 0.0.0.0 area 0
 router eigrp 3000
- address-family ipv4 vrf r67 autonomous-system 90
+ address-family ipv4 vrf B autonomous-system 90
   redistribute bgp 1 metric 10000 100 255 1 1500
   network 26.1.1.2 0.0.0.0
 router bgp 1
- address-family ipv4 vrf r45
+ address-family ipv4 vrf A
   redistribute ospf 110 match internal external 1 external 2
- address-family ipv4 vrf r67
+ address-family ipv4 vrf B
   redistribute eigrp 90 metric 10
 
 R3:
 router rip
- address-family ipv4 vrf r45
+ address-family ipv4 vrf A
   redistribute bgp 1 metric transparent
   network 35.0.0.0
   no auto-summary
-router ospf 110 vrf r67
+router ospf 110 vrf B
  router-id 3.3.3.3
  redistribute bgp 1 subnets
  network 37.1.1.3 0.0.0.0 area 0
 router bgp 1
- address-family ipv4 vrf r45
+ address-family ipv4 vrf A
   redistribute rip metric 10
- address-family ipv4 vrf r67
+ address-family ipv4 vrf B
   redistribute ospf 110 match internal external 1 external 2
 
 R4:
