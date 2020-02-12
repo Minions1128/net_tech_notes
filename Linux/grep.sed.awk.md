@@ -735,10 +735,10 @@ arp -n | awk '/^[1-9]/{system("arp -d "$1)}'
 arp -n | awk '/^[1-9]/{print "arp -d ",$1}' | sh -x
 ```
 
-2. 有三个文件 name, gender, score.
+2. 有三个文件 std_num, gender, score.
 
 ```sh
-cat name
+cat std_num
 张三|000001
 李四|000002
 
@@ -747,25 +747,27 @@ cat gender
 李四|f
 
 cat score
-000001|65
-000001|70
-000002|75
-000002|80
+000001|maths|65
+000001|chemistry|70
+000002|maths|75
+000002|chemistry|80
 ```
 
-要求输出为:
+要求将学生姓名和性别还有分数对应输出, 为:
 
 ```
-张三-m-000001-65
-张三-m-000001-70
-李四-f-000002-75
-李四-f-000002-80
+张三-m-000001-maths-65
+张三-m-000001-chemistry-70
+李四-f-000002-maths-75
+李四-f-000002-chemistry-80
 ```
+
+一种 awk 的写法为:
 
 ```sh
 awk -F'|' -v OFS='-' '
-    NR==FNR{a[$1]=$2;b[$2]=$1;next}
-    NR-2==FNR{c[$1]=$2;next}
-    {print b[$1], c[b[$1]], $1, $2}
-' name gender score
+    NR==FNR{n[$2]=$1;next}
+    NR-2==FNR{g[$1]=$2;next}
+    {print n[$1], g[n[$1]], $1, $2, $3}
+' std_num gender score
 ```
