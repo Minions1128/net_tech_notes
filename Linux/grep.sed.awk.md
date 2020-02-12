@@ -60,7 +60,7 @@ Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式�
         - 注意：分组括号的模式匹配到的内容会被正则表达式引擎自动记录于内部变量中，这些变量为：`\#`
             - \1：从左侧起，第一个匹配到的组。
             - ```
-               ]# cat 1.txt 
+               ]# cat 1.txt
               He loves his lover.
               He likes his lover.
               She loves her liker.
@@ -68,7 +68,7 @@ Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式�
               ]# cat 1.txt | grep "\(l..e\).*\1"
               He loves his lover.
               She likes her liker.
-              ]# 
+              ]#
               ]# cat /etc/passwd | grep "r..t"
               root:x:0:0:root:/root:/bin/bash
               operator:x:11:0:operator:/root:/sbin/nologin
@@ -208,7 +208,7 @@ Regular Expression，REGEXP：由一类特殊字符及文本所编写的模式�
                 - `sed '/^#/!w ./ssss.txt' /etc/fstab`
             - r /PATH/FROM/SOMEFILE：读取指定文件的内容至当前文件被模式匹配到的行后面；文件合并；
             - =：为模式匹配到的行打印行号；
-            - !：条件取反: 
+            - !：条件取反:
                 - 地址定界!编辑命令；
                 - `sed '/^#/!w ./ssss.txt' /etc/fstab`
             - s///：查找替换，其分隔符可自行指定，常用的有s@@@, s###等；
@@ -304,7 +304,7 @@ hello: swap
         UUID
         ```
         ```sh
-        tail -5 /etc/fstab |  awk -F '=' '{print $1}'          
+        tail -5 /etc/fstab |  awk -F '=' '{print $1}'
         UUID
         UUID
         UUID
@@ -313,7 +313,7 @@ hello: swap
         ```
     - OFS：output field seperator，默认为空白字符；
         ```sh
-        tail -5 /etc/fstab |  awk -v FS='-' -v OFS='%%' '{print $1,$2}' 
+        tail -5 /etc/fstab |  awk -v FS='-' -v OFS='%%' '{print $1,$2}'
         UUID=5aeef323%%4cbf
         UUID=d4264ed9%%0440
         UUID=61901ea4%%9e66
@@ -322,15 +322,15 @@ hello: swap
         ```
     - RS：input record seperator，输入时的换行符；
         ```sh
-        tail -2 /etc/fstab |  awk -v RS='-'  '{print $1,$2}' 
-        UUID=82aaf98d 
-        f9da 
-        4937 
-        9f12 
+        tail -2 /etc/fstab |  awk -v RS='-'  '{print $1,$2}'
+        UUID=82aaf98d
+        f9da
+        4937
+        9f12
         9d6bf026d130 /var
-        753d 
-        439d 
-        9f08 
+        753d
+        439d
+        9f08
         28c1c544b54d swap
         ```
     - ORS：output record seperator，输出时的换行符；
@@ -348,14 +348,14 @@ hello: swap
         ```
     - NF：number of field，字段数量，`{print NF}`
         ```sh
-        tail -2 /etc/fstab | awk -F '=' '{print NF}'  
+        tail -2 /etc/fstab | awk -F '=' '{print NF}'
         2
         2
         # {print NF}为打印第二个字段
         ```
     - NR：number of record, 行数；
         ```sh
-        tail -5 /etc/fstab | awk -F '=' '{print NR}' 
+        tail -5 /etc/fstab | awk -F '=' '{print NR}'
         1
         2
         3
@@ -376,7 +376,7 @@ hello: swap
 ### 3. printf命令
 
 - 格式化输出：`printf FORMAT, item1, item2, ...`
-    - (1) FORMAT必须给出; 
+    - (1) FORMAT必须给出;
     - (2) 不会自动换行，需要显式给出换行控制符，\n
     - (3) FORMAT中需要分别为后面的每个item指定一个格式化符号；
 
@@ -451,7 +451,7 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
 - (2) /regular expression/：仅处理能够被此处的模式匹配到的行；
     - !: 对结果取反
     ```sh
-    awk -F- '/^UUID/{print $1}' /etc/fstab   
+    awk -F- '/^UUID/{print $1}' /etc/fstab
     UUID=19d170bc
     UUID=06fe9c9e
     UUID=1a6af1df
@@ -462,7 +462,7 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
     UUID=9d83aed5
     ```
     ```sh
-    awk '!/^UUID/{print $1}' /etc/fstab     
+    awk '!/^UUID/{print $1}' /etc/fstab
 
     #
     #
@@ -530,7 +530,7 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
 ### 7. 控制语句
 
 - 控制语句种类：
-    - if(condition) {statments} 
+    - if(condition) {statments}
     - if(condition) {statments} else {statements}
     - while(conditon) {statments}
     - do {statements} while(condition)
@@ -539,7 +539,7 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
     - continue
     - delete array[index]
     - delete array
-    - exit 
+    - exit
     - { statements }
 
 - 7.1 if-else
@@ -570,9 +570,9 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
     - 使用场景：对一行内的多个字段逐一类似处理时使用；对数组中的各元素逐一处理时使用；
     - e.g.1: 处理文件`/etc/grub2.cfg`中，linux16开头的每一行，统计其每个字符串的字符个数：
         ```sh
-        cat /etc/grub2.cfg | grep "^[[:space:]]*linux16" 
-                linux16 /vmlinuz-3.10.0-327.el7.x86_64 root=UUID=19d170bc-a683-4050-adba-978d99e8e910 ro rhgb quiet net.ifnames=0 biosdevname=0 
-                linux16 /vmlinuz-0-rescue-f2646364ecfc443f8bf9c2da8550a3c7 root=UUID=19d170bc-a683-4050-adba-978d99e8e910 ro rhgb quiet net.ifnames=0 biosdevname=0 
+        cat /etc/grub2.cfg | grep "^[[:space:]]*linux16"
+                linux16 /vmlinuz-3.10.0-327.el7.x86_64 root=UUID=19d170bc-a683-4050-adba-978d99e8e910 ro rhgb quiet net.ifnames=0 biosdevname=0
+                linux16 /vmlinuz-0-rescue-f2646364ecfc443f8bf9c2da8550a3c7 root=UUID=19d170bc-a683-4050-adba-978d99e8e910 ro rhgb quiet net.ifnames=0 biosdevname=0
         ####
         cat /etc/grub2.cfg | grep "^[[:space:]]*linux16" | awk '{i=1;while(i<NF) {printf "string: [%s],\t length is %s\n",$i,length($i);i++}printf"\n"}'
         awk '/^[[:space:]]*linux16/{i=1;while(i<=NF) {printf "string: [%s],\t length is %s\n", $i, length($i); i++}printf"\n"}' /etc/grub2.cfg
@@ -594,7 +594,7 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
 
         # {
         #     i=1;
-        #     while(i<NF) 
+        #     while(i<NF)
         #     {
         #         printf "string: [%s],\t length is %s\n",$i,length($i);
         #         i++
@@ -602,7 +602,7 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
         #     printf"\n"
         # }
         ```
-    - e.g.2: 在e.g.1中，只显示长度大于等于7的字符串及其长度 
+    - e.g.2: 在e.g.1中，只显示长度大于等于7的字符串及其长度
         ```sh
         cat /etc/grub2.cfg | grep "^[[:space:]]*linux16" | awk '{i=1;while(i<NF){if(length($i)>=7) printf "string: [%s],\t length is %s\n", $i, length($i); i++}printf "\n"}'
         awk '/^[[:space:]]*linux16/{i=1;while(i<NF){if(length($i)>=7) printf "string: [%s],\t length is %s\n", $i, length($i); i++}printf "\n"}' /etc/grub2.cfg
@@ -620,7 +620,7 @@ tail -5 /etc/passwd| awk -F: '{printf "%+2.2f\n",$3}'
         #     i=1;
         #     while(i<NF)
         #     {
-        #         if(length($i)>=7) 
+        #         if(length($i)>=7)
         #             printf "string: [%s],\t length is %s\n", $i, length($i);
         #         i++
         #     }
@@ -729,7 +729,39 @@ awk '{for(i=1;i<=NF;i++){count[$i]++}}END{for(i in count) {print i,count[i]}}' /
 ### 一些例子：
 
 - 清楚ARP表项
+    ```sh
+    arp -n | awk '/^[1-9]/{system("arp -d "$1)}'
+    arp -n | awk '/^[1-9]/{print "arp -d ",$1}' | sh -x
+    ```
+
+- 有三个文件 name, gender, score.
+    ```sh
+    cat name
+    张三|000001
+    李四|000002
+
+    cat gender
+    张三|m
+    李四|f
+
+    cat score
+    000001|65
+    000001|70
+    000002|75
+    000002|80
+    ```
+要求输出为:
+    ```
+    张三-m-000001-65
+    张三-m-000001-70
+    李四-f-000002-75
+    李四-f-000002-80
+    ```
+
 ```sh
-arp -n | awk '/^[1-9]/{system("arp -d "$1)}'
-arp -n | awk '/^[1-9]/{print "arp -d ",$1}' | sh -x
+awk -F'|' -v OFS='-' '
+    NR==FNR{a[$1]=$2;b[$2]=$1;next}
+    NR-2==FNR{c[$1]=$2;next}
+    {print b[$1], c[b[$1]], $1, $2}
+' name gender score
 ```
