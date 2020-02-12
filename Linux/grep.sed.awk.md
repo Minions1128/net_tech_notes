@@ -729,10 +729,11 @@ awk '{for(i=1;i<=NF;i++){count[$i]++}}END{for(i in count) {print i,count[i]}}' /
 ### 一些例子：
 
 1. 清除ARP表项
-    ```sh
-    arp -n | awk '/^[1-9]/{system("arp -d "$1)}'
-    arp -n | awk '/^[1-9]/{print "arp -d ",$1}' | sh -x
-    ```
+
+```sh
+arp -n | awk '/^[1-9]/{system("arp -d "$1)}'
+arp -n | awk '/^[1-9]/{print "arp -d ",$1}' | sh -x
+```
 
 2. 有三个文件 name, gender, score.
 
