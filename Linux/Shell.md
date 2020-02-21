@@ -67,7 +67,7 @@
             #
             file1_lines=$(grep "^$" $1 | wc -l)
             file2_lines=$(grep "^$" $2 | wc -l)
-            echo "Total blank lines: $[$file1_lines+$file2_lines]"  
+            echo "Total blank lines: $[$file1_lines+$file2_lines]"
             ```
     - **特殊变量**：shell内置的有特殊功用的变量
         - $?：上以命令的执行结果：0：成功；1-255：失败
@@ -180,16 +180,16 @@ grep "^[[:space:]]*$" /etc/rc.d/init.d/functions | wc -l
     ```
     COMMAND1 && COMMAND2
     COMMAND1 || COMMAND2
-    ! COMMAND 
+    ! COMMAND
 
     [ -O FILE ] && [ -r FILE ]
-    ```        
+    ```
     - 第二种方式：
     ```
     EXPRESSION1  -a  EXPRESSION2
     EXPRESSION1  -o  EXPRESSION2
     ! EXPRESSION
-    
+
     [ -O FILE -a -x FILE ]
     ```
 
@@ -332,9 +332,9 @@ echo "Max number: $max."
         - (1) 列出当前系统识别到的所有磁盘设备；
         - (2) 如磁盘数量为1，则显示其空间使用信息；否则，则显示最后一个磁盘上的空间使用信息；
             ```sh
-            if [ $disks -eq 1 ]; then 
+            if [ $disks -eq 1 ]; then
                 fdisk -l /dev/[hs]da
-            else 
+            else
                 fdisk -l $(fdisk -l /dev/[sh]d[a-z] | grep -o "^Disk /dev/[sh]d[a-]" | tail -1 | cut -d' ' -f2)
             fi
 ```
@@ -410,7 +410,7 @@ elif [ $userid -ge 1000 ]; then
     echo "login user."
 else
     echo "System user."
-fi                                      
+fi
 ```
 
 - 练习：写一个脚本
@@ -450,7 +450,7 @@ fi
 - 将一段代码重复执行0、1或多次；
     - 进入条件：条件满足时才进入循环；
     - 退出条件：每个循环都应该有退出条件，以有机会退出循环；
-        
+
 - bash脚本：
     - for循环
     - while循环
@@ -525,7 +525,7 @@ for filename in /var/log/*; do
         echo "Socket file."
     else
         echo "Unkown."
-    fi                  
+    fi
 done
 ```
 
@@ -560,7 +560,7 @@ done
 
 echo $sum
 ```
-        
+
 #### until循环
 
 ```sh
@@ -575,7 +575,7 @@ done
 - 示例：求100以内所有正整数之和
 
 ```sh
-            
+
 #!/bin/bash
 #
 declare -i sum=0
@@ -635,7 +635,7 @@ done
         useradd $name
         echo "$password" | passwd --stdin $name &> /dev/null
         echo "Add user $name finished."
-    fi          
+    fi
 ```
 
 - 检测脚本中的语法错误`bash -n /path/to/some_script`
@@ -659,4 +659,21 @@ else
     echo "Wrong disk special file."
     exit 2
 fi
+```
+
+
+# 数组
+
+```sh
+n_array=("name|tr|td")
+tr=0
+for name in a b c d e f g
+do
+    td=$(expr $tr \* $tr)
+    info="$name|$tr|$td"
+    n_array=("${n_array[@]}" "$info")
+    tr=$(expr $tr + 1)
+done
+for i in "${!n_array[@]}"; do echo "${n_array[$i]}"; done
+for d in ${n_array[@]};    do echo $d;               done
 ```
