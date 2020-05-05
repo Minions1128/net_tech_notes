@@ -111,17 +111,46 @@ Linux系统的组成部分:
                 - 管控/etc/init.d/每个服务脚本在各级别下的启动或关闭状态;
                 - 查看: chkconfig  --list [name]
                 - 添加: chkconfig  --add  name
-                - 能被添加的服务的脚本定义格式之一:
+                - 能被添加的服务的脚本定义格式之一, 包含举例:
                     ```sh
                     #!/bin/bash
-                    #
-                    # chkconfig: RUNLEVEL START_PRI  STOP_PRI
-                    # description:
+                    # testsrv       service testing script
+                    # chkconfig: 2345 50 60
+
+                    prog=$(basename $0)
+
+                    usage() {
+                        echo "Usage: $prog {start|stop|status|restart}"
+                        exit 1
+                    }
+
+                    if [ $# -lt 1 ]; then
+                        usage
+                    fi
+
+                    if [ $1 == "start" ]; then
+                        echo "start $prog successfully."
+                    elif [ $1 == "stop" ]; then
+                        echo "stop $prog successfully."
+                    elif [ $1 == "restart" ]; then
+                        echo "stop $prog successfully."
+                        sleep 1
+                        echo "start $prog successfully."
+                    elif [ $1 == "status" ]; then
+                        if pidof $prog &> /dev/null; then
+                            echo "$prog is running."
+                        else
+                            echo "$prog is not running."
+                        fi
+                    else
+                        usage
+                    fi
                     ```
                 - 删除: chkconfig  --del  name
                     - 修改指定的链接类型:
                         - `chkconfig  [--level  LEVELS]  name  <on|off|reset>`
                             - --level LEVELS: 指定要控制的级别; 默认为2345;
+                - 开启, 关闭: chkconfig name {on|off}
                 - 注意: 正常级别下, 最后启动的一个服务S99local没有链接至/etc/init.d下的某脚本, 而是链接至了/etc/rc.d/rc.local (/etc/rc.local)脚本; 因此, 不便或不需写为服务脚本的程序期望能开机自动运行时, 直接放置于此脚本文件中即可。
                 - 其他例子:
                     ```
