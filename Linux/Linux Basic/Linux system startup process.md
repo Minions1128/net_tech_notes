@@ -147,11 +147,10 @@ Linux系统的组成部分:
                     fi
                     ```
                 - 删除: chkconfig  --del  name
-                    - 修改指定的链接类型:
-                        - `chkconfig  [--level  LEVELS]  name  <on|off|reset>`
-                            - --level LEVELS: 指定要控制的级别; 默认为2345;
+                - 修改指定的链接类型: `chkconfig  [--level  LEVELS]  NAME  <on|off|reset>`
+                    - --level LEVELS: 指定要控制的级别; 默认为2345;
                 - 开启, 关闭: chkconfig name {on|off}
-                - 注意: 正常级别下, 最后启动的一个服务S99local没有链接至/etc/init.d下的某脚本, 而是链接至了/etc/rc.d/rc.local (/etc/rc.local)脚本; 因此, 不便或不需写为服务脚本的程序期望能开机自动运行时, 直接放置于此脚本文件中即可。
+                - 注意: 正常级别下, 最后启动的一个服务S99local没有链接至/etc/init.d下的某脚本, 而是链接至了`/etc/rc.d/rc.local or /etc/rc.local`脚本; 因此, 不便或不需写为服务脚本的程序期望能开机自动运行时, 直接放置于此脚本文件中即可.
                 - 其他例子:
                     ```
                     tty1:2345:respawn:/usr/sbin/mingetty tty1
