@@ -72,10 +72,12 @@
                     - 立即生效的方式: `sysctl -p [/PATH/TO/CONFIG_FILE]`
         - 内核参数:
             - net.ipv4.ip_forward: 核心转发;
-            - vm.drop_caches:
+            - vm.drop_caches: 手动回收内存: https://www.jianshu.com/p/016f7cf0380d
             - kernel.hostname: 主机名;
             - net.ipv4.icmp_echo_ignore_all: 忽略所有ping操作;
     - /sys目录:
         - sysfs: 输出内核识别出的各硬件设备的相关属性信息, 也有内核对硬件特性的可设置参数; 对此些参数的修改, 即可定制硬件设备工作特性;
-        - udev: 通过读取/sys目录下的硬件设备信息按需为各硬件设备创建设备文件; udev是用户空间程序; 专用工具: devadmin, hotplug;
-        - udev为设备创建设备文件时, 会读取其事先定义好的规则文件, 一般在/etc/udev/rules.d/目录下, 以及/usr/lib/udev/rules.d/目录下;
+        - udev: 通过读取/sys目录下的硬件设备信息按需为各硬件设备创建设备文件;
+            - 用户空间程序;
+            - 专用工具: devadmin, hotplug;
+            - udev为设备创建设备文件时, 会读取其事先定义好的规则文件, 一般在/etc/udev/rules.d/目录下, 以及/usr/lib/udev/rules.d/目录下;
