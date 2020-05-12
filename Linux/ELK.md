@@ -206,7 +206,7 @@ output {
 # 注意:
     # 1, 输出的日志文件名必须以“logstash-”开头, 方可将geoip.location的type自动设定为"geo_point";
     # 2, target => "geoip"
-        ```
+```
 
 - 除了使用grok filter plugin实现日志输出json化之外, 还可以直接配置服务输出为json格式;
 
