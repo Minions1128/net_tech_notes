@@ -51,11 +51,11 @@
 - IPtables的链：
     - 内置链：对应于hook function
     自定义链接：用于内置链的扩展和补充，可实现更灵活的规则管理机制；
-                
+
 - 添加规则时的考量点：
     - (1) 要实现哪种功能：判断添加到哪个表上；
     - (2) 报文流经的路径：判断添加到哪个链上；
-            
+
 - 链：链上的规则次序，即为检查的次序；因此，隐含一定的应用法则：
     - (1) 同类规则（访问同一应用），匹配范围小的放上面；
     - (2) 不同类的规则（访问不同应用），匹配到报文频率较大的放在上面；
@@ -114,7 +114,7 @@
             - -Z：zero，置零；
                 - IPtables的每条规则都有两个计数器：
                     - (1) 匹配到的报文的个数；
-                    - (2) 匹配到的所有报文的大小之和；                        
+                    - (2) 匹配到的所有报文的大小之和；
         - 查看：
             - -L：list, 列出指定鏈上的所有规则；
             - -n：numberic，以数字格式显示地址和端口号；
@@ -199,7 +199,7 @@
                         - 内核模块装载：
                             - nf_conntrack
                             - nf_conntrack_ipv4
-                        - 手动装载：nf_conntrack_ftp 
+                        - 手动装载：nf_conntrack_ftp
                     - 追踪到的连接：`/proc/net/nf_conntrack`
                     - 调整可记录的连接数量最大值：`/proc/sys/net/nf_conntrack_max`
                     - 超时时长：`/proc/sys/net/netfilter/*timeout*`
@@ -222,12 +222,12 @@
                 ~]# iptables  -I INPUT -d 172.16.0.67 -p icmp -j in_ping_rules
                 ~]# iptables -vnL --line-numbers
                 Chain INPUT (policy ACCEPT 274 packets, 29788 bytes)
-                num   pkts bytes target     prot opt in     out   source        destination         
-                1        0     0 in_ping_rules  icmp --  *    *   0.0.0.0/0     172.16.0.67              
-                                                                                               
-                Chain in_ping_rules (1 references)                                  
-                num   pkts bytes target     prot opt in     out   source        destination         
-                1        0     0 ACCEPT     icmp --  *      *     172.16.0.68   172.16.0.67         
+                num   pkts bytes target     prot opt in     out   source        destination
+                1        0     0 in_ping_rules  icmp --  *    *   0.0.0.0/0     172.16.0.67
+
+                Chain in_ping_rules (1 references)
+                num   pkts bytes target     prot opt in     out   source        destination
+                1        0     0 ACCEPT     icmp --  *      *     172.16.0.68   172.16.0.67
                 2        0     0 ACCEPT     icmp --  *      *     0.0.0.0/0     172.16.0.67   icmptype 8
                 ```
 

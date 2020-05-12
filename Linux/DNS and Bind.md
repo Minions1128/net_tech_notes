@@ -136,7 +136,7 @@
     - bind-utils：bind客户端程序集，例如dig, host, nslookup等；
     - bind：提供的dns server程序、以及几个常用的测试程序；
     - bind-chroot：选装，让named运行于jail模式下；
-            
+
 - bind：
     - 主配置文件：/etc/named.conf, 或包含进来其它文件；
         - /etc/named.iscdlv.key
@@ -172,7 +172,7 @@
             ```
         - 关闭仅允许本地查询：`//allow-query  { localhost; };`or`allow-query  { any; };`
         - 检查配置文件语法错误：`named-checkconf [/etc/named.conf]`
-                    
+
 - 测试工具：dig, host, nslookup等
     - dig命令：`dig  [-t RR_TYPE]  name  [@SERVER]  [query options]`
         - 用于测试dns系统，因此其不会查询hosts文件；
@@ -196,7 +196,7 @@
         ```
         zone  "ZONE_NAME"  IN  {
             type  {master|slave|hint|forward};
-            file  "ZONE_NAME.zone"; 
+            file  "ZONE_NAME.zone";
         };
         ```
     - (2) 建立区域数据文件（主要记录为A或AAAA记录）在/var/named目录下建立区域数据文件；
@@ -225,7 +225,7 @@
             ```
             chgrp  named  /var/named/example.com.zone
             chmod  o=  /var/named/example.com.zone
-            ```       
+            ```
         - 检查语法错误：
             ```
             named-checkzone  ZONE_NAME   ZONE_FILE
@@ -243,7 +243,7 @@
             ```
             zone  "ZONE_NAME"  IN  {
                 type  {master|slave|hint|forward};
-                file  "ZONE_NAME.zone"; 
+                file  "ZONE_NAME.zone";
             };
             ```
         - 注意：反向区域的名字：
@@ -291,7 +291,7 @@
         - 从服务器是区域级别的概念；
         - 时间要同步；ntpdate命令；
     - 配置一个从区域：
-        - On Slave 
+        - On Slave
             - (1) 定义区域：
                 - 定义一个从区域；
                     ```
@@ -361,7 +361,7 @@
     - 访问控制指令：
         - allow-query  {};  允许查询的主机；白名单；
         - allow-transfer {};  允许向哪些主机做区域传送；默认为向所有主机；应该配置仅允许从服务器；
-        - allow-recursion {}; 允许哪此主机向当前DNS服务器发起递归查询请求； 
+        - allow-recursion {}; 允许哪此主机向当前DNS服务器发起递归查询请求；
         - allow-update {}; DDNS，允许动态更新区域数据库文件中内容；
 
 - bind view：视图：
@@ -382,7 +382,7 @@
                 file  "example.com/internal";
             };
         };
-        
+
         view external {
             match-clients { any; };
             zone "example.com" IN {

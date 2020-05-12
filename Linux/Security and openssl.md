@@ -4,7 +4,7 @@
 
 - 通信回顾：
     - 同一主机上的进程间通信：IPC， message queue, shm, semerphor
-    - 不同主上的进程间通信：socket 
+    - 不同主上的进程间通信：socket
 
 - SSL: Secure Sockets Layer: http --> ssl --> https
 
@@ -35,7 +35,7 @@
 
 - 密钥算法和协议
     - 对称加密：加密和解密使用同一个密钥；
-        - DES：Data Encryption Standard; 
+        - DES：Data Encryption Standard;
         - 3DES：Triple DES;
         - AES：Advanced Encryption Standard;  (128bits, 192bits, 256bits, 384bits)
         - Blowfish, Twofish, IDEA, RC6, CAST5
@@ -121,7 +121,7 @@
     - V1.0, V1.1, V1.2, V1.3
     - 分层设计：
         - 1、最底层：基础算法原语的实现，aes, rsa, md5
-        - 2、向上一层：各种算法的实现； 
+        - 2、向上一层：各种算法的实现；
         - 3、再向上一层：组合算法实现的半成品；
         - 4、用各种组件拼装而成的各种成品密码学协议软件；
 

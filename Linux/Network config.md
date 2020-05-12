@@ -21,7 +21,7 @@
             - 注意：
                 1. DNS服务器指定：配置文件：`/etc/resolv.conf`
                 2. 本地主机名配置：配置文件：`/etc/sysconfig/network`
-                    - CentOS 7：hostnamectl                    
+                    - CentOS 7：hostnamectl
 
         - 配置文件：RedHat及相关发行版
             `/etc/sysconfig/network-scripts/ifcfg-NETCARD_NAME`
@@ -53,7 +53,7 @@
 - ifconfig命令：接口及地址查看和管理
     - `ifconfig [INTERFACE]`
     - `-a`：显示所有接口，包括inactive状态的接口
-    
+
     - `ifconfig interface [aftype] options | address ...`：配置地址的方式
         - `ifconfig IFACE IP/MASK [up|down]`或者`ifconfig IFACE IP netmask NETMASK`
             - options：[-]promisc：（关闭）开启接口的混杂模式：（混杂模式，是指一台机器的网卡能够接收所有经过它的数据流，而不论其目的地址是否是它。）
@@ -102,7 +102,7 @@
 
 - ifup/ifdown命令：开启/禁用某个端口
     - 注意：通过配置文件`/etc/sysconfig/network-scripts/ifcfg-IFACE`来识别接口并完成配置
-    
+
 - 配置主机名：
     - hostname命令：
         - 查看：`hostname`
@@ -198,8 +198,8 @@
             - SYN_RECV：
             - CLOSED：
     - EXPRESSION：
-        - dport = 
-        - sport = 
+        - dport =
+        - sport =
         - 示例：
             ```
                 ~]# ss -tan '(  dport = :22 or sport = :22  )'
@@ -294,12 +294,12 @@
         - BOOTPROTO：网上别名不支持动态获取地址，只能选择static, none
 
 ## 网络客户端工具：
-   
-- hping命令: send (almost) arbitrary TCP/IP packets to network hosts, (package: hping3) 
+
+- hping命令: send (almost) arbitrary TCP/IP packets to network hosts, (package: hping3)
     - --fast, Alias for -i u10000. Hping will send 10 packets for second.
     - --faster, Alias for -i u1. Faster then --fast ;) (but not as fast as your computer can send packets due to the signal-driven design).
     - --flood, Sent packets as fast as possible, without taking care to show incoming replies.  This is ways faster than to specify the -i u0 option.
-    - -i uX, 
+    - -i uX,
 
 - ftp命令: File Transfer Protocol
     - ftp服务命令行客户端工具；

@@ -158,7 +158,7 @@
             - 从终端拆除：ctrl+p, ctrl+q
             - attach：附加至某运行状态的容器的终端设备；
             - exec：让运行中的容器运行一个额外的程序；
-        
+
 - 查看：
     - logs：Fetch the logs of a container，容器内部程序运行时输出到终端的信息；
         - 例如：`docker logs CONTAINER-NAME`
@@ -251,7 +251,7 @@
         - 存储于联合文件系统中，不易于宿主机访问；
         - 容器间数据共享不便
         - 删除容器其数据会丢失
-    - 解决方案：“卷(volume)”: 
+    - 解决方案：“卷(volume)”:
 
 [![docker.cow](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.cow.jpg "docker.cow")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.cow.jpg "docker.cow")
 
@@ -302,7 +302,7 @@
             - `]# docker run --rm --dns 172.16.0.1 --add-host "docker.com:172.16.0.100" busybox:latest nslookup docker.com`
 
 - Joined containers: 指使用某个已存在容器的网络接口的容器，接口被联盟内的各容器共享使用；因此，联盟式容器彼此间完全无隔离，
-    - 例如: 
+    - 例如:
         - 创建一个监听于2222端口的http服务容器
             - `]# docker run -d -it --rm -p 2222 busybox:latest /bin/httpd -p 2222 -f`
         - 创建一个联盟式容器，并查看其监听的端口

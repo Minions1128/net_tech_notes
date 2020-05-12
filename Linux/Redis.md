@@ -6,7 +6,7 @@
     - C：多个数据节点上的数据一致；
     - A：用户发出请求后的有限时间范围内返回结果；
     - P：network partition，网络发生分区后，服务是否依然可用；
-    - CAP理论：一个分布式系统不可能同时满足C、A、P三个特性，最多可同时满足其中两者；对于分布式系统满足分区容错性几乎是必须的。     
+    - CAP理论：一个分布式系统不可能同时满足C、A、P三个特性，最多可同时满足其中两者；对于分布式系统满足分区容错性几乎是必须的。
         - AP: C：弱一致性；
         - CP:
 
@@ -21,7 +21,7 @@
 
 - NoSQL：Not Only SQL
     - http://www.nosql-databases.org/
-    - Key Value / Tuple Store：DynamoDB, redis 
+    - Key Value / Tuple Store：DynamoDB, redis
     - column Family：列式数据库, hbase
     - Document Store：文档数据库，mongodb, elastic
     - Graph Databases：图式数据库，Neo4j
@@ -30,7 +30,7 @@
 
 ## Redis
 
-- Redis (REmote DIctionary Server) is an open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker. 
+- Redis (REmote DIctionary Server) is an open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker.
     - 开源、内存存储、数据结构存储；
     - 可用作：数据库、缓存、消息队列；
 
@@ -69,7 +69,7 @@
         "help @<group>" to get a list of commands in <group>
         "help <command>" for help on <command>
         "help <tab>" to get a list of possible help topics
-        "quit" to exit      
+        "quit" to exit
     ```
 
 ### 简单命令
@@ -96,7 +96,7 @@
     - LINDEX
     - LSET
 
-- @set 
+- @set
     - SADD
     - SPOP： 随机弹出一个元素
     - SREM：删除
@@ -142,7 +142,7 @@
     - Advanced配置
 
 - 通用配置项：
-    - daemonize, supervised, loglevel, pidfile, logfile, 
+    - daemonize, supervised, loglevel, pidfile, logfile,
     - databases：设定数据库数量，默认为16个，每个数据库的名字均为整数，从0开始编号，默认操作的数据库为0；
     - 切换数据库的方法：`SELECT <dbid>`
 
@@ -173,7 +173,7 @@
 
 - ADVANCED配置：
     - hash-max-ziplist-entries 512
-    - hash-max-ziplist-value 64，设置ziplist的键数量最大值，每个值的最大空间； 
+    - hash-max-ziplist-value 64，设置ziplist的键数量最大值，每个值的最大空间；
     - client-output-buffer-limit normal 0 0 0
     - client-output-buffer-limit slave 256mb 64mb 60
     - client-output-buffer-limit pubsub 32mb 8mb 60
@@ -193,7 +193,7 @@
     - help @connection
     - `AUTH <password>`
     - `ECHO <message>`
-    - PING 
+    - PING
     - QUIT
     - SELECT dbid
 
@@ -207,7 +207,7 @@
     - CLIENT LIST
     - CLIENT PAUSE
         - CLIENT PAUSE timeout
-    - CLIENT REPLY               
+    - CLIENT REPLY
     - CLIENT SETNAME：Set the current connection name
     - SHUTDOWN [NOSAVE|SAVE]
     - 配置参数可运行时修改：
@@ -217,7 +217,7 @@
         - CONFIG SET
         - INFO：服务器状态信息查看；分为多个secion；
             - `INFO [section]`
-             
+
 - Redis的持久化:
     - RDB：snapshotting
         - 二进制格式；
@@ -229,7 +229,7 @@
     - AOF：Append Only File, fsync
         - 记录每次写操作至指定的文件尾部实现的持久化；
         - 当redis重启时，可通过重新执行文件中的命令在内存中重建出数据库；
-        - BGREWRITEAOF：AOF文件重写；不会读取正在使用AOF文件，而是通过将内存中的数据以命令的方式保存至临时文件中，完成之后替换原来的AOF文件； 
+        - BGREWRITEAOF：AOF文件重写；不会读取正在使用AOF文件，而是通过将内存中的数据以命令的方式保存至临时文件中，完成之后替换原来的AOF文件；
 
 - RDB相关的配置：
     - `save <seconds> <changes>`
@@ -251,14 +251,14 @@
         - everysec：每秒一次；
         - always：每语句一次；
     - no-appendfsync-on-rewrite no: 是否在后台执行aof重写期间不调用fsync，默认为no，表示调用；
-    - `auto-aof-rewrite-percentage 100`和`auto-aof-rewrite-min-size 64mb`: 这两个条件同时满足时，方会触发重写AOF；与上次aof文件大小相比，其增长量超过100%，且大小不少于64MB; 
+    - `auto-aof-rewrite-percentage 100`和`auto-aof-rewrite-min-size 64mb`: 这两个条件同时满足时，方会触发重写AOF；与上次aof文件大小相比，其增长量超过100%，且大小不少于64MB;
     - aof-load-truncated yes
     - 注意：持久机制本身不能取代备份；应该制订备份策略，对redis库定期备份；
-        
-- 建议RDB和AOF不要同时启用，如果RDB与AOF同时启用： 
+
+- 建议RDB和AOF不要同时启用，如果RDB与AOF同时启用：
     - (1) BGSAVE和BGREWRITEAOF不会同时进行；
     - (2) Redis服务器启动时用持久化的数据文件恢复数据，会优先使用AOF；
-            
+
 - 主从复制：
     - 特点：
         - 一个Master可以有多个slave主机，支持链式复制；
@@ -281,7 +281,7 @@
         - `*repl-timeout 60`
         - repl-disable-tcp-nodelay no
         - repl-backlog-size 1mb
-        - `*slave-priority 100`: 复制集群中，主节点故障时，sentinel应用场景中的主节点选举时使用的优先级；数字越小优先级越高，但0表示不参与选举； 
+        - `*slave-priority 100`: 复制集群中，主节点故障时，sentinel应用场景中的主节点选举时使用的优先级；数字越小优先级越高，但0表示不参与选举；
         - min-slaves-to-write 3：主节点仅允许其能够通信的从节点数量大于等于此处的值时接受写操作；
         - min-slaves-max-lag 10：从节点延迟时长超出此处指定的时长时，主节点会拒绝写入操作；
 
@@ -300,7 +300,7 @@
         - `sentinel failover-timeout <master-name> <milliseconds>`: sentinel必须在此指定的时长内完成故障转移操作，否则，将视为故障转移操作失败；
         - `sentinel notification-script <master-name> <script-path>`: 通知脚本，此脚本被自动传递多个参数；
     - redis-cli -h SENTINEL_HOST -p SENTINEL_PORT
-        - redis-cli> 
+        - redis-cli>
         - SENTINEL masters
         - SENTINEL slaves <MASTER_NAME>
         - SENTINEL failover <MASTER_NAME>

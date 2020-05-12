@@ -56,7 +56,7 @@ gateway 10.10.51.1
 # 全局信息
 option domain-name "example.com";
 option domain-name-servers ns1.example.com, ns2.example.com;
-default-lease-time 3600; 
+default-lease-time 3600;
 max-lease-time 7200;
 authoritative;
 option voip-cfg code 242 = string;  # 自定义option
