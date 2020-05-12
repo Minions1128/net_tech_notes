@@ -169,11 +169,11 @@ ansible -i hosts all -m raw -a "
     - (2) 用户自定义变量:
         - (a) ansible-playbook命令的命令行中的: -e VARS, --extra-vars=VARS
         - (b) 在playbook中定义变量的方法:
-            ```
+            ```yaml
             - var1: value1
             - var2: value2
             ```
-            ```
+            ```yaml
             - hosts: all
               remote_user: root
               tasks:
@@ -187,7 +187,7 @@ ansible -i hosts all -m raw -a "
             - (i) 向不同的主机传递不同的变量;
                 - IP/HOSTNAME varaiable=value var2=value2
             - (ii) 向组中的主机传递相同的变量; 在host文件中，定义:
-            ```
+            ```yaml
             - [groupname:vars]
             - variable=value
             ```
@@ -201,7 +201,7 @@ ansible -i hosts all -m raw -a "
             # vim /etc/ansible/hosts
             10.0.0.1  ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=root@123
             ```
-            ```
+            ```yaml
             # hosts
             10.0.0.1 http_port=80
             10.0.0.2 http_port=80
@@ -235,7 +235,7 @@ ansible -i hosts all -m raw -a "
     - mode=
 
 - templates: 文本文件，嵌套有脚本（使用模板编程语言编写）,Jinja2，示例:
-    ```
+    ```yaml
     # cat var.yaml
     - hosts: websrvs
       remote_user: root
@@ -318,7 +318,7 @@ ansible -i hosts all -m raw -a "
     - meta/: 至少应该包含一个名为main.yml的文件，定义当前角色的特殊设定及其依赖关系; 其它的文件需要在此文件中通过include进行包含;
     - default/: 设定默认变量时使用此目录中的main.yml文件;
     - 在playbook调用角色方法1:
-        ```
+        ```yaml
         - hosts: websrvs
           remote_user: root
           roles:
@@ -327,7 +327,7 @@ ansible -i hosts all -m raw -a "
             - nginx
         ```
     - 在playbook调用角色方法2: 传递变量给角色
-        ```
+        ```yaml
         - hosts:
           remote_user:
           roles:
@@ -335,7 +335,7 @@ ansible -i hosts all -m raw -a "
         ```
     - 键role用于指定角色名称; 后续的k/v用于传递变量给角色;
     - 还可以基于条件测试实现角色调用;
-        ```
+        ```yaml
         roles:
         - { role: nginx, when: "ansible_distribution_major_version == '7' " }
         ```

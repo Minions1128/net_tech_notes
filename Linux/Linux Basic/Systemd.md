@@ -15,21 +15,21 @@
 
 - 核心概念：unit
     - 由其相关配置文件进行标识、识别和配置；
-    - 文件中主要包含了系统服务、监听的socket、保存的快照以及其它与init相关的信息； 
+    - 文件中主要包含了系统服务、监听的socket、保存的快照以及其它与init相关的信息；
     - 这些配置文件主要保存在：
         - /usr/lib/systemd/system
         - /run/systemd/system
         - /etc/systemd/system
     - 常见类型：
-        - Service unit：     .service    用于定义系统服务；
-        - Target unit：      .target     用于模拟实现“运行级别”；
-        - Device unit：      .device     用于定义内核识别的设备；
-        - Mount unit：       .mount      定义文件系统挂载点；
-        - Socket unit：      .socket     用于标识进程间通信用到的socket文件；
-        - Snapshot unit：    .snapshot   管理系统快照；
-        - Swap unit：        .swap       用于标识swap设备；
-        - Automount unit：   .automount  文件系统自动点设备；
-        - Path unit：        .path       用于定义文件系统中的一文件或目录；
+        - Service unit：    .service    用于定义系统服务；
+        - Target unit：     .target     用于模拟实现“运行级别”；
+        - Device unit：     .device     用于定义内核识别的设备；
+        - Mount unit：      .mount      定义文件系统挂载点；
+        - Socket unit：     .socket     用于标识进程间通信用到的socket文件；
+        - Snapshot unit：   .snapshot   管理系统快照；
+        - Swap unit：       .swap       用于标识swap设备；
+        - Automount unit：  .automount  文件系统自动点设备；
+        - Path unit：       .path       用于定义文件系统中的一文件或目录；
 
 - 关键特性：
     - 基于socket的激活机制：socket与程序分离；
@@ -43,27 +43,27 @@
     - systemctl的命令是固定不变的；
     - 非由systemd启动的服务，systemctl无法与之通信；
 
-- 管理系统服务：CentOS 7： service类型的unit文件；
-            
+- 管理系统服务：CentOS 7：service类型的unit文件；
+
 - syscemctl命令：Control the systemd system and service manager, 格式`systemctl  [OPTIONS...]  COMMAND  [NAME...]`
-    - 启动： service  NAME  start  ==>  systemctl  start  NAME.service
-    - 停止： service  NAME  stop  ==> systemctl  stop  NAME.service
-    - 重启： service  NAME  restart  ==>  systemctl  restart  NAME.service
-    - 状态： service  NAME  status  ==>  systemctl  status  NAME.service
+    - 启动：service  NAME  start  ==>  systemctl  start  NAME.service
+    - 停止：service  NAME  stop  ==> systemctl  stop  NAME.service
+    - 重启：service  NAME  restart  ==>  systemctl  restart  NAME.service
+    - 状态：service  NAME  status  ==>  systemctl  status  NAME.service
     - -
     - 条件式重启：service  NAME  condrestart  ==>  systemctl  try-restart  NAME.service
-    - 重载或重启服务： systemctl  reload-or-restart  NAME.servcie
+    - 重载或重启服务：systemctl  reload-or-restart  NAME.servcie
     - 重载或条件式重启服务：systemctl  reload-or-try-restart  NAME.service
     - -
-    - 查看某服务当前激活与否的状态： systemctl  is-active  NAME.service
+    - 查看某服务当前激活与否的状态：systemctl  is-active  NAME.service
     - 查看所有已激活的服务：systemctl  list-units  --type  service
-    - 查看所有服务（已激活及未激活）: chkconfig --lsit  ==>  systemctl  list-units  -t  service  --all 
+    - 查看所有服务（已激活及未激活）: chkconfig --lsit  ==>  systemctl  list-units  -t  service  --all
     - -
-    - 设置服务开机自启： chkconfig  NAME  on  ==>  systemctl  enable  NAME.service
-    - 禁止服务开机自启： chkconfig  NAME  off  ==>  systemctl  disable  NAME.service 
-    - 查看某服务是否能开机自启： chkconfig  --list  NAME  ==>  systemctl  is-enabled  NAME.service
-    - 禁止某服务设定为开机自启： systemctl  mask  NAME.service
-    - 取消此禁止： systemctl  unmask  NAME.servcie
+    - 设置服务开机自启：chkconfig  NAME  on  ==>  systemctl  enable  NAME.service
+    - 禁止服务开机自启：chkconfig  NAME  off  ==>  systemctl  disable  NAME.service
+    - 查看某服务是否能开机自启：chkconfig  --list  NAME  ==>  systemctl  is-enabled  NAME.service
+    - 禁止某服务设定为开机自启：systemctl  mask  NAME.service
+    - 取消此禁止：systemctl  unmask  NAME.servcie
     - 查看服务的依赖关系：systemctl  list-dependencies  NAME.service
 
 - 管理target units：
@@ -75,20 +75,20 @@
         - 4  ==>  runlevel4.tartet,  multi-user.target
         - 5  ==>  runlevel5.target,  graphical.target
         - 6  ==>  runlevel6.target,  reboot.target
-    - 级别切换： init  N  ==>  systemctl  isolate  NAME.target
-    - 查看级别： runlevel  ==>  systemctl  list-units  --type  target
-    - 查看所有级别： systemctl  list-units  -t  target  -a
-    - 获取默认运行级别：systemctl  get-default  
-    - 修改默认运行级别： systemctl  set-default   NAME.target
-    - 切换至紧急救援模式： systemctl  rescue
-    - 切换至emergency模式： systemctl  emergency
+    - 级别切换：init  N  ==>  systemctl  isolate  NAME.target
+    - 查看级别：runlevel  ==>  systemctl  list-units  --type  target
+    - 查看所有级别：systemctl  list-units  -t  target  -a
+    - 获取默认运行级别：systemctl  get-default
+    - 修改默认运行级别：systemctl  set-default   NAME.target
+    - 切换至紧急救援模式：systemctl  rescue
+    - 切换至emergency模式：systemctl  emergency
 
 - 其它常用命令：
-    - 关机： systemctl  halt,  systemctl  poweroff
-    - 重启： systemctl  reboot
-    - 挂起： systemctl  suspend
-    - 快照： systemctl  hibernate 
-    - 快照并挂起： systemctl  hybrid-sleep
+    - 关机：systemctl  halt,  systemctl  poweroff
+    - 重启：systemctl  reboot
+    - 挂起：systemctl  suspend
+    - 快照：systemctl  hibernate
+    - 快照并挂起：systemctl  hybrid-sleep
 
 - service unit file：
     - 文件通常由三部分组成：
