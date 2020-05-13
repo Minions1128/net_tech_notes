@@ -27,9 +27,9 @@
         - Mount unit: `.mount`定义文件系统挂载点;
         - Socket unit: `.socket`用于标识进程间通信用到的socket文件;
         - Snapshot unit: `.snapshot`管理系统快照;
-        - Swap unit:        .swap       用于标识swap设备;
-        - Automount unit:   .automount  文件系统自动点设备;
-        - Path unit:        .path       用于定义文件系统中的一文件或目录;
+        - Swap unit: `.swap`用于标识swap设备;
+        - Automount unit: `.automount`文件系统自动点设备;
+        - Path unit: `.path`用于定义文件系统中的一文件或目录;
 
 - 关键特性:
     - 基于socket的激活机制: socket与程序分离;
@@ -45,26 +45,24 @@
 
 - 管理系统服务: CentOS 7: service类型的unit文件;
 
-- syscemctl命令: Control the systemd system and service manager, 格式`systemctl  [OPTIONS...]  COMMAND  [NAME...]`
-    - 启动: service  NAME  start  ==>  systemctl  start  NAME.service
-    - 停止: service  NAME  stop  ==> systemctl  stop  NAME.service
-    - 重启: service  NAME  restart  ==>  systemctl  restart  NAME.service
-    - 状态: service  NAME  status  ==>  systemctl  status  NAME.service
+- syscemctl命令: Control the systemd system and service manager, 格式`systemctl [OPTIONS...] COMMAND [NAME...]`
+    - 启动: service NAME start  ==>  systemctl start NAME.service
+    - 停止: service NAME stop  ==> systemctl stop NAME.service
+    - 重启: service NAME restart  ==>  systemctl restart NAME.service
+    - 状态: service NAME status  ==>  systemctl status NAME.service
     - -
-    - 条件式重启: service  NAME  condrestart  ==>  systemctl  try-restart  NAME.service
-    - 重载或重启服务: systemctl  reload-or-restart  NAME.servcie
-    - 重载或条件式重启服务: systemctl  reload-or-try-restart  NAME.service
+    - 条件式重启: service NAME condrestart  ==>  systemctl try-restart NAME.service
+    - 重载或重启服务(Reload one or more units if possible, otherwise start or restart): systemctl reload-or-restart NAME.servcie
+    - 重载或条件式重启服务(Reload one or more units if possible, otherwise restart if active): systemctl reload-or-try-restart NAME.service
     - -
-    - 查看某服务当前激活与否的状态: systemctl  is-active  NAME.service
-    - 查看所有已激活的服务: systemctl  list-units  --type  service
-    - 查看所有服务（已激活及未激活）: chkconfig --lsit  ==>  systemctl  list-units  -t  service  --all
+    - 查看某服务当前激活与否的状态: systemctl is-active NAME.service
+    - 查看所有已激活的服务: systemctl list-units --type service
+    - 查看所有服务(已激活及未激活): chkconfig --lsit  ==>  systemctl list-units -t service --all
     - -
-    - 设置服务开机自启: chkconfig  NAME  on  ==>  systemctl  enable  NAME.service
-    - 禁止服务开机自启: chkconfig  NAME  off  ==>  systemctl  disable  NAME.service
-    - 查看某服务是否能开机自启: chkconfig  --list  NAME  ==>  systemctl  is-enabled  NAME.service
-    - 禁止某服务设定为开机自启: systemctl  mask  NAME.service
-    - 取消此禁止: systemctl  unmask  NAME.servcie
-    - 查看服务的依赖关系: systemctl  list-dependencies  NAME.service
+    - 设置服务开机(禁止)自启: chkconfig NAME { on | off }  ==>  systemctl { enable | disable } NAME.service
+    - 查看某服务是否能开机自启: chkconfig --list NAME  ==>  systemctl is-enabled NAME.service
+    - (取消)禁止某服务设定为开机自启: systemctl { mask | unmask } NAME.service
+    - 查看服务的依赖关系: systemctl list-dependencies NAME.service
 
 - 管理target units:
     - 运行级别:
