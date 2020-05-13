@@ -14,15 +14,15 @@
     - 基于依赖关系定义服务控制逻辑;
 
 - 核心概念: unit
-    - 由其相关配置文件进行标识、识别和配置;
-    - 文件中主要包含了系统服务、监听的socket、保存的快照以及其它与init相关的信息;
+    - 由其相关配置文件进行标识, 识别和配置;
+    - 文件中主要包含了系统服务, 监听的socket, 保存的快照以及其它与init相关的信息;
     - 这些配置文件主要保存在:
         - /usr/lib/systemd/system
         - /run/systemd/system
         - /etc/systemd/system
     - 常见类型:
         - Service unit: `.service`用于定义系统服务;
-        - Target unit: `.target`用于模拟实现“运行级别”;
+        - Target unit: `.target`用于模拟实现"运行级别";
         - Device unit: `.device`用于定义内核识别的设备;
         - Mount unit: `.mount`定义文件系统挂载点;
         - Socket unit: `.socket`用于标识进程间通信用到的socket文件;
@@ -73,48 +73,68 @@
         - 4  ==>  runlevel4.tartet,  multi-user.target
         - 5  ==>  runlevel5.target,  graphical.target
         - 6  ==>  runlevel6.target,  reboot.target
-    - 级别切换: init  N  ==>  systemctl  isolate  NAME.target
-    - 查看级别: runlevel  ==>  systemctl  list-units  --type  target
-    - 查看所有级别: systemctl  list-units  -t  target  -a
-    - 获取默认运行级别: systemctl  get-default
-    - 修改默认运行级别: systemctl  set-default   NAME.target
-    - 切换至紧急救援模式: systemctl  rescue
-    - 切换至emergency模式: systemctl  emergency
+    - 级别切换: init N  ==>  systemctl isolate  NAME.target
+    - 查看级别: runlevel ==>  systemctl list-units --type target
+    - 查看所有级别: systemctl list-units -t target -a
+    - 获取默认运行级别: systemctl get-default
+    - 修改默认运行级别: systemctl set-default  NAME.target
+    - 切换至紧急救援模式: systemctl rescue
+    - 切换至emergency模式: systemctl emergency
 
 - 其它常用命令:
-    - 关机: systemctl  halt,  systemctl  poweroff
-    - 重启: systemctl  reboot
-    - 挂起: systemctl  suspend
-    - 快照: systemctl  hibernate
-    - 快照并挂起: systemctl  hybrid-sleep
+    - 关机: systemctl halt, systemctl poweroff
+    - 重启: systemctl reboot
+    - 挂起: systemctl suspend
+    - 休眠: systemctl hibernate
+    - 快照并挂起: systemctl hybrid-sleep
 
 - service unit file:
     - 文件通常由三部分组成:
-        - [Unit]: 定义与Unit类型无关的通用选项; 用于提供unit的描述信息、unit行为及依赖关系等;
+        - [Unit]: 定义与Unit类型无关的通用选项; 用于提供unit的描述信息, unit行为及依赖关系等;
         - [Service]: 与特定类型相关的专用选项; 此处为Service类型;
-        - [Install]: 定义由“systemctl  enable”以及"systemctl  disable“命令在实现服务启用或禁用时用到的一些选项;
-    - Unit段的常用选项:
+        - [Install]: 定义由`systemctl enable`以及`systemctl disable`命令在实现服务启用或禁用时用到的一些选项;
+    - [Unit]段的常用选项:
         - Description: 描述信息;  意义性描述;
         - After: 定义unit的启动次序; 表示当前unit应该晚于哪些unit启动; 其功能与Before相反;
         - Requies: 依赖到的其它units; 强依赖, 被依赖的units无法激活时, 当前unit即无法激活;
         - Wants: 依赖到的其它units; 弱依赖;
         - Conflicts: 定义units间的冲突关系;
-    - Service段的常用选项:
-        - Type: 用于定义影响ExecStart及相关参数的功能的unit进程启动类型;
-            - 类型包括:
-                - simple:
-                - forking:
-                - oneshot:
-                - dbus:
-                - notify:
-                - idle:
+    - [Service]段的常用选项:
+        - Type: 用于定义影响ExecStart及相关参数的功能的unit进程启动类型, 类型包括:
+            - simple: 默认值, 这个daemon主要由ExecStart接的指令串来启动, 启动后常驻于内存中
+            - forking: 由ExecStart启动的程序透过spawns延伸出其他子程序来作为此daemon的主要服务. 原生父程序在启动结束后就会终止
+            - oneshot: 与simple类似, 不过这个程序在工作完毕后就结束了, 不会常驻在内存中
+            - dbus: 与simple类似, 但这个daemon必须要在取得一个D-Bus的名称后, 才会继续运作. 因此通常也要同时设定BusNname= 才行
+            - notify: 在启动完成后会发送一个通知消息. 还需要配合NotifyAccess来让Systemd接收消息
+            - idle: 与simple类似, 要执行这个daemon必须要所有的工作都顺利执行完毕后才会执行. 这类的daemon通常是开机到最后才执行即可的服务
         - EnvironmentFile: 环境配置文件;
         - ExecStart: 指明启动unit要运行命令或脚本;  ExecStartPre, ExecStartPost
         - ExecStop: 指明停止unit要运行的命令或脚本;
         - Restart:
-    - Install段的常用选项:
+    - [Install]段的常用选项:
         - Alias:
         - RequiredBy: 被哪些units所依赖;
         - WantedBy: 被哪些units所依赖;
 
 - 注意: 对于新创建的unit文件或, 修改了的unit文件, 要通知systemd重载此配置文件. `systemctl daemon-reload`
+
+```sh
+cat /usr/lib/systemd/system/httpd.service | grep -v "^#"
+[Unit]
+Description=The Apache HTTP Server
+After=network.target remote-fs.target nss-lookup.target
+Documentation=man:httpd(8)
+Documentation=man:apachectl(8)
+
+[Service]
+Type=notify
+EnvironmentFile=/etc/sysconfig/httpd
+ExecStart=/usr/sbin/httpd $OPTIONS -DFOREGROUND
+ExecReload=/usr/sbin/httpd $OPTIONS -k graceful
+ExecStop=/bin/kill -WINCH ${MAINPID}
+KillSignal=SIGCONT
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+```
