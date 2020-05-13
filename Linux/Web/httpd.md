@@ -1,4 +1,4 @@
-# HTTPD
+# httpd
 
 - httpd的安装和使用: ASF: apache software foundation, httpd: apache (a patchy server)
 

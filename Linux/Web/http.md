@@ -95,6 +95,8 @@
 <entity-body>
 ```
 
+### 相关解释
+
 - version: `HTTP/<major>.<minor>`
 
 - reason-phrase: 状态码所标记的状态的简要描述;
@@ -111,22 +113,22 @@
     - OPTIONS: 请求服务器返回对指定资源支持使用的请求方法;
     - 协议查看或分析的工具: tcpdump, tshark, wireshark
 
-- status: 三位数字，如200，301, 302, 404, 502; 标记请求处理过程中发生的情况;
-    - 1xx: 100-101, 信息提示;
+- status: 三位数字，如200，301, 302, 404, 502; 标记请求处理过程中发生的情况
+    - 1xx: 100-101, 信息提示
     - 2xx: 200-206, 成功
     - 3xx: 300-305, 重定向
     - 4xx: 400-415, 错误类信息，客户端错误
     - 5xx: 500-505, 错误类信息，服务器端错误
     - 常用的状态码:
-        - 200: 成功，请求的所有数据通过响应报文的entity-body部分发送;OK
-        - 301: 请求的URL指向的资源已经被删除;但在响应报文中通过首部Location指明了资源现在所处的新位置;Moved Permanently
+        - 200: 成功，请求的所有数据通过响应报文的entity-body部分发送; OK
+        - 301: 请求的URL指向的资源已经被删除;但在响应报文中通过首部Location指明了资源现在所处的新位置; Moved Permanently
         - 302: 与301相似，但在响应报文中通过Location指明资源现在所处临时新位置; Found
-        - 304: 客户端发出了条件式请求，但服务器上的资源未曾发生改变，则通过响应此响应状态码通知客户端;Not Modified
-        - 401: 需要输入账号和密码认证方能访问资源;Unauthorized
-        - 403: 请求被禁止;Forbidden
-        - 404: 服务器无法找到客户端请求的资源;Not Found
-        - 500: 服务器内部错误;Internal Server Error
-        - 502: 代理服务器从后端服务器收到了一条伪响应;Bad Gateway
+        - 304: 客户端发出了条件式请求，但服务器上的资源未曾发生改变，则通过响应此响应状态码通知客户端; Not Modified
+        - 401: 需要输入账号和密码认证方能访问资源; Unauthorized
+        - 403: 请求被禁止; Forbidden
+        - 404: 服务器无法找到客户端请求的资源; Not Found
+        - 500: 服务器内部错误; Internal Server Error
+        - 502: 代理服务器从后端服务器收到了一条伪响应; Bad Gateway
 
 - headers:
     - 每个请求或响应报文可包含任意个首部;
@@ -219,7 +221,7 @@
     - URL方案: scheme
     - 服务器地址: ip:port
     - 资源路径:
-        - http://www.example.com:80/bbs/index.php,
+        - http://www.example.com:80/bbs/index.php
         - https://
     - 基本语法: `<scheme>://<user>:<password>@<host>:<port>/<path>[;<params>][?<query>][#<frag>]`
         - params: 参数，http://www.example.com/bbs/hello;gender=f
