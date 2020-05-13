@@ -203,3 +203,27 @@
                 - Expires: 实体的过期时间;
                 - Last-Modified: 最后一次修改的时间
         - 扩展首部
+
+## HTTP 服务
+
+- http服务器程序:
+    - httpd (apache)
+    - nginx
+    - lighttpd
+
+- 应用程序服务器:
+    - IIS: .Net
+    - tomcat: .jsp
+
+- URL: Unifrom Resource Locator
+    - URL方案: scheme
+    - 服务器地址: ip:port
+    - 资源路径:
+        - http://www.example.com:80/bbs/index.php,
+        - https://
+    - 基本语法: `<scheme>://<user>:<password>@<host>:<port>/<path>[;<params>][?<query>][#<frag>]`
+        - params: 参数，http://www.example.com/bbs/hello;gender=f
+        - query: http://www.example.com/bbs/item.php?username=tom&title=abc
+        - frag: https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html-single/Installation_Guide/index.html#ch-Boot-x86
+        - 相对URL
+        - 绝对URL
