@@ -73,6 +73,24 @@
         - systemctl {enable|disable} httpd.service
         - systemctl {start|stop|restart|status} httpd.service
 
+- httpd-2.4
+    - 新特性:
+        - (1) MPM支持运行为DSO机制; 以模块形式按需加载;
+        - (2) event MPM生产环境可用;
+        - (3) 异步读写机制;
+        - (4) 支持每模块及每目录的单独日志级别定义;
+        - (5) 每请求相关的专用配置;
+        - (6) 增强版的表达式分析式;
+        - (7) 毫秒级持久连接时长定义;
+        - (8) 基于FQDN的虚拟主机也不再需要NameVirutalHost指令;
+        - (9) 新指令, AllowOverrideList;
+        - (10) 支持用户自定义变量;
+        - (11) 更低的内存消耗;
+    - 新模块:
+        - (1) mod_proxy_fcgi
+        - (2) mod_proxy_scgi
+        - (3) mod_remoteip
+
 ### httpd的常用配置
 
 - 主配置文件: /etc/httpd/conf/httpd.conf
@@ -420,21 +438,22 @@
         </Location>
         ```
 
-- 14, curl命令: 是基于URL语法在命令行方式下工作的文件传输工具, 它支持FTP, FTPS, HTTP, HTTPS, GOPHER, TELNET, DICT, FILE及LDAP等协议. curl支持HTTPS认证, 并且支持HTTP的POST, PUT等方法,  FTP上传,  kerberos认证, HTTP上传, 代理服务器, cookies, 用户名/密码认证, 下载文件断点续传, 上载文件断点续传, http代理服务器管道(proxy tunneling), 甚至它还支持IPv6, socks5代理服务器, 通过http代理服务器上传文件到FTP服务器等等, 功能十分强大.
-    - `curl  [options]  [URL...]`
-    - curl的常用选项:
-        - `-A/--user-agent <string>` 设置用户代理发送给服务器
-        - --basic 使用HTTP基本认证
-        - --tcp-nodelay 使用TCP_NODELAY选项
-        - -e/--referer <URL> 来源网址
-        - `--cacert <file>` CA证书 (SSL)
-        - --compressed 要求返回是压缩的格式
-        - `-H/--header <line>`自定义首部信息传递给服务器
-        - -I/--head 只显示响应报文首部信息
-        - `--limit-rate <rate>` 设置传输速度
-        - `-u/--user <user[:password]>`设置服务器的用户和密码
-        - -0/--http1.0 使用HTTP 1.0
-    - 另一个工具elinks: `elinks  [OPTION]... [URL]...`
+- 14, 测试命令
+    - curl命令: 是基于URL语法在命令行方式下工作的文件传输工具, 它支持FTP, FTPS, HTTP, HTTPS, GOPHER, TELNET, DICT, FILE及LDAP等协议. curl支持HTTPS认证, 并且支持HTTP的POST, PUT等方法,  FTP上传,  kerberos认证, HTTP上传, 代理服务器, cookies, 用户名/密码认证, 下载文件断点续传, 上载文件断点续传, http代理服务器管道(proxy tunneling), 甚至它还支持IPv6, socks5代理服务器, 通过http代理服务器上传文件到FTP服务器等等, 功能十分强大.
+        - `curl  [options]  [URL...]`
+        - curl的常用选项:
+            - `-A/--user-agent <string>` 设置用户代理发送给服务器
+            - --basic 使用HTTP基本认证
+            - --tcp-nodelay 使用TCP_NODELAY选项
+            - -e/--referer <URL> 来源网址
+            - `--cacert <file>` CA证书 (SSL)
+            - --compressed 要求返回是压缩的格式
+            - `-H/--header <line>`自定义首部信息传递给服务器
+            - -I/--head 只显示响应报文首部信息
+            - `--limit-rate <rate>` 设置传输速度
+            - `-u/--user <user[:password]>`设置服务器的用户和密码
+            - -0/--http1.0 使用HTTP 1.0
+    - elinks: `elinks  [OPTION]... [URL]...`
         - -dump: 不进入交互式模式, 而直接将URL的内容输出至标准输出;
 
 - 15, user/group: 指定以哪个用户的身份运行httpd服务进程;
