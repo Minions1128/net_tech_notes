@@ -77,6 +77,10 @@
         - HEADERS: (name: value)
         - `<request body>`
 
+- 协议认证
+    - 基于IP认证
+    - 基于用户认证: basic, digest
+
 ## HTTP工作模式
 
 - http请求报文: http request
@@ -212,6 +216,8 @@
     - httpd (apache)
     - nginx
     - lighttpd
+    - Tengine
+    - OpenResty
 
 - 应用程序服务器:
     - IIS: .Net
@@ -229,3 +235,27 @@
         - frag: https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html-single/Installation_Guide/index.html#ch-Boot-x86
         - 相对URL
         - 绝对URL
+
+## I/O模型
+
+- I/O模型: (非)阻塞型, 复用型, 信号驱动型, 同/异步
+
+- 阻塞/非阻塞:
+    - 关注调用者在等待结果返回之前所处的状态
+    - 阻塞: blocking, 调用结果返回之前, 调用者被挂起;
+    - 非阻塞: nonblocking, 调用结果返回之前, 调用者不会被挂起;
+
+- IO 复用器
+    - select(): 1024
+    - poll()
+
+- 信号驱动型: 通过信号控制
+
+- 同步/异步
+    - 关注消息通知机制;
+    - 同步: 等待对方返回消息;
+    - 异步: 被调用者通过状态, 通知或回调机制通知调用者被调用者的运行状态
+
+- 一次文件IO请求, 都会由两阶段组成:
+    - 第一步：等待数据, 即数据从磁盘到内核内存, blocking io
+    - 第二步：复制数据, 即数据内核内存到进程内存, non-blocking io
