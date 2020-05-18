@@ -240,6 +240,8 @@
 
 - I/O模型: (非)阻塞型, 复用型, 信号驱动型, 同/异步
 
+![IO models](https://github.com/Minions1128/net_tech_notes/blob/master/img/IO%20models.png "IO models")
+
 - 阻塞/非阻塞:
     - 关注调用者在等待结果返回之前所处的状态
     - 阻塞: blocking, 调用结果返回之前, 调用者被挂起;
