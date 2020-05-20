@@ -185,7 +185,7 @@ stream {
 
 - 定义路径相关的配置:
     - 6, root path; 设置web资源路径映射; 用于指明用户请求的url所对应的本地文件系统上的文档所在目录路径; 可用的位置: http, server, location, if in location;
-    - 7, `location [ = | ~ | ~* | ^~ ] uri { ... }` Sets configuration depending on a request URI. 在一个server中location配置段可存在多个, 用于实现从uri到文件系统的路径映射; ngnix会根据用户请求的URI来检查定义的所有location, 并找出一个最佳匹配, 而后应用其配置;
+    - 7, `location [ = | ~ | ~* | ^~ ] uri { ... }` Sets configuration depending on a request URI. 在一个server中location配置段可存在多个, 用于实现从uri到文件系统的路径映射; ngnix会根据用户请求的URI来检查定义的所有location, 并找出一个最佳匹配, 而后应用其配置; 其匹配方式
         - `=`: 对URI做精确匹配; 例如, http://www.example.com/, http://www.example.com/index.html
             ```
             location  =  / {
@@ -196,7 +196,7 @@ stream {
         - `~*`: 对URI做正则表达式模式匹配, 不区分字符大小写;
         - `^~`: 对URI的左半部分做匹配检查, 不区分字符大小写;
         - 不带符号: 匹配起始于此uri的所有的url;
-        - 匹配优先级: `=, ^~, ～/～*, 不带符号;`
+        - 匹配优先级: `=, ^~, ~/~*, 不带符号;`
             ```
             root /vhosts/www/htdocs/
                 http://www.example.com/index.html --> /vhosts/www/htdocs/index.html
@@ -214,19 +214,17 @@ stream {
             - (b) alias, 给定的路径对应于location中的/uri/右侧的/;
     - 9, index file ...; 默认资源; http, server, location;
     - 10, error_page code ... [=[response]] uri; Defines the URI that will be shown for the specified errors.
-    - 11, try_files file ... uri;
 
 - 定义客户端请求的相关配置
     - 12, keepalive_timeout timeout [header_timeout]; 设定保持连接的超时时长, 0表示禁止长连接; 默认为75s;
     - 13, keepalive_requests number; 在一次长连接上所允许请求的资源的最大数量, 默认为100;
     - 14, keepalive_disable none | browser ...; 对哪种浏览器禁用长连接;
     - 15, send_timeout time; 向客户端发送响应报文的超时时长, 此处, 是指两次写操作之间的间隔时长;
-    - 16, client_body_buffer_size size; 用于接收客户端请求报文的body部分的缓冲区大小; 默认为16k; 超出此大小时, 其将被暂存到磁盘上的由client_body_temp_path指令所定义的位置;
+    - 16, client_body_buffer_size size; 用于接收客户端请求报文的body部分的缓冲区大小; 默认为16k; 超出此大小时, 其将被暂存到磁盘上的由`client_body_temp_path`指令所定义的位置;
     - 17, client_body_temp_path path [level1 [level2 [level3]]]; 设定用于存储客户端请求报文的body部分的临时存储路径及子目录结构和数量; 16进制的数字;
-        - `client_body_temp_path /var/tmp/client_body 2 1 1`
-            - 1: 表示用一位16进制数字表示一级子目录; 0-f
-            - 2: 表示用2位16进程数字表示二级子目录: 00-ff
-            - 2: 表示用2位16进程数字表示三级子目录: 00-ff
+        - level1: 表示用一位16进制数字表示一级子目录: 0-f
+        - level2: 表示用2位16进程数字表示二级子目录: 00-ff
+        - level3: 表示用2位16进程数字表示三级子目录: 00-ff
 
 - 对客户端进行限制的相关配置:
     - 18, limit_rate rate; 限制响应给客户端的传输速率, 单位是bytes/second, 0表示无限制;
@@ -247,30 +245,38 @@ stream {
             - (2) 打开的目录结构;
             - (3) 没有找到的或者没有权限访问的文件的相关信息;
             - max=N: 可缓存的缓存项上限; 达到上限后会使用LRU算法实现缓存管理;
-            - inactive=time: 缓存项的非活动时长, 在此处指定的时长内未被命中的或命中的次数少于open_file_cache_min_uses指令所指定的次数的缓存项即为非活动项;
+            - inactive=time: 缓存项的非活动时长, 在此处指定的时长内未被命中的或命中的次数少于`open_file_cache_min_uses`指令所指定的次数的缓存项即为非活动项;
     - 23, open_file_cache_valid time; 缓存项有效性的检查频率; 默认为60s;
     - 24, open_file_cache_min_uses number; 在open_file_cache指令的inactive参数指定的时长内, 至少应该被命中多少次方可被归类为活动项;
     - 25, open_file_cache_errors on | off; 是否缓存查找时发生错误的文件一类的信息;
 
-- ngx_http_access_module模块: 实现基于ip的访问控制功能
+- ngx_http_access_module: 实现基于ip的访问控制功能, http, server, location, limit_except
     - 26, allow address | CIDR | unix: | all;
     - 27, deny address | CIDR | unix: | all;
-    - http, server, location, limit_except
 
-- ngx_http_auth_basic_module模块: 实现基于用户的访问控制, 使用basic机制进行用户认证;
+- ngx_http_auth_basic_module: 实现基于用户的访问控制, 使用basic机制进行用户认证;
     - 28, auth_basic string | off;
     - 29, auth_basic_user_file file;
-        ```
-        location /admin/ {
-            alias /webapps/app1/data/;
-            auth_basic "Admin Area";
-            auth_basic_user_file /etc/nginx/.ngxpasswd;
-        }
-        ```
     - 注意: htpasswd 命令由httpd-tools所提供;
 
-- ngx_http_stub_status_module模块 用于输出nginx的基本状态信息;
-    - examples:
+- ngx_http_auth_basic_module 配置举例
+
+```
+location /admin/ {
+    alias /webapps/app1/data/;
+    auth_basic "Admin Area";
+    auth_basic_user_file /etc/nginx/.ngxpasswd;
+}
+```
+
+- ngx_http_stub_status_module: 用于输出nginx的基本状态信息;
+    - 30, stub_status; 配置示例:
+        ```
+        location  /basic_status {
+            stub_status;
+        }
+        ```
+    - 状态页信息:
         ```
         Active connections: 291
         server accepts handled requests
@@ -284,14 +290,9 @@ stream {
         - Reading: 处于读取客户端请求报文首部的连接的连接数;
         - Writing: 处于向客户端发送响应报文过程中的连接数;
         - Waiting: 处于等待客户端发出请求的空闲连接数;
-    - 30, stub_status; 配置示例:
-        ```
-        location  /basic_status {
-            stub_status;
-        }
-        ```
 
-- ngx_http_log_module模块: writes request logs in the specified format.
+
+- ngx_http_log_module: writes request logs in the specified format.
     - 31, log_format name string ...;
         - string可以使用nginx核心模块及其它模块内嵌的变量;
         - whats more: 为nginx定义使用类似于httpd的combined格式的访问日志;
@@ -318,7 +319,7 @@ stream {
 - ngx_http_gzip_module 配置示例:
 
 ```
-gzip  on;
+gzip on;
 gzip_comp_level 6;
 gzip_min_length 64;
 gzip_proxied any;
