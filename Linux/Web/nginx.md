@@ -68,17 +68,19 @@ make && make install
     - 主程序文件: /usr/sbin/nginx
     - Unit File: nginx.service
 
-- 配置:
-    - 主配置文件的配置指令: `directive value [value2 ...];`
-    - 注意:
-        - (1) 指令必须以分号结尾;
-        - (2) 支持使用配置变量;
-            - 内建变量: 由Nginx模块引入, 可直接引用;
-            - 自定义变量: 由用户使用set命令定义;
-                ```
-                set variable_name value;
-                引用变量: $variable_name
-                ```
+## 配置
+
+- 主配置文件的配置指令: `directive value [value2 ...];`
+
+- 注意:
+    - (1) 指令必须以分号结尾;
+    - (2) 支持使用配置变量;
+        - 内建变量: 由Nginx模块引入, 可直接引用;
+        - 自定义变量: 由用户使用set命令定义;
+            ```
+            set variable_name value;
+            引用变量: $variable_name
+            ```
 
 - 主配置文件结构:
 
@@ -114,3 +116,136 @@ stream {
     ...
 }
 ```
+
+### main配置段常见的配置指令
+
+- 正常运行必备的配置
+    - 1, `user user [group]`: Defines user and group credentials used by worker processes. If group is omitted, a group whose name equals that of user is used.
+    - 2, `pid /PATH/TO/PID_FILE;` 指定存储nginx主进程进程号码的文件路径;
+    - 3, `include file | mask;` 指明包含进来的其它配置文件片断;
+
+    - 4, `load_module file;` 指明要装载的动态模块;
+
+- 优化性能相关的配置
+    - 1, worker_processes number | auto;
+        - worker_processes进程的数量; 通常应该等于小于当前主机的cpu的物理核心数;
+        - auto: 当前主机物理CPU核心数;
+    - 2, worker_cpu_affinity cpumask ...;
+        - worker_cpu_affinity auto [cpumask];
+        - CPU MASK:
+            - 00000000:
+            - 00000001: 0号CPU
+            - 00000010: 1号CPU
+    - 3, worker_priority number; 指定worker进程的nice值, 设定worker进程优先级; [-20,20]
+    - 4, worker_rlimit_nofile number; worker进程所能够打开的文件数量上限;
+
+- 用于调试及定位问题相关的配置
+    - 1, daemon on|off; 是否以守护进程方式运行Nignx;
+    - 2, master_process on|off; 是否以master/worker模型运行nginx; 默认为on; off, master也会处理worker进程的事务.
+    - 3, error_log file [level];
+
+- 事件驱动相关的配置 `events { ...; }`
+    - 1, worker_connections number; 每个worker进程所能够打开的最大并发连接数数量; worker_processes * worker_connections
+    - 2, use method; 指明并发连接请求的处理方法; use {epoll|select};
+    - 3, accept_mutex on | off; 处理新的连接请求的方法;
+        - on意味着由各worker轮流处理新请求
+        - off意味着每个新请求的到达都会通知所有的worker进程;
+
+### http配置段
+
+- 与套接字相关的配置:
+    - 1, `server { ... }`: 配置一个虚拟主机;
+        ```
+        server {
+            listen address[:PORT]|PORT;
+            server_name SERVER_NAME;
+            root /PATH/TO/DOCUMENT_ROOT;
+        }
+        ```
+    - 2, listen: `listen {PORT | address [:port] | listen unix:/var/run/nginx.sock} [default_server] [ssl] [http2 | spdy] [backlog=number] [rcvbuf=size] [sndbuf=size]`
+        - default_server: 设定为默认虚拟主机;
+        - ssl: 限制仅能够通过ssl连接提供服务;
+        - backlog=number: 后援队列长度;
+        - rcvbuf=size: 接收缓冲区大小;
+        - sndbuf=size: 发送缓冲区大小;
+    - 3, server_name name ...; 指明虚拟主机的主机名称; 后可跟多个由空白字符分隔的字符串;
+        - 支持`*`通配任意长度的任意字符; `server_name *.example.com  www.example.*`
+        - 支持`~`起始的字符做正则表达式模式匹配; `server_name ~^www\d+\.example\.com$;`
+        - 匹配机制:
+            - (1) 首先是字符串精确匹配;
+            - (2) 左侧`*`通配符;
+            - (3) 右侧`*`通配符;
+            - (4) 正则表达式;
+        - example: 定义四个虚拟主机, 混合使用三种类型的虚拟主机; 仅开放给来自于本地网络中的主机访问;
+    - 4.1, tcp_nodelay on | off; 在keepalived模式下的连接是否启用TCP_NODELAY选项;
+    - 4.2, tcp_nopush on|off; 在sendfile模式下, 是否启用TCP_CORK选项;
+    - 5, sendfile on | off; 是否启用sendfile功能;
+
+- 定义路径相关的配置:
+    - 6, root path; 设置web资源路径映射; 用于指明用户请求的url所对应的本地文件系统上的文档所在目录路径; 可用的位置: http, server, location, if in location;
+    - 7, location [ = | ~ | ~* | ^~ ] uri { ... } Sets configuration depending on a request URI. 在一个server中location配置段可存在多个, 用于实现从uri到文件系统的路径映射; ngnix会根据用户请求的URI来检查定义的所有location, 并找出一个最佳匹配, 而后应用其配置;
+        - `=`: 对URI做精确匹配; 例如, http://www.example.com/, http://www.example.com/index.html
+            ```
+            location  =  / {
+               ...
+            }
+            ```
+        - `~`: 对URI做正则表达式模式匹配, 区分字符大小写;
+        - `~*`: 对URI做正则表达式模式匹配, 不区分字符大小写;
+        - `^~`: 对URI的左半部分做匹配检查, 不区分字符大小写;
+        - 不带符号: 匹配起始于此uri的所有的url;
+        - 匹配优先级: `=, ^~, ～/～*, 不带符号;`
+            ```
+            root /vhosts/www/htdocs/
+                http://www.example.com/index.html --> /vhosts/www/htdocs/index.html
+            server {
+                root  /vhosts/www/htdocs/
+
+                location /admin/ {
+                   root /webapps/app1/data/
+                }
+            }
+            ```
+    - 8, alias path; 定义路径别名, 文档映射的另一种机制; 仅能用于location上下文;
+        - 注意: location中使用root指令和alias指令的意义不同;
+            - (a) root, 给定的路径对应于location中的/uri/左侧的/;
+            - (b) alias, 给定的路径对应于location中的/uri/右侧的/;
+    - 9, index file ...; 默认资源; http, server, location;
+    - 10, error_page code ... [=[response]] uri; Defines the URI that will be shown for the specified errors.
+    - 11, try_files file ... uri;
+
+- 定义客户端请求的相关配置
+    - 12, keepalive_timeout timeout [header_timeout]; 设定保持连接的超时时长, 0表示禁止长连接; 默认为75s;
+    - 13, keepalive_requests number; 在一次长连接上所允许请求的资源的最大数量, 默认为100;
+    - 14, keepalive_disable none | browser ...; 对哪种浏览器禁用长连接;
+    - 15, send_timeout time; 向客户端发送响应报文的超时时长, 此处, 是指两次写操作之间的间隔时长;
+    - 16, client_body_buffer_size size; 用于接收客户端请求报文的body部分的缓冲区大小; 默认为16k; 超出此大小时, 其将被暂存到磁盘上的由client_body_temp_path指令所定义的位置;
+    - 17, client_body_temp_path path [level1 [level2 [level3]]]; 设定用于存储客户端请求报文的body部分的临时存储路径及子目录结构和数量; 16进制的数字;
+        - `client_body_temp_path /var/tmp/client_body 2 1 1`
+            - 1: 表示用一位16进制数字表示一级子目录; 0-f
+            - 2: 表示用2位16进程数字表示二级子目录: 00-ff
+            - 2: 表示用2位16进程数字表示三级子目录: 00-ff
+
+- 对客户端进行限制的相关配置:
+    - 18, limit_rate rate; 限制响应给客户端的传输速率, 单位是bytes/second, 0表示无限制;
+    - 19, limit_except method ... { ... } 限制对指定的请求方法之外的其它方法的使用客户端;
+        ```
+        limit_except GET {
+            allow 192.168.1.0/24;
+            deny  all;
+        }
+        ```
+
+- 文件操作优化的配置
+    - 20, aio on | off | threads[=pool]; 是否启用aio功能;
+    - 21, directio size | off; 在Linux主机启用O_DIRECT标记, 此处意味文件大于等于给定的大小时使用, 例如directio 4m;
+    - 22, open_file_cache off;
+        - `open_file_cache max=N [inactive=time];` nginx可以缓存以下三种信息:
+            - (1) 文件的描述符, 文件大小和最近一次的修改时间;
+            - (2) 打开的目录结构;
+            - (3) 没有找到的或者没有权限访问的文件的相关信息;
+            - max=N: 可缓存的缓存项上限; 达到上限后会使用LRU算法实现缓存管理;
+            - inactive=time: 缓存项的非活动时长, 在此处指定的时长内未被命中的或命中的次数少于open_file_cache_min_uses指令所指定的次数的缓存项即为非活动项;
+    - 23, open_file_cache_valid time; 缓存项有效性的检查频率; 默认为60s;
+    - 24, open_file_cache_min_uses number; 在open_file_cache指令的inactive参数指定的时长内, 至少应该被命中多少次方可被归类为活动项;
+    - 25, open_file_cache_errors on | off; 是否缓存查找时发生错误的文件一类的信息;
