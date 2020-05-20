@@ -180,6 +180,8 @@ stream {
     - 4, tcp_nodelay on | off; 在keepalived模式下的连接是否启用TCP_NODELAY选项;
     - 5, sendfile on | off; 是否启用sendfile功能;
     - 5.1, tcp_nopush on|off; 在sendfile模式下, 是否启用TCP_CORK选项;
+        - sending the response header and the beginning of a file in one packet, on Linux and FreeBSD `4.*`;
+        - sending a file in full packets.
 
 - 定义路径相关的配置:
     - 6, root path; 设置web资源路径映射; 用于指明用户请求的url所对应的本地文件系统上的文档所在目录路径; 可用的位置: http, server, location, if in location;
@@ -390,7 +392,7 @@ server {
 - ngx_http_referer_module 配置示例:
 
 ```
-valid_referers none block server_names *.example.com *.mageedu.com example.* mageedu.* ~\.example\.;
+valid_referers none block server_names *.example.com *.ifeng.com example.* ifeng.* ~\.example\.;
 
 if($invalid_referer) {
    return http://www.example.com/invalid.jpg;
