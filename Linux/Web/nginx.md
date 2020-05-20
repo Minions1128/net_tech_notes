@@ -269,7 +269,7 @@ location /admin/ {
 }
 ```
 
-- ngx_http_stub_status_module: 用于输出nginx的基本状态信息;
+- **ngx_http_stub_status_module**: 用于输出nginx的基本状态信息;
     - 30, stub_status; 配置示例:
         ```
         location  /basic_status {
@@ -290,7 +290,6 @@ location /admin/ {
         - Reading: 处于读取客户端请求报文首部的连接的连接数;
         - Writing: 处于向客户端发送响应报文过程中的连接数;
         - Waiting: 处于等待客户端发出请求的空闲连接数;
-
 
 - ngx_http_log_module: writes request logs in the specified format.
     - 31, log_format name string ...;
@@ -314,7 +313,7 @@ location /admin/ {
     - 6, gzip_proxied { off | expired | no-cache | no-store | private | no_last_modified | no_etag | auth | any ... }; nginx作为代理服务器接收到从被代理服务器发送的响应报文后, 在何种条件下启用压缩功能的;
         - off: 对代理的请求不启用
         - no-cache, no-store, private: 表示从被代理服务器收到的响应报文首部的Cache-Control的值为此三者中任何一个, 则启用压缩功能;
-    - 7, gzip_types mime-type ...; 压缩过滤器, 仅对此处设定的MIME类型的内容启用压缩功能;
+    - 7, gzip_types mime-type ...; 压缩过滤器, 仅对此处设定的MIME类型(`/etc/nginx/mime.types`)的内容启用压缩功能;
 
 - ngx_http_gzip_module 配置示例:
 
@@ -326,14 +325,14 @@ gzip_proxied any;
 gzip_types text/xml text/css  application/javascript;
 ```
 
-- ngx_http_ssl_module 模块:
+- ngx_http_ssl_module:
     - 1, ssl on | off; Enables the HTTPS protocol for the given virtual server.
     - 2, ssl_certificate file; 当前虚拟主机使用PEM格式的证书文件;
     - 3, ssl_certificate_key file; 当前虚拟主机上与其证书匹配的私钥文件;
     - 4, ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2]; 支持ssl协议版本, 默认为后三个;
-    - 5, ssl_session_cache off | none | [builtin[:size]] [shared:name:size];
-        - builtin[:size]: 使用OpenSSL内建的缓存, 此缓存为每worker进程私有;
-        - [shared:name:size]: 在各worker之间使用一个共享的缓存;
+    - 5, `ssl_session_cache off | none | [builtin[:size]] [shared:name:size];`
+        - `builtin[:size]`: 使用OpenSSL内建的缓存, 此缓存为每worker进程私有;
+        - `[shared:name:size]`: 在各worker之间使用一个共享的缓存;
     - 6, ssl_session_timeout time; 客户端一侧的连接可以复用ssl session cache中缓存 的ssl参数的有效时长;
 
 - ngx_http_ssl_module 配置示例:
