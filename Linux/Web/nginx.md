@@ -183,7 +183,7 @@ stream {
 
 - 定义路径相关的配置:
     - 6, root path; 设置web资源路径映射; 用于指明用户请求的url所对应的本地文件系统上的文档所在目录路径; 可用的位置: http, server, location, if in location;
-    - 7, location [ = | ~ | ~* | ^~ ] uri { ... } Sets configuration depending on a request URI. 在一个server中location配置段可存在多个, 用于实现从uri到文件系统的路径映射; ngnix会根据用户请求的URI来检查定义的所有location, 并找出一个最佳匹配, 而后应用其配置;
+    - 7, `location [ = | ~ | ~* | ^~ ] uri { ... }` Sets configuration depending on a request URI. 在一个server中location配置段可存在多个, 用于实现从uri到文件系统的路径映射; ngnix会根据用户请求的URI来检查定义的所有location, 并找出一个最佳匹配, 而后应用其配置;
         - `=`: 对URI做精确匹配; 例如, http://www.example.com/, http://www.example.com/index.html
             ```
             location  =  / {
@@ -249,3 +249,150 @@ stream {
     - 23, open_file_cache_valid time; 缓存项有效性的检查频率; 默认为60s;
     - 24, open_file_cache_min_uses number; 在open_file_cache指令的inactive参数指定的时长内, 至少应该被命中多少次方可被归类为活动项;
     - 25, open_file_cache_errors on | off; 是否缓存查找时发生错误的文件一类的信息;
+
+- ngx_http_access_module模块: 实现基于ip的访问控制功能
+    - 26, allow address | CIDR | unix: | all;
+    - 27, deny address | CIDR | unix: | all;
+    - http, server, location, limit_except
+
+- ngx_http_auth_basic_module模块: 实现基于用户的访问控制, 使用basic机制进行用户认证;
+    - 28, auth_basic string | off;
+    - 29, auth_basic_user_file file;
+        ```
+        location /admin/ {
+            alias /webapps/app1/data/;
+            auth_basic "Admin Area";
+            auth_basic_user_file /etc/nginx/.ngxpasswd;
+        }
+        ```
+    - 注意: htpasswd 命令由httpd-tools所提供;
+
+- ngx_http_stub_status_module模块 用于输出nginx的基本状态信息;
+    - examples:
+        ```
+        Active connections: 291
+        server accepts handled requests
+            16630948 16630948 31070465
+        Reading: 6 Writing: 179 Waiting: 106
+        ```
+        - Active connections: 活动状态的连接数;
+        - accepts: 已经接受的客户端请求的总数;
+        - handled: 已经处理完成的客户端请求的总数;
+        - requests: 客户端发来的总的请求数;
+        - Reading: 处于读取客户端请求报文首部的连接的连接数;
+        - Writing: 处于向客户端发送响应报文过程中的连接数;
+        - Waiting: 处于等待客户端发出请求的空闲连接数;
+    - 30, stub_status; 配置示例:
+        ```
+        location  /basic_status {
+            stub_status;
+        }
+        ```
+
+- ngx_http_log_module模块: writes request logs in the specified format.
+    - 31, log_format name string ...;
+        - string可以使用nginx核心模块及其它模块内嵌的变量;
+        - whats more: 为nginx定义使用类似于httpd的combined格式的访问日志;
+    - 32, access_log { path [format [buffer=size] [gzip[=level]] [flush=time] [if=condition]] | off }; 访问日志文件路径, 格式及相关的缓冲的配置;
+        - buffer=size
+        - flush=time
+    - 33, open_log_file_cache { max=N [inactive=time] [min_uses=N] [valid=time] | off }; 缓存各日志文件相关的元数据信息;
+        - max: 缓存的最大文件描述符数量;
+        - min_uses: 在inactive指定的时长内访问大于等于此值方可被当作活动项;
+        - inactive: 非活动时长;
+        - valid: 验正缓存中各缓存项是否为活动项的时间间隔;
+
+- ngx_http_gzip_module: a filter that compresses responses using the “gzip” method. This often helps to reduce the size of transmitted data by half or even more.
+    - 1, gzip on | off; Enables or disables gzipping of responses.
+    - 2, gzip_comp_level level; Sets a gzip compression level of a response. Acceptable values are in the range from 1 to 9.
+    - 3, gzip_disable regex ...; Disables gzipping of responses for requests with “User-Agent” header fields matching any of the specified regular expressions.
+    - 4, gzip_min_length length; 启用压缩功能的响应报文大小阈值;
+    - 5, gzip_buffers number size; 支持实现压缩功能时为其配置的缓冲区数量及每个缓存区的大小;
+    - 6, gzip_proxied { off | expired | no-cache | no-store | private | no_last_modified | no_etag | auth | any ... }; nginx作为代理服务器接收到从被代理服务器发送的响应报文后, 在何种条件下启用压缩功能的;
+        - off: 对代理的请求不启用
+        - no-cache, no-store, private: 表示从被代理服务器收到的响应报文首部的Cache-Control的值为此三者中任何一个, 则启用压缩功能;
+    - 7, gzip_types mime-type ...; 压缩过滤器, 仅对此处设定的MIME类型的内容启用压缩功能;
+
+- ngx_http_gzip_module 配置示例:
+
+```
+gzip  on;
+gzip_comp_level 6;
+gzip_min_length 64;
+gzip_proxied any;
+gzip_types text/xml text/css  application/javascript;
+```
+
+- ngx_http_ssl_module 模块:
+    - 1, ssl on | off; Enables the HTTPS protocol for the given virtual server.
+    - 2, ssl_certificate file; 当前虚拟主机使用PEM格式的证书文件;
+    - 3, ssl_certificate_key file; 当前虚拟主机上与其证书匹配的私钥文件;
+    - 4, ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2]; 支持ssl协议版本, 默认为后三个;
+    - 5, ssl_session_cache off | none | [builtin[:size]] [shared:name:size];
+        - builtin[:size]: 使用OpenSSL内建的缓存, 此缓存为每worker进程私有;
+        - [shared:name:size]: 在各worker之间使用一个共享的缓存;
+    - 6, ssl_session_timeout time; 客户端一侧的连接可以复用ssl session cache中缓存 的ssl参数的有效时长;
+
+- ngx_http_ssl_module 配置示例:
+
+```
+server {
+    listen 443 ssl;
+    server_name www.example.com;
+    root /vhosts/ssl/htdocs;
+    ssl on;
+    ssl_certificate /etc/nginx/ssl/nginx.crt;
+    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+    ssl_session_cache shared:sslcache:20m;
+}
+```
+
+- ngx_http_rewrite_module模块: used to change request URI using PCRE regular expressions, return redirects, and conditionally select configurations. 将用户请求的URI基于regex所描述的模式进行检查, 而后完成替换;
+    - 举例:
+        - bbs.example.com --> www.example.com/bbs/
+        - http://www.example.com/ --> https://www.example.com/
+        - http://www.example.com/login.php;username=tom --> http://www.example.com/tom/
+    - 1, rewrite regex replacement [flag] 将用户请求的URI基于regex所描述的模式进行检查, 匹配到时将其替换为replacement指定的新的URI;
+        - 注意: 如果在同一级配置块中存在多个rewrite规则, 那么会自下而下逐个检查; 被某条件规则替换完成后, 会重新一轮的替换检查, 因此, 隐含有循环机制; [flag]所表示的标志位用于控制此循环机制;
+        - 如果replacement是以http://或https://开头, 则替换结果会直接以重向返回给客户端; 301: 永久重定向;
+        - [flag]:
+            - last: 重写完成后停止对当前URI在当前location中后续的其它重写操作, 而后对新的URI启动新一轮重写检查; 提前重启新一轮循环;
+            - break: 重写完成后停止对当前URI在当前location中后续的其它重写操作, 而后直接跳转至重写规则配置块之后的其它配置; 结束循环;
+            - redirect: 重写完成后以临时重定向方式直接返回重写后生成的新URI给客户端, 由客户端重新发起请求; 不能以http://或https://开头;
+            - permanent:重写完成后以永久重定向方式直接返回重写后生成的新URI给客户端, 由客户端重新发起请求;
+    - 2, return: Stops processing and returns the specified code to a client.
+        - return code [text];
+        - return code URL;
+        - return URL;
+    - 3, rewrite_log on | off; 是否开启重写日志;
+    - 4, if (condition) { ... } 引入一个新的配置上下文 ; 条件满足时, 执行配置块中的配置指令; server, location;
+        - condition:
+            - ==, !=
+            - `~`: 模式匹配, 区分字符大小写;
+            - `~*`: 模式匹配, 不区分字符大小写;
+            - `!~`: 模式不匹配, 区分字符大小写;
+            - `!~*`: 模式不匹配, 不区分字符大小写;
+        - 文件及目录存在性判断:
+            - -e, !-e
+            - -f, !-f
+            - -d, !-d
+            - -x, !-x
+    - 5, set $variable value; 用户自定义变量;
+
+- ngx_http_referer_module 模块: used to block access to a site for requests with invalid values in the “Referer” header field.
+    - 1, valid_referers none | blocked | server_names | string ...; 定义referer首部的合法可用值;
+        - none: 请求报文首部没有referer首部;
+        - blocked: 请求报文的referer首部没有值;
+        - server_names: 参数, 其可以有值作为主机名或主机名模式;
+            - arbitrary_string: 直接字符串, 但可使用`*`作通配符;
+            - regular expression: 被指定的正则表达式模式匹配到的字符串; 要使用`~`开头, 例如 `~.*\.example\.com;`
+
+- ngx_http_referer_module 配置示例:
+
+```
+valid_referers none block server_names *.example.com *.mageedu.com example.* mageedu.* ~\.example\.;
+
+if($invalid_referer) {
+   return http://www.example.com/invalid.jpg;
+}
+```
