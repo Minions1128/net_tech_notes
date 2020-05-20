@@ -177,9 +177,9 @@ stream {
             - (3) 右侧`*`通配符;
             - (4) 正则表达式;
         - example: 定义四个虚拟主机, 混合使用三种类型的虚拟主机; 仅开放给来自于本地网络中的主机访问;
-    - 4.1, tcp_nodelay on | off; 在keepalived模式下的连接是否启用TCP_NODELAY选项;
-    - 4.2, tcp_nopush on|off; 在sendfile模式下, 是否启用TCP_CORK选项;
+    - 4, tcp_nodelay on | off; 在keepalived模式下的连接是否启用TCP_NODELAY选项;
     - 5, sendfile on | off; 是否启用sendfile功能;
+    - 5.1, tcp_nopush on|off; 在sendfile模式下, 是否启用TCP_CORK选项;
 
 - 定义路径相关的配置:
     - 6, root path; 设置web资源路径映射; 用于指明用户请求的url所对应的本地文件系统上的文档所在目录路径; 可用的位置: http, server, location, if in location;
