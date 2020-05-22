@@ -61,7 +61,7 @@
     - (2) 请求报文和响应报文都必须经由Director转发; Director易于成为系统瓶颈;
     - (3) 支持端口映射, 可修改请求报文的目标PORT;
     - (4) vs必须是Linux系统, rs可以是任意系统;
-    - CIP --> VIP --> RIP -(Director)-> CIP
+    - 报文路径: CIP:VIP --(Director)--> CIP:RIP --(RS)--> RIP:CIP --(Director)--> VIP:CIP
 
 - lvs-dr: Direct Routing, 直接路由; 通过为请求报文重新封装一个MAC首部进行转发, 源MAC是DIP所在的接口的MAC, 目标MAC是某挑选出的RS的RIP所在接口的MAC地址; 源IP/PORT, 以及目标IP/PORT均保持不变; Director和各RS都得配置使用VIP;
     - (1) 确保前端路由器将目标IP为VIP的请求报文发往Director:
@@ -74,8 +74,8 @@
     - (3) RS跟Director要在同一个物理网络;
     - (4) 请求报文要经由Director, 但响应不能经由Director, 而是由RS直接发往Client;
     - (5) 不支持端口映射;
-    - CIP --> VIP --> RIP --> CIP
-    - CMAC -...-> VMAC --> RMAC -..-> CMAC
+    - 报文路径: CIP:VIP --(Director)--> CIP:VIP --(RS)--> VIP:CIP
+    - 数据帧结构: CMAC:VMAC --(Director)--> DMAC:RMAC --(RS)--> RMAC:GW-MAC
 
 - lvs-tun: 转发方式: 不修改请求报文的IP首部(源IP为CIP, 目标IP为VIP), 而是在原IP报文之外再封装一个IP首部(源IP是DIP, 目标IP是RIP), 将报文发往挑选出的目标RS; RS直接响应给客户端(源IP是VIP, 目标IP是CIP);
     - (1) DIP, VIP, RIP都应该是公网地址;
