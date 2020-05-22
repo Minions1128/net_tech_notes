@@ -20,7 +20,7 @@
     - 应用层(专用): (自定义的请求模型分类) roxy server:
         - http: nginx(http), httpd, haproxy(mode http), ...
         - fastcgi: nginx, httpd, ...
-        - mysql: ProxySQL,  ...
+        - mysql: ProxySQL, ...
 
 - 会话保持:
     - (1) session sticky
@@ -32,9 +32,6 @@
 
 ## Linux Virtual Server
 
-- l4: 四层路由器, 四层交换机;
-    - VS: 根据请求报文的目标IP和目标协议及端口将其调度转发至某RealServer, 根据调度算法来挑选RS;
-
 - iptables/netfilter:
     - iptables: 用户空间的管理工具;
     - netfilter: 内核空间上的框架;
@@ -43,9 +40,12 @@
         - 转发: PREROUTING --> FORWARD --> POSTROUTING
     - DNAT: 目标地址转换; PREROUTING;
     - SNAT: 源地址转换; POSTROUTING;
+    - LVS: PREROUTING --> INPUT --> POSTROUTING
+
 - lvs: ipvsadm/ipvs
     - ipvsadm: 用户空间的命令行工具, 规则管理器, 用于管理集群服务及相关的RealServer;
     - ipvs: 工作于内核空间的netfilter的INPUT钩子之上的框架;
+
 - lvs集群类型中的术语:
     - vs: Virtual Server, Director, Dispatcher, Balancer
     - rs: Real Server, upstream server, backend server
@@ -54,10 +54,7 @@
 
 ### lvs集群的类型
 
-- lvs-nat: 修改请求报文的目标IP; 多目标IP的DNAT;
-- lvs-dr: 操纵封装新的MAC地址;
-- lvs-tun: 在原请求IP报文之外新加一个IP首部;
-- lvs-fullnat: 修改请求报文的源和目标IP;
+- nat, dr, tun, fullnat
 
 - lvs-nat: 多目标IP的DNAT, 通过将请求报文中的目标地址和目标端口修改为某挑出的RS的RIP和PORT实现转发;
     - (1) RIP和DIP必须在同一个IP网络, 且应该使用私网地址; RS的网关要指向DIP;
