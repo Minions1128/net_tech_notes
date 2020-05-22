@@ -360,7 +360,7 @@ server {
         - [flag]:
             - last: 重写完成后停止对当前URI在当前location中后续的其它重写操作, 而后对新的URI启动新一轮重写检查; 提前重启新一轮循环;
             - break: 重写完成后停止对当前URI在当前location中后续的其它重写操作, 而后直接跳转至重写规则配置块之后的其它配置; 结束循环;
-            - redirect: 重写完成后以临时重定向方式直接返回重写后生成的新URI给客户端, 由客户端重新发起请求; 不能以`http://`或`https://`开头;
+            - redirect: 重写完成后以临时重定向方式直接返回重写后生成的新URI给客户端, 由客户端重新发起请求; 描述不能以`http://`或`https://`开头;
             - permanent:重写完成后以永久重定向方式直接返回重写后生成的新URI给客户端, 由客户端重新发起请求;
     - 2, return: Stops processing and returns the specified code to a client.
         - return code [text];
@@ -374,11 +374,7 @@ server {
             - `~*`: 模式匹配, 不区分字符大小写;
             - `!~`: 模式不匹配, 区分字符大小写;
             - `!~*`: 模式不匹配, 不区分字符大小写;
-        - 文件及目录存在性判断:
-            - -e, !-e
-            - -f, !-f
-            - -d, !-d
-            - -x, !-x
+        - 文件及目录存在性判断: `-e, !-e, -f, !-f, -d, !-d, -x, !-x`
     - 5, set $variable value; 用户自定义变量;
 
 - ngx_http_referer_module: used to block access to a site for requests with invalid values in the “Referer” header field.
