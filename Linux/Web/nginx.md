@@ -333,7 +333,7 @@ gzip_types text/xml text/css  application/javascript;
     - 5, `ssl_session_cache off | none | [builtin[:size]] [shared:name:size];`
         - `builtin[:size]`: 使用OpenSSL内建的缓存, 此缓存为每worker进程私有;
         - `[shared:name:size]`: 在各worker之间使用一个共享的缓存;
-    - 6, ssl_session_timeout time; 客户端一侧的连接可以复用ssl session cache中缓存 的ssl参数的有效时长;
+    - 6, ssl_session_timeout time; 客户端一侧的连接可以复用ssl session cache中缓存的ssl参数的有效时长;
 
 - ngx_http_ssl_module 配置示例:
 
@@ -349,18 +349,18 @@ server {
 }
 ```
 
-- ngx_http_rewrite_module模块: used to change request URI using PCRE regular expressions, return redirects, and conditionally select configurations. 将用户请求的URI基于regex所描述的模式进行检查, 而后完成替换;
+- ngx_http_rewrite_module: used to change request URI using PCRE regular expressions, return redirects, and conditionally select configurations. 将用户请求的URI基于regex所描述的模式进行检查, 而后完成替换;
     - 举例:
-        - bbs.example.com --> www.example.com/bbs/
+        - http://bbs.example.com --> http://www.example.com/bbs/
         - http://www.example.com/ --> https://www.example.com/
         - http://www.example.com/login.php;username=tom --> http://www.example.com/tom/
     - 1, rewrite regex replacement [flag] 将用户请求的URI基于regex所描述的模式进行检查, 匹配到时将其替换为replacement指定的新的URI;
         - 注意: 如果在同一级配置块中存在多个rewrite规则, 那么会自下而下逐个检查; 被某条件规则替换完成后, 会重新一轮的替换检查, 因此, 隐含有循环机制; [flag]所表示的标志位用于控制此循环机制;
-        - 如果replacement是以http://或https://开头, 则替换结果会直接以重向返回给客户端; 301: 永久重定向;
+        - 如果replacement是以`http://`或`https://`开头, 则替换结果会直接以重向返回给客户端; 301: 永久重定向;
         - [flag]:
             - last: 重写完成后停止对当前URI在当前location中后续的其它重写操作, 而后对新的URI启动新一轮重写检查; 提前重启新一轮循环;
             - break: 重写完成后停止对当前URI在当前location中后续的其它重写操作, 而后直接跳转至重写规则配置块之后的其它配置; 结束循环;
-            - redirect: 重写完成后以临时重定向方式直接返回重写后生成的新URI给客户端, 由客户端重新发起请求; 不能以http://或https://开头;
+            - redirect: 重写完成后以临时重定向方式直接返回重写后生成的新URI给客户端, 由客户端重新发起请求; 不能以`http://`或`https://`开头;
             - permanent:重写完成后以永久重定向方式直接返回重写后生成的新URI给客户端, 由客户端重新发起请求;
     - 2, return: Stops processing and returns the specified code to a client.
         - return code [text];
@@ -381,7 +381,7 @@ server {
             - -x, !-x
     - 5, set $variable value; 用户自定义变量;
 
-- ngx_http_referer_module 模块: used to block access to a site for requests with invalid values in the “Referer” header field.
+- ngx_http_referer_module: used to block access to a site for requests with invalid values in the “Referer” header field.
     - 1, valid_referers none | blocked | server_names | string ...; 定义referer首部的合法可用值;
         - none: 请求报文首部没有referer首部;
         - blocked: 请求报文的referer首部没有值;
