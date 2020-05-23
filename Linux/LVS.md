@@ -83,7 +83,7 @@
     - (3) 请求报文要经由Director, 但响应不能经由Director;
     - (4) 不支持端口映射;
     - (5) RS的OS得支持隧道功能;
-    - CIP -- VIP, DIP(tun CIP) --> RIP(tun VIP), VIP --> CIP
+    - 报文路径: CIP:VIP --(Director)--> DIP:RIP(CIP:VIP) --(RS)--> VIP:CIP
 
 - lvs-fullnat: 通过同时修改请求报文的源IP地址和目标IP地址进行转发;
     - (1) VIP是公网地址, RIP和DIP是私网地址, 且通常不在同一IP网络; 因此, RIP的网关一般不会指向DIP;
@@ -91,7 +91,7 @@
     - (3) 请求和响应报文都经由Director;
     - (4) 支持端口映射;
     - 注意: 此类型默认不支持;
-    - CIP --> VIP, DIP(nat CIP) --> RIP(nat VIP), VIP --> CIP
+    - 报文路径: CIP:VIP --(Director)--> DIP:RIP --(RS)--> VIP:CIP
 
 - 总结:
     - lvs-nat, lvs-fullnat: 请求和响应报文都经由Director;
