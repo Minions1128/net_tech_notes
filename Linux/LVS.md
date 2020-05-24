@@ -327,19 +327,22 @@ esac
 - FWM: FireWall Mark, netfilter:
     - target: MARK, This target is used to set the Netfilter mark value associated with the packet.
         - --set-mark value
-
-- 借助于防火墙标记来分类报文, 而后基于标记定义集群服务; 可将多个不同的应用使用同一个集群服务进行调度;
+    - 借助于防火墙标记来分类报文, 而后基于标记定义集群服务; 可将多个不同的应用使用同一个集群服务进行调度;
 
 - 打标记方法(在Director主机): `iptables -t mangle -A PREROUTING -d $vip -p $proto --dport $port -j MARK --set-mark NUMBER`
 
 - 基于标记定义集群服务: `ipvsadm -A -f NUMBER [options]`
 
-- lvs persistence: 持久连接
-    - 持久连接模板: 实现无论使用任何调度算法, 在一段时间内, 能够实现将来自同一个地址的请求始终发往同一个RS; `ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [timeout]]`
-    - port Affinity:
-        - 每端口持久: 每个端口对应定义为一个集群服务, 每集群服务单独调度;
-        - 每防火墙标记持久: 基于防火墙标记定义集群服务; 可实现将多个端口上的应用统一调度, 即所谓的port Affinity;
-        - 每客户端持久: 基于0端口定义集群服务, 即将客户端对所有应用的请求统统调度至后端主机, 必须定义为持久模式;
+### 持久连接
+
+- lvs persistence: 实现无论使用任何调度算法, 在一段时间内, 能够实现将来自同一个地址的请求始终发往同一个RS; `ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [timeout]]`
+
+- port Affinity:
+    - 每端口持久: 每个端口对应定义为一个集群服务, 每集群服务单独调度;
+    - 每防火墙标记持久: 基于防火墙标记定义集群服务; 可实现将多个端口上的应用统一调度, 即所谓的port Affinity;
+    - 每客户端持久: 基于0端口定义集群服务, 即将客户端对所有应用的请求统统调度至后端主机, 必须定义为持久模式;
+
+### Others
 
 - 考虑:
     - (1) Director不可用, 整个系统将不可用; SPoF
@@ -355,7 +358,9 @@ esac
             - (b) 传输层检测, 端口探测;
             - (c) 应用层检测, 请求某关键资源;
 
-- ldirectord: Daemon to monitor remote services and control Linux Virtual Server. ldirectord is a daemon to monitor and administer real servers in a cluster of load balanced virtual servers. ldirectord typically is started from heartbeat but can also be run from the command line. 配置示例:
+- ldirectord: Daemon to monitor remote services and control Linux Virtual Server. ldirectord is a daemon to monitor and administer real servers in a cluster of load balanced virtual servers. ldirectord typically is started from heartbeat but can also be run from the command line.
+
+- 配置示例:
 
 ```sh
 checktimeout=3
@@ -375,9 +380,3 @@ virtual=5
     request="index.html"
     receive="CentOS"
 ```
-
-- 补充: 共享存储
-    - NAS: Network Attached Storage
-        - nfs/cifs
-        - 文件系统接口
-    - SAN: Storage Area Network, “块”接口
