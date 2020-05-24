@@ -91,7 +91,7 @@
     - (3) 请求和响应报文都经由Director;
     - (4) 支持端口映射;
     - 注意: 此类型默认不支持;
-    - 报文路径: CIP:VIP --(Director)--> DIP:RIP --(RS)--> VIP:CIP
+    - 报文路径: CIP:VIP --(Director)--> DIP:RIP --(RS)--> RIP:DIP --(Director)--> VIP:CIP
 
 - 总结:
     - lvs-nat, lvs-fullnat: 请求和响应报文都经由Director;
@@ -110,9 +110,9 @@
         - SH: Source Hashing, 实现session sticky, 源IP地址hash; 将来自于同一个IP地址的请求始终发往第一次挑中的RS, 从而实现会话绑定;
         - DH: Destination Hashing; 目标地址哈希, 将发往同一个目标地址的请求始终转发至第一次挑中的RS, 典型使用场景是正向代理缓存场景中的负载均衡;
     - 动态方法: 主要根据每RS当前的负载状态及调度算法进行调度; Overhead=
-        - LC: least connections `Overhead=activeconns*256+inactiveconns`
-        - WLC: Weighted LC `Overhead=(activeconns*256+inactiveconns)/weight`
-        - SED: Shortest Expection Delay `Overhead=(activeconns+1)*256/weight`
+        - LC: least connections `Overhead = activeconns * 256 + inactiveconns`
+        - WLC: Weighted LC `Overhead = (activeconns * 256 + inactiveconns) / weight`
+        - SED: Shortest Expection Delay `Overhead = (activeconns + 1) * 256 / weight`
         - NQ: Never Queue
         - LBLC: Locality-Based LC, 动态的DH算法;
         - LBLCR: LBLC with Replication, 带复制功能的LBLC;
@@ -125,7 +125,7 @@
 
 - ipvs: `grep -i -C 10 "ipvs" /boot/config-VERSION-RELEASE.x86_64`
 
-- 支持的协议: TCP,  UDP,  AH,  ESP,  AH_ESP,  SCTP;
+- 支持的协议: TCP, UDP, AH, ESP, AH_ESP, SCTP;
 
 - ipvs集群:
     - 集群服务
@@ -144,7 +144,8 @@
     - 查看:
 
 ```sh
-ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [timeout]] [-M netmask] [--pe persistence_engine] [-b sched-flags]
+ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [timeout]] \
+    [-M netmask] [--pe persistence_engine] [-b sched-flags]
 ipvsadm -D -t|u|f service-address
 ipvsadm -C
 ipvsadm -R
@@ -153,6 +154,10 @@ ipvsadm -a|e -t|u|f service-address -r server-address [options]
 ipvsadm -d -t|u|f service-address -r server-address
 ipvsadm -L|l [options]
 ipvsadm -Z [-t|u|f service-address]
+ipvsadm --set tcp tcpfin udp
+ipvsadm --start-daemon state [--mcast-interface interface] [--syncid sid]
+ipvsadm --stop-daemon state
+ipvsadm -h
 ```
 
 - 管理集群服务: 增、改、删;
@@ -191,7 +196,7 @@ ipvsadm -Z [-t|u|f service-address]
 - 负载均衡集群设计时要注意的问题:
     - (1) 是否需要会话保持;
     - (2) 是否需要共享存储;
-        - 共享存储: NAS,  SAN,  DS(分布式存储)
+        - 共享存储: NAS, SAN, DS(分布式存储)
         - 数据同步:
         - whats more: rsync+inotify实现数据同步
 
