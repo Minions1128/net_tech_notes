@@ -214,9 +214,15 @@ ipvsadm -h
     - --stats: output of statistics information
     - --rate : output of rate information
 
-- 保存和重载:
-    - ipvsadm -S = ipvsadm-save
-    - ipvsadm -R = ipvsadm-restore
+- 保存及重载规则:
+    - 保存: 建议保存至`/etc/sysconfig/ipvsadm`
+        - `ipvsadm-save > /PATH/TO/IPVSADM_FILE`
+        - `ipvsadm -S > /PATH/TO/IPVSADM_FILE`
+        - `systemctl stop ipvsadm.service`
+    - 重载:
+        - `ipvsadm-restore < /PATH/FROM/IPVSADM_FILE`
+        - `ipvsadm -R < /PATH/FROM/IPVSADM_FILE`
+        - `systemctl restart ipvsadm.service`
 
 - 负载均衡集群设计时要注意的问题:
     - (1) 是否需要会话保持;
@@ -316,8 +322,10 @@ esac
     - vip与dip/rip不在同一网段的实验环境设计及配置实现;
     - lvs的详细应用: 讲清楚类型、调度方法; 并且给出nat和dr类型的设计拓扑及具体实现;
 
+### FWM
+
 - FWM: FireWall Mark, netfilter:
-    - target: MARK, This  target  is  used  to set the Netfilter mark value associated with the packet.
+    - target: MARK, This target is used to set the Netfilter mark value associated with the packet.
         - --set-mark value
 
 - 借助于防火墙标记来分类报文, 而后基于标记定义集群服务; 可将多个不同的应用使用同一个集群服务进行调度;
@@ -332,16 +340,6 @@ esac
         - 每端口持久: 每个端口对应定义为一个集群服务, 每集群服务单独调度;
         - 每防火墙标记持久: 基于防火墙标记定义集群服务; 可实现将多个端口上的应用统一调度, 即所谓的port Affinity;
         - 每客户端持久: 基于0端口定义集群服务, 即将客户端对所有应用的请求统统调度至后端主机, 必须定义为持久模式;
-
-- 保存及重载规则:
-    - 保存: 建议保存至`/etc/sysconfig/ipvsadm`
-        - `ipvsadm-save > /PATH/TO/IPVSADM_FILE`
-        - `ipvsadm -S > /PATH/TO/IPVSADM_FILE`
-        - `systemctl stop ipvsadm.service`
-    - 重载:
-        - `ipvsadm-restore < /PATH/FROM/IPVSADM_FILE`
-        - `ipvsadm -R < /PATH/FROM/IPVSADM_FILE`
-        - `systemctl restart ipvsadm.service`
 
 - 考虑:
     - (1) Director不可用, 整个系统将不可用; SPoF
