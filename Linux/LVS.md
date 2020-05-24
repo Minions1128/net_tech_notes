@@ -141,21 +141,46 @@
 - ipvsadm 命令核心功能:
     - 集群服务管理: 增、删、改;
     - 集群服务的RS管理: 增、删、改;
-    - 查看:
+    - 查看
+
+- 命令
 
 ```sh
+# 添加, 修改集群
 ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [timeout]] \
     [-M netmask] [--pe persistence_engine] [-b sched-flags]
+
+# 删除集群
 ipvsadm -D -t|u|f service-address
+
+# 清空定义的所有内容
 ipvsadm -C
+
+# restore rules from stdin
 ipvsadm -R
+
+# save rules to stdout
 ipvsadm -S [-n]
+
+# add, edit real server with options
 ipvsadm -a|e -t|u|f service-address -r server-address [options]
+
+# delete real server
 ipvsadm -d -t|u|f service-address -r server-address
+
+# list the table
 ipvsadm -L|l [options]
+
+# zero counters in a service or all services
 ipvsadm -Z [-t|u|f service-address]
+
+# set connection timeout values
 ipvsadm --set tcp tcpfin udp
+
+# start connection sync daemon
 ipvsadm --start-daemon state [--mcast-interface interface] [--syncid sid]
+
+# stop connection sync daemon
 ipvsadm --stop-daemon state
 ipvsadm -h
 ```
