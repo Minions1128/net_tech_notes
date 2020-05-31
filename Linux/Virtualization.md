@@ -131,7 +131,7 @@ virt-manager &
         - -display type: 显示的类型, sdl, curses, none和vnc;
         - -nographic: 不使用图形接口;
         - -vga [std|cirrus|vmware|qxl|xenfb|none]: 模拟出的显卡的型号;
-        - -vnc display[,option[,option[,...]]]]: 启动一个vnc server来显示虚拟机接口;  让qemu进程监听一个vnc接口;
+        - -vnc display[,option[,option[,...]]]]: 启动一个vnc server(宿主机)来显示虚拟机接口; 让qemu进程监听一个vnc接口;
             - display:
                 - (1) HOST:N; 在HOST主机的第N个桌面号输出vnc; 5900+N
                 - (2) unix:/PATH/TO/SOCK_FILE
@@ -154,8 +154,16 @@ virt-manager &
 - 示例1
 
 ```sh
-qemu-kvm -name c2 -smp 2,maxcpus=4,sockets=2,cores=2 -m 128 \
-    -drive file=/images/kvm/cos-i386.qcow2,if=virtio -vnc  :1 -daemonize \
+qemu-img create -f qcow2 -o preallocation=metadata,size=80g /....../centos7.img
+
+qemu-kvm -name c2 \
+    -m 128 \
+    -cpu host \
+    -smp 2,maxcpus=4,sockets=2,cores=2 \
+    -drive file=/images/kvm/cos-i386.qcow2,if=virtio,media=disk,cache=writeback,format=qcow2 \
+    -drive file=/.../...iso,media=cdrom, \
+    -boot order=dc,once=d \
+    -vnc :1 -daemonize \
     -net nic,model=e1000,macaddr=52:54:00:00:00:11 \
     -net tap,script=/etc/qemu-ifup
 ```
@@ -165,7 +173,8 @@ qemu-kvm -name c2 -smp 2,maxcpus=4,sockets=2,cores=2 -m 128 \
 ```sh
 qemu-kvm -name winxp -smp 1,maxcpus=2,sockets=1,cores=2 -m 1024 \
     -drive file=/data/vms/winxp.qcow2,media=disk,cache=writeback,format=qcow2 \
-    file=/tmp/winxp.iso,media=cdrom -boot order=dc,once=d -vnc :1 \
+    -drive file=/tmp/winxp.iso,media=cdrom \
+    -boot order=dc,once=d -vnc :1 \
     -net nic,model=rtl8139,macaddr=52:54:00:00:aa:11 \
     -net tap,ifname=tap1,script=/etc/qemu-ifup -daemonize
 ```
