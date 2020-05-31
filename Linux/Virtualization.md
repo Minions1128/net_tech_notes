@@ -3,7 +3,7 @@
 ## 概述
 
 - 虚拟化技术类型:
-    - 主机虚拟化: xen, kvm, virtualbox
+    - 主机虚拟化: xen, kvm, virtualbox, VMWare Workstation
     - 容器(用户空间隔离): lxc(LinuX Container), openvz, libcontainer, runC, rkt, Linux V Servers, Virtuozzo
     - 系统库虚拟化: wine
     - 应用程序级虚拟化: jvm, pvm
@@ -52,7 +52,7 @@
     - (2) HVM: Intel VT, AMD AMD-v
 
 - KVM的组件
-    - kvm.ko: 模块, (kvm.ko)/dev/kvm:, 工作为hypervisor, 在用户空间可通过系统调用ioctl()与内核中的kvm模块交互, 从而完成虚拟机的创建, 启动, 停止, 删除等各种管理功能;
+    - kvm.ko: 模块, (kvm.ko)/dev/kvm, 工作为hypervisor, 在用户空间可通过系统调用ioctl()与内核中的kvm模块交互, 从而完成虚拟机的创建, 启动, 停止, 删除等各种管理功能;
     - qemu-kvm: qemu-kvm is an open source virtualizer that provides hardware emulation for the KVM hypervisor. 用户空间的工具程序; 工作于用户空间, 用于实现IO设备模拟; 用于实现一个虚拟机实例;
     - libvirt: Libvirt is a C toolkit to interact with the virtualization capabilities of recent versions of Linux (and other OSes). The main package includes the libvirtd server exporting the virtualization support. 其为C/S:
         - Client:
