@@ -111,13 +111,15 @@ virt-manager &
         - -cpu cpu: -cpu help来获取列表; 用于指定要模拟的CPU型号;
         - -smp n[,maxcpus=cpus][,cores=cores][,threads=threads][,sockets=sockets]: 指明虚拟机上vcpu的数量及拓扑;
         - -boot [order=drives][,once=drives][,menu=on|off] [,splash=sp_name][,splash-time=sp_time][,reboot-timeout=rb_time][,strict=on|off]
-            - - order: 各设备的引导次序: c表示第一块硬盘, d表示第一个光驱设备; -boot order=dc,once=d
+            - - order: 各设备的引导次序: c表示第一块硬盘, d表示第一个光驱设备;
+            - `-boot order=dc,once=d`
         - -m megs: 虚拟机的内存大小;
         - -name NAME: 当前虚拟机的名称, 要惟一;
     - 块设备相关的选项:
         - -hda/-hdb file: 指明IDE总线类型的磁盘映射文件路径; 第0和第1个;
         - -hdc/-hdd file: 第2和第3个;
         - -cdrom file: 指定要使用光盘映像文件;
+        - ---
         - -drive [file=file][,if=type][,media=d][,index=i] [,cache=writethrough|writeback|none|directsync|unsafe][,format=f]:
             - file=/PATH/TO/SOME_IMAGE_FILE: 映像文件路径;
             - if=TYPE: 块设备总线类型, ide, scsi, sd, floppy, virtio,...
@@ -149,9 +151,24 @@ virt-manager &
             - ifname=NAME: 自定义接口名称;
     - 其它选项: -daemonize: 以守护进程运行;
 
-- 示例1: `qemu-kvm -name c2 -smp 2,maxcpus=4,sockets=2,cores=2 -m 128 -drive file=/images/kvm/cos-i386.qcow2,if=virtio -vnc  :1 -daemonize -net nic,model=e1000,macaddr=52:54:00:00:00:11 -net tap,script=/etc/qemu-ifup`
+- 示例1
 
-- 示例2: `qemu-kvm -name winxp -smp 1,maxcpus=2,sockets=1,cores=2 -m 1024 -drive file=/data/vms/winxp.qcow2,media=disk,cache=writeback,format=qcow2 file=/tmp/winxp.iso,media=cdrom -boot order=dc,once=d -vnc :1 -net nic,model=rtl8139,macaddr=52:54:00:00:aa:11 -net tap,ifname=tap1,script=/etc/qemu-ifup -daemonize`
+```sh
+qemu-kvm -name c2 -smp 2,maxcpus=4,sockets=2,cores=2 -m 128 \
+    -drive file=/images/kvm/cos-i386.qcow2,if=virtio -vnc  :1 -daemonize \
+    -net nic,model=e1000,macaddr=52:54:00:00:00:11 \
+    -net tap,script=/etc/qemu-ifup
+```
+
+- 示例2
+
+```sh
+qemu-kvm -name winxp -smp 1,maxcpus=2,sockets=1,cores=2 -m 1024 \
+    -drive file=/data/vms/winxp.qcow2,media=disk,cache=writeback,format=qcow2 \
+    file=/tmp/winxp.iso,media=cdrom -boot order=dc,once=d -vnc :1 \
+    -net nic,model=rtl8139,macaddr=52:54:00:00:aa:11 \
+    -net tap,ifname=tap1,script=/etc/qemu-ifup -daemonize
+```
 
 ```sh
 cat /etc/qemu-ifup
