@@ -7,8 +7,8 @@
 - sudo: 能够让获得授权的用户以另外一个用户的身份运行指定的命令;
     - 授权机制: 授权文件 /etc/sudoers
         ```
-        root        ALL=(ALL)       ALL
-        %wheel      ALL=(ALL)       ALL
+        root     ALL=(ALL)       ALL, !/bin/su   # user
+        %wheel   ALL=(ALL)       ALL             # group
         ```
     - 编译此文件的专用命令: visudo
         - 授权项:
@@ -45,10 +45,22 @@
                 - Cmnd_Alias
             - 例如:
                 ```
-                User_Alias  NETADMIN=tom, jerry
-                Cmnd_Alias NETCMND=ip, ifconfig, route
-                NETADMIN     localhost=(root)     NETCMND
+                User_Alias      NETADMIN=tom, jerry
+                Cmnd_Alias      NETCMND=ip, ifconfig, route
+                NETADMIN        localhost=(root)     NETCMND
                 ```
+
+- 常用标签:
+    - NOPASSWD:
+    - PASSWD:
+
+- /etc/sudoers应用示例:
+
+```
+Cmnd_Alias USERADMINCMNDS = /usr/sbin/useradd, /usr/sbin/usermod, /usr/bin/passwd [a-z]*, !/usr/bin/passwd root
+User_Alias USERADMIN = bob, alice
+USERADMIN       ALL=(root)      PASSWD: USERADMINCMNDS, NOPASSWD: OTHERUSER
+```
 
 - sudo命令:
     - 检票机制: 能记录成功认证结果一段时间, 默认为5分钟;
@@ -56,15 +68,3 @@
         - `sudo [options] COMMAND`
             - -l[l] command 列出用户能执行的命令
             - -k 清除此前缓存用户成功认证结果;
-
-- /etc/sudoers应用示例:
-
-```
-Cmnd_Alias USERADMINCMNDS = /usr/sbin/useradd, /usr/sbin/usermod, /usr/bin/passwd [a-z]*, !/usr/bin/passwd root
-User_Alias USERADMIN = bob, alice
-USERADMIN       ALL=(root)      USERADMINCMNDS
-```
-
-- 常用标签:
-    - NOPASSWD:
-    - PASSWD:
