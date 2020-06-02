@@ -117,21 +117,21 @@ global_defs {
     notification_email_from keepalived@localhost
     smtp_server 127.0.0.1
     smtp_connect_timeout 30
-    router_id node1
+    router_id node1.zhejian.com
     vrrp_mcast_group4 224.0.100.19
 }
-vrrp_instance VI_1 {
+vrrp_instance VIR_1 {
     state BACKUP
-    interface eno16777736
+    interface eth0
     virtual_router_id 14
     priority 98
     advert_int 1
     authentication {
         auth_type PASS
-        auth_pass 571f97b2
+        auth_pass 123456_psd
     }
     virtual_ipaddress {
-        10.1.0.91/16 dev eno16777736
+        10.1.0.91/16 dev eth0
     }
 }
 ```
@@ -189,26 +189,26 @@ global_defs {
     notification_email_from keepalived@localhost
     smtp_server 127.0.0.1
     smtp_connect_timeout 30
-    router_id node1
+    router_id node1.zhejian.com
     vrrp_mcast_group4 224.0.100.19
 }
-vrrp_instance VI_1 {
+vrrp_instance VIR_1 {
     state MASTER
-    interface eno16777736
+    interface eth0
     virtual_router_id 14
     priority 100
     advert_int 1
     authentication {
         auth_type PASS
-        auth_pass 571f97b2
+        auth_pass 123456_psd
     }
     virtual_ipaddress {
-        10.1.0.91/16 dev eno16777736
+        10.1.0.91/16 dev eth0
     }
 }
-vrrp_instance VI_2 {
+vrrp_instance VIR_2 {
     state BACKUP
-    interface eno16777736
+    interface eth0
     virtual_router_id 15
     priority 98
     advert_int 1
@@ -217,7 +217,7 @@ vrrp_instance VI_2 {
         auth_pass 578f07b2
     }
     virtual_ipaddress {
-        10.1.0.92/16 dev eno16777736
+        10.1.0.92/16 dev eth0
     }
 }
 ```
@@ -229,9 +229,9 @@ vrrp_instance VI_2 {
 #
 contact='root@localhost'
 
-notify ()  {
-    local mailsubject="$ (hostname)  to be $1, vip floating"
-    local mailbody="$ (date +'%F %T') : vrrp transition, $ (hostname)  changed to be $1"
+notify() {
+    local mailsubject="$(hostname) to be $1, vip floating"
+    local mailbody="$(date +'%F %T'): vrrp transition, $(hostname) changed to be $1"
     echo "$mailbody" | mail -s "$mailsubject" $contact
 }
 
@@ -246,7 +246,7 @@ fault)
     notify fault
     ;;
 *)
-    echo "Usage: $ (basename $0)  {master|backup|fault}"
+    echo "Usage: $(basename $0) {master|backup|fault}"
     exit 1
     ;;
 esac
@@ -256,6 +256,8 @@ esac
     - notify_master "/etc/keepalived/notify.sh master"
     - notify_backup "/etc/keepalived/notify.sh backup"
     - notify_fault "/etc/keepalived/notify.sh fault"
+
+- `man keepalived.conf`
 
 - 虚拟服务器:
     - 配置参数:
@@ -321,21 +323,21 @@ global_defs {
     notification_email_from keepalived@localhost
     smtp_server 127.0.0.1
     smtp_connect_timeout 30
-    router_id node1
+    router_id node1.zhejian.com
     vrrp_mcast_group4 224.0.100.19
 }
-vrrp_instance VI_1 {
+vrrp_instance VIR_1 {
     state MASTER
-    interface eno16777736
+    interface eth0
     virtual_router_id 14
     priority 100
     advert_int 1
     authentication {
         auth_type PASS
-        auth_pass 571f97b2
+        auth_pass 123456_psd
     }
     virtual_ipaddress {
-        10.1.0.93/16 dev eno16777736
+        10.1.0.93/16 dev eth0
     }
     notify_master "/etc/keepalived/notify.sh master"
     notify_backup "/etc/keepalived/notify.sh backup"
@@ -395,12 +397,12 @@ root@localhost
 notification_email_from kaadmin@localhost
 smtp_server 127.0.0.1
 smtp_connect_timeout 30
-router_id node1
+router_id node1.zhejian.com
 vrrp_mcast_group4 224.0.100.67
 }
-vrrp_instance VI_1 {
+vrrp_instance VIR_1 {
 state MASTER
-interface eno16777736
+interface eth0
 virtual_router_id 44
 priority 100
 advert_int 1
@@ -409,18 +411,18 @@ authentication {
     auth_pass f1bf7fde
 }
 virtual_ipaddress {
-    172.16.0.80/16 dev eno16777736 label eno16777736:0
+    172.16.0.80/16 dev eth0 label eth0:0
 }
 track_interface {
-    eno16777736
+    eth0
 }
 notify_master "/etc/keepalived/notify.sh master"
 notify_backup "/etc/keepalived/notify.sh backup"
 notify_fault "/etc/keepalived/notify.sh fault"
 }
-vrrp_instance VI_2 {
+vrrp_instance VIR_2 {
 state BACKUP
-interface eno16777736
+interface eth0
 virtual_router_id 45
 priority 98
 advert_int 1
@@ -429,10 +431,10 @@ authentication {
     auth_pass f2bf7ade
 }
 virtual_ipaddress {
-    172.16.0.90/16 dev eno16777736 label eno16777736:1
+    172.16.0.90/16 dev eth0 label eth0:1
 }
 track_interface {
-    eno16777736
+    eth0
 }
 notify_master "/etc/keepalived/notify.sh master"
 notify_backup "/etc/keepalived/notify.sh backup"
@@ -500,7 +502,7 @@ global_defs {
     notification_email_from keepalived@localhost
     smtp_server 127.0.0.1
     smtp_connect_timeout 30
-    router_id node1
+    router_id node1.zhejian.com
     vrrp_mcast_group4 224.0.100.19
 }
 vrrp_script chk_down {
@@ -515,18 +517,18 @@ vrrp_script chk_nginx {
     fall 2
     rise 1
 }
-vrrp_instance VI_1 {
+vrrp_instance VIR_1 {
     state MASTER
-    interface eno16777736
+    interface eth0
     virtual_router_id 14
     priority 100
     advert_int 1
     authentication {
         auth_type PASS
-        auth_pass 571f97b2
+        auth_pass 123456_psd
     }
     virtual_ipaddress {
-        10.1.0.93/16 dev eno16777736
+        10.1.0.93/16 dev eth0
     }
     track_script {
         chk_down
