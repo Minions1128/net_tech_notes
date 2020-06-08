@@ -151,6 +151,22 @@ virt-manager &
             - ifname=NAME: 自定义接口名称;
     - 其它选项: -daemonize: 以守护进程运行;
 
+```sh
+cat /etc/qemu-ifup
+
+#!/bin/bash
+bridge=br0
+if [ -n "$1" ];then
+    ip link set $1 up
+    sleep 1
+    brctl addif $bridge $1
+    [ $? -eq 0 ] && exit 0 || exit 1
+else
+    echo "Error: no interface specified."
+    exit 1
+fi
+```
+
 - 示例1
 
 ```sh
@@ -177,22 +193,6 @@ qemu-kvm -name winxp -smp 1,maxcpus=2,sockets=1,cores=2 -m 1024 \
     -boot order=dc,once=d -vnc :1 \
     -net nic,model=rtl8139,macaddr=52:54:00:00:aa:11 \
     -net tap,ifname=tap1,script=/etc/qemu-ifup -daemonize
-```
-
-```sh
-cat /etc/qemu-ifup
-
-#!/bin/bash
-bridge=br0
-if [ -n "$1" ];then
-    ip link set $1 up
-    sleep 1
-    brctl addif $bridge $1
-    [ $? -eq 0 ] && exit 0 || exit 1
-else
-    echo "Error: no interface specified."
-    exit 1
-fi
 ```
 
 - 半虚拟化: virtio; 建议: Network IO, Disk IO使用virtio, 性能会有显著提升;

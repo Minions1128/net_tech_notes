@@ -1,0 +1,29 @@
+# yum
+
+- name: install specific version bind
+  yum: name={{ item }} state=present
+  with_items:
+    - "bind-libs-9.11.4-16.P2.el7_8.3.x86_64"
+    - "bind-libs-lite-9.11.4-16.P2.el7_8.3.x86_64"
+  tags:
+    - install bind
+
+- name: 安装最新版本的apache
+  yum: name=httpd state=latest
+
+- name: 移除apache
+  yum: name=httpd state=absent
+
+- name: 升级所有的软件包
+  yum: name=* state=latest
+
+- name: 从一个远程yum仓库安装nginx
+  yum:
+    - name: http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+    - state: present
+
+- name: 从本地仓库安装nginx
+  yum: name=/usr/local/src/nginx-release-centos-6-0.el6.ngx.noarch.rpm state=present
+
+- name: 安装整个Development tools相关的软件包
+  yum: name="@Development tools" state=present
