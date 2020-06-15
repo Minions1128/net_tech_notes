@@ -121,26 +121,22 @@
 
 ## RabbitMQ Cluster
 
-- (1)设置各节点主机名: `hostnamectl ste-hostname HOSTNAME` 确保对方的都能解析节点名称
-
-- (2)将cookie复制到各节点, 保持cokkie一致
-
-- (3)停止rabbitmq服务后手动启动
+- 设置各节点主机名: `hostnamectl ste-hostname HOSTNAME` 确保对方的都能解析节点名称
+- 时间同步
+- 各节点要启动rabbitmq_management插件
     ```sh
-    service rabbitmq stop
+    systemctl stop rabbitmq-server
     rabbitmq-server -detached
     ```
-    - 可使用rabbitmq cluster_status查看集群状态
+- 配置过程
+    - master: 复制其cookie到其他各节点, 要注意保持其权限为400: `/var/lib/rabbitmq/.erlang.cookie`
+    - slave:
+        - 停止应用: rabbitmqctl stop_app
+        - 加入集群: rabbitmqctl join_cluster CLUSTER_NAME
+        - 启动应用: rabbitmqctl start_app
+        - rabbitmqctl cluster_status: 查看集群状态
 
-- (4)停止其中一个节点的应用
-    ```sh
-    rabbitmqctl stop_app # (如停止node2)
-    rabbitmqctl join_cluster rabbit@NODE_NAME   # (在node2执行命令)
-    ```
-
-- 容易出现的错误: 集群名称需要和节点名一致, 负责将无法添加节点
-
-## 基于haproxy的LB集群
+## 基于HAProxy的LB集群
 
 ```sh
 listen rabbitmq:5672
