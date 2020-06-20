@@ -1,5 +1,7 @@
 # Linux磁盘及文件系统管理
 
+- [CentOS如何挂载硬盘](https://www.cnblogs.com/chenjian/p/8862524.html "CentOS如何挂载硬盘")
+
 ## Summary
 
 - 文件系统管理
@@ -180,7 +182,7 @@
 - blkid：查看指定块设备的属性信息：
     - `blkid [-L label | -U uuid] DEVICE`
     - -L LABEL：根据LABEL定位设备
-    - -U UUID：根据UUID定位设备 
+    - -U UUID：根据UUID定位设备
 
 - e2label命令：卷标的查看与设定
     - 查看：e2label device
@@ -251,7 +253,7 @@
                 - sync/async：同步/异步操作；
                 - atime/noatime：文件或目录在被访问时是否更新其访问时间戳；
                 - diratime/nodiratime：目录在被访问时是否更新其访问时间戳；
-                - remount：重新挂载； 
+                - remount：重新挂载；
                 - acl：支持使用facl功能；
                     - `# mount -o acl device dir`
                     - `# tune2fs -o acl device`
@@ -282,7 +284,7 @@
                 - `# fuser -v MOUNT_POINT`
             - 终止所有正在访问某挂载点的进程：
                 - `# fuser -km MOUNT_POINT`
-      
+
 - 设定除根文件系统以外的其它文件系统能够开机时自动挂载：使用/etc/fstab文件
     - 每行定义一个要挂载的文件系统及相关属性：6个字段：
         - (1) 要挂载的设备：
@@ -426,7 +428,7 @@
 
 - 实现方式：
     - 硬件实现方式
-    - 软件实现方式 
+    - 软件实现方式
 
 ### CentOS 6上的软件RAID的实现
 
@@ -436,7 +438,7 @@
     - 命令的语法格式：`mdadm [mode] <raiddevice> [options] <component-devices>`
         - `<raiddevice>: /dev/md#`
         - `<component-devices>`: 任意块设备
-    - 支持的RAID级别：LINEAR, RAID0, RAID1, RAID4, RAID5, RAID6, RAID10; 
+    - 支持的RAID级别：LINEAR, RAID0, RAID1, RAID4, RAID5, RAID6, RAID10;
     - 模式：
         - 创建：-C
             - -n #: 使用#个块设备来创建此RAID；
@@ -543,7 +545,7 @@ key: https://blog.51cto.com/arm2012/1955817
     - -O <feature>: 所支持一些扩展特性
         - -O list-all: 列出支持的所有feature；
 
-- 属性查看：btrfs filesystem show 
+- 属性查看：btrfs filesystem show
 - 挂载文件系统：mount -t btrfs /dev/sdb MOUNT_POINT
 - 透明压缩机制：mount -o compress={lzo|zlib} DEVICE MOUNT_POINT
 - 动态增减空间：btrfs filesystem resize {{+|-}5G|max} MOUNT_POINT
