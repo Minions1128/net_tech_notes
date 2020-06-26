@@ -4,6 +4,8 @@
 
 - netns 在内核实现, 其功能由 iproute 所提供的 netns 这个 OBJECT 来提供
 
+- 利用 netns 实现一个虚拟网络与外网通信
+
 ```
 +-------------+  +-------------+
 |             |  |             |
@@ -121,4 +123,51 @@ ip netns exec rt dnsmasq -F 10.0.0.151,10.0.0.160 \
 # 进入 vm2, 利用 dhcp 获取地址
     udhcpc -h
     udhcpc -R
+```
+
+## OvS
+
+- 基于C语言开发, 特性:
+    - 802.1q
+    - NIC bonding
+    - NetFlow, sFlow
+    - QoS
+    - (IPSec over )GRE, VxLAN
+    - OpenFlow
+
+- 组成部分:
+    - ovs-vswitched: OvS daemon, 实现数据报文交换功能, 和linux内核兼容模块, 一同实现了基于流的交换技术
+    - ovsdb-server: 轻量级的数据库服务器, 主要保存OvS的配置信息, e.g..接口, 交换和vlan; ovs-switched 的交换功能基于此库完成
+    - ovs-dpctl
+    - ovs-vsctl: 用于获取/更改ovs-switched的配置信息, 其修改操作会保存与ovsdb-server
+    - ovs-appctl
+    - ovsdbmonitor
+    - ovs-controller
+    - ovs-ofctl
+    - ovs-pki
+
+- `service openvswitch start`启动ovs
+
+
+
+- `ovs-vsctl [OPTIONS] COMMAND [ARG...]`
+    - show: print overview of database contents
+    - add-br/del-br BRIDGE: create/delete a new bridge named BRIDGE, (and delete all of its ports)
+    - list-br: print the names of all the bridges
+    - add-port/del-port BRIDGE PORT: add/delete network device PORT (when delete, which may be bonded) to BRIDGE
+    - list-ports BRIDGE: print the names of all the ports on BRIDGE
+    - list TBL [REC]: list RECord (or all records) in TBL, TBL: Intercace, Port
+
+```sh
+ip link add s0 type veth peer name s1
+ovs-vsctl add-port br0 s0
+ovs-vsctl add-port br1 s1
+ovs-vsctl set port vif1 tag 10
+ovs-vsctl remove port vif1 tag 10
+```
+
+```
+/etc/udev/rules.d/70-persistent-net.rules
+修改之后, `/etc/sysconfig/network-scripts/ifcfg-eth0`相应修改其mac地址
+重新装在网卡
 ```
