@@ -166,6 +166,18 @@ ovs-vsctl set port vif1 tag 10
 ovs-vsctl remove port vif1 tag 10
 ```
 
+```sh
+ip link add sif0 type veth peer name rif0
+ip link set rif0 netns r0
+ovs-vsctl add-port br-in sif0
+
+ip netns exec r0 ip link set rif0 up
+ip netns exec r0 ip addr add 10.0.4.0/24 dev rif0
+ip netns exec dnsmasq -F 10.0.4.11,10.0.4.20,86400 -i rif0
+ip netns exec ss -tuanl | grep 67
+# 启动一个vm, vm的地址使用dnsmasq配置
+```
+
 ```
 /etc/udev/rules.d/70-persistent-net.rules
 修改之后, `/etc/sysconfig/network-scripts/ifcfg-eth0`相应修改其mac地址
