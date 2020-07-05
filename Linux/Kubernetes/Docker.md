@@ -320,10 +320,10 @@
 
 - 为docker run命令使用-p选项即可实现端口映射，无须手动添加规则
     - -p选项的使用格式
-        - -p <containerPort>: 将指定的容器端口映射至主机所有地址的一个动态端口
-        - -p <hostPort>:<containerPort>: 将容器端口<containerPort>映射至指定的主机端口<hostPort>
-        - -p <ip>::<containerPort>: 将指定的容器端口<containerPort>映射至主机指定<ip>的动态端口
-        - -p <ip>:<hostPort>:<containerPort>: 将指定的容器端口<containerPort>映射至主机指定<ip>的端口<hostPort>
+        - `-p <containerPort>`: 将指定的容器端口映射至主机所有地址的一个动态端口
+        - `-p <hostPort>:<containerPort>`: 将容器端口`<containerPort>`映射至指定的主机端口`<hostPort>`
+        - `-p <ip>::<containerPort>`: 将指定的容器端口`<containerPort>`映射至主机指定`<ip>`的动态端口
+        - `-p <ip>:<hostPort>:<containerPort>`: 将指定的容器端口`<containerPort>`映射至主机指定`<ip>`的端口`<hostPort>`
     - v `-P`选项或`--publish-all`将容器的所有计划要暴露端口全部映射至主机端口
 
 - 如果不想使用默认的docker0桥接口，或者需要修改此桥接口的网络属性，可通过为docker daemon命令使用-b、--bip、--fixed-cidr、--default-gateway、--dns以及--mtu等选项进行设定
@@ -335,7 +335,7 @@
     - connect
     - disconnect
 
-### Dockerfile
+## Dockerfile
 
 - Dockerfile is nothing but the source code for building Docker images
     - Docker can **build images** automatically by reading the instructions from a Dockerfile
