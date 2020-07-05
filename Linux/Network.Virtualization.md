@@ -6,6 +6,8 @@
 
 - 利用 netns 实现一个虚拟网络与外网通信
 
+## Linux Bridge实验
+
 ```
 +-------------+  +-------------+
 |             |  |             |
@@ -148,8 +150,6 @@ ip netns exec rt dnsmasq -F 10.0.0.151,10.0.0.160 \
 
 - `service openvswitch start`启动ovs
 
-
-
 - `ovs-vsctl [OPTIONS] COMMAND [ARG...]`
     - show: print overview of database contents
     - add-br/del-br BRIDGE: create/delete a new bridge named BRIDGE, (and delete all of its ports)
@@ -177,6 +177,10 @@ ip netns exec dnsmasq -F 10.0.4.11,10.0.4.20,86400 -i rif0
 ip netns exec ss -tuanl | grep 67
 # 启动一个vm, vm的地址使用dnsmasq配置
 ```
+
+- whats more: https://github.com/Minions1128/net_tech_notes/blob/master/vxlan/README.md
+
+- 修改网卡名称和mac
 
 ```
 /etc/udev/rules.d/70-persistent-net.rules
