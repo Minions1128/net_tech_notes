@@ -184,7 +184,7 @@
         - 位于下层的镜像称为父镜像(parent image), 最底层的称为基础镜像(base image)
         - 最上层为“可读写”层, 其下的均为“只读”层
 
-- Docker目前支持的联合文件系统种类包括AUFS、Btrfs、VFS和DeviceMapper等。
+- Docker目前支持的联合文件系统种类包括AUFS, Btrfs, VFS和DeviceMapper等。
     - AUFS, Aadvanced multi-layered Unification FileSystem, 高级多层统一文件系统, 在Ubuntu上默认使用aufs
     - Devicemapper: 在CentOS7上使用的是devicemapper,
 
@@ -202,7 +202,7 @@
             - 用户仓库名称格式为“用户名/仓库名”
         - 每个仓库可以包含多个Tag(标签) , 每个标签对应一个镜像
     - Index
-        - 维护用户帐户、镜像的校验以及公共命名空间的信息
+        - 维护用户帐户, 镜像的校验以及公共命名空间的信息
         - 相当于为Registry提供了一个完成用户认证等功能的检索接口
 
 | 请求镜像 | 部署流程 |
@@ -292,7 +292,7 @@
 
 - Docker安装完成后, 会自动创建三个网络, 可使用“docker network ls”命令查看。创建容器时, 可为docker run命令使用--network选项指定要加入的网络
     - host: 相当于是Open container, 直接使用宿主机网络资源
-    - none: 不参与网络通信, 运行于此类容器中的进程仅能访问本地环回接口, 仅适用于进程无须网络通信的场景中, 例如备份、进程诊断及各种离线任务等
+    - none: 不参与网络通信, 运行于此类容器中的进程仅能访问本地环回接口, 仅适用于进程无须网络通信的场景中, 例如备份, 进程诊断及各种离线任务等
         - `]# docker run --rm --net none busybox:latest ifconfig -a`
     - bridge: represents the docker0 network present in all Docker installations
         - `]# docker run --rm --net bridge busybox:latest ifconfig -a`
@@ -307,8 +307,8 @@
             - `]# docker run -d -it --rm -p 2222 busybox:latest /bin/httpd -p 2222 -f`
         - 创建一个联盟式容器, 并查看其监听的端口
             - `]# docker run -it --rm --net container:web --name joined busybox:latest netstat -tan`
-    - 联盟式容器彼此间虽然共享同一个网络名称空间, 但其它名称空间如User、Mount等还是隔离的
-    - 联盟式容器彼此间存在端口冲突的可能性, 因此, 通常只会在多个容器上的程序需要程序loopback接口互相通信、或对某已存的容器的网络属性进行监控时才使用此种模式的网络模型
+    - 联盟式容器彼此间虽然共享同一个网络名称空间, 但其它名称空间如User, Mount等还是隔离的
+    - 联盟式容器彼此间存在端口冲突的可能性, 因此, 通常只会在多个容器上的程序需要程序loopback接口互相通信, 或对某已存的容器的网络属性进行监控时才使用此种模式的网络模型
 
 - 开放容器或其上的服务为外部网络访问, 需要在宿主机上为其定义DNAT规则, 例如
     - 对宿主机某IP地址的访问全部映射给某容器地址
@@ -326,7 +326,7 @@
         - `-p <ip>:<hostPort>:<containerPort>`: 将指定的容器端口`<containerPort>`映射至主机指定`<ip>`的端口`<hostPort>`
     - v `-P`选项或`--publish-all`将容器的所有计划要暴露端口全部映射至主机端口
 
-- 如果不想使用默认的docker0桥接口, 或者需要修改此桥接口的网络属性, 可通过为docker daemon命令使用-b、--bip、--fixed-cidr、--default-gateway、--dns以及--mtu等选项进行设定
+- 如果不想使用默认的docker0桥接口, 或者需要修改此桥接口的网络属性, 可通过为docker daemon命令使用-b, --bip, --fixed-cidr, --default-gateway, --dns以及--mtu等选项进行设定
 
 - 创建docker网络: https://docs.docker.com/engine/reference/commandline/network_create/
     - create
@@ -394,44 +394,39 @@
         - 如果`<dest>`事先不存在, 它将会被自动创建, 这包括其父目录路径
     - `COPY data /data/`: 将宿主机当前工作目录`data`下的所有文件, 复制到容器的`/data/`下
 
-- ADD
-        - ADD指令类似于COPY指令, ADD支持使用TAR文件和URL路径
-        - Syntax
-            - `ADD <src> ... <dest>` 或
-            - `ADD ["<src>",... "<dest>"]`
-        - 操作准则
-            - 同COPY指令
-            - 如果`<src>`为URL且`<dest>`不以`/`结尾, 则`<src>`指定的文件将被下载并直接被创建为`<dest>`; 如果`<dest>`以/结尾, 则文件名URL指定的文件将被直接下载并保存为`<dest>/<filename>`
-            - 如果`<src>`是一个本地系统上的压缩格式的tar文件, 它将被展开为一个目录, 其行为类似于`tar -x`命令; 然而, 通过URL获取到的tar文件将不会自动展开;
-            - 如果`<src>`有多个, 或其间接或直接使用了通配符, 则`<dest>`必须是一个以/结尾的目录路径; 如果`<dest>`不以/结尾, 则其被视作一个普通文件, `<src>`的内容将被直接写入到`<dest>`;
+- ADD: 类似于COPY指令, ADD支持使用TAR文件和URL路径
+    - Syntax
+        - `ADD <src> ... <dest>` 或
+        - `ADD ["<src>",... "<dest>"]`
+    - 操作准则
+        - 同COPY指令
+        - 如果`<src>`为URL且`<dest>`不以`/`结尾, 则`<src>`指定的文件将被下载并直接被创建为`<dest>`; 如果`<dest>`以/结尾, 则文件名URL指定的文件将被直接下载并保存为`<dest>/<filename>`
+        - 如果`<src>`是一个本地系统上的压缩格式的tar文件, 它将被展开为一个目录, 其行为类似于`tar -x`命令; 然而, 通过URL获取到的tar文件将不会自动展开;
+        - 如果`<src>`有多个, 或其间接或直接使用了通配符, 则`<dest>`必须是一个以`/`结尾的目录路径; 如果`<dest>`不以`/`结尾, 则其被视作一个普通文件, `<src>`的内容将被直接写入到`<dest>`;
 
-- WORKDIR
-        - 用于为Dockerfile中所有的RUN、CMD、ENTRYPOINT、COPY和ADD指定设定工作目录
-        - Syntax
-            - `WORKDIR <dirpath>`
-                - 在Dockerfile文件中, WORKDIR指令可出现多次, 其路径也可以为相对路径, 不过, 其是相对此前一个WORKDIR指令指定的路径
-                - 另外, WORKDIR也可调用由ENV指定定义的变量
-            - 例如
-                - `WORKDIR /var/log`
-                - `WORKDIR $STATEPATH`
+- WORKDIR: 用于为Dockerfile中所有的RUN, CMD, ENTRYPOINT, COPY和ADD指定设定工作目录
+    - Syntax
+        - `WORKDIR <dirpath>`
+            - 在Dockerfile文件中, WORKDIR指令可出现多次, 其路径也可以为相对路径, 不过, 其是相对此前一个WORKDIR指令指定的路径
+            - 另外, WORKDIR也可调用由ENV指定定义的变量
+    - 例如
+        - `WORKDIR /var/log`
+        - `WORKDIR $STATEPATH`
 
-- VOLUME
-        - 用于在image中创建一个挂载点目录, 以挂载Docker host上的卷或其它容器上的卷
-        - Syntax
-            - `VOLUME <mountpoint>` 或
-            - `VOLUME ["<mountpoint>"]`
-        - 如果挂载点目录路径下此前在文件存在, docker run命令会在卷挂载完成后将此前的所有文件复制到新挂载的卷中
+- VOLUME: 用于在image中创建一个挂载点目录, 以挂载Docker host上的卷或其它容器上的卷
+    - Syntax
+        - `VOLUME <mountpoint>` 或
+        - `VOLUME ["<mountpoint>"]`
+    - 如果挂载点目录路径下此前在文件存在, docker run命令会在卷挂载完成后将此前的所有文件复制到新挂载的卷中
 
-- EXPOSE
-        - 用于为容器打开指定要监听的端口以实现与外部通信
-        - Syntax
-            - `EXPOSE <port>[/<protocol>] [<port>[/<protocol>] ...]`
-                - `<protocol>`用于指定传输层协议, 可为tcp或udp二者之一, 默认为TCP协议
-            - EXPOSE指令可一次指定多个端口, 例如
-                - `EXPOSE 11211/udp 11211/tcp`
+- EXPOSE: 用于为容器打开指定要监听的端口以实现与外部通信
+    - Syntax
+        - `EXPOSE <port>[/<protocol>] [<port>[/<protocol>] ...]`
+            - `<protocol>`用于指定传输层协议, 可为tcp或udp二者之一, 默认为TCP协议
+    - EXPOSE指令可一次指定多个端口, 例如: `EXPOSE 11211/udp 11211/tcp`
 
 - ENV
-        - 用于为镜像定义所需的环境变量, 并可被Dockerfile文件中位于其后的其它指令（如ENV、ADD、COPY等）所调用
+        - 用于为镜像定义所需的环境变量, 并可被Dockerfile文件中位于其后的其它指令（如ENV, ADD, COPY等）所调用
         - 调用格式为$variable_name或${variable_name}
         - Syntax
             - `ENV <key> <value>` 或
@@ -474,7 +469,7 @@
         - Dockerfile文件中也可以存在多个ENTRYPOINT指令, 但仅有最后一个会生效
 
 - USER
-        - 用于指定运行image时的或运行Dockerfile中任何RUN、CMD或ENTRYPOINT指令指定的程序时的用户名或UID
+        - 用于指定运行image时的或运行Dockerfile中任何RUN, CMD或ENTRYPOINT指令指定的程序时的用户名或UID
         - 默认情况下, container的运行身份为root用户
         - Syntax
             - `USER <UID>|<UserName>`
