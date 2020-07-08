@@ -452,7 +452,6 @@
     - Privileged containers maintain their file system and network isolation but have full access to shared memory and devices and possess full system capabilities
         - --privileged: Give extended privileges to this container
 
-
 ## Private Registry
 
 - 创建: `yum install -y docker-distribution`
@@ -461,25 +460,26 @@
 - push:
     - 将docker.io镜像标记为私有仓库: `docker tag <SOURCE REPOSITORY> <REGISTRY-IP/TAG>`
     - push新镜像: `docker push <REGISTRY-IP/TAG>`
-        - 推送时, 可能会有http协议不兼容问题:
-            - 可以将docker允许使用http的镜像仓库, 并且添加新的仓库:
-                ```
-                /etc/sysconfig/docker
-                INSECURE_REGISTRY='--insecure-registry 172.16.1.1:5000'
-                ADD_REGISTRY='--add-registry 172.16.1.1:5000'
-                ```
-            - 也可以配置Docker private Registry的Nginx反代配置方式:
-                ```
-                client_max_body_size 0;
-                location / {
-                    proxy_pass  http://registrysrvs;
-                    proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-                    proxy_redirect off;
-                    proxy_buffering off;
-                    proxy_set_header        Host            $host;
-                    proxy_set_header        X-Real-IP       $remote_addr;
-                    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-                    auth_basic "Docker Registry Service";
-                    auth_basic_user_file "/etc/nginx/.ngxpasswd";
-                }
-                ```
+
+- 推送时, 可能会有http协议不兼容问题
+    - 可以将docker允许使用http的镜像仓库, 并且添加新的仓库:
+        ```
+        /etc/sysconfig/docker
+        INSECURE_REGISTRY='--insecure-registry 172.16.1.1:5000'
+        ADD_REGISTRY='--add-registry 172.16.1.1:5000'
+        ```
+    - 也可以配置Docker private Registry的Nginx反代配置方式:
+        ```
+        client_max_body_size 0;
+        location / {
+            proxy_pass  http://registrysrvs;
+            proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+            proxy_redirect off;
+            proxy_buffering off;
+            proxy_set_header        Host            $host;
+            proxy_set_header        X-Real-IP       $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            auth_basic "Docker Registry Service";
+            auth_basic_user_file "/etc/nginx/.ngxpasswd";
+        }
+        ```
