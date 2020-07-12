@@ -2,6 +2,12 @@
 
 - [Kubernetes 文档](https://www.kubernetes.org.cn/k8s "Kubernetes 文档")
 
+- [Centos7部署Kubernetes集群](https://www.cnblogs.com/zhenyuyaodidiao/p/6500830.html "Centos7部署Kubernetes集群")
+
+- [浅析flannel与docker结合的机制和原理](https://xuxinkun.github.io/2016/07/18/flannel-docker/ "浅析flannel与docker结合的机制和原理")
+
+- [k8s核心yml--Pod、Deployment、Service](https://cloud.tencent.com/developer/article/1462777 "k8s核心yml--Pod、Deployment、Service")
+
 ## 容器编排三组解决方案
 
 - Docker容器编排三剑客
@@ -39,7 +45,7 @@
 
 [![k8s.master](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.master.jpg "k8s.master")](https://github.com/Minions1128/net_tech_notes/blob/master/img/k8s.master.jpg "k8s.master")
 
-- agent主机(node):
+- node:
     - kubelet: Container Agent
     - container runtime(docker/rkt/...)
     - kube-proxy: A load balancer for Pods
@@ -143,34 +149,53 @@
         - If DNS has been enabled throughout the cluster then all Pods should be able to do name resolution of Services automatically
 
 - Network
+    - Cilium
+    - OVN (Open Virtual Networking)
+    - Calico
+    - Romana
+    - Flannel
+    - OVS
+    - Open Contrail
+    - Cisco Contiv
 
-```
-Kubernetes Cluster:
-    环境:
-        master, etcd: 172.18.0.67
-        node1: 172.18.0.68
-        node2: 172.18.0.69
-    前提:
-        1、基于主机名通信: /etc/hosts；
-        2、时间同步；
-        3、关闭firewalld和iptables.service；
+- Kubernetes Objects
+    - are persistent entities in the Kubernetes system
+    - Kubernetes uses these entities to represent the state of your cluster
+    - Specifically, they can describe:
+        - What containerized applications are running (and on which nodes)
+        - The resources available to those applications
+        - The policies around how those applications behave, such as restart policies, upgrades, and fault-tolerance
+    A Kubernetes object is a "record of intent" –- once you create the object, the Kubernetes system will constantly work to ensure that object exists
+    - By creating an object, you’re effectively telling the Kubernetes system what you want your cluster’s workload to look like; this is your cluster’s desired state
+    - To work with Kubernetes objects – whether to create, modify, or delete them – you’ll need to use the Kubernetes API
+    - When you use the kubectl command-line interface, for example, the CLI makes the necessary Kubernetes API calls for you; you can also use the Kubernetes API directly in your own programs
+    - Every Kubernetes object includes two nested object fields that govern the object’s configuration: the object **spec** and the object **status**
+        - The spec, which you must provide, describes your desired state for the object the characteristics that you want the object to have
+        - The status describes the actual state for the object, and is supplied and updated by the Kubernetes system
+    - At any given time, the Kubernetes Control Plane actively manages an object’s actual state to match the desired state you supplied
+    - Most often, you provide the information to kubectl in a .yaml file. kubectl converts the information to JSON when making the API request: [k8s核心yml--Pod、Deployment、Service](https://cloud.tencent.com/developer/article/1462777 "k8s核心yml--Pod、Deployment、Service")
 
-        OS: CentOS 7.3.1611, Extras仓库中；
+## deployment实例
 
-安装配置步骤:
-        1、etcd, 仅master节点；
-        2、flannel, 集群的所有节点；
-        3、配置k8s的master: 仅master节点；
-            kubernetes-master
-            启动的服务:
-                kube-apiserver, kube-scheduler, kube-controller-manager
-        4、配置k8s的各Node节点；
-            kubernetes-node
-
-            先设定启动docker服务；
-            启动的k8s的服务:
-                kube-proxy, kubelet
-
-        http://www.cnblogs.com/zhenyuyaodidiao/p/6500830.html
-        https://xuxinkun.github.io/2016/07/18/flannel-docker/
+```yml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deploy-bbox
+spec:
+  selector:
+    matchLabels:
+      app: bbox
+  replicas: 3
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: bbox
+    sepc:
+      containers:
+      - name: bboxhttpd
+        image: "registry:5000/bbox-httpd:v0.2"
+        ports:
+        - containerPort: 18888
 ```
