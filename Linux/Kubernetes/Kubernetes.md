@@ -177,25 +177,41 @@
 
 ## deployment实例
 
+- https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+
 ```yml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: deploy-bbox
+  name: nginx-deployment
 spec:
-  selector:
-    matchLabels:
-      app: bbox
   replicas: 3
-  revisionHistoryLimit: 2
   template:
     metadata:
       labels:
-        app: bbox
-    sepc:
+        app: nginx
+    spec:
       containers:
-      - name: bboxhttpd
-        image: "registry:5000/bbox-httpd:v0.2"
+      - name: nginx
+        image: nginx:1.7.9
         ports:
-        - containerPort: 18888
+        - containerPort: 80
+```
+
+## service 实例
+
+```yml
+apiVersion: extensions/v1beta1
+kind: Service
+matadata:
+  name: nginx-service
+spec:
+  ports:
+  - name: http
+    protocol: tcp
+    port: 80
+    targetPort: 80
+  selector:
+    app: nginx
+  type: LoadBalancer
 ```
