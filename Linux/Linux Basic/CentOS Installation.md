@@ -63,7 +63,7 @@
         - vnc
         - vncpassword='PASSWORD'
     - 启动紧急救援模式: rescue
-    - 装载额外驱动: d
+    - 装载额外驱动: `dd`
     - whats more: www.redhat.com/docs, 《installation guide》
 
 - el6 安装引导选项: ks: 指明kickstart文件的位置;
@@ -136,8 +136,8 @@ openssl passwd -1 -salt `openssl rand -hex 4`
         - permissive
         - disabled
     - 立即生效:
-        - # getenforce
-        - # setenforce  0
+        - getenforce
+        - setenforce 0
 
 - 定制kickstart文件:
 
