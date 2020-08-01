@@ -136,35 +136,16 @@ echo ${abc[*]}
 ```sh
 #!/bin/bash
 a="Hello World !"
-echo ${a#*o}
-#  World !
-
-echo ${a##*o}
-# rld !
-
-echo ${a%o*}
-# Hello W
-
-echo ${a%%o*}
-# Hell
-
-echo ${a/l/L}
-# HeLlo World !
-
-echo ${a//l/L}
-# HeLLo WorLd !
-
-echo ${a/l}
-# Helo World !
-
-echo ${a//l}
-# Heo Word !
-
-echo ${a^^}
-# HELLO WORLD !
-
-echo ${a,,}
-# hello world !
+echo ${a#*o}        #  World !
+echo ${a##*o}       # rld !
+echo ${a%o*}        # Hello W
+echo ${a%%o*}       # Hell
+echo ${a/l/L}       # HeLlo World !
+echo ${a//l/L}      # HeLLo WorLd !
+echo ${a/l}         # Helo World !
+echo ${a//l}        # Heo Word !
+echo ${a^^}         # HELLO WORLD !
+echo ${a,,}         # hello world !
 ```
 
 - 字符串处理
