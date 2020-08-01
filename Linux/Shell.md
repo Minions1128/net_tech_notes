@@ -87,6 +87,8 @@
 
 ## 数组
 
+- 举例
+
 ```sh
 ipInfo=(
     host1    10.0.0.1
@@ -105,6 +107,73 @@ while true; do
         sleep 1
     done
 done
+```
+
+- 排序
+
+```sh
+len=10
+for((i=0;i<$len;i++)); do
+    abc[i]=$RANDOM
+done
+echo ${abc[*]}
+for((i=0;i<$len;i++)); do
+    max=$i
+    for((j=i;j<$len;j++)); do
+        [[ abc[max] -lt abc[j] ]] && max=$j
+    done
+    if [[ $max -ne $i ]]; then
+        temp=${abc[$max]}
+        abc[$max]=${abc[$i]}
+        abc[$i]=$temp
+    fi
+done
+echo ${abc[*]}
+```
+
+- 字符串应用
+
+```sh
+#!/bin/bash
+a="Hello World !"
+echo ${a#*o}
+#  World !
+
+echo ${a##*o}
+# rld !
+
+echo ${a%o*}
+# Hello W
+
+echo ${a%%o*}
+# Hell
+
+echo ${a/l/L}
+# HeLlo World !
+
+echo ${a//l/L}
+# HeLLo WorLd !
+
+echo ${a/l}
+# Helo World !
+
+echo ${a//l}
+# Heo Word !
+
+echo ${a^^}
+# HELLO WORLD !
+
+echo ${a,,}
+# hello world !
+```
+
+- 字符串处理
+
+```sh
+${var:-VALUE}       # 如果 var 为空, 则返回VALUE; 否则返回var的值;
+${var:=VALUE}       # 如果 var 为空, 则返回VALUE, 并将var赋值VALUE; 否则返回var的值;
+${var:+VALUE}       # 如果 var 不空, 则返回VALUE;
+${var:?ERROR_INFO}  # 如果 var 为空, 或未设定, 则返回ERROR_INFO
 ```
 
 ## 基本运算符
