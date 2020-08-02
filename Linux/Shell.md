@@ -136,7 +136,7 @@ echo ${abc[*]}
 ```sh
 #!/bin/bash
 a="Hello World !"
-echo ${a#*o}        #  World !
+echo ${a#*o}        # World !
 echo ${a##*o}       # rld !
 echo ${a%o*}        # Hello W
 echo ${a%%o*}       # Hell
@@ -365,3 +365,40 @@ for i in $(seq 0 $1); do
 done
 echo
 ```
+
+## 信号
+
+- trap: Trap signals and other events.
+    - `trap [-lp] [[arg] signal_spec ...]`
+
+```sh
+function mytrap() {
+    echo "\n\033[5mInterrupt by keyboard\033[0m"
+    echo $c
+    exit 1
+}
+
+trap 'mytrap' INT
+# trap 'mytrap' 2
+c=0
+while true; do
+    c=$(($c+1))
+    echo "hahaha"
+    sleep 1
+done
+```
+
+- xargs: build and execute command lines from standard input
+
+```sh
+echo '--help' | cat
+# --help
+echo '--help' | xargs cat
+# Usage: cat [OPTION]... [FILE]...
+# <omitted>
+# For complete documentation, run: info coreutils 'cat invocation'
+```
+
+## 颜色
+
+- https://blog.csdn.net/andylauren/article/details/60873400
