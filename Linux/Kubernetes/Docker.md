@@ -320,7 +320,9 @@
     - If this file exists, the CLI modifies the context to exclude files and directories that match patterns in it
     - The CLI interprets the .dockerignore file as a newline-separated list of patterns similar to the file globs of Unix shells
 
-### Dockerfile Instructions: `Dockerfile`, 最后使用`docker build`命令进行构建
+### Dockerfile Instructions
+
+- `Dockerfile`, 最后使用`docker build`命令进行构建
 
 - 参考: https://www.runoob.com/docker/docker-dockerfile.html
 
@@ -417,7 +419,7 @@
 
 - ENTRYPOINT
     - 类似CMD指令的功能, 用于为容器指定默认运行程序, 从而使得容器像是一个单独的可执行程序
-        - 与CMD不同的是, 由ENTRYPOINT启动的程序不会被docker run命令行指定的参数所覆盖, 而且, 这些命令行参数会被当作参数传递给ENTRYPOINT指定指定的程序
+        - 与CMD不同的是, 由ENTRYPOINT启动的程序不会被docker run命令行指定的参数所覆盖, 而且, 这些**命令行参数会被当作参数传递给ENTRYPOINT指定指定的程序**
         - 不过, docker run命令的--entrypoint选项的参数可覆盖ENTRYPOINT指令指定的程序
     - Syntax
         - `ENTRYPOINT <command>`
@@ -438,6 +440,60 @@
     - 尽管任何指令都可注册成为触发器指令, 但ONBUILD不能自我嵌套, 且不会触发FROM和MAINTAINER指令
     - 使用包含ONBUILD指令的Dockerfile构建的镜像应该使用特殊的标签, 例如`ruby:2.0-onbuild`
     - 在ONBUILD指令中使用ADD或COPY指令应该格外小心, 因为新构建过程的上下文在缺少指定的源文件时会失败
+
+- HEALTHCHECK
+- SHELL
+- STOPSIGNAL
+- ARG
+
+- example1:
+
+```sh
+# cat Dockerfile
+FROM busybox:latest
+ENV DOC_ROOT=/data/web/html/ \
+    WEB_SRV_PKG19="nginx-1.19.2" \
+    WEB_SRV_PKG18="nginx-1.18.0"
+VOLUME /data/mysql/
+EXPOSE 80/tcp
+# COPY yum.repos.d /etc/yum.repos.d/
+COPY index.html $DOC_ROOT
+# WORKDIR /usr/local/src/
+# ADD ${WEB_SRV_PKG19}.tar.gz ./
+WORKDIR /usr/local/
+ADD http://nginx.org/download/${WEB_SRV_PKG18}.tar.gz ./src/
+RUN cd src/ && tar -xf ${WEB_SRV_PKG18}.tar.gz \
+    && mv ${WEB_SRV_PKG18} webserver
+# CMD /bin/httpd -f -h ${DOC_ROOT}
+ENTRYPOINT /bin/httpd -f -h ${DOC_ROOT}
+
+# docker build -t asdf ./
+```
+
+- example2:
+
+```sh
+# entrypoint.sh
+#!/bin/sh
+cat > /etc/nginx/conf.d/default.conf << EOF
+server {
+    server_name $HOSTNAME;
+    listen ${IP:-0.0.0.0}:${PORT:-80};
+    root ${NGX_DOC_ROOT:-/usr/share/nginx/html};
+}
+EOF
+exec "$@"
+
+# Dockerfile
+FROM nginx:1.14-alpine
+ENV NGX_DOC_ROOT='/data/web/html/'
+ADD index.html $NGX_DOC_ROOT
+ADD entrypoint.sh /bin/
+CMD ["/usr/sbin/nginx","-g","daemon off;"]
+ENTRYPOINT ["/bin/entrypoint.sh"]
+EXPOSE 80/tcp 12345/udp
+HEALTHCHECK --start-period=3s CMD wget -O - -q http://${IP:-0.0.0.0}:${PORT}/
+```
 
 ## 资源限制
 
