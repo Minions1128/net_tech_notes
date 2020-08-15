@@ -19,6 +19,8 @@
         - **Docker Hub** and **Docker Cloud** are public registries that anyone can use, and Docker is configured to look for images on Docker Hub by default.
         - You can even run your own private registry.
 
+- [docker中的命名空间](https://www.jianshu.com/p/04327e148169 "docker中的命名空间")
+
 [![docker.architecture](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.architecture.jpg "docker.architecture")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.architecture.jpg "docker.architecture")
 
 - Docker逻辑组件
