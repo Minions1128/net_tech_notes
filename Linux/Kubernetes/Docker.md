@@ -534,6 +534,7 @@ HEALTHCHECK --start-period=3s CMD wget -O - -q http://${IP:-0.0.0.0}:${PORT}/
         INSECURE_REGISTRY='--insecure-registry 172.16.1.1:5000'
         ADD_REGISTRY='--add-registry 172.16.1.1:5000'
         ```
+    - `/etc/docker/daemon.json`, 添加`"insecure-registries": [URL],`
     - 也可以配置Docker private Registry的Nginx反代配置方式:
         ```
         client_max_body_size 0;
