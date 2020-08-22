@@ -518,6 +518,8 @@ HEALTHCHECK --start-period=3s CMD wget -O - -q http://${IP:-0.0.0.0}:${PORT}/
     - Privileged containers maintain their file system and network isolation but have full access to shared memory and devices and possess full system capabilities
         - --privileged: Give extended privileges to this container
 
+- 测试工具: stress
+
 ## Private Registry
 
 - 创建: `yum install -y docker-distribution`
