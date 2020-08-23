@@ -45,22 +45,27 @@ systemctl enable docker kubelet
 echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
 echo 1 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
 
+# 检查kube-scheduler.yaml, kube-controller-manager.yaml配置是否禁用了非安全端口
+egrep "\-\-port=0" /etc/kubernetes/manifests/kube-scheduler.yaml
+egrep "\-\-port=0" /etc/kubernetes/manifests/kube-controller-manager.yaml
+cp /etc/kubernetes/manifests/kube-scheduler.yaml{,.bak}
+cp /etc/kubernetes/manifests/kube-controller-manager.yaml{,.bak}
+sed -i '/\s*-\s*--port=0\s*$/d' /etc/kubernetes/manifests/kube-scheduler.yaml
+sed -i '/\s*-\s*--port=0\s*$/d' \
+    /etc/kubernetes/manifests/kube-controller-manager.yaml
+
 # 初始化master节点
 kubeadm init --pod-network-cidr=10.244.0.0/16 \
     --service-cidr=10.96.0.0/12 \
     --ignore-preflight-errors=Swap
 
-# 请记录最后的kubeadm join命令的全部内容
+# 记录最后的kubeadm join命令的全部内容
 
 # 初始化kubectl
 mkdir ~/.kube
 cp /etc/kubernetes/admin.conf ~/.kube/
 echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> ~/.bash_profile
 source ~/.bash_profile
-
-# 检查kube-scheduler.yaml, kube-controller-manager.yaml配置是否禁用了非安全端口
-egrep "\-\-port=0" /etc/kubernetes/manifests/kube-scheduler.yaml
-egrep "\-\-port=0" /etc/kubernetes/manifests/kube-controller-manager.yaml
 
 # 测试
 kubectl get componentstatus
