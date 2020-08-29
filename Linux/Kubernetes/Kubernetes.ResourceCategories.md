@@ -14,3 +14,27 @@
 
 - **Metadata resources**: are objects you use to configure the behavior of other resources within the cluster, such as HorizontalPodAutoscaler for scaling workloads.
     - HPA, PodTemplate, LimitRange
+
+- 一级字段
+    - apiVersion(group/version): `kubectl api-versions`
+    - kind
+    - metadata(name, namespace, labels, annotations, ...)
+    - spec
+    - status(readOnly)
+
+## Pods
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-demo
+  namespace: default
+  labels:
+    app: myapp
+    tier: frontend
+spec:
+  containers:               # required
+  - name: myngx             # required
+    image: nginx:latest     # required
+```
