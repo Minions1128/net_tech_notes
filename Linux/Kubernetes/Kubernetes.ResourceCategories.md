@@ -1,5 +1,7 @@
 # Kubernetes 资源清单
 
+- https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#-strong-api-overview-strong-
+
 - **Workloads**: are objects you use to manage and run your containers on the cluster.
     - Pod, ReplicaSet, Deployment, StatefulSet, DaemonSet, Job, Cronjob
 
@@ -25,6 +27,7 @@
 ## Pods
 
 ```yaml
+# demo
 apiVersion: v1
 kind: Pod
 metadata:
@@ -34,7 +37,67 @@ metadata:
     app: myapp
     tier: frontend
 spec:
-  containers:               # required
-  - name: myngx             # required
-    image: nginx:latest     # required
+  containers:                   # required
+    - name: myngx               # required
+      image: nginx:latest       # required
+      ports:
+        - name: http
+          containerPort: 80     # required
+        - name: https
+          containerPort: 443
+    - name: mybbox
+      image: busybox:latest
+      command:
+        - "/bin/sh"
+        - "-c"
+        - "sleep 1000"
+```
+
+```yaml
+# liveness-exec-container
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-exec-pod
+  namespace: default
+spec:
+  containers:
+    - name: liveness-exec-container
+      image: busybox:latest
+      imagePullPolicy: IfNotPresent
+      command:
+        - "/bin/sh"
+        - "-c"
+        - "touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 3600"
+      livenessProbe:
+        exec:
+          command:
+            - "test"
+            - "-e"
+            - "/tmp/healthy"
+        initialDelaySeconds: 1
+        periodSeconds: 3
+```
+
+```yaml
+# readiness-httpget-pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: readiness-httpget-pod
+  namespace: default
+spec:
+  containers:
+    - name: readiness-httpget-container
+      image: nginx:latest
+      imagePullPolicy: IfNotPresent
+      ports:
+        - name: http
+          containerPort: 80
+      readinessProbe:
+        httpGet:
+          port: http
+          path: /var/www/html/index.html
+        initialDelaySeconds: 1
+        periodSeconds: 3
 ```
