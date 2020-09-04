@@ -191,6 +191,30 @@ spec:
 
 ```yaml
 apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      role: logstor
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: logstor
+    spec:
+      containers:
+        - name: redis
+          image: redis:4.0-alpine
+          ports:
+            - name: redis
+              containerPort: 6379
+---
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: filebeat-ds
