@@ -248,3 +248,170 @@ spec:
 ### StatefulSet
 
 - 管理有状态应用
+
+### Service
+
+- https://www.cnblogs.com/linuxk/p/9605901.html
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+  namespace: default
+spec:
+  selector:                   # 标签选择器，必须指定pod资源本身的标签
+    app: myapp
+    release: canary
+  type: NodePort
+  # {NodePort|ExternalName|ClusterIP|NodePort|LoadBalancer}
+  ports:
+    - port: 80                # 暴露给服务的端口
+      targetPort: 80          # 容器的端口
+      nodePort: 30080         # node port
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deploy
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+      release: canary
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:                 # pod
+    metadata:
+      labels:
+        app: myapp
+        release: canary
+    spec:
+      containers:
+        - name: myapp
+          image: nginx:latest
+          ports:
+            - name: http
+              containerPort: 80
+```
+
+### Ingress和Ingress Controller
+
+- https://www.cnblogs.com/linuxk/p/9706720.html
+- [ingress-nginx部署](https://www.jianshu.com/p/52889bc8571d "ingress-nginx部署")
+
+- 部署 Ingress controller
+
+```sh
+wget https://github.com/kubernetes/ingress-nginx/blob/nginx-0.30.0/deploy/static/mandatory.yaml
+sed -i 's/quay.io/quay.azk8s.cn/' mandatory.yaml
+kubectl apply -f mandatory.yaml
+```
+
+- 部署 ingress-nginx service
+
+```sh
+wget https://github.com/kubernetes/ingress-nginx/blob/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml
+sed -i 's/targetPort: 80/targetPort: 80\n      nodePort: 30080/' \
+    service-nodeport.yaml
+sed -i 's/targetPort: 443/targetPort: 443\n      nodePort: 30443/' \
+    service-nodeport.yaml
+kubectl apply -f service-nodeport.yaml
+```
+
+- 部署后端服务
+
+```yaml
+# 创建service为myapp
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+  namespace: default
+spec:
+  selector:
+    app: myapp
+    release: canary
+  ports:
+    - name: http
+      targetPort: 80
+      port: 80
+---
+# 创建后端服务的pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-backend-pod
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+      release: canary
+  template:
+    metadata:
+      labels:
+        app: myapp
+        release: canary
+    spec:
+      containers:
+        - name: myapp
+          image: ikubernetes/myapp:v2
+          ports:
+            - name: http
+              containerPort: 80
+```
+
+- 部署ingress
+
+```yaml
+# ingress
+apiVersion: extensions/v1beta1              # api版本
+kind: Ingress   #清单类型
+metadata:     #元数据
+  name: ingress-myapp                       # ingress的名称
+  namespace: default                        # 所属名称空间
+  annotations:                              # 注解信息
+    kubernetes.io/ingress.class: "nginx"
+spec:                                       # 规格
+  rules:                                    # 定义后端转发的规则
+  - host: myapp.example.com                 # 通过域名进行转发
+    http:
+      paths:
+      - path:
+      # 配置访问路径, 如果通过url进行转发, 需要修改; 空默认为访问的路径为"/"
+        backend:                            # 配置后端服务
+          serviceName: myapp
+          servicePort: 80
+```
+
+- 部署 tomcat tls
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-tomcat-tls
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - hosts:
+    - tomcat.example.com
+    secretName: tomcat-ingress-secret
+  rules:
+  - host: tomcat.example.com
+    http:
+      paths:
+      - path:
+        backend:
+          serviceName: tomcat
+          servicePort: 8080
+```
