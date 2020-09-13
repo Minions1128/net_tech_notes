@@ -446,6 +446,7 @@ kubectl create secret generic mysecret2 \
     --from-file=./username \
     --from-file=./password
 
+# from-env-file
 cat << EOF > env.txt
 username=admin
 password=123456
@@ -530,3 +531,7 @@ spec:
               name: mysecret
               key: password
 ```
+
+### StatefulSet
+
+- https://www.cnblogs.com/linuxk/p/9767736.html
