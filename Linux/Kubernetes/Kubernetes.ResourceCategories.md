@@ -415,3 +415,118 @@ spec:
           serviceName: tomcat
           servicePort: 8080
 ```
+
+### 存储卷
+
+- https://www.cnblogs.com/linuxk/p/9760363.html
+
+- 常用分类
+    - emptyDir: 临时目录, Pod删除数据也会被清除, 用于数据的临时存储
+    - hostPath: 宿主机目录映射
+    - 本地的SAN(iSCSI, FC), NAS(nfs, cifs, http)存储
+    - 分布式存储(glusterfs, rbd, cephfs)
+    - 云存储(EBS, Azure Disk)
+
+- 配置容器应用
+    - secret
+    - configMap
+
+- 创建 secret
+
+```sh
+# from-literal
+kubectl create secret generic mysecret1 \
+    --from-literal=username=admin \
+    --from-literal=password=123456
+
+# from-file
+echo -n admin  > ./username
+echo -n 123456 > ./password
+kubectl create secret generic mysecret2 \
+    --from-file=./username \
+    --from-file=./password
+
+cat << EOF > env.txt
+username=admin
+password=123456
+EOF
+kubectl create secret generic mysecret3 \
+    --from-env-file=env.txt
+
+kubectl get secret mysecret3 -o yaml
+```
+
+- 通过 pod volumes 使用 secret
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+data:
+  username: YWRtaW4=        # base64
+  password: MTIzNDU2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-secret
+spec:
+  containers:
+    - name: pod-secret
+      image: busybox
+      args:
+        - /bin/sh
+        - -c
+        - sleep 10;touch /tmp/healthy;sleep 30000
+      volumeMounts:   # 将 foo mount 到容器路径 /etc/foo, 可指定读写权限为 readOnly
+        - name: foo
+          mountPath: "/etc/foo"
+          readOnly: true
+  volumes:          # 定义 volume foo, 来源为 secret mysecret。
+    - name: foo
+      secret:
+        secretName: mysecret
+        items:    # 或者自定义存放数据的文件名
+          - key: username
+            path: my-secret/my-username
+          - key: password
+            path: my-secret/my-password
+# 以 Volume 方式使用的 Secret 支持动态更新: Secret 更新后, 容器中的数据也会更新
+```
+
+- 通过 pod 环境变量使用 secret
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+data:
+  username: YWRtaW4=        # base64
+  password: MTIzNDU2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-secret-env
+spec:
+  containers:
+    - name: pod-secret-env
+      image: busybox
+      args:
+        - /bin/sh
+        - -c
+        - sleep 10;touch /tmp/healthy;sleep 30000
+      env:
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: username
+        - name: SECRET_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: password
+```
