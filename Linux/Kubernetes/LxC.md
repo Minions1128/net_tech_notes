@@ -1,8 +1,5 @@
 # LXC
 
-- 虚拟化和容器的区别
-[![virtualization_vs_container](https://github.com/Minions1128/net_tech_notes/blob/master/img/virtualization_vs_container.jpg "virtualization_vs_container")](https://github.com/Minions1128/net_tech_notes/blob/master/img/virtualization_vs_container.jpg "virtualization_vs_container")
-
 - LXC is a userspace interface for the Linux kernel containment features.
 
 - Current LXC uses the following kernel features to contain processes
@@ -16,6 +13,9 @@
 - LXC containers are often considered as something in the middle between a chroot and a full fledged virtual machine.
 
 - The goal of LXC is to create an environment as close as possible to a standard Linux installation but without the need for a separate kernel.
+
+- 虚拟化和容器的区别
+[![virtualization_vs_container](https://github.com/Minions1128/net_tech_notes/blob/master/img/virtualization_vs_container.jpg "virtualization_vs_container")](https://github.com/Minions1128/net_tech_notes/blob/master/img/virtualization_vs_container.jpg "virtualization_vs_container")
 
 - 容器体系架构
 
@@ -36,11 +36,12 @@
     - lxc-snapshot: 创建和恢复快照;
 
 - WebGUI: lxc-webpanel
-    - http://lxc-webpanel.github.io/
-    - yum install python-flask
-    - git clone https://github.com/lxc-webpanel/LXC-Web-Panel.git
-    - python LXC-Web-Panel/lwp.py
-
+```sh
+# http://lxc-webpanel.github.io
+yum install python-flask
+git clone https://github.com/lxc-webpanel/LXC-Web-Panel.git
+python LXC-Web-Panel/lwp.py
+```
 
 - Linux Containers have emerged as a key open source application packaging and delivery technology, combining lightweight application isolation with the flexibility of image-based deployment methods.
 
