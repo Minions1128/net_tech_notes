@@ -222,18 +222,18 @@
 [![docker.volumes.proc](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.volumes.proc.jpg "docker.volumes.proc")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.volumes.proc.jpg "docker.volumes.proc")
 
 - 两种类型的卷:
-    - Bind mount volume:  a volume that points to a user-specified location on the host file system.
-    - Docker-managed volume:  the Docker daemon creates managed volumes in a portion of the host’s file system that’s owned by Docker, e.g.. `var/lib/docker/volumes`
-    - 在docker run是, 使用`--volume, -v {HOSTDIR:VOLUMERDIR | HOSTDIR}`选项指定
+    - **Bind mount volume**: a volume that points to a user-specified location on the host file system.
+    - **Docker-managed volume**: the Docker daemon creates managed volumes in a portion of the host’s file system that’s owned by Docker, e.g.. `var/lib/docker/volumes`
+        - 在docker run时, 使用`--volume, -v {HOSTDIR:VOLUMERDIR | HOSTDIR}`选项指定
     - docker volume list: 列出现在已有的卷
 
 - Sharing volumes: There are two ways to share volumes between containers.
-    - 多个容器的卷使用同一个主机目录, 例如
+    - **多个容器的卷使用同一个主机目录**, 例如
         ```
         ~]# docker run –it --name c1 -v /docker/volumes/v1:/data busybox
         ~]# docker run –it --name c2 -v /docker/volumes/v1:/data busybox
         ```
-    - 复制使用其它容器的卷, 为docker run命令使用--volumes-from选项
+    - **复制使用其它容器的卷**, 为docker run命令使用--volumes-from选项
         ```
         ]# docker run -it --name bbox1 -v /docker/volumes/v1:/data busybox
         ]# docker run -it --name bbox2 --volumes-from bbox1 busybox
