@@ -1,6 +1,8 @@
 # Docker
 
-## 体系结构
+## 1. 概述
+
+### 1.1 体系结构
 
 - docker中的容器: lxc -> libcontainer -> runC
     - runC is a CLI tool for spawning and running containers according to the OCI(Open Container Initiative) specification
@@ -19,8 +21,6 @@
         - **Docker Hub** and **Docker Cloud** are public registries that anyone can use, and Docker is configured to look for images on Docker Hub by default.
         - You can even run your own private registry.
 
-- [docker中的命名空间](https://www.jianshu.com/p/04327e148169 "docker中的命名空间")
-
 [![docker.architecture](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.architecture.jpg "docker.architecture")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.architecture.jpg "docker.architecture")
 
 - Docker逻辑组件
@@ -38,8 +38,9 @@
         - You can create, run, stop, move, or delete a container using the Docker API or CLI.
         - You can connect a container to one or more networks, attach storage to it, or even create a new image based on its current state.
 
+- [docker中的命名空间](https://www.jianshu.com/p/04327e148169 "docker中的命名空间")
 
-## 安装
+### 1.2 安装
 
 - 依赖的基础环境
     - 64 bits CPU
@@ -67,7 +68,7 @@
 
 [![docker.event.state](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.event.state.jpg "docker.event.state")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.event.state.jpg "docker.event.state")
 
-## 相关命令
+### 1.3 相关命令
 
 - [Docker reference documentation](https://docs.docker.com/reference/ "Docker reference documentation")
 
@@ -131,7 +132,7 @@
         - `docker top CONTAINER-NAME`
     - docker inspect: 显示docker详细信息
 
-## Docker Images
+## 2. Docker Images
 
 [![docker.image.layer](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.image.layer.jpg "docker.image.layer")](https://github.com/Minions1128/net_tech_notes/blob/master/img/docker.image.layer.jpg "docker.image.layer")
 
@@ -200,7 +201,7 @@
             - --input, -i: Read from tar archive file, instead of STDIN
             - --quiet, -q: Suppress the load output
 
-## Docker Data Volumes
+## 3. Docker Data Volumes
 
 - 写时复制(COW):
     - Docker镜像由多个只读层叠加而成, 启动容器时, Docker会加载只读镜像层并在镜像栈顶部添加一个读写层
@@ -241,7 +242,7 @@
     - 删除容器之时删除相关的卷: 为docker rm命令使用-v选项
     - 删除指定的卷: `docker volume rm`
 
-### Docker网络
+## 4. Docker网络
 
 - Docker is concerned with two types of networking:
     - single-host virtual networks: provide container isolation
@@ -294,7 +295,7 @@
     - connect
     - disconnect
 
-## Dockerfile
+## 5. Dockerfile
 
 - Dockerfile is nothing but the source code for building Docker images
     - Docker can **build images** automatically by reading the instructions from a Dockerfile
@@ -495,7 +496,7 @@ EXPOSE 80/tcp 12345/udp
 HEALTHCHECK --start-period=3s CMD wget -O - -q http://${IP:-0.0.0.0}:${PORT}/
 ```
 
-## 资源限制
+## 6. 资源限制
 
 - 8-side containers:
 
@@ -520,7 +521,7 @@ HEALTHCHECK --start-period=3s CMD wget -O - -q http://${IP:-0.0.0.0}:${PORT}/
 
 - 测试工具: stress
 
-## Private Registry
+## 7. Private Registry
 
 - 创建: `yum install -y docker-distribution`
 - 配置文件: `/etc/docker-distribution/registry/config.yml`
