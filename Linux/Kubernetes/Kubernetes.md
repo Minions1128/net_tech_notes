@@ -17,7 +17,7 @@
 - ASF: mesos(资源调框架, IDC操作系统), marathon(编排容器)
 - Google: Kubernetes
 
-## K8s
+## 概述
 
 - Kubernetes is an open source system for managing containerized applications across multiple hosts, providing basic mechanisms for deployment, maintenance, and scaling of applications.
 
