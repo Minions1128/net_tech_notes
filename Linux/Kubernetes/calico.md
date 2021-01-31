@@ -29,4 +29,3 @@ calicoctl config get -Name
 4. BGP Route Reflector (BIRD),  an optional BGP route reflector for higher scale.
 5. The Orchestrator plugin,     orchestrator-specific code that tightly integrates calico into that orchestrator.
 ```
-
