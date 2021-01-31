@@ -4,3 +4,4 @@ temp.*
 *.pdf
 *.yaml
 temp
+*.pyc
