@@ -55,3 +55,4 @@ netstat -n|awk '/^tcp/{++S[$NF]}END {for(a in S) print a, S[a]}'
 
 ## Linux Analysis Tools
 
+![analysis.tools](https://github.com/Minions1128/net_tech_notes/blob/master/img/analysis.tools.jpeg)
