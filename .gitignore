@@ -1,7 +1,3 @@
 *.txt
-temp.*
-*.temp
 *.pdf
-*.yaml
-temp
 *.pyc
