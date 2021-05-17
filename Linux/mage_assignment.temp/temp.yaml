@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deploy-bbox
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: bbox
+    sepc:
+      containers:
+        - name: bbox
+          image: string
+          ports:
+            - name: http
+              containerPort: 8080 #对service暴露端口
+
+
+
+spec:
+  selector:
+    matchLabels:
+      app: bbox
+
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: bbox
+    sepc:
+      containers:
+      - name: bboxhttpd
+        image: "registry:5000/bbox-httpd:v0.2"
+        ports:
+        - containerPort: 18888
