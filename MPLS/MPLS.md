@@ -49,6 +49,8 @@
 - 5. 由于MPLS分发标签给目的地的上游和上游的LSR. 所以LDP建立传递邻居信息时, 会将路由器所有物理接口的IP地址告诉邻居路由器, 将这些信息存入到邻居表中;
 - 6. 当收到邻居的标签时, 会结合自己的FIB, 并且将适合的标签加入到LFIB中.
 
+- LDP参考: https://cshihong.github.io/2018/02/23/MPLS-LDP%E5%9F%BA%E7%A1%80/#LDP%20LSP%E7%9A%84%E5%BB%BA%E7%AB%8B
+
 ### 2.3 数据转发
 
 ![mpls lsr](/img/mpls_lsr_forwarding.jpg "mpls lsr")
