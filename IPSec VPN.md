@@ -18,9 +18,17 @@ IP 51号，其封装格式有两种模式：Transport Mode和Tunnel Mode
 * 序列号：防止重复攻击
 * Next header：相当于IP报文的协议号字段。
 * Auth data：存放其hash值。
+
 ## 3. IKE
+
 IKE，网络密钥交换协议，通过UDP 500端口发送，解决IPSec自动生成、交换key的问题。IKE拥有的协议有ISAKMP（Internet Security Association Key Management Protocol），SKEME和Oakley，SKEME和Oakley组成ISAKMP。
+
+- 参考：
+    - [IPSec VPN之IKE协议详解](https://cshihong.github.io/2019/04/03/IPSec-VPN%E4%B9%8BIKE%E5%8D%8F%E8%AE%AE%E8%AF%A6%E8%A7%A3/ "IPSec VPN之IKE协议详解")
+    - [IPSec VPN之IKEv2协议详解](https://cshihong.github.io/2019/04/09/IPSec-VPN%E4%B9%8BIKEv2%E5%8D%8F%E8%AE%AE%E8%AF%A6%E8%A7%A3/ "IPSec VPN之IKEv2协议详解")
+
 ### 3.1 第一阶段
+
 * 该阶段用于建立IKE SA
 * 为第二阶段交换key材料，该key为数据实际加密的key。
 * 分为两种模式：主模式和激进模式。先只讨论主模式。
