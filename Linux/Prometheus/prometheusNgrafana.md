@@ -10,6 +10,7 @@ docker pull prom/prometheus
 docker pull prom/node-exporter
 docker pull grafana/grafana
 docker pull prom/alertmanager
+docker pull prom/pushgateway
 
 # 确定网络接口名称
 itf=en0
@@ -38,24 +39,45 @@ netstat -tan|egrep 9100
 # 编辑配置文件
 # 确定网络接口名称
 itf=en0
-mkdir -pv ~/Data/prometheus
+ipaddr=$(ip a show dev $itf|egrep -w inet|awk '{print$2}'|awk -F/ '{print$1}')
+mkdir -pv ~/Data/prometheus/rules
 cat << EOF > ~/Data/prometheus/prometheus.yml
 global:
   scrape_interval:     15s
   evaluation_interval: 15s
 
+# rule file
+rule_files:
+  - "rules/*.yml"
+
 scrape_configs:
+  # prometheus server
   - job_name: prometheus
     static_configs:
       - targets: ["localhost:9090"]
         labels:
           instance: prometheus
-
+  # exporter
   - job_name: linux
     static_configs:
-      - targets: ["$(ip a show dev $itf|egrep -w inet|awk '{print$2}'|awk -F/ '{print$1}'):9100"]
+      - targets: ["$ipaddr:9100"]
         labels:
           instance: localhost
+  # pushgateway
+  - job_name: pushgateway
+    static_configs:
+      - targets: ["$ipaddr:9091"]
+        labels:
+          instance: pushgateway
+
+# Alertmanager configuration
+# 此处也可以基于文件的添加方式, 使用 file_sd_configs
+alerting:
+  alertmanagers:
+  - scheme: http
+  - static_configs:
+    - targets: ["$ipaddr:9093"]
+
 EOF
 
 # 启动 promethus
@@ -166,21 +188,15 @@ groups:
           summary: "{{\$labels.instance}}: NetworkMore1M"
           description: "{{ \$labels.instance }}: NetworkMore1M (current value is: {{ \$value }})"
 EOF
-itf=en0
-cat << EOF >> ~/Data/prometheus/prometheus.yml
-
-# rule file
-rule_files:
-  - "rules/*.yml"
-
-# Alertmanager configuration
-alerting:
-  alertmanagers:
-  - scheme: http
-  - static_configs:
-    - targets: ["$(ip a show dev $itf|egrep -w inet|awk '{print$2}'|awk -F/ '{print$1}'):9093"]
-
-# 此处也可以基于文件的添加方式, 使用 file_sd_configs
-EOF
 docker restart prometheus1
+```
+
+## 5. pushgateway
+
+- 启动
+
+```sh
+docker run -d -p 9091:9091 \
+    --name=pushgateway1 \
+    prom/pushgateway
 ```
